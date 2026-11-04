@@ -368,7 +368,7 @@ function paneBlock(){
     if(!P.carries.includes(g.id)&&!have)return '';
     const no=!P.carries.includes(g.id);
     return `<div class="row">${drugPic(g.id,34)}<div class="info" style="min-width:0"><div class="t">${g.name}${!no&&of.v?` <span style="color:var(--dim);font-weight:400">· ${of.v}</span>`:''} ${no?`<span class="chip">${plugFem(S.at)?'She':'He'} don't carry it</span>`:`${gchip(of.q,g)} ${tag}${look}`}${dtag}</div>
-      <div class="s">${!no?(stockOf(S.at,g)>=g.step?`${plugFem(S.at)?'She':'He'} got ${amt(stockOf(S.at,g),g)} · `:'<b style="color:var(--blood)">Sold out today</b> · '):''}Street ~${money(street(g))} · You got ${have?amt(have,g):'0'}${have?` (${grade(S.q[g.id],g)})`:''}${have?(S.paid[g.id]?` · paid ~${money(S.paid[g.id])}`:' · got it free'):''}${have?` · ${!P.carries.includes(g.id)&&P.lvl==='Low'?'plug won\'t take it':`plug pays ${money(sp)}${!P.carries.includes(g.id)?' (30% less, he don\'t carry it)':''}`}, Js pay ~${money(Math.round(plugPrice('sell',g,true)*1.4))}`:''}</div></div>
+      <div class="s">${!no?(stockOf(S.at,g)>=g.step?`${plugFem(S.at)?'She':'He'} got ${amt(stockOf(S.at,g),g)} · `:'<b style="color:var(--blood)">Sold out today</b> · '):''}Street ~${money(street(g))} · You got ${have?amt(have,g):'0'}${have?` (${grade(S.q[g.id],g)})`:''}${have?(S.paid[g.id]?` · paid ~${money(S.paid[g.id])}`:' · got it free'):''}${have?` · ${!P.carries.includes(g.id)&&P.lvl==='Low'?'plug won\'t take it':`plug pays ${money(sp)}${!P.carries.includes(g.id)?' (30% less, '+(plugFem(S.at)?'she':'he')+' don\'t carry it)':''}`}, Js pay ~${money(Math.round(plugPrice('sell',g,true)*1.4))}`:''}</div></div>
       <div class="price ${cls}">${no?'<span style="color:var(--dim)">—</span>':money(p)}</div>
       <div class="btns"><button class="btn green" data-a="buy" data-g="${g.id}" ${P.carries.includes(g.id)&&!locked&&stockOf(S.at,g)>=g.step?'':'disabled'}>Buy</button>
       <button class="btn" data-a="sell" data-g="${g.id}" ${have?'':'disabled'}>Sell</button></div></div>`;
@@ -2137,7 +2137,7 @@ function qtyModal(kind,g,to,bl){if(to==='js'&&stuckHome())return;
     if(pdisc)S.pk[S.at].disc=0;
     if(kind==='buy')S.trust[S.at]=Math.min(100,S.trust[S.at]+1);
     if(kind==='buy'&&crewHere()){const c=crew(S.owner[S.at]);c.beef=Math.max(0,c.beef-1);c.respect=Math.min(100,c.respect+1)}
-    if(!js&&!known){S.deals[S.at]=(S.deals[S.at]||0)+1;if(S.deals[S.at]>=(rankAt(4)?1:3)){S.known.push(S.at);say(`${plugName(S.at)} knows you now. Better prices and you can talk to him.`)}}
+    if(!js&&!known){S.deals[S.at]=(S.deals[S.at]||0)+1;if(S.deals[S.at]>=(rankAt(4)?1:3)){S.known.push(S.at);say(`${plugName(S.at)} knows you now. Better prices and you can talk to ${plugFem(S.at)?'her':'him'}.`)}}
     if(kind==='buy'){of.stock=Math.max(0,stockOf(S.at,g)-n);S.vn=S.vn||{};S.vn[g.id]=of.v;if(of.fake){S.fakeFrom=S.fakeFrom||{};S.fakeFrom[g.id]=S.at}const realHave=S.inv[g.id]-S.fake[g.id];if(of.fake)S.fake[g.id]+=n;else S.q[g.id]=Math.round((S.q[g.id]*realHave+of.real*n)/(realHave+n));const tot=Math.round(p*n*bulk(n,g));S.paid[g.id]=Math.round((S.paid[g.id]*S.inv[g.id]+tot)/(S.inv[g.id]+n));S.inv[g.id]+=n;S.cash-=tot;if(bulk(n,g)<=.9)ck('s:bulk');say(`Copped ${amt(n,g)} of ${of.v?of.v+' ':''}${g.name} for ${money(tot)}${bulk(n,g)<1?` (bulk −${Math.round((1-bulk(n,g))*100)}%)`:''}.`)}
     else{const fk=Math.min(S.fake[g.id],Math.round(n*S.fake[g.id]/S.inv[g.id]));S.fake[g.id]-=fk;
       const got=bl==='win'?n*p:(n-fk)*p+fk*Math.round(p*.15);
@@ -2191,7 +2191,7 @@ function nextDay(){if(S.att)S.att=S.att.map(v=>Math.max(0,Math.round(v*.8-2)));i
   drawCard(.09,'Out on the block,');
   const unk=BLOCKS.map((b,i)=>i).filter(i=>!S.known.includes(i));
   if(unk.length&&Math.random()<(is('shade')?.25:.15)){const bi=pick(unk);S.known.push(bi);
-    say(pick([`Somebody at the gas station put you on with ${plugName(bi)} from ${BLOCKS[bi]}.`,`Your cousin linked you with ${plugName(bi)} on ${BLOCKS[bi]}.`,`Met ${plugName(bi)} from ${BLOCKS[bi]} at a party. He got you now.`,`A customer vouched for you. ${plugName(bi)} on ${BLOCKS[bi]} knows you now.`]))}
+    say(pick([`Somebody at the gas station put you on with ${plugName(bi)} from ${BLOCKS[bi]}.`,`Your cousin linked you with ${plugName(bi)} on ${BLOCKS[bi]}.`,`Met ${plugName(bi)} from ${BLOCKS[bi]} at a party. ${plugFem(bi)?'She':'He'} got you now.`,`A customer vouched for you. ${plugName(bi)} on ${BLOCKS[bi]} knows you now.`]))}
   event();
 }
 function event(){
