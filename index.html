@@ -2348,6 +2348,7 @@ function act(a,el){
   if(a==='pcard'){S.passed=S.day;const n=rnd(1,2);for(let i=0;i<n;i++)addCusto(pick(CNAMES),pick(PINFO[S.at].carries),'block');S.heat=Math.min(100,S.heat+3);say(`Passed your number out on ${BLOCKS[S.at]}.`)}
   if(a==='pserve')return serveCusto(+el.dataset.i,true,el.dataset.g?{gid:el.dataset.g,sw:Math.random()<.25}:{});
   if(a==='poffer')return offerElse(+el.dataset.i);
+  if(a==='pargive')return parGive(+el.dataset.k);
   if(a==='pignore'){const r=S.texts.splice(+el.dataset.i,1)[0];const c=S.custos[r.ci];if(c)c.loy=Math.max(0,c.loy-6);say(`Left ${c?c.name:'them'} on read.`)}
   if(a==='phit')return hitUp(+el.dataset.i);
   if(a==='pask'){const c=S.custos[+el.dataset.i];const right=S.rep>=70||Math.random()<.8;c.ask=(c.uc===right)?'cop':'ok';say(c.ask==='cop'?`Asked around about ${c.name}. People saying they might be twelve.`:`Asked around about ${c.name}. People say they solid.`)}
@@ -2493,7 +2494,17 @@ function teenStart(ch,age){age=age||14;S.cal=1;S.age=age;S.grade=Math.min(12,9+(
   const m=rnd(9,18),mo=((m-1)%12)+1,yr=2026+(m>12?1:0);S.nextBday=Date.UTC(yr+(age-14),mo-1,rnd(1,28));
   if(age<18){S.home='family';S.cap+=20}}
 function guardianLine(){const P=S.par;if(!P||S.home!=='family')return '';const st=P.strict>=70?'Strict':P.strict>=45?'Keeps an eye on you':'Lets you slide';
-  return `<div class="row" style="flex-wrap:wrap">${parPic(52)}<div class="info" style="flex:1 1 200px;min-width:0"><div class="t">Living with ${P.name} <span class="chip">${st}</span>${S.grounded>S.day?' <span class="chip war">Grounded</span>':''}</div><div class="s">${P.sub}</div><div class="s">Trust ${P.trust}/100</div><div class="bar"><i style="width:${P.trust}%;background:var(--money)"></i></div></div></div>`}
+  return `<div class="row" style="flex-wrap:wrap">${parPic(52)}<div class="info" style="flex:1 1 200px;min-width:0"><div class="t">Living with ${P.name} <span class="chip">${st}</span>${S.grounded>S.day?' <span class="chip war">Grounded</span>':''}</div><div class="s">${P.sub}</div><div class="s">Trust ${P.trust}/100</div><div class="bar"><i style="width:${P.trust}%;background:var(--money)"></i></div></div>
+    <div class="btns"><button class="btn green" data-a="pargive" data-k="100" ${S.cash>=100&&S.parGive!==S.day?'':'disabled'}>Give ${P.who.toLowerCase()} $100</button><button class="btn green" data-a="pargive" data-k="500" ${S.cash>=500&&S.parGive!==S.day?'':'disabled'}>Give $500</button></div></div>`}
+function parGive(amt){const P=S.par;if(!P)return;S.cash-=amt;S.parGive=S.day;const big=amt>=500,teen=S.age&&S.age<18;
+  const sus=P.strict>=70?(big?.85:.55):P.strict>=45?(big?.5:.2):(big?.15:0);let h,t,good=true;
+  if(teen&&Math.random()<sus){good=false;P.trust=Math.max(0,P.trust-(big?15:8));S.heat=Math.min(100,S.heat+(big?4:1));
+    if(P.strict>=70&&big){S.grounded=S.day+4;addStress(10);h=`${P.name} ain't buying it`;t=`"${money(amt)}? You ${S.age} with no job. Where you getting this money from?" ${P.name} took the money, went through your room, and you're grounded for two weeks.`}
+    else{h=`${P.name} looked at you funny`;t=`"Where you get ${money(amt)} from?" You said you been cutting grass. ${P.name} took it, but they watching you now. Trust −${big?15:8}.`}}
+  else{P.trust=Math.min(100,P.trust+(big?12:6));addStress(big?-10:-5);S.rep+=big?1:0;
+    h=pick([`${P.name} hugged you`,`${P.name} teared up`,`${P.name} said thank you`]);t=pick([`"Thank you, baby. Be safe out there, you hear me?"`,`"You ain't have to do that. Thank you. Now go to school and stay out of trouble."`,`"Lord knows we needed this. Be careful, okay?"`])+` Trust +${big?12:6}, stress −${big?10:5}.`}
+  say(good?`Gave ${P.name} ${money(amt)}. ${P.name}: thank you, be safe.`:`Gave ${P.name} ${money(amt)} and they got suspicious.`);
+  modal(`${parPic(80).replace('flex:none','align-self:center')}<h2 style="color:${good?'var(--money)':'var(--blood)'}">${h}</h2><p>${t}</p><div class="btns"><button class="btn go" id="ok">${good?'Love you':'My fault'}</button></div>`);$('ok').onclick=close}
 function calTick(){if(!S.cal)return;const d=calDate();
   // during a time skip (jail or dev skip) school events don't pop up; the year still ends and you still move up
   const sq=x=>{if(!window.FF)return S.schoolQ.push(x);if(x!=='report2')return;if(S.grades>=50){S.yrs=(S.yrs||0)+1;if(S.grade>=12){S.school='grad';S.diploma=1;say('You graduated while you were away.')}else S.promote=1}else say('You failed the year while you were away.')};
