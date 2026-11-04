@@ -325,7 +325,7 @@ function render(){
   const C=CHARS.find(c=>c.id===S.char);$('who').textContent=C.name;
   $('me').innerHTML=`${PORTRAITS[C.id]?`<img src="${PORTRAITS[C.id]}" alt="${C.name}" style="width:56px;height:56px;border-radius:6px;object-fit:cover;flex:none">`:`<div style="width:56px;height:56px;border-radius:6px;background:#2a2430;display:flex;align-items:center;justify-content:center;font-family:var(--display);font-size:26px;color:var(--accent);flex:none">${C.name[0]}</div>`}<div class="info"><div class="t" style="font-family:var(--display);font-size:20px;font-weight:400">${C.name}</div><div class="s">${roleOf(C)}</div></div>`;$('rk').textContent=identity();$('rtab').hidden=!S.rapOn;$('htab').hidden=!S.robOn;if((tab==='rap'&&!S.rapOn)||(tab==='rob'&&!S.robOn))tab='block';
   $('stash').textContent=Math.round(used())+'/'+S.cap;
-  $('hp').textContent=S.hp;$('hpb').style.width=S.hp+'%';
+  $('hp').textContent=S.hp<=35?S.hp+' · hospital':S.hp;$('hp').style.color=S.hp<=35?'var(--blood)':'';$('hpb').style.width=S.hp+'%';$('hpb').style.background=S.hp<=35?'var(--blood)':'var(--money)';
   $('heat').textContent=S.heat;$('heatb').style.width=S.heat+'%';
   $('rep').textContent=S.rep;
   $('here').textContent=BLOCKS[S.at];{const w=document.querySelector('.where'),art=BLOCKART[S.at];w.style.backgroundImage=art?`linear-gradient(90deg,rgba(20,17,24,.92) 30%,rgba(20,17,24,.45)),url(${art})`:'';w.style.backgroundSize=art?'cover':'';w.style.backgroundPosition=art?'center 60%':''}
@@ -1354,7 +1354,7 @@ function lick(k){if(stuckHome())return;
     modal(`<div class="sec" style="margin:0;color:var(--blood)">High risk · high reward</div><h2>${nm}</h2><p>${nm} ${where} with a <b>${G2.name}${fa?' (full auto)':''}</b> on him and a fat knot in his pocket.${P.burned?' He knows your face. You took his last one.':P.trust>0?` Y'all cool. He trusts you (${P.trust}/100).`:''}${slip?' <b>He\'s slipping hard</b>, not watching nothing.':''}</p>
       <p class="s">Run up: his gun, his cash (~${money(cash)}), rep +6. Your strength ${myStr()} vs his ${theirs}. Lose and you get shot up.</p>
       ${P.burned?'':`<p class="s">Finesse: just ask to see it. No gun drawn, no fight. Talk ${S.sk.talk}/10 · ${Math.round(fOdds*100)}% he hands it over.</p>`}
-      <p class="s" style="color:var(--dim)">Smarts helps you catch him slipping. Trust from giving it back makes everything easier with him later.</p>
+      ${S.hp<=60?`<p class="s" style="color:var(--blood)"><b>You're at ${S.hp} health.</b> Lose this and you could die. Hit the hospital first.</p>`:''}<p class="s" style="color:var(--dim)">Smarts helps you catch him slipping. Trust from giving it back makes everything easier with him later.</p>
       <div class="btns"><button class="btn red" id="y">Run up on him</button>${P.burned?'':'<button class="btn go" id="fz">Finesse him</button>'}<button class="btn" id="n">Let it go</button></div>`);
     $('n').onclick=close;
     const take=()=>{S.guns=S.guns||{};const dup=S.guns[g]||armed().includes(g);if(dup){const v=Math.round(G2.cost*.6);S.cash+=v;return ` You already had one, so you flipped it for ${money(v)}.`}S.guns[g]=1;if(fa){S.auto=S.auto||{};S.auto[g]=1}return ''};
@@ -2289,7 +2289,7 @@ function war(c){if(!canWar()){modal(`<h2>No firepower</h2><p>You can't take a bl
   const d=cdef(c.id),mine=myStr()+(S.fx.ride?12:0);
   const odds=Math.round(mine/(mine+c.str)*100);
   modal(`<img src="${WARBAN}" alt="" style="width:100%;border-radius:6px;display:block"><h2 style="color:${d.color}">Take ${BLOCKS[S.at]}?</h2>
-    <p>Your strength ${mine} vs the ${d.name} ${c.str}. About ${odds}% chance. Win and the block is yours. Lose and you get hurt bad. Either way, cops hear about it.</p>
+    <p>Your strength ${mine} vs the ${d.name} ${c.str}. About ${odds}% chance. Win and the block is yours. Lose and you get hurt bad. Either way, cops hear about it.</p>${S.hp<=45?`<p class="s" style="color:var(--blood)"><b>You're at ${S.hp} health.</b> Lose this and you could die. Hit the hospital first.</p>`:''}
     <div class="btns"><button class="btn red" id="y">Run it</button><button class="btn" id="n">Not yet</button></div>`);
   $('n').onclick=close;
   $('y').onclick=()=>{window.fgGun=1;fightGame(mine,c.str,`the ${d.name} on ${BLOCKS[S.at]}`,win=>{S.heat=Math.min(100,S.heat+(is('shade')?12:25));S.fx.ride=0;
