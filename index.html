@@ -513,7 +513,7 @@ function gangOwn(){modal(`<h2>Start your own gang</h2><p>$10,000 to get it going
   $('n').onclick=close;$('y').onclick=()=>{const nm=($('gn').value||'').trim()||`${CHARS.find(x=>x.id===S.char)?.name||'My'} Gang`;S.cash-=10000;S.myGang={name:nm,day:S.day};S.rep+=10;addXP(10);say(`Started your own gang: ${nm}.`);close()}}
 function paneCrew(){
   const turf=S.owner.filter(o=>o==='me').length, need=S.lvl*20;
-  return `${(S.traits||[]).length?`<div class="row" style="flex-wrap:wrap"><div class="info"><div class="t">Traits</div><div class="s">${S.traits.map(id=>{const t=TRAITS.find(x=>x.id===id);return t?`<b>${t.name}</b>: ${t.sub.replace(' Can\'t be undone.','')}`:''}).join('<br>')}</div></div></div>`:''}<div class="row" style="flex-wrap:wrap"><div class="info"><div class="t">Level ${S.lvl} · ${S.pts} skill point${S.pts===1?'':'s'} to spend</div>
+  return `${(S.traits||[]).length?`<div class="row" style="flex-wrap:wrap"><div class="info"><div class="t">Traits</div><div class="s">${S.traits.map(id=>{const t=TRAITS.find(x=>x.id===id);return t?`<b>${t.name}</b> · <i>${t.story}</i><br>${t.sub.replace(' Can\'t be undone.','')}`:''}).join('<br>')}</div></div></div>`:''}<div class="row" style="flex-wrap:wrap"><div class="info"><div class="t">Level ${S.lvl} · ${S.pts} skill point${S.pts===1?'':'s'} to spend</div>
     <div class="s">XP ${S.xp} / ${need}. Earn XP from profit, fights, taking blocks, missions and mini games.</div><div class="bar"><i style="width:${S.xp/need*100}%;background:var(--accent)"></i></div></div></div>
    ${Object.keys(SKN).map(k=>`<div class="row" style="padding:8px 12px"><div class="info"><div class="t">${SKN[k]} <span style="font-family:var(--label);font-weight:700;color:var(--accent)">${S.sk[k]}</span>/10</div><div class="s">${SKD[k]}</div>
     <div class="bar"><i style="width:${S.sk[k]*10}%;background:var(--accent)"></i></div></div><button class="btn green" data-a="sk" data-k="${k}" ${S.pts>0&&S.sk[k]<10?'':'disabled'}>+1</button></div>`).join('')}
@@ -662,23 +662,23 @@ function cut(k,cap){const src=CUTS[k];if(!src)return;let o=document.getElementBy
   const done=()=>{o.style.opacity=0;setTimeout(()=>{o.hidden=true},300);clearTimeout(o._t)};o.onclick=done;clearTimeout(o._t);o._t=setTimeout(done,3200)}
 const hasT=t=>!!(S&&S.traits&&S.traits.includes(t));
 const TRAITS=[
- {id:'tongue',name:'Silver Tongue',cost:4,sub:'+2 Talk. −1 Muscle.',sk:{talk:2,muscle:-1}},
- {id:'built',name:'Built Different',cost:4,sub:'+2 Muscle. −1 Talk.',sk:{muscle:2,talk:-1}},
- {id:'hustler',name:'Born Hustler',cost:4,sub:'+2 Hustle. −1 Luck.',sk:{hustle:2,luck:-1}},
- {id:'nosey',name:'Nosey',cost:3,sub:'+1 Street Smarts. You catch people slipping way more (strap licks, robbing plugs). −1 Hustle.',sk:{smarts:1,hustle:-1}},
- {id:'charm',name:'Lucky Charm',cost:3,sub:'+2 Luck. −1 Street Smarts.',sk:{luck:2,smarts:-1}},
- {id:'cold',name:'Ice Cold',cost:3,sub:'Stress builds 30% slower. −1 Talk, people say you cold.',sk:{talk:-1}},
- {id:'dayone',name:'Got a Day One',cost:4,sub:'Start with a loyal homie at 70 closeness who backs you up.'},
- {id:'face',name:'Face Card',cost:3,sub:'+10 rep from the jump. But twelve already know your face: start with 20 heat.'},
- {id:'sketchy',name:'Sketchy Past',cost:-4,sub:'+4 trait points. One crew already hates you and you start with 25 heat. Can\'t be undone.'},
- {id:'hot',name:'Hothead',cost:-3,sub:'+3 trait points and +1 Muscle. Stress builds 30% faster.',sk:{muscle:1}},
- {id:'brokestart',name:'Broke Start',cost:-2,sub:'+2 trait points. You start with $0.'},
+ {id:'tongue',name:'Smooth Operator',story:'You been talking your way out of detention every week since 6th grade.',cost:4,sub:'+2 Talk. −1 Muscle.',sk:{talk:2,muscle:-1}},
+ {id:'built',name:'Grown Man Strength',story:'Biggest dude in every class picture since 4th grade. Nobody tried you twice.',cost:4,sub:'+2 Muscle. −1 Talk.',sk:{muscle:2,talk:-1}},
+ {id:'hustler',name:'Candy Man',story:'Sold candy out your bookbag in middle school and never once ran out.',cost:4,sub:'+2 Hustle. −1 Luck.',sk:{hustle:2,luck:-1}},
+ {id:'nosey',name:'Nosey',story:'Granny always said you\'d make a good cop. You took that personal, but you still see everything.',cost:3,sub:'+1 Street Smarts. You catch people slipping way more (strap licks, robbing plugs). −1 Hustle.',sk:{smarts:1,hustle:-1}},
+ {id:'charm',name:'Blessed',story:'Found a hundred dollar bill on the ground twice. Some people just got it.',cost:3,sub:'+2 Luck. −1 Street Smarts.',sk:{luck:2,smarts:-1}},
+ {id:'cold',name:'Ice in Your Veins',story:'Watched your uncle get raided when you was 8 and finished your cereal.',cost:3,sub:'Stress builds 30% slower. −1 Talk, people say you cold.',sk:{talk:-1}},
+ {id:'dayone',name:'Day One',story:'You and him been brothers since the sandbox. He\'ll ride for you, no question.',cost:4,sub:'Start with a loyal homie at 70 closeness who backs you up.'},
+ {id:'face',name:'Face Card',story:'Everybody on the Eastside already know your name. So do the cops.',cost:3,sub:'+10 rep from the jump. But twelve already know your face: start with 20 heat.'},
+ {id:'sketchy',name:'Got History',story:'You did some things in middle school. People ain\'t forgot, and neither did twelve.',cost:-4,sub:'+4 trait points. One crew already hates you and you start with 25 heat. Can\'t be undone.'},
+ {id:'hot',name:'Short Fuse',story:'Can\'t let nothing slide. Got the write-ups and the busted knuckles to prove it.',cost:-3,sub:'+3 trait points and +1 Muscle. Stress builds 30% faster.',sk:{muscle:1}},
+ {id:'brokestart',name:'Came From Nothing',story:'Mama did her best. Some nights the lights was off and dinner was noodles.',cost:-2,sub:'+2 trait points. You start with $0.'},
 ];
 function traitPick(after){const base=4;let pick=[];
   const left=()=>base-pick.reduce((a,id)=>a+TRAITS.find(t=>t.id===id).cost,0);
   const draw=()=>{const L=left();modal(`<h2>Pick your traits</h2><p>Everybody comes with something. Spend <b>${L}</b> point${L===1?'':'s'}. Bad traits give you more points to spend. Once you start, they're locked in.</p>
     <div style="display:flex;flex-direction:column;gap:6px">${TRAITS.map(t=>{const on=pick.includes(t.id),can=on||(t.cost<=L)&&!(t.id==='cold'&&pick.includes('hot'))&&!(t.id==='hot'&&pick.includes('cold'));
-      return `<button class="btn ${on?'go':''}" data-tr="${t.id}" ${can?'':'disabled'} style="text-align:left;text-transform:none;letter-spacing:0;font-family:var(--body);padding:10px 12px;line-height:1.35;white-space:normal;width:100%"><b>${t.name}</b> <span style="opacity:.8">· ${t.cost>0?`costs ${t.cost}`:`gives ${-t.cost}`}</span><br><span style="font-weight:400;font-size:13px">${t.sub}</span></button>`}).join('')}</div>
+      return `<button class="btn ${on?'go':''}" data-tr="${t.id}" ${can?'':'disabled'} style="text-align:left;text-transform:none;letter-spacing:0;font-family:var(--body);padding:10px 12px;line-height:1.35;white-space:normal;width:100%"><b>${t.name}</b> <span style="opacity:.8">· ${t.cost>0?`costs ${t.cost}`:`gives ${-t.cost}`}</span><br><i style="font-weight:400;font-size:13px;opacity:.85">${t.story}</i><br><span style="font-weight:400;font-size:13px">${t.sub}</span></button>`}).join('')}</div>
     <div class="btns"><button class="btn go" id="tgo">${pick.length?'Lock it in':'Skip, no traits'}</button></div>`);
     $('mcard').querySelectorAll('[data-tr]').forEach(b=>b.onclick=()=>{const id=b.dataset.tr;pick=pick.includes(id)?pick.filter(x=>x!==id):[...pick,id];draw()});
     $('tgo').onclick=()=>{applyTraits(pick);after()}};
