@@ -1810,20 +1810,27 @@ const CNAMES=['Lil Kev','Big Mike','Lil Shorty','Pooh','Nikki','Dre','Jasmine','
 function addCusto(name,gid,src){S.custos=S.custos||[];if(S.custos.length>=15||S.custos.some(c=>c.name===name))return;const g=G(gid);
   const size=g.unit==='g'?(gid==='snow'||gid==='kicks'?pick([1,3.5,7]):pick([3.5,7,14,28])):g.unit==='pills'?pick([5,10,20,50]):pick([1,2,4]);
   S.custos.push({name,gid,size,loy:40,buys:0,last:S.day,uc:Math.random()<.07});say(`📱 ${name} saved your number. They want ${g.name}.`)}
-function custoPrice(c){const g=G(c.gid);return Math.round(street(g)*gmult(S.q[c.gid])*1.25*(1+c.loy/400))}
+function custoPrice(c,gid){gid=gid||c.gid;const g=G(gid);return Math.round(street(g)*gmult(S.q[gid])*1.25*(1+c.loy/400))}
+function altSize(c,gid){const g=G(gid);return g.unit==='g'?(gid==='snow'||gid==='kicks'?3.5:7):g.unit==='pills'?10:1}
 function phoneDay(){S.custos=S.custos||[];S.texts=(S.texts||[]).filter(t=>{if(S.day-t.day>2){const c=S.custos[t.ci];if(c){c.loy=Math.max(0,c.loy-8)}return false}return true});
-  S.custos.forEach((c,i)=>{if(S.texts.length<6&&!S.texts.some(t=>t.ci===i)&&Math.random()<.12+c.loy/500)S.texts.push({ci:i,day:S.day})});
+  S.custos.forEach((c,i)=>{if(S.texts.length<6&&!S.texts.some(t=>t.ci===i)&&Math.random()<.12+c.loy/500){const alt=Math.random()<.22?pick(GOODS.filter(x=>x.id!==c.gid)).id:null;S.texts.push({ci:i,day:S.day,g:alt})}});
   const lost=S.custos.filter(c=>c.loy<=0);if(lost.length){lost.forEach(c=>say(`${c.name} found a new plug.`));S.custos=S.custos.filter(c=>c.loy>0);S.texts=[]}
   const n=(S.texts||[]).length;if(n)say(`📱 You got ${n} text${n===1?'':'s'} from your plays.`)}
-function serveCusto(ci,fromText,o){o=o||{};const c=S.custos[ci];if(!c)return;const g=G(c.gid),n=Math.min(Math.round(c.size*(o.mult||1)/g.step)*g.step||c.size,S.inv[c.gid]);
+function serveCusto(ci,fromText,o){o=o||{};const c=S.custos[ci];if(!c)return;const gid=o.gid||c.gid,g=G(gid),sz=o.gid&&o.gid!==c.gid?altSize(c,gid):c.size,n=Math.min(Math.round(sz*(o.mult||1)/g.step)*g.step||sz,S.inv[gid]);
   if(n<g.step){if(fromText){say(`You ain't got no ${g.name} for ${c.name}.`)}else say(`You don't have ${g.name} to bring ${c.name}.`);render();return}
   if(c.uc&&c.buys<2&&Math.random()<.6){busted();S.custos.splice(ci,1);S.texts=[];return lickDone('New number was the feds','That "new play" was undercover. Should have kept it to people you know.',false,true)}
-  const fk=Math.min(S.fake[c.gid],Math.round(n*S.fake[c.gid]/S.inv[c.gid]));S.fake[c.gid]-=fk;
-  const each=Math.round(custoPrice(c)*(o.price||1)),got=Math.round((n-fk)*each+fk*each*.1);S.inv[c.gid]-=n;if(S.inv[c.gid]<=0){S.inv[c.gid]=0;S.paid[c.gid]=0;S.q[c.gid]=50;S.fake[c.gid]=0}
-  const profit=got-S.paid[c.gid]*n;S.cash+=got;if(profit>0){S.st.profit+=profit;addXP(Math.floor(profit/500))}S.st.sold+=n*g.sp*5;S.heat=Math.min(100,S.heat+1);
-  c.buys++;c.last=S.day;c.hit=S.day;if(o.loy)c.loy=Math.min(100,c.loy+o.loy);c.loy=fk?Math.max(0,c.loy-35):Math.min(100,c.loy+(tier(S.q[c.gid])===2?8:tier(S.q[c.gid])===1?5:1));
+  const fk=Math.min(S.fake[gid],Math.round(n*S.fake[gid]/S.inv[gid]));S.fake[gid]-=fk;
+  const each=Math.round(custoPrice(c,gid)*(o.price||1)),got=Math.round((n-fk)*each+fk*each*.1);S.inv[gid]-=n;if(S.inv[gid]<=0){S.inv[gid]=0;S.paid[gid]=0;S.q[gid]=50;S.fake[gid]=0}
+  const profit=got-S.paid[gid]*n;S.cash+=got;if(profit>0){S.st.profit+=profit;addXP(Math.floor(profit/500))}S.st.sold+=n*g.sp*5;S.heat=Math.min(100,S.heat+1);
+  c.buys++;c.last=S.day;c.hit=S.day;if(o.loy)c.loy=Math.min(100,c.loy+o.loy);c.loy=fk?Math.max(0,c.loy-35):Math.min(100,c.loy+(tier(S.q[gid])===2?8:tier(S.q[gid])===1?5:1));
   S.texts=(S.texts||[]).filter(t=>t.ci!==ci);
+  if(o.gid&&o.gid!==c.gid&&o.sw){c.gid=gid;c.size=sz;say(`${c.name} liked that ${g.name}. They want ${g.name} from now on.`)}
   say(`${c.name} pulled up for ${amt(n,g)} of ${g.name}. +${money(got)}.${fk?` Some of it was fake, and ${c.name} noticed.`:''}`);render()}
+function offerElse(ci){const c=S.custos[ci];if(!c)return;const opts=GOODS.filter(x=>x.id!==c.gid&&S.inv[x.id]>=x.step);
+  modal(`${custPic(c.name,64).replace('flex:none','align-self:center')}<h2>Offer ${c.name} something else</h2><p>${c.name} usually wants ${G(c.gid).name}. What you got for them?</p><div class="btns">${opts.map(x=>`<button class="btn" data-og="${x.id}">${x.name}</button>`).join('')}</div><div class="btns"><button class="btn" id="no">Never mind</button></div>`);
+  $('no').onclick=close;$('mcard').querySelectorAll('[data-og]').forEach(b=>b.onclick=()=>{const gid=b.dataset.og,x=G(gid);c.hit=S.day;$('modal').hidden=true;
+    if(Math.random()<.3+c.loy/250+(S.sk.talk||3)*.02)return serveCusto(ci,false,{gid,sw:Math.random()<.3,loy:2});
+    const no=pick([`"Nah, I only mess with ${G(c.gid).name}."`,`"${x.name}? I'm good on that."`,`"Maybe another time, I ain't got it like that today."`]);c.loy=Math.max(0,c.loy-2);say(`${c.name}: ${no}`);toast(`${c.name}: ${no}`,false);render()})}
 function hitUp(ci){const c=S.custos[ci];if(!c)return;const g=G(c.gid);c.hit=S.day;
   if(c.tmr&&c.tmr<=S.day){c.tmr=0;return serveCusto(ci,false,{loy:3})}
   const luck=(S.sk.luck||3),r=Math.random()*100,good=30+c.loy/3+luck*3;
@@ -1841,14 +1848,14 @@ function panePhone(){const C=S.custos||[],T=S.texts||[];
   let h=paneConnect()+`<div class="row" style="flex-wrap:wrap;border-color:var(--accent)"><div class="info"><div class="t" style="font-family:var(--display);font-size:20px;font-weight:400">Trap phone</div><div class="s">${C.length} plays saved · plays pay more than the Js, and more the longer they've been buying from you. They come to you, wherever you at.</div></div>
     <div class="btns" style="width:100%"><button class="btn go" style="white-space:normal" data-a="ptext" ${S.texted===S.day||!C.length?'disabled':''}>${S.texted===S.day?'Already texted today':"Text everybody \"I'm open\""}</button><button class="btn" style="white-space:normal" data-a="pcard" ${S.passed===S.day?'disabled':''}>${S.passed===S.day?'Passed it out today':`Pass out your number on ${BLOCKS[S.at]}`}</button></div></div>`;
   h+=`<div class="sec">Texts (${T.length})</div>`;
-  h+=T.length?T.map((t,i)=>{const c=C[t.ci];if(!c)return '';const g=G(c.gid),have=S.inv[c.gid]>=g.step;
-    return `<div class="row" style="padding:8px 12px;flex-wrap:wrap">${custPic(c.name,44)}<div class="info" style="flex:1 1 200px;min-width:0"><div class="t">📱 ${c.name}</div><div class="s">"You got ${amt(c.size,g)} of ${g.name}?" · pays ~${money(custoPrice(c))} each${have?'':' · <span style="color:var(--blood)">you\'re out</span>'}</div></div>
-      <div class="btns"><button class="btn green" data-a="pserve" data-i="${t.ci}" ${have?'':'disabled'}>Tell them pull up</button><button class="btn" data-a="pignore" data-i="${i}">Ignore</button></div></div>`}).join('')
+  h+=T.length?T.map((t,i)=>{const c=C[t.ci];if(!c)return '';const gid=t.g||c.gid,g=G(gid),have=S.inv[gid]>=g.step,sz=t.g?altSize(c,gid):c.size;
+    return `<div class="row" style="padding:8px 12px;flex-wrap:wrap">${custPic(c.name,44)}<div class="info" style="flex:1 1 200px;min-width:0"><div class="t">📱 ${c.name}</div><div class="s">"${t.g?`Switching it up today. `:''}You got ${amt(sz,g)} of ${g.name}?" · pays ~${money(custoPrice(c,gid))} each${have?'':' · <span style="color:var(--blood)">you\'re out</span>'}</div></div>
+      <div class="btns"><button class="btn green" data-a="pserve" data-i="${t.ci}" data-g="${t.g||''}" ${have?'':'disabled'}>Tell them pull up</button><button class="btn" data-a="pignore" data-i="${i}">Ignore</button></div></div>`}).join('')
     :`<div class="row"><div class="info"><div class="s">No texts right now. Your plays hit you up on their own every few days.</div></div></div>`;
   h+=`<div class="sec">Contacts</div>`;
   h+=C.length?C.map((c,i)=>{const g=G(c.gid);return `<div class="row" style="flex-wrap:wrap;padding:8px 12px">${custPic(c.name,44)}<div class="info" style="flex:1 1 200px;min-width:0"><div class="t">${c.name} <span class="chip ${c.loy>=70?'mine':''}">${c.loy>=70?'Regular':c.loy>=40?'Buys sometimes':'Shaky'}</span></div>
       <div class="s">Wants ${amt(c.size,g)} of ${g.name} · bought ${c.buys} time${c.buys===1?'':'s'}</div><div class="bar"><i style="width:${c.loy}%;background:var(--money)"></i></div></div>
-      <div class="btns"><button class="btn" data-a="phit" data-i="${i}" ${c.hit===S.day||(c.last===S.day&&c.buys>0)||S.inv[c.gid]<g.step?'disabled':''}>${c.last===S.day&&c.buys>0?'Already copped today':c.tmr&&c.tmr<=S.day?'They said hit them today':'Hit them up'}</button>${c.buys<2&&!c.ask?`<button class="btn" data-a="pask" data-i="${i}" ${S.rep>=40?'':'disabled'}>${S.rep>=40?'Ask around about them':'Ask around (need 40 rep)'}</button>`:''}<button class="btn" data-a="pdel" data-i="${i}">Delete</button></div>${c.ask?`<div class="s" style="font-weight:700;color:${c.ask==='cop'?'var(--blood)':'var(--money)'}">${c.ask==='cop'?'Word is they might be twelve.':'Word is they solid.'}</div>`:''}</div>`}).join('')
+      <div class="btns"><button class="btn" data-a="phit" data-i="${i}" ${c.hit===S.day||(c.last===S.day&&c.buys>0)||S.inv[c.gid]<g.step?'disabled':''}>${c.last===S.day&&c.buys>0?'Already copped today':c.tmr&&c.tmr<=S.day?'They said hit them today':'Hit them up'}</button>${!(c.last===S.day&&c.buys>0)&&c.hit!==S.day&&GOODS.some(x=>x.id!==c.gid&&S.inv[x.id]>=x.step)?`<button class="btn" data-a="poffer" data-i="${i}">Offer something else</button>`:''}${c.buys<2&&!c.ask?`<button class="btn" data-a="pask" data-i="${i}" ${S.rep>=40?'':'disabled'}>${S.rep>=40?'Ask around about them':'Ask around (need 40 rep)'}</button>`:''}<button class="btn" data-a="pdel" data-i="${i}">Delete</button></div>${c.ask?`<div class="s" style="font-weight:700;color:${c.ask==='cop'?'var(--blood)':'var(--money)'}">${c.ask==='cop'?'Word is they might be twelve.':'Word is they solid.'}</div>`:''}</div>`}).join('')
     :`<div class="row"><div class="info"><div class="s">No plays yet. Serve the Js, sell to your neighbors, or pass out your number and people will save it.</div></div></div>`;
   h+=`<div class="row"><div class="info"><div class="s" style="color:var(--dim)">Serve fakes and they find a new plug. New numbers could be undercover, so watch who you serve.</div></div></div>`;
   return h}
@@ -2339,7 +2346,8 @@ function act(a,el){
   if(a==='gun'){const G2=GUNS[el.dataset.k];if(el.dataset.k==='switchy')S.swUntil=-1;S.cash-=G2.cost;S.guns=S.guns||{};S.guns[el.dataset.k]=1;S.heat=Math.min(100,S.heat+G2.heat);say(`Bought a ${G2.name.toLowerCase()} from Unc. +${G2.str} strength in fights.`)}
   if(a==='ptext'){S.texted=S.day;return textAll()}
   if(a==='pcard'){S.passed=S.day;const n=rnd(1,2);for(let i=0;i<n;i++)addCusto(pick(CNAMES),pick(PINFO[S.at].carries),'block');S.heat=Math.min(100,S.heat+3);say(`Passed your number out on ${BLOCKS[S.at]}.`)}
-  if(a==='pserve')return serveCusto(+el.dataset.i,true);
+  if(a==='pserve')return serveCusto(+el.dataset.i,true,el.dataset.g?{gid:el.dataset.g,sw:Math.random()<.25}:{});
+  if(a==='poffer')return offerElse(+el.dataset.i);
   if(a==='pignore'){const r=S.texts.splice(+el.dataset.i,1)[0];const c=S.custos[r.ci];if(c)c.loy=Math.max(0,c.loy-6);say(`Left ${c?c.name:'them'} on read.`)}
   if(a==='phit')return hitUp(+el.dataset.i);
   if(a==='pask'){const c=S.custos[+el.dataset.i];const right=S.rep>=70||Math.random()<.8;c.ask=(c.uc===right)?'cop':'ok';say(c.ask==='cop'?`Asked around about ${c.name}. People saying they might be twelve.`:`Asked around about ${c.name}. People say they solid.`)}
