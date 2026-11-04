@@ -237,7 +237,7 @@ const isF=()=>is('lucky')||is('val')||(is('life')&&!!(S.custom&&S.custom.fem));
 const adult=()=>!S.age||S.age>=18;
 const SKSTART={life:{hustle:3,talk:3,muscle:3,smarts:3,luck:3},val:{hustle:6,talk:4,muscle:2,smarts:3,luck:2},country:{hustle:4,talk:3,muscle:4,smarts:3,luck:3},slick:{hustle:4,talk:6,muscle:2,smarts:3,luck:3},tank:{hustle:3,talk:2,muscle:6,smarts:2,luck:2},shade:{hustle:3,talk:3,muscle:2,smarts:6,luck:3},lucky:{hustle:3,talk:3,muscle:2,smarts:2,luck:6}};
 function knownStart(ch){const k=[0];const rest=[1,2,3,4,5].sort(()=>Math.random()-.5);while(k.length<KNOWN[ch])k.push(rest.pop());return k}
-function plugName(bi){if(S.pname&&S.pname[bi])return S.pname[bi];return is('lucky')&&bi===S.ex?(S.age&&S.age<18?'Tre (your cousin\'s homeboy)':'Tre (your ex)'):PLUGS[bi]}
+function plugName(bi){if(S.pname&&S.pname[bi])return S.pname[bi];return is('lucky')&&bi===S.ex?'Tre':PLUGS[bi]}
 const plugFem=bi=>S.pname&&S.pname[bi]?S.pfem[bi]:FEM[bi];
 const DIFF={easy:{name:'Easy',days:40,buy:.9,heat:.8,crew:.8,risk:.7,sub:'Cheaper plugs, chill crews, less heat.'},normal:{name:'Normal',days:35,buy:1,heat:1,crew:1,risk:1,sub:'The way it\'s meant to be played.'},hard:{name:'Hard',days:30,buy:1.12,heat:1.3,crew:1.3,risk:1.4,sub:'Pricey plugs, more heat, crews hit harder, jackboys everywhere.'}};
 const D=()=>DIFF[S.diff||'normal'];
@@ -348,7 +348,7 @@ function paneBlock(){
   const kn=S.known.includes(S.at);
   const P=PINFO[S.at],L=LVL[P.lvl];const burnt=!!S.burned[S.at];const locked=(S.rep<L.rep&&!rankAt(2))||burnt;
   let h=`<div class="row" style="align-items:flex-start;border-color:${L.col}">${avatar(S.at)}<div class="info"><div class="t" style="font-family:var(--display);font-size:20px;font-weight:400">${plugName(S.at)}</div>
-    <div class="btns" style="margin:2px 0 4px"><span class="chip" style="color:${L.col};border-color:${L.col}">${P.lvl} level plug</span>${kn?'<span class="chip mine">Knows you</span>':'<span class="chip">Stranger</span>'}</div>
+    <div class="btns" style="margin:2px 0 4px"><span class="chip" style="color:${L.col};border-color:${L.col}">${P.lvl} level plug</span>${kn?'<span class="chip mine">Knows you</span>':'<span class="chip">Stranger</span>'}${is('lucky')&&S.at===S.ex?`<span class="chip">${S.age&&S.age<18?'Your cousin\'s homeboy':'Your ex'}</span>`:''}</div>
     <div class="s" style="font-style:italic">${S.pbio[S.at]||P.bio}</div>
     <div class="s">Carries ${P.carries.map(id=>G(id).name).join(', ')} · ${P.lvl==='Big'?'moves keys, 15% cheaper':P.lvl==='Mid'?'moves pounds, normal prices':'small stock, 10% higher'}</div>
     ${locked?`<div class="s" style="color:var(--blood)">Won't serve you until you got ${L.rep} rep.</div>`:''}
@@ -1944,7 +1944,7 @@ function hoops(){if(stuckHome())return;
   betPicker('Hoop at the park','Hit the shot when the marker is in the green (tap Shoot or press Space). Best of 5 against a hooper from the block.',bet=>{
     S.park=S.day;S.cash-=bet;
     const zone=18+(is('tank')?12:0)+S.sk.muscle-(stressed()?6:0)+(buf('percs')?6:0)+(buf('bars')?4:0)-(buf('snow')?4:0), opp=rnd(1,4); let shot=0,made=0,pos=0,dir=1,zs=rnd(10,90-zone);mgOn=true;
-    modal(`<h2>Shootout</h2><p>Bet ${money(bet)}. He made <b>${opp}</b> of 5. Beat him.</p>
+    modal(`<h2>Shooting contest</h2><p>Bet ${money(bet)}. He made <b>${opp}</b> of 5. Beat him.</p>
       <div style="position:relative;height:34px;background:var(--line);border-radius:6px;overflow:hidden" id="trk">
         <div id="zn" style="position:absolute;top:0;bottom:0;background:var(--money);opacity:.7"></div>
         <div id="mk" style="position:absolute;top:-2px;bottom:-2px;width:5px;background:var(--fg);border-radius:2px"></div></div>
@@ -2045,9 +2045,9 @@ function talk(kind,g){
   const go=(pct,ch)=>{
     S.talked[bi]=true;
     const dir=kind==='buy'?-1:1;
-    if(Math.random()*100<ch){const p=Math.round(now*(1+dir*pct));S.deal={bi,g:g.id,kind,p};S.trust[bi]=Math.min(100,t+3);
+    if(Math.random()*100<ch){const p=Math.round(now*(1+dir*pct));S.deal={bi,g:g.id,kind,p,ok:1,line:pick(pct>.2?['"Damn, you hard to say no to. Bet."','"You lucky I fuck with you. Run it."','"Aight aight, you got that. Don\'t tell nobody."']:['"Bet, I got you."','"For you? Cool."','"Aight, that\'s fair."'])};S.trust[bi]=Math.min(100,t+3);
       S.st.talks++;say(`${plug} went for it. ${g.name} at ${money(p)}.`)}
-    else{const p=Math.round(now*(1-dir*.12));S.deal={bi,g:g.id,kind,p};S.trust[bi]=Math.max(0,t-10);
+    else{const p=Math.round(now*(1-dir*.12));S.deal={bi,g:g.id,kind,p,ok:0,line:pick(['"You got me fucked up."','"Nah. Now it\'s more. Keep playing with me."','"Who you think you talking to?"','"Price just went up. Thank yourself."'])};S.trust[bi]=Math.max(0,t-10);
       say(`${plug} got offended. ${g.name} is ${money(p)} for you now.`)}
     qtyModal(kind,g);
   };
@@ -2089,7 +2089,7 @@ function qtyModal(kind,g,to,bl){if(to==='js'&&stuckHome())return;
       ${bl==='lose'?`<p class="s" style="color:var(--blood);font-size:13px">They ain't going for it. "That's ${grade(S.q[g.id],g)} at best." Now they want 20% off.</p>`:''}
       ${noCarry&&!js?`<p class="s" style="color:var(--accent);font-size:13px">${plugName(S.at)} don't carry ${g.name}, so ${plugFem(S.at)?'she':'he'} only pays 30% less to flip it. ${referral(g)||''}</p>`:''}
       <p class="s" style="color:var(--dim);font-size:13px">${js?`The Js on ${BLOCKS[S.at]} got about ${money(jl)} left to spend today${checkDay()?'. It\'s the first of the month, so they paying 15% more':''}. `:''}${js&&((S.att||[])[S.at]||0)>=30?`<b style="color:var(--blood)">Attention on ${BLOCKS[S.at]} is ${((S.att||[])[S.at]||0)>=60?'high':'up'}, so serving here brings extra heat. Spread it out or let it cool off.</b> `:''}${js?`The Js pay about 40% more, but it's loud: way more heat${crewHere()?(crew(S.owner[S.at]).respect>=60?`. The ${cdef(S.owner[S.at]).name} gave you the green light, but eat too good and they get jealous`:` and the ${cdef(S.owner[S.at]).name} get heated`):''}.`:`Wholesale to the plug. Less money, barely any heat, and it builds trust${crewHere()?` and respect with the ${cdef(S.owner[S.at]).name}`:''}.`}</p>`;
-  modal(`${drugPic(g.id,72).replace('flex:none','align-self:center')}<h2>${kind==='buy'?'Buy':'Sell'} ${g.name}${kind==='buy'&&of.v?`: ${of.v}`:kind==='sell'&&S.vn&&S.vn[g.id]?`: ${S.vn[g.id]}`:''}</h2><p>${js?'The Js pay':`${plugName(S.at)}'s price:`} <b>${money(p)}</b> each${card?` <span class="chip here">${kind==='buy'?'Plug Love −30%':'Hype Day +40%'}</span>`:''}</p>${gl}
+  modal(`${drugPic(g.id,72).replace('flex:none','align-self:center')}<h2>${kind==='buy'?'Buy':'Sell'} ${g.name}${kind==='buy'&&of.v?`: ${of.v}`:kind==='sell'&&S.vn&&S.vn[g.id]?`: ${S.vn[g.id]}`:''}</h2><p>${js?'The Js pay':`${plugName(S.at)}'s price:`} <b>${money(p)}</b> each${card?` <span class="chip here">${kind==='buy'?'Plug Love −30%':'Hype Day +40%'}</span>`:''}</p>${S.deal&&S.deal.bi===S.at&&S.deal.g===g.id&&S.deal.kind===kind&&!js?`<p style="margin:0;font-weight:700;color:${S.deal.ok?'var(--money)':'var(--blood)'}">${plugName(S.at)}: ${S.deal.line||''} <span style="font-weight:400">${S.deal.ok?'Deal locked in at':'Mad price:'} ${money(S.deal.p)} each for the rest of today.</span></p>`:''}${card?`<p class="s" style="margin:0;color:var(--dim)">${kind==='buy'?'Plug Love':'Hype Day'} only works on this one ${kind}. After that the price goes back to normal.</p>`:''}${gl}
     <div class="qty"><input type="range" id="q" min="${g.step}" max="${max}" step="${g.step}" value="${max}"><output id="qo">${amt(max,g)}</output></div>
     <div class="btns">${g.sizes.filter(z=>z[0]<=max||kind==='buy').map(z=>`<button class="btn" data-z="${z[0]}" ${z[0]>max?'disabled':''}>${z[1]}</button>`).join('')}<button class="btn" data-z="${max}">Max</button></div>
     ${kind==='buy'&&g.sizes.some(z=>z[0]>max)?`<p class="s" style="color:var(--dim);font-size:13px">Can't go bigger right now: ${[[teenCap,S.age<16?'too young, a zip max till 16':'too young, a QP max till 18'],[fl(S.cash/p),'not enough cash'],[fl((S.cap-used())/g.sp),'stash is full (get a bigger stash in the Me tab)'],[stk,`${plugName(S.at)} only got ${amt(stk,g)} on hand`]].filter(x=>x[0]<=max+g.step/2).map(x=>x[1])[0]||'limit reached'}.</p>`:''}
