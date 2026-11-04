@@ -1626,7 +1626,15 @@ function friendRole(i){const f=S.friends[i];
       return lickDone('It went smooth',`${f.name} got ${mark} to pull up where you were waiting. You took ${money(v)} and gave ${f.name} her cut.`,true,true)}
     modal(`<h2 style="color:var(--blood)">He wasn't slipping</h2><p>${f.name} got ${mark} there, but he came ready. You gotta fight your way out.</p><div class="btns"><button class="btn red" id="go">Fight</button></div>`);
     $('go').onclick=()=>fightGame(myStr(),rnd(12,22),'The mark',w=>{if(w){const v=rnd(400,1500);S.cash+=v;say(`Fought the mark and still got ${money(v)}.`);lickDone('Still got it',`You handled him and still got ${money(v)}.`,true,true)}else{const dmg=rnd(15,30);S.hp-=dmg;f.close=Math.max(0,f.close-10);say(`The setup went bad. −${dmg} health.`);lickDone('It went bad',`He got the best of you. −${dmg} health, and ${f.name} is shook.`,false,true)}})}}
-const GUNS={pistol:{name:'Pistol',cost:800,str:5,heat:3,sub:'Small and easy to hide.'},revolver:{name:'Revolver',cost:1300,str:7,heat:4,sub:'Old school. Never jams.'},shotgun:{name:'Shotgun',cost:2600,str:10,heat:6,sub:'Ends arguments. Hard to hide.'},rifle:{name:'Rifle',cost:6000,str:15,heat:10,sub:'Serious business. Serious heat.'}};
+const GUNS={pistol:{name:'Pistol',cost:800,str:5,heat:3,mag:8,rad:20,rel:900,sub:'Cheap and easy to hide. Jams sometimes.'},
+smitty:{name:'Semi Smitty',cost:1000,str:6,heat:3,mag:10,rad:20,rel:900,sub:'Semi-auto nine. Reliable.'},
+glizzy:{name:'Semi Glizzy',cost:1200,str:7,heat:4,mag:15,rad:20,rel:850,sub:'Fifteen in the clip. Everybody want one.'},
+revolver:{name:'Revolver',cost:1300,str:7,heat:4,mag:6,rad:24,rel:1100,sub:'Old school. Never jams.'},
+shotgun:{name:'Shotgun',cost:2600,str:10,heat:6,mag:5,rad:34,rel:1300,sub:'Ends arguments. Hard to hide.'},
+switchy:{name:'Glizzy w/ Switch',cost:3500,str:12,heat:9,mag:30,rad:30,rel:1000,burst:3,sub:'Full auto. Every tap sprays 3. Eats ammo. Feds hate it.'},
+micro:{name:'Micro ARP',cost:4500,str:13,heat:8,mag:30,rad:22,rel:950,sub:'Little rifle, big problems. Fits in a bookbag.'},
+rifle:{name:'Rifle',cost:6000,str:15,heat:10,mag:20,rad:22,rel:1000,sub:'Serious business. Serious heat.'},
+draco:{name:'Drako',cost:7500,str:17,heat:12,mag:30,rad:26,rel:1100,sub:'The big stick. Nobody on the block want smoke with this.'}};
 function gunBonus(){return Math.max(0,...Object.keys(S.guns||{}).map(k=>GUNS[k].str))}
 function paneGuns(){const here=S.at===2;
   let h=`<div class="sec">Gun dealer · Unc</div><div class="row"><img src="${UNCPIC}" alt="" style="width:56px;height:56px;border-radius:6px;object-fit:cover;flex:none"><div class="info" style="min-width:0"><div class="t">Unc ${here?'<span class="chip here">Here</span>':''}</div><div class="s">Sells out the back of the tire shop on The Bottom. Your best gun adds to your strength in every fight. Get caught with one and you lose it, plus it's another charge.</div></div></div>`;
@@ -1702,7 +1710,7 @@ function panePhone(){const C=S.custos||[],T=S.texts||[];
 function shootoutGame(mine,theirs,who,done){
   mgOn=true;const W=320,H=240,share=mine/(mine+theirs);
   const best=Object.keys(S.guns||{}).sort((a,b)=>GUNS[b].str-GUNS[a].str)[0]||'pistol';
-  const GS={pistol:{mag:8,rad:20,rel:900},revolver:{mag:6,rad:23,rel:1100},shotgun:{mag:5,rad:34,rel:1300},rifle:{mag:20,rad:22,rel:1000}}[best];
+  const GS=GUNS[best]||GUNS.pistol;
   const total=Math.max(3,Math.min(10,3+Math.round(theirs/7))),peek=Math.max(650,Math.round(1500*(0.55+share*.7)-(stressed()?150:0)+(buf('bars')?120:0)-(buf('phones')?150:0)));
   const dmgIn=Math.round(9+(1-share)*10),slots=[[34,122],[96,110],[226,108],[292,118],[124,102]];
   let hp=100,left=total,ammo=GS.mag,reload=0,cover=false,enemy=[],next=performance.now()+900,last=performance.now(),msg='Get ready…',t0=performance.now(),flash=0,backupT=performance.now()+3500,over=false;
@@ -1715,7 +1723,7 @@ function shootoutGame(mine,theirs,who,done){
   const cv=$('sc'),x=cv.getContext('2d'),oppImg=OPPPICS.map(u=>{const i=new Image();i.src=u;return i}),bgi=new Image();bgi.src=SHOOTBG;
   const setCover=v=>{cover=v;$('scv').style.opacity=v?1:.75};
   const doReload=()=>{if(reload||ammo===GS.mag)return;reload=performance.now()+GS.rel;msg='Reloading…'};
-  const shoot=(px,py)=>{if(over||cover)return;if(reload){msg='Still reloading.';return}if(ammo<=0){msg='Empty. Reload!';return}ammo--;flash=performance.now()+80;
+  const shoot=(px,py)=>{if(over||cover)return;if(reload){msg='Still reloading.';return}if(ammo<=0){msg='Empty. Reload!';return}ammo=Math.max(0,ammo-(GS.burst||1));flash=performance.now()+80;
     const hit=enemy.find(e=>e.up&&Math.hypot(e.x-px,e.y-py)<GS.rad+6);if(hit){hit.up=false;hit.dead=true;left--;msg=pick(['Got one.','Dropped him.','He\'s down.']);if(left<=0)finish(true)}else msg='Missed.';if(ammo<=0&&!reload)msg='Empty. Reload!'};
   cv.onpointerdown=e=>{const r=cv.getBoundingClientRect();shoot((e.clientX-r.left)*W/r.width,(e.clientY-r.top)*H/r.height)};
   const cb=$('scv');cb.onpointerdown=e=>{e.preventDefault();setCover(true)};cb.onpointerup=cb.onpointerleave=cb.onpointercancel=()=>setCover(false);
