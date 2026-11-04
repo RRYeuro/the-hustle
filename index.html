@@ -128,7 +128,7 @@ h1{font-family:var(--display);font-weight:400;font-size:34px;letter-spacing:.02e
   <div class="row" id="mission" style="border-color:var(--accent)"></div>
   <div class="sec late">What's happening</div>
   <div class="log late" id="log"></div>
-  <div class="btns late"><button class="btn" id="newgame">Menu</button><button class="btn go" id="retire" hidden>Retire and see your score</button></div>
+  <div class="btns late"><button class="btn" id="newgame">Menu</button><button class="btn" id="devbtn" style="border-color:var(--heat);color:var(--heat)" hidden>Dev</button><button class="btn go" id="retire" hidden>Retire and see your score</button></div>
   </div>
   <div class="main">
   <div class="tabs" role="tablist">
@@ -2691,13 +2691,22 @@ function mainMenu(canContinue){
     <button class="btn" id="mlife" style="padding:12px">Life mode</button>
     <button class="btn" id="ml" style="padding:12px">Load game</button>
     <button class="btn" id="mh" style="padding:12px">How to play</button>
-    <div class="btns" style="justify-content:center"><button class="btn" id="msnd">Sound: ${SND.sfx?'On':'Off'}</button><button class="btn" id="mmus">Music: ${SND.music?'On':'Off'}</button></div></div>`);
+    <div class="btns" style="justify-content:center"><button class="btn" id="msnd">Sound: ${SND.sfx?'On':'Off'}</button><button class="btn" id="mmus">Music: ${SND.music?'On':'Off'}</button><button class="btn" id="mcode">Codes</button></div></div>`);
   if($('mc'))$('mc').onclick=()=>{$('modal').hidden=true;render()};
   $('ms').onclick=()=>slotsModal('new','story');$('mb').onclick=()=>slotsModal('new','sandbox');$('ml').onclick=()=>slotsModal('load');$('mlife').onclick=()=>slotsModal('new','life');
   $('mh').onclick=()=>tutorial(0,()=>mainMenu(canContinue));
+  $('mcode').onclick=()=>{modal(`<h2>Enter a code</h2><input id="cin" maxlength="24" autocomplete="off" autocapitalize="characters" placeholder="Code" style="width:100%;padding:10px;border-radius:6px;border:1px solid var(--line);background:var(--bg);color:var(--fg);font:inherit;text-transform:uppercase"><p id="cmsg" class="s" style="min-height:1.2em"></p><div class="btns"><button class="btn go" id="cok">Enter</button><button class="btn" id="cbk">Back</button></div>`);
+    const go=()=>{const c=$('cin').value.trim().toUpperCase().replace(/\s+/g,'');const r=CODES[c];$('cmsg').textContent=r?r():'That code ain\'t it.';$('cmsg').style.color=r?'var(--money)':'var(--blood)'};
+    $('cok').onclick=go;$('cin').onkeydown=e=>{if(e.key==='Enter')go()};$('cbk').onclick=()=>mainMenu(canContinue);setTimeout(()=>$('cin').focus(),50)};
   $('msnd').onclick=()=>{SND.sfx=!SND.sfx;sndSave();mainMenu(canContinue)};$('mmus').onclick=()=>{SND.music=!SND.music;sndSave();SND.music?musicStart():musicStop();mainMenu(canContinue)};
 }
 $('newgame').onclick=()=>mainMenu(!S.over);
+$('devbtn').onclick=()=>devPanel();
+const devOn=()=>{try{return localStorage.getItem('hustle-dev')==='1'}catch(e){return false}};
+function devShow(){$('devbtn').hidden=!devOn()}devShow();
+const CODES={
+  'RRYEURO182':()=>{const on=!devOn();try{localStorage.setItem('hustle-dev',on?'1':'0')}catch(e){}devShow();return on?'Dev menu unlocked. The Dev button is next to Menu.':'Dev menu turned off.'},
+};
 
 start(false);render();if(S.over&&$('modal').hidden)checkEnd();
 </script>
