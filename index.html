@@ -1199,7 +1199,7 @@ function enemyHit(bi){const nm=plugName(bi),dmg=rnd(10,25),take=Math.round(S.cas
 function plugRob(bi){const P=PINFO[bi],nm=plugName(bi),her=plugFem(bi)?'her':'him';
   const pk=S.pk[bi]=S.pk[bi]||{},big=P.lvl==='Big',kn=S.known.includes(bi),cased=pk.cased&&S.day-pk.cased<=3;
   const trustB=kn?S.trust[bi]/100*(big?.1:.45):0;
-  const odds=Math.max(.05,Math.min(.95,.3+S.sk.muscle*.03+S.soldiers*.06-({Low:0,Mid:.1,Big:.35})[P.lvl]-(stressed()?.1:0)+(S.rob.mask?.05:0)+(big&&S.rob.car?.05:0)+trustB+(cased?.2:0)));
+  const odds=Math.max(.05,Math.min(.95,.3+S.sk.muscle*.03+S.soldiers*.06-({Low:0,Mid:.1,Big:.35})[P.lvl]-(stressed()?.1:0)+(S.rob.mask?.05:0)+(big&&S.rob.car?.05:0)+trustB+(cased?.2:0)+girlB()));
   if(big&&S.soldiers<2){modal(`<h2>${nm} is too heavy</h2><p>Big plugs been through it all. ${nm} got shooters on the roof and cameras on every corner. You need at least 2 soldiers before you even think about it.</p><div class="btns"><button class="btn go" id="n">Got it</button></div>`);$('n').onclick=close;return}
   modal(`<h2>Rob ${nm}?</h2><p>${P.lvl} level plug${big?' with real security':''}. About <b>${Math.round(odds*100)}%</b> chance.</p>
     <p class="s" style="color:var(--dim)">${kn&&!big&&S.trust[bi]>=50?`${nm} trusts you, so ${plugFem(bi)?'she':'he'} won't see it coming. `:''}${big?`Big plugs don't slip, even for people they trust. ${cased?'You cased the spot, so you know the routine.':'Case the spot first to learn the routine (+20%).'}`:''}</p>
@@ -1342,7 +1342,7 @@ function lick(k){if(stuckHome())return;
       const dmg=rnd(20,40);S.hp-=dmg;let lost='';const mine=Object.keys(S.guns||{});if(mine.length&&Math.random()<.35){const l=pick(mine);delete S.guns[l];lost=` He took your ${GUNS[l].name.toLowerCase()} too.`}
       lickDone('He pulled first',`He saw you coming. −${dmg} health.${lost}`,false)});return}
   if(k==='scam')return talkGame(sus=>{
-    if(Math.random()<.1+sus*.03-S.sk.talk*.005){busted();return lickDone('It was a setup','The "buyer" was undercover. Should have known.',false)}
+    if(Math.random()<.1+sus*.03-S.sk.talk*.005-girlB()){busted();return lickDone('It was a setup','The "buyer" was undercover. Should have known.',false)}
     if(sus<=1){const pay=rnd(600,1800);S.cash+=pay;S.rep+=2;S.heat=Math.min(100,S.heat+10);addXP(3);addStress(5);
       return lickDone('He came with the bread',`He fell for every word. Buyer showed up with ${money(pay)} and you took it.`,true)}
     if(sus<=3){const dmg=rnd(10,30);S.hp-=dmg;addStress(12);return lickDone('He came strapped',`He didn't trust you, so he came ready. You got out, but not clean. −${dmg} health.`,false)}
@@ -1618,11 +1618,12 @@ const FNAMES=['Dame','Peanut','Lil Kev','Rico','Bri','Tay','Jojo','Nate','Mook',
 const FTRAITS={loyal:{name:'Loyal',sub:'Sticks with you. Closeness drops slower.'},hustler:{name:'Hustler',sub:'Sometimes breaks you off a little money.'},wild:{name:'Wild',sub:'Extra backup in fights, but brings heat.'},snake:{name:'Shady',sub:'Something about them. Keep them close or they turn.'}};
 const FNAMES_F=['Bri','Keke','Trina','Mari','Jada','Nae','Lexi','Tiana','Rosa','Mei'];
 const FROLES={
- setup:{name:'Sets people up',meet:'She knows how to get people where she wants them.',on:'she can set somebody up for you to rob.',off:'she\'ll help you set people up.'},
+ setup:{name:'Sets people up',meet:'She knows how to get people where she wants them.',on:'she can set somebody up for you to rob. The closer y\'all are, the better it goes. She also scouts plugs and lures fake gun buyers, so those go better too.',off:'she\'ll help you set people up.'},
  scam:{name:'Scammer',meet:'He stays on his laptop doing something.',on:'he put you on to scamming, and your card punching hits more often.',off:'he\'ll put you on to scamming.'},
  rob:{name:'Jack boy',meet:'Always talking about licks.',on:'he plans licks with you: better odds on every lick and heist.',off:'he\'ll put you on to licks.'},
  connect:{name:'Got connects',meet:'Knows every plug in the city.',on:'introduce you to a plug.',off:'they\'ll introduce you to a plug.'},
 };
+const girlB=()=>{const f=(S.friends||[]).filter(f=>f.role==='setup'&&f.close>=50).sort((a,b)=>b.close-a.close)[0];return f?.06+(f.close-50)/500:0};
 const friendWith=r=>(S.friends||[]).some(f=>f.role===r&&f.close>=50);
 function roleBtn(f,i){if(!f.role||f.role==='none'||f.close<50)return '';
   if(f.role==='setup')return adult()?`<button class="btn red" data-a="frole" data-i="${i}" ${f.used&&S.day-f.used<3?'disabled':''}>${f.used&&S.day-f.used<3?'Lay low a few days':'Set somebody up'}</button>`:'';
@@ -1635,7 +1636,7 @@ function friendRole(i){const f=S.friends[i];
   if(f.role==='connect'){const un=BLOCKS.map((b,j)=>j).filter(j=>!S.known.includes(j)&&!S.burned[j]);if(!un.length)return say(`${f.name} said you already know everybody.`);
     const bi=pick(un);S.known.push(bi);f.used=1;say(`${f.name} plugged you in with ${plugName(bi)} on ${BLOCKS[bi]}.`);return lickDone('Plugged in',`${f.name} vouched for you with ${plugName(bi)} on ${BLOCKS[bi]}. ${plugFem(bi)?'She':'He'} knows you now.`,true,true)}
   if(f.role==='setup'){f.used=S.day;const mark=pick(['a dude flashing money on IG','a dealer from out of town','a rapper who talks too much','a guy who owes the whole block']);
-    if(Math.random()<.7+(S.sk.smarts-3)*.03){const v=rnd(800,3000);S.cash+=v;S.heat=Math.min(100,S.heat+10);addXP(4);S.rob.noto+=8;say(`${f.name} set up ${mark}. Took ${money(v)}.`);
+    if(Math.random()<Math.min(.95,.62+(f.close-50)*.006+(S.sk.smarts-3)*.03)){const v=rnd(800,3000);S.cash+=v;S.heat=Math.min(100,S.heat+10);addXP(4);S.rob.noto+=8;say(`${f.name} set up ${mark}. Took ${money(v)}.`);
       return lickDone('It went smooth',`${f.name} got ${mark} to pull up where you were waiting. You took ${money(v)} and gave ${f.name} her cut.`,true,true)}
     modal(`<h2 style="color:var(--blood)">He wasn't slipping</h2><p>${f.name} got ${mark} there, but he came ready. You gotta fight your way out.</p><div class="btns"><button class="btn red" id="go">Fight</button></div>`);
     $('go').onclick=()=>fightGame(myStr(),rnd(12,22),'The mark',w=>{if(w){const v=rnd(400,1500);S.cash+=v;say(`Fought the mark and still got ${money(v)}.`);lickDone('Still got it',`You handled him and still got ${money(v)}.`,true,true)}else{const dmg=rnd(15,30);S.hp-=dmg;f.close=Math.max(0,f.close-10);say(`The setup went bad. −${dmg} health.`);lickDone('It went bad',`He got the best of you. −${dmg} health, and ${f.name} is shook.`,false,true)}})}}
@@ -1689,7 +1690,7 @@ function paneFriends(){const F=S.friends||[];
   if(F.length<5)h+=`<div class="row"><div class="info"><div class="s">Friends at 60+ closeness back you up in fights. At 80+ they warn you when twelve is around.</div></div><button class="btn go" data-a="fmeet" ${S.fmeet===S.day?'disabled':''}>${S.fmeet===S.day?'Went out today':'Go meet people'}</button></div>`;
   h+=F.map((f,i)=>`<div class="row" style="flex-wrap:wrap;padding:8px 12px"><div class="info"><div class="t">${f.name} <span class="chip ${f.close>=60?'mine':''}">${f.close>=80?'Day one':f.close>=60?'Solid':f.close>=30?'Cool':'Distant'}</span> <span class="chip">${FTRAITS[f.trait].name}</span></div>
     <div class="s">Closeness ${Math.round(f.close)}/100 · ${FTRAITS[f.trait].sub}</div>${f.role&&f.role!=='none'?`<div class="s" style="color:var(--accent)">${FROLES[f.role].name}: ${f.close>=50?FROLES[f.role].on:`get to 50 closeness and ${FROLES[f.role].off}`}</div>`:''}<div class="bar"><i style="width:${f.close}%;background:var(--money)"></i></div></div>
-    <div class="btns"><button class="btn" data-a="fhang" data-i="${i}" ${f.hang===S.day?'disabled':''}>Kick it</button><button class="btn green" data-a="fhelp" data-i="${i}" ${S.cash>=200?'':'disabled'}>Look out $200</button>${roleBtn(f,i)}<button class="btn" data-a="fcut" data-i="${i}">Cut off</button></div></div>`).join('');
+    <div class="btns"><button class="btn" data-a="fhang" data-i="${i}" ${f.hang===S.day?'disabled':''}>Kick it</button><button class="btn green" data-a="fhelp" data-i="${i}" ${S.cash>=200?'':'disabled'}>Look out $200</button>${roleBtn(f,i)}${(S.myGang||S.gang)&&f.close>=60?`<button class="btn go" data-a="fjoin" data-i="${i}" ${f.asked===S.day?'disabled':''}>Ask to join the gang</button>`:''}<button class="btn" data-a="fcut" data-i="${i}">Cut off</button></div></div>`).join('');
   return h}
 /* ---------- trap phone ---------- */
 const CNAMES=['Lil Kev','Big Mike','Lil Shorty','Pooh','Nikki','Dre','Jasmine','Coach','Uncle Ray','Tia','Marco','Stacy','Hector','Trey','Mama Jo','Wes','Lena','Bobby','Kim','Chase','Dwayne','Ashley','Rocky','Ebony'];
@@ -2027,7 +2028,7 @@ function qtyModal(kind,g,to,bl){if(to==='js'&&stuckHome())return;
 }
 
 /* ---------- day / events ---------- */
-function nextDay(){if(!(S.swUntil>=S.day)&&Math.random()<.1)S.swUntil=S.day+2;
+function nextDay(){if(S.snakeIn&&S.soldiers>0&&Math.random()<.025){S.snakeIn--;S.soldiers--;const h=(S.gangHomies||[]).pop()||'One of your homies';S.heat=Math.min(100,S.heat+20);S.cash=Math.max(0,S.cash-Math.round(S.cash*.1));say(`${h} was a snake the whole time. Ran off with 10% of your cash and started talking to twelve. Heat +20.`)}if(!(S.swUntil>=S.day)&&Math.random()<.1)S.swUntil=S.day+2;
   S.day++;
   const turf=S.owner.filter(o=>o==='me').length;
   if(turf){S.cash+=turf*300;}
@@ -2196,6 +2197,11 @@ function act(a,el){
   if(a==='fhang'){const f=S.friends[+el.dataset.i];f.hang=S.day;f.close=Math.min(100,f.close+8);addStress(-8);say(`Kicked it with ${f.name}. Y'all closer now.`)}
   if(a==='fhelp'){const f=S.friends[+el.dataset.i];S.cash-=200;f.close=Math.min(100,f.close+15);say(`Looked out for ${f.name} with $200.`)}
   if(a==='frole')return friendRole(+el.dataset.i);
+  if(a==='fjoin'){const i=+el.dataset.i,f=S.friends[i];f.asked=S.day;const gname=S.myGang?S.myGang.name:cdef(S.gang).name;
+    const odds=Math.min(.95,.25+(f.close-60)*.015+({loyal:.25,wild:.3,hustler:.05,snake:.15})[f.trait]);
+    if(Math.random()<odds){S.friends.splice(i,1);S.soldiers++;S.gangHomies=S.gangHomies||[];S.gangHomies.push(f.name);if(!S.myGang&&crew(S.gang))crew(S.gang).respect=Math.min(100,crew(S.gang).respect+8);
+      say(`${f.name} is in ${gname} now. +1 soldier, no hiring fee.`);modal(`<h2>${f.name} is in</h2><p>"Say less. I been waiting on you to ask." ${f.name} is part of ${esc(gname)} now and rides as one of your soldiers. You still pay the daily cut, but no hiring fee.</p>${f.trait==='snake'?'<p class="s" style="color:var(--dim)">You ever really trust them though?</p>':''}<div class="btns"><button class="btn go" id="ok">Welcome</button></div>`);$('ok').onclick=close;if(f.trait==='snake')S.snakeIn=(S.snakeIn||0)+1;return render()}
+    f.close=Math.max(0,f.close-5);say(`${f.name} said nah to joining ${gname}.`);modal(`<h2>${f.name} said nah</h2><p>${pick(['"I fuck with you, but I ain\'t tryna be in all that."','"My mama would kill me. I\'m good."','"Gang life ain\'t for me. I\'ll still pull up for you though."','"Ask me again when it\'s really paying."'])}</p><div class="btns"><button class="btn go" id="ok">Bet</button></div>`);$('ok').onclick=close;return render()}
   if(a==='fcut'){const f=S.friends.splice(+el.dataset.i,1)[0];say(`Cut ${f.name} off.`)}
   if(a==='givegun'){const k=el.dataset.k;delete S.guns[k];armed().push(k);say(`Passed the ${GUNS[k].name.toLowerCase()} to one of your soldiers. He's strapped now.`)}
   if(a==='ungun'){const i=+el.dataset.k,k=armed()[i];if(k&&!(S.guns||{})[k]){S.armed.splice(i,1);S.guns=S.guns||{};S.guns[k]=1;say(`Took the ${GUNS[k].name.toLowerCase()} back.`)}}
