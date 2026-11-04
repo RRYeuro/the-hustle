@@ -2166,7 +2166,7 @@ function nextDay(){if(S.att)S.att=S.att.map(v=>Math.max(0,Math.round(v*.8-2)));i
   if(S.stress>=100){S.hp-=15;S.stress=60;say('You hit your breaking point. Lost a day in your head and took −15 health. Lay low sometimes.');}
   if(S.soldiers){const cost=S.soldiers*(S.myGang?100:150);S.cash-=cost;if(S.cash<0){S.soldiers=Math.max(0,S.soldiers-1);say('Couldn\'t pay the crew. A soldier walked.');S.cash=Math.max(0,S.cash)}}
   S.heat=Math.max(0,S.heat-3);
-  S.crews.forEach(c=>{if(c.alive){c.str+=rnd(0,1);if(c.beef>0&&c.beef<45)c.beef=Math.max(0,c.beef-2);c.envy=Math.max(0,c.envy-2);if(c.beef>=45)c.respect=Math.max(0,c.respect-2)}});
+  S.crews.forEach(c=>{if(c.alive){if(Math.random()<(S.cal?.15:.5))c.str+=1;c.str=Math.min(c.str,crewCap());if(c.beef>0&&c.beef<45)c.beef=Math.max(0,c.beef-2);c.envy=Math.max(0,c.envy-2);if(c.beef>=45)c.respect=Math.max(0,c.respect-2)}});
   roll();
   if(S.day>maxDay()&&!freeMode()){S.over=true;return}
   drawCard(.09,'Out on the block,');
@@ -2400,7 +2400,8 @@ function pickChar(mode='story',skip){
     if(!seen)return tutorial(0,()=>{try{localStorage.setItem('tl-tut','1')}catch(e){}$('modal').hidden=true;render()});
     $('modal').hidden=true;render()};if(mode==='sandbox')return go();traitPick(go)});
 }
-function fixLoaded(){if(S&&S.cal&&S.school==='in'&&S.age){const want=Math.min(12,9+(S.age-14));if(S.grade<want-1){S.grade=want;S.schoolQ=[]}if((S.schoolQ||[]).length>4)S.schoolQ=S.schoolQ.slice(-2)}
+function crewCap(){return 22+(S.lvl||1)*7+Math.floor((S.rep||0)/10)}
+function fixLoaded(){if(S&&S.crews)S.crews.forEach(c=>{c.str=Math.min(c.str,crewCap())});if(S&&S.cal&&S.school==='in'&&S.age){const want=Math.min(12,9+(S.age-14));if(S.grade<want-1){S.grade=want;S.schoolQ=[]}if((S.schoolQ||[]).length>4)S.schoolQ=S.schoolQ.slice(-2)}
   if(S&&S.home==='granny'){S.cap-=HOMES.granny.stash;S.home='couch'}
   if(S&&S.mode==='life'&&S.age<18&&S.home==='couch'&&!(S.fate&&S.fate.cut)){S.home='family';S.cap+=20}
   if(S&&!S.units){GOODS.forEach(g=>{S.cash+=Math.round(S.inv[g.id]*S.paid[g.id]);S.inv[g.id]=0;S.paid[g.id]=0;S.fake[g.id]=0;S.q[g.id]=50});S.units=1;roll()}
