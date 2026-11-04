@@ -1144,8 +1144,8 @@ function lifeDay(){
   if(S.cal){calTick();if(!S.inJail){if(fate())return;if(S.age>=18&&S.fate&&!S.fate.eighteenShown){S.fate.eighteenShown=1;return eighteen()}}}
   else if(S.age&&S.day>1&&(S.day-1)%30===0){S.age++;say(`Happy birthday. You're ${S.age} now.`);if(fate())return;if(S.age===18)return eighteen()}
   fateWeekly();
-  if(S.cal){const prevSchool=!((S.day-2)%2)&&S.school==='in'&&!schoolBreak(calDate(S.day-1));if(prevSchool&&!S.inJail&&S.classDay!==S.day-1&&S.day>1&&!(S.suspended>=S.day-1)){S.grades=Math.max(0,(S.grades||0)-7);if(S.grades<15){S.school='out';say('You missed too much school and got kicked out.')}else say('Skipped school this week. Grades −7.')}}
-  else if(S.age&&S.age<18&&S.school==='in'&&S.classDay!==S.day-1){S.grades=Math.max(0,(S.grades||0)-1);if(S.grades<15){S.school='out';say('You missed too much school and got kicked out.')}}
+  if(S.cal){const prevSchool=!((S.day-2)%2)&&S.school==='in'&&!schoolBreak(calDate(S.day-1));if(prevSchool&&!S.inJail&&!window.DEVFF&&S.classDay!==S.day-1&&S.day>1&&!(S.suspended>=S.day-1)){S.grades=Math.max(0,(S.grades||0)-7);if(S.grades<15){S.school='out';say('You missed too much school and got kicked out.')}else say('Skipped school this week. Grades −7.')}}
+  else if(S.age&&S.age<18&&S.school==='in'&&!window.DEVFF&&S.classDay!==S.day-1){S.grades=Math.max(0,(S.grades||0)-1);if(S.grades<15){S.school='out';say('You missed too much school and got kicked out.')}}
   if(S.job&&weekTick()){const pay=Math.round(JOBS[S.job].pay*(S.cal&&S.school==='in'&&!schoolBreak()?.5:1));S.cash+=pay;say(`Got paid ${money(pay)} from the ${JOBS[S.job].name.toLowerCase()} job.`)}
   if(S.job)addStress(1);
   const b=bizOpen();if(b.length){let t=0;b.forEach(k=>t+=BIZ[k].pay*(S.college==='grad'?1.2:1));t=Math.round(t);S.cash+=t;S.heat=Math.max(0,S.heat-b.length);say(`Your business${b.length>1?'es':''} brought in ${money(t)} today.`)}
@@ -1634,7 +1634,7 @@ function devPanel(){if(!S||S.ph)return;
   $('dvx').onclick=close;
   $('mcard').querySelectorAll('[data-dv]').forEach(b=>b.onclick=()=>devDo(b.dataset.dv));
 }
-function devSkip(n){window.FF=true;let i=0;for(;i<n;i++){$('modal').hidden=true;nextDay();if(S.over||!$('modal').hidden)break}window.FF=false;
+function devSkip(n){window.FF=true;window.DEVFF=true;let i=0;for(;i<n;i++){$('modal').hidden=true;nextDay();if(S.over||!$('modal').hidden)break}window.FF=false;window.DEVFF=false;
   say(`Dev: skipped ${i+(i<n?1:0)} day${i===0?'':'s'}.`);if($('modal').hidden){checkEnd();render();devPanel()}else render()}
 function devDo(k){
   const done=m=>{say('Dev: '+m);render();devPanel()};
@@ -2398,7 +2398,7 @@ function pickChar(mode='story',skip){
     if(!seen)return tutorial(0,()=>{try{localStorage.setItem('tl-tut','1')}catch(e){}$('modal').hidden=true;render()});
     $('modal').hidden=true;render()};if(mode==='sandbox')return go();traitPick(go)});
 }
-function fixLoaded(){
+function fixLoaded(){if(S&&S.cal&&S.school==='in'&&S.age){const want=Math.min(12,9+(S.age-14));if(S.grade<want-1){S.grade=want;S.schoolQ=[]}if((S.schoolQ||[]).length>4)S.schoolQ=S.schoolQ.slice(-2)}
   if(S&&S.home==='granny'){S.cap-=HOMES.granny.stash;S.home='couch'}
   if(S&&S.mode==='life'&&S.age<18&&S.home==='couch'&&!(S.fate&&S.fate.cut)){S.home='family';S.cap+=20}
   if(S&&!S.units){GOODS.forEach(g=>{S.cash+=Math.round(S.inv[g.id]*S.paid[g.id]);S.inv[g.id]=0;S.paid[g.id]=0;S.fake[g.id]=0;S.q[g.id]=50});S.units=1;roll()}
@@ -2458,14 +2458,16 @@ function teenStart(ch,age){age=age||14;S.cal=1;S.age=age;S.grade=Math.min(12,9+(
 function guardianLine(){const P=S.par;if(!P||S.home!=='family')return '';const st=P.strict>=70?'Strict':P.strict>=45?'Keeps an eye on you':'Lets you slide';
   return `<div class="row" style="flex-wrap:wrap">${parPic(52)}<div class="info" style="flex:1 1 200px;min-width:0"><div class="t">Living with ${P.name} <span class="chip">${st}</span>${S.grounded>S.day?' <span class="chip war">Grounded</span>':''}</div><div class="s">${P.sub}</div><div class="s">Trust ${P.trust}/100</div><div class="bar"><i style="width:${P.trust}%;background:var(--money)"></i></div></div></div>`}
 function calTick(){if(!S.cal)return;const d=calDate();
+  // during a time skip (jail or dev skip) school events don't pop up; the year still ends and you still move up
+  const sq=x=>{if(!window.FF)return S.schoolQ.push(x);if(x!=='report2')return;if(S.grades>=50){S.yrs=(S.yrs||0)+1;if(S.grade>=12){S.school='grad';S.diploma=1;say('You graduated while you were away.')}else S.promote=1}else say('You failed the year while you were away.')};
   if(S.nextBday&&d.getTime()>=S.nextBday){S.age++;const nb=new Date(S.nextBday);nb.setUTCFullYear(nb.getUTCFullYear()+1);S.nextBday=nb.getTime();say(`Happy birthday. You're ${S.age} now.`)}
   if(S.school!=='in')return;S.schoolQ=S.schoolQ||[];
-  if(crossed(8,17)){if(S.promote){S.grade=Math.min(12,S.grade+1);S.promote=0}S.grades=Math.round((S.grades+60)/2);S.schoolQ.push('first')}
-  if(crossed(10,9))S.schoolQ.push('homecoming');
-  if(crossed(12,8)||crossed(5,18))S.schoolQ.push('finals');
-  if(crossed(12,21))S.schoolQ.push('report1');
-  if(S.grade>=11&&crossed(4,24))S.schoolQ.push('prom');
-  if(crossed(5,29))S.schoolQ.push('report2')}
+  if(crossed(8,17)){if(S.promote){S.grade=Math.min(12,S.grade+1);S.promote=0}S.grades=Math.round((S.grades+60)/2);sq('first')}
+  if(crossed(10,9))sq('homecoming');
+  if(crossed(12,8)||crossed(5,18))sq('finals');
+  if(crossed(12,21))sq('report1');
+  if(S.grade>=11&&crossed(4,24))sq('prom');
+  if(crossed(5,29))sq('report2')}
 function parReact(kind){const P=S.par;if(!P||S.home!=='family')return '';const strict=P.strict>=60;
   if(kind==='bad'){P.trust=Math.max(0,P.trust-(strict?15:6));if(strict){S.grounded=S.day+4;addStress(8);return `${P.name} went off. You're grounded for two weeks.`}return `${P.name} sighed. "Do better." That's it.`}
   if(kind==='good'){P.trust=Math.min(100,P.trust+8);const r=strict?rnd(100,250):rnd(20,80);S.cash+=r;return `${P.name} was proud and slid you ${money(r)}.`}
