@@ -1362,7 +1362,7 @@ function lick(k){if(stuckHome())return;
       if(win){const extra=take();S.cash+=cash;S.rep+=6;addXP(6);P.burned=1;P.trust=0;P.g=null;P.fa=undefined;return lickDone('Took his strap',`You caught ${nm} slipping and walked off with his ${G2.name.toLowerCase()}${fa?' (full auto)':''} and ${money(cash)}.${extra} Rep +6.`,true)}
       const dmg=rnd(30,60);S.hp-=dmg;S.rep=Math.max(0,S.rep-4);let lost='';const mine=Object.keys(S.guns||{});if(mine.length&&Math.random()<.55){const l=pick(mine);delete S.guns[l];if(S.auto)delete S.auto[l];houndGone();lost=` He took your ${GUNS[l].name.toLowerCase()} too.`}
       if(S.hp>0&&Math.random()<.2){busted();return lickDone('He pulled first',`${nm} saw you coming and let it fly. −${dmg} health.${lost} Shots fired brought twelve, and they snatched you up.`,false)}
-      lickDone('He pulled first',`${nm} saw you coming and let it fly. −${dmg} health, rep −4.${lost}`,false)});
+      say(`Tried to take ${nm}'s strap. He pulled first. −${dmg} health.${lost}`);lickDone('He pulled first',`${nm} saw you coming and let it fly. −${dmg} health, rep −4.${lost}`,false)});
     $('y').onclick=()=>runUp(theirs);
     if($('fz'))$('fz').onclick=()=>{const line=pick(['"Damn, that\'s hard. Lemme see that."','"Bro where you got that from? Let me hold it real quick."','"That\'s the new one? Let me see how it feel."']);
       if(Math.random()>=fOdds){addStress(6);modal(`<h2>${nm} ain't going for it</h2><p>You said ${line} He looked at you sideways and put his hand on it. "Nah, you good." He's on alert now.</p><div class="btns"><button class="btn red" id="y2">Run up anyway</button><button class="btn" id="n2">Walk off</button></div>`);
