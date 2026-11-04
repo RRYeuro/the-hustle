@@ -63,6 +63,8 @@ h1{font-family:var(--display);font-weight:400;font-size:34px;letter-spacing:.02e
 .log p{margin:0;color:var(--dim)} .log p:first-child{color:var(--fg)}
 .log .d{font-family:var(--label);color:var(--accent);margin-right:6px}
 .modal{position:fixed;inset:0;background:rgba(5,4,6,.82);display:flex;align-items:center;justify-content:center;padding:20px;z-index:20}
+.xbtn{position:sticky;top:-10px;align-self:flex-end;margin:-10px -10px -24px 0;z-index:2;width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:var(--bg);color:var(--fg);font-size:16px;line-height:1;cursor:pointer;flex:none}
+.totop{position:fixed;right:max(14px,env(safe-area-inset-right,0px));bottom:calc(76px + env(safe-area-inset-bottom,0px));z-index:50;width:44px;height:44px;border-radius:50%;border:1px solid var(--accent);background:var(--panel);color:var(--accent);font-size:20px;box-shadow:0 4px 16px rgba(0,0,0,.4);cursor:pointer}
 .card{max-height:calc(100vh - 40px);overflow:auto;background:var(--panel);border:1px solid var(--accent);border-radius:8px;padding:18px;max-width:420px;width:100%;display:flex;flex-direction:column;gap:12px}
 .card h2{font-family:var(--display);font-weight:400;font-size:28px;margin:0;letter-spacing:.02em;text-wrap:balance}
 .card p{margin:0;line-height:1.45}
@@ -2073,7 +2075,10 @@ function talk(kind,g){
   $('a').onclick=()=>go(.10,small);$('b').onclick=()=>go(.25,big);$('n').onclick=()=>qtyModal(kind,g);
 }
 /* ---------- modal ---------- */
-function modal(html){if($('modal').hidden)window._lt=S&&S.log&&S.log[0];$('mcard').innerHTML=html;$('modal').hidden=false}
+function modal(html){if($('modal').hidden)window._lt=S&&S.log&&S.log[0];$('mcard').innerHTML=html;$('modal').hidden=false;addX()}
+// little X in the corner of any popup that has a way out (Cancel, Never mind, Back, Close...)
+function addX(){const mc=$('mcard');mc.scrollTop=0;const out=[...mc.querySelectorAll('button')].find(b=>/^(cancel|never mind|back|back out|close|not now|nah|not yet|let it go|walk off|done|okay|bet|continue|got it|skip)$/i.test(b.textContent.trim())&&!b.disabled);
+  if(!out||window.mgOn)return;const x=document.createElement('button');x.className='xbtn';x.setAttribute('aria-label','Close');x.textContent='✕';x.onclick=()=>out.click();mc.prepend(x)}
 function close(){$('modal').hidden=true;checkEnd();render();const nw=S&&S.log&&S.log[0];if(nw&&nw!==window._lt&&$('modal').hidden&&!S.over)toast(nw.t);window._lt=nw}
 const crewHere=()=>{const o=S.owner[S.at];return o!=='me'&&o!=='none'};
 function stuckHome(){if(S&&S.grounded>S.day){$('modal').hidden=true;say(`You're grounded. ${S.par?S.par.name:'They'} ain't letting you leave the house. Lay low, go to school, or text your plays to come to you.`);render();return true}return false}
@@ -2766,6 +2771,8 @@ function mainMenu(canContinue){
   $('msnd').onclick=()=>{SND.sfx=!SND.sfx;sndSave();mainMenu(canContinue)};$('mmus').onclick=()=>{SND.music=!SND.music;sndSave();SND.music?musicStart():musicStop();mainMenu(canContinue)};
 }
 $('newgame').onclick=()=>mainMenu(!S.over);
+{const tt=document.createElement('button');tt.className='totop';tt.textContent='↑';tt.setAttribute('aria-label','Back to top');tt.hidden=true;tt.onclick=()=>window.scrollTo({top:0,behavior:'smooth'});document.body.appendChild(tt);
+ addEventListener('scroll',()=>{tt.hidden=scrollY<500},{passive:true})}
 $('devbtn').onclick=()=>devPanel();
 const devOn=()=>{try{return localStorage.getItem('hustle-dev')==='1'}catch(e){return false}};
 function devShow(){$('devbtn').hidden=!devOn()}devShow();
