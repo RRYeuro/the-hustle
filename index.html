@@ -1815,17 +1815,27 @@ function phoneDay(){S.custos=S.custos||[];S.texts=(S.texts||[]).filter(t=>{if(S.
   S.custos.forEach((c,i)=>{if(S.texts.length<6&&!S.texts.some(t=>t.ci===i)&&Math.random()<.12+c.loy/500)S.texts.push({ci:i,day:S.day})});
   const lost=S.custos.filter(c=>c.loy<=0);if(lost.length){lost.forEach(c=>say(`${c.name} found a new plug.`));S.custos=S.custos.filter(c=>c.loy>0);S.texts=[]}
   const n=(S.texts||[]).length;if(n)say(`📱 You got ${n} text${n===1?'':'s'} from your plays.`)}
-function serveCusto(ci,fromText){const c=S.custos[ci];if(!c)return;const g=G(c.gid),n=Math.min(c.size,S.inv[c.gid]);
+function serveCusto(ci,fromText,o){o=o||{};const c=S.custos[ci];if(!c)return;const g=G(c.gid),n=Math.min(Math.round(c.size*(o.mult||1)/g.step)*g.step||c.size,S.inv[c.gid]);
   if(n<g.step){if(fromText){say(`You ain't got no ${g.name} for ${c.name}.`)}else say(`You don't have ${g.name} to bring ${c.name}.`);render();return}
   if(c.buys<2&&Math.random()<.03){busted();S.custos.splice(ci,1);S.texts=[];return lickDone('New number was the feds','That "new play" was undercover. Should have kept it to people you know.',false,true)}
   const fk=Math.min(S.fake[c.gid],Math.round(n*S.fake[c.gid]/S.inv[c.gid]));S.fake[c.gid]-=fk;
-  const each=custoPrice(c),got=Math.round((n-fk)*each+fk*each*.1);S.inv[c.gid]-=n;if(S.inv[c.gid]<=0){S.inv[c.gid]=0;S.paid[c.gid]=0;S.q[c.gid]=50;S.fake[c.gid]=0}
+  const each=Math.round(custoPrice(c)*(o.price||1)),got=Math.round((n-fk)*each+fk*each*.1);S.inv[c.gid]-=n;if(S.inv[c.gid]<=0){S.inv[c.gid]=0;S.paid[c.gid]=0;S.q[c.gid]=50;S.fake[c.gid]=0}
   const profit=got-S.paid[c.gid]*n;S.cash+=got;if(profit>0){S.st.profit+=profit;addXP(Math.floor(profit/500))}S.st.sold+=n*g.sp*5;S.heat=Math.min(100,S.heat+1);
-  c.buys++;c.last=S.day;c.loy=fk?Math.max(0,c.loy-35):Math.min(100,c.loy+(tier(S.q[c.gid])===2?8:tier(S.q[c.gid])===1?5:1));
-  if(fromText)S.texts=S.texts.filter(t=>t.ci!==ci);
+  c.buys++;c.last=S.day;c.hit=S.day;if(o.loy)c.loy=Math.min(100,c.loy+o.loy);c.loy=fk?Math.max(0,c.loy-35):Math.min(100,c.loy+(tier(S.q[c.gid])===2?8:tier(S.q[c.gid])===1?5:1));
+  S.texts=(S.texts||[]).filter(t=>t.ci!==ci);
   say(`${c.name} pulled up for ${amt(n,g)} of ${g.name}. +${money(got)}.${fk?` Some of it was fake, and ${c.name} noticed.`:''}`);render()}
-function textAll(){const C=S.custos||[];let came=0,cash0=S.cash;
-  C.forEach((c,i)=>{if(Math.random()<.35+c.loy/200&&S.inv[c.gid]>=G(c.gid).step){serveCusto(i,false);came++}});
+function hitUp(ci){const c=S.custos[ci];if(!c)return;const g=G(c.gid);c.hit=S.day;
+  if(c.tmr&&c.tmr<=S.day){c.tmr=0;return serveCusto(ci,false,{loy:3})}
+  const luck=(S.sk.luck||3),r=Math.random()*100,good=30+c.loy/3+luck*3;
+  const ask=(h,t,btns)=>{modal(`${custPic(c.name,64).replace('flex:none','align-self:center')}<h2>${h}</h2><p>${t}</p><div class="btns">${btns.map((b,j)=>`<button class="btn ${j?'':'go'}" id="hb${j}">${b[0]}</button>`).join('')}</div>`);btns.forEach((b,j)=>$('hb'+j).onclick=()=>{$('modal').hidden=true;b[1]()})};
+  if(r<good){if(Math.random()<.12+luck*.015&&S.inv[c.gid]>=c.size*2)return ask(`${c.name} wants double`,`"Bet, I was just about to hit you. Bring me double, I got people with me."`,[[`Bring ${amt(c.size*2,g)}`,()=>serveCusto(ci,false,{mult:2,loy:4})],['Just the usual',()=>serveCusto(ci,false)]]);return serveCusto(ci,false)}
+  const roll=Math.random();
+  if(roll<.35)return ask(`${c.name} is short`,`"I only got about ${money(Math.round(custoPrice(c)*.7*Math.min(c.size,S.inv[c.gid])))} right now. Can you look out for me this one time?"`,[['Give the deal (30% off)',()=>serveCusto(ci,false,{price:.7,loy:10})],['Nah, full price',()=>{c.loy=Math.max(0,c.loy-5);say(`Told ${c.name} no deal. They'll find it somewhere else today.`);render()}]]);
+  if(roll<.65){c.tmr=S.day+1;say(`${c.name}: "Not today, hit me tomorrow."`);toast(`${c.name}: "Not today, hit me tomorrow." They'll buy next time you hit them.`);return render()}
+  if(roll<.85){say(`${c.name}: "Nah I'm good, still got some from last time."`);toast(`${c.name}: "Nah I'm good, still got some from last time."`);return render()}
+  c.loy=Math.max(0,c.loy-3);say(`${c.name} left you on read.`);toast(`${c.name} left you on read.`,false);render()}
+function textAll(){const C=S.custos||[];let came=0,cash0=S.cash;if(S.textAll===S.day){modal(`<h2>Already did that</h2><p>You already blasted everybody today. Spam them again and they gon' block you.</p><div class="btns"><button class="btn go" id="ok">Bet</button></div>`);$('ok').onclick=close;return}S.textAll=S.day;
+  C.forEach((c,i)=>{if(!(c.last===S.day&&c.buys>0)&&Math.random()<.35+c.loy/200&&S.inv[c.gid]>=G(c.gid).step){serveCusto(i,false);came++}});
   modal(`<h2>"I'm open"</h2><p>You texted everybody. ${came?`<b>${came}</b> of your plays pulled up and you made <b style="color:var(--money)">${money(S.cash-cash0)}</b>.`:'Nobody came through. Either they\'re good or you ain\'t got what they want.'}</p><div class="btns"><button class="btn go" id="ok">Bet</button></div>`);$('ok').onclick=close}
 function panePhone(){const C=S.custos||[],T=S.texts||[];
   let h=paneConnect()+`<div class="row" style="flex-wrap:wrap;border-color:var(--accent)"><div class="info"><div class="t" style="font-family:var(--display);font-size:20px;font-weight:400">Trap phone</div><div class="s">${C.length} plays saved · plays pay more than the Js, and more the longer they've been buying from you. They come to you, wherever you at.</div></div>
@@ -1838,7 +1848,7 @@ function panePhone(){const C=S.custos||[],T=S.texts||[];
   h+=`<div class="sec">Contacts</div>`;
   h+=C.length?C.map((c,i)=>{const g=G(c.gid);return `<div class="row" style="flex-wrap:wrap;padding:8px 12px">${custPic(c.name,44)}<div class="info" style="flex:1 1 200px;min-width:0"><div class="t">${c.name} <span class="chip ${c.loy>=70?'mine':''}">${c.loy>=70?'Regular':c.loy>=40?'Buys sometimes':'Shaky'}</span></div>
       <div class="s">Wants ${amt(c.size,g)} of ${g.name} · bought ${c.buys} time${c.buys===1?'':'s'}</div><div class="bar"><i style="width:${c.loy}%;background:var(--money)"></i></div></div>
-      <div class="btns"><button class="btn" data-a="phit" data-i="${i}" ${c.hit===S.day||S.inv[c.gid]<g.step?'disabled':''}>Hit them up</button><button class="btn" data-a="pdel" data-i="${i}">Delete</button></div></div>`}).join('')
+      <div class="btns"><button class="btn" data-a="phit" data-i="${i}" ${c.hit===S.day||(c.last===S.day&&c.buys>0)||S.inv[c.gid]<g.step?'disabled':''}>${c.last===S.day&&c.buys>0?'Already copped today':c.tmr&&c.tmr<=S.day?'They said hit them today':'Hit them up'}</button><button class="btn" data-a="pdel" data-i="${i}">Delete</button></div></div>`}).join('')
     :`<div class="row"><div class="info"><div class="s">No plays yet. Serve the Js, sell to your neighbors, or pass out your number and people will save it.</div></div></div>`;
   h+=`<div class="row"><div class="info"><div class="s" style="color:var(--dim)">Serve fakes and they find a new plug. New numbers could be undercover, so watch who you serve.</div></div></div>`;
   return h}
@@ -2329,7 +2339,7 @@ function act(a,el){
   if(a==='pcard'){S.passed=S.day;const n=rnd(1,2);for(let i=0;i<n;i++)addCusto(pick(CNAMES),pick(PINFO[S.at].carries),'block');S.heat=Math.min(100,S.heat+3);say(`Passed your number out on ${BLOCKS[S.at]}.`)}
   if(a==='pserve')return serveCusto(+el.dataset.i,true);
   if(a==='pignore'){const r=S.texts.splice(+el.dataset.i,1)[0];const c=S.custos[r.ci];if(c)c.loy=Math.max(0,c.loy-6);say(`Left ${c?c.name:'them'} on read.`)}
-  if(a==='phit'){const c=S.custos[+el.dataset.i];c.hit=S.day;return serveCusto(+el.dataset.i,false)}
+  if(a==='phit')return hitUp(+el.dataset.i);
   if(a==='pdel'){S.custos.splice(+el.dataset.i,1);S.texts=(S.texts||[]).filter(t=>t.ci!==+el.dataset.i).map(t=>({...t,ci:t.ci>+el.dataset.i?t.ci-1:t.ci}));say('Deleted the number.')}
   if(a==='punch')return punch();
   if(a==='laptop'){S.cash-=2000;S.scam.laptop=1;say('Set up the laptop. Ghost work unlocked.')}
