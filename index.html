@@ -1527,7 +1527,7 @@ function devPanel(){if(!S||S.ph)return;
     <div class="sec">Unlock</div><div class="btns">${B('plugs','Know every plug')}${B('trust','All plugs 100 trust')}${B('cards','3 random cards')}${B('rap','Rap on')}${B('rob','Robbing on')}${B('scam','Scamming on')}${B('mis','Finish current mission')}</div>
     <div class="sec">Trigger events</div><div class="btns">${B('ecops','Cops')}${B('eamb','Crew ambush')}${B('ejack','Jackboys')}${B('elink','Link-up')}${B('eraid','Raid')}${B('efight','Test fight')}</div>
     <div class="sec">New stuff</div><div class="btns">${B('hp20','Health 20')}${B('hot','Heat 80')}${B('str95','Stress 95')}${B('allg','QP of every drug')}${B('fkp','20 fake Percs')}${B('plays','3 trap phone plays')}${B('hook','Get hooked')}</div>
-    <div class="btns">${B('econn','Meet the connect')}${B('dateplug','Date the plug here')}${B('crewok','Crews 75 respect')}${B('crewmad','Crews want smoke')}${B('nogang','Reset gang stuff')}${B('gcall','Gang call')}${B('gally','Ally event')}${B('bizev','Business event')}${B('strap','Gun + 2 soldiers')}${B('jail','Get locked up')}${B('sstrike','School strike')}${B('kid','Have a kid')}${B('kidage','Kid +5 years')}</div>
+    <div class="btns">${B('econn','Meet the connect')}${B('dateplug','Date the plug here')}${B('crewok','Crews 75 respect')}${B('crewmad','Crews want smoke')}${B('nogang','Reset gang stuff')}${B('gcall','Gang call')}${B('gally','Ally event')}${B('bizev','Business event')}${B('strap','Gun + 2 soldiers')}${B('swstock','Unc has switches')}${B('jail','Get locked up')}${B('sstrike','School strike')}${B('kid','Have a kid')}${B('kidage','Kid +5 years')}</div>
     <div class="sec">Mini games</div><div class="btns">${B('mchase','Police chase')}${B('mshoot','Shootout')}${B('mhoop','Hoops')}${B('mdice','Dice')}${B('mcar','Steal a car')}${B('mstore','Rob store')}${B('mpharm','Rob pharmacy')}${B('mhouse','Hit a house')}${B('mscam','Fake gun sale')}</div>
     <div class="sec">Go to (free, no day)</div><div class="btns">${BLOCKS.map((b,i)=>B('go'+i,b)).join('')}</div>
     <p class="s" style="color:var(--dim);font-size:13px">Time skips stop when something big happens, like a birthday event.</p>
@@ -1577,6 +1577,7 @@ function devDo(k){
   if(k==='dateplug'){if(!adult())return done('under 18');S.known.includes(S.at)||S.known.push(S.at);S.trust[S.at]=95;if(S.gf)endGF();S.gf={name:plugName(S.at),rel:80,plug:S.at};(S.pk[S.at]=S.pk[S.at]||{}).hooked=1;return done(`dating ${plugName(S.at)}`)}
   if(k==='jail'){$('modal').hidden=true;busted();render();return checkEnd()}
   if(k==='sstrike'){const m=schoolStrike('testing');return done(m.replace(/<[^>]+>/g,''))}
+  if(k==='swstock'){S.swUntil=S.day+2;return done('switches in stock at Unc')}
   if(k==='strap'){S.guns=S.guns||{};S.guns.pistol=1;S.soldiers=Math.max(S.soldiers,2);return done('pistol + 2 soldiers')}
   if(k==='kid'){if(!adult())return done('under 18');if(!S.gf)S.gf={name:'Nia',rel:80};$('modal').hidden=true;return baby()}
   if(k==='kidage'){(S.kids||[]).forEach(c=>c.born-=(S.cal?520:150));kidDay();return done('kids +5 years (events queue for next day)')}
@@ -1635,12 +1636,16 @@ switchy:{name:'Glizzy w/ Switch',cost:3500,str:12,heat:9,mag:30,rad:30,rel:1000,
 micro:{name:'Micro ARP',cost:4500,str:13,heat:8,mag:30,rad:22,rel:950,sub:'Little rifle, big problems. Fits in a bookbag.'},
 rifle:{name:'Rifle',cost:6000,str:15,heat:10,mag:20,rad:22,rel:1000,sub:'Serious business. Serious heat.'},
 draco:{name:'Drako',cost:7500,str:17,heat:12,mag:30,rad:26,rel:1100,sub:'The big stick. Nobody on the block want smoke with this.'}};
+const swIn=()=>S.swUntil>=S.day;
 function gunBonus(){return Math.max(0,...Object.keys(S.guns||{}).map(k=>GUNS[k].str))}
 function paneGuns(){const here=S.at===2;
   let h=`<div class="sec">Gun dealer · Unc</div><div class="row"><img src="${UNCPIC}" alt="" style="width:56px;height:56px;border-radius:6px;object-fit:cover;flex:none"><div class="info" style="min-width:0"><div class="t">Unc ${here?'<span class="chip here">Here</span>':''}</div><div class="s">Sells out the back of the tire shop on The Bottom. Your best gun adds to your strength in every fight. Get caught with one and you lose it, plus it's another charge.</div></div></div>`;
   if(!here)return h+`<div class="row"><div class="info"><div class="s">Go to The Bottom to buy from Unc.${Object.keys(S.guns||{}).length?` You're carrying: ${Object.keys(S.guns).map(k=>GUNS[k].name).join(', ')}.`:''}</div></div></div>`;
   if(S.age&&S.age<18)return h+`<div class="row"><div class="info"><div class="s">"Come back when you grown." Unc won't sell to you until 18.</div></div></div>`;
-  return h+Object.entries(GUNS).map(([k,G2])=>{const own=(S.guns||{})[k];return `<div class="row" style="padding:8px 12px"><div class="info"><div class="t">${G2.name} ${own?'<span class="chip mine">Yours</span>':''}</div><div class="s">+${G2.str} strength · ${G2.sub} Heat +${G2.heat} when you buy it.</div></div>${own?'':`<button class="btn green" data-a="gun" data-k="${k}" ${S.cash>=G2.cost?'':'disabled'}>${money(G2.cost)}</button>`}</div>`}).join('')}
+  const g=S.guns||{},semi=g.glizzy?'glizzy':g.smitty?'smitty':null,fee=2800;
+  h+=swIn()?`<div class="row" style="padding:8px 12px;border-color:var(--gold)"><div class="info"><div class="t">Unc got switches in <span class="chip here">Rare</span></div><div class="s">"Don't ask where I got 'em. They ain't gon' be here long."${semi&&!g.switchy?` Unc can put one on your ${GUNS[semi].name} for a healthy fee.`:''}</div></div>${semi&&!g.switchy?`<button class="btn green" data-a="swput" data-k="${semi}" ${S.cash>=fee?'':'disabled'}>Make it full auto ${money(fee)}</button>`:''}</div>`
+    :`<div class="row" style="padding:8px 12px"><div class="info"><div class="s">No switches right now. Unc only gets 'em in every once in a while. Check back.</div></div></div>`;
+  return h+Object.entries(GUNS).filter(([k])=>k!=='switchy'||swIn()||g.switchy).map(([k,G2])=>{const own=(S.guns||{})[k];return `<div class="row" style="padding:8px 12px"><div class="info"><div class="t">${G2.name} ${own?'<span class="chip mine">Yours</span>':''}</div><div class="s">+${G2.str} strength · ${G2.sub} Heat +${G2.heat} when you buy it.</div></div>${own?'':`<button class="btn green" data-a="gun" data-k="${k}" ${S.cash>=G2.cost?'':'disabled'}>${money(G2.cost)}</button>`}</div>`}).join('')}
 function friendBack(){return Math.min(15,(S.friends||[]).filter(f=>f.close>=60).reduce((a,f)=>a+(f.trait==='wild'?5:3),0))}
 function meetFriend(manual){S.friends=S.friends||[];const taken=S.friends.map(f=>f.name);const role=pick(['setup','scam','rob','connect','none','none']);
   const name=pick((role==='setup'?FNAMES_F:FNAMES).filter(n=>!taken.includes(n)));const trait=pick(['loyal','loyal','hustler','wild','snake']);
@@ -2003,7 +2008,7 @@ function qtyModal(kind,g,to,bl){if(to==='js'&&stuckHome())return;
 }
 
 /* ---------- day / events ---------- */
-function nextDay(){
+function nextDay(){if(!(S.swUntil>=S.day)&&Math.random()<.1)S.swUntil=S.day+2;
   S.day++;
   const turf=S.owner.filter(o=>o==='me').length;
   if(turf){S.cash+=turf*300;}
@@ -2173,7 +2178,8 @@ function act(a,el){
   if(a==='fhelp'){const f=S.friends[+el.dataset.i];S.cash-=200;f.close=Math.min(100,f.close+15);say(`Looked out for ${f.name} with $200.`)}
   if(a==='frole')return friendRole(+el.dataset.i);
   if(a==='fcut'){const f=S.friends.splice(+el.dataset.i,1)[0];say(`Cut ${f.name} off.`)}
-  if(a==='gun'){const G2=GUNS[el.dataset.k];S.cash-=G2.cost;S.guns=S.guns||{};S.guns[el.dataset.k]=1;S.heat=Math.min(100,S.heat+G2.heat);say(`Bought a ${G2.name.toLowerCase()} from Unc. +${G2.str} strength in fights.`)}
+  if(a==='swput'){const k=el.dataset.k;S.cash-=2800;delete S.guns[k];S.guns.switchy=1;S.heat=Math.min(100,S.heat+6);S.swUntil=-1;say(`Unc took your ${GUNS[k].name.toLowerCase()} in the back. Came out 20 minutes later full auto. "Don't tell nobody where you got that." That was his last switch.`)}
+  if(a==='gun'){const G2=GUNS[el.dataset.k];if(el.dataset.k==='switchy')S.swUntil=-1;S.cash-=G2.cost;S.guns=S.guns||{};S.guns[el.dataset.k]=1;S.heat=Math.min(100,S.heat+G2.heat);say(`Bought a ${G2.name.toLowerCase()} from Unc. +${G2.str} strength in fights.`)}
   if(a==='ptext'){S.texted=S.day;return textAll()}
   if(a==='pcard'){S.passed=S.day;const n=rnd(1,2);for(let i=0;i<n;i++)addCusto(pick(CNAMES),pick(PINFO[S.at].carries),'block');S.heat=Math.min(100,S.heat+3);say(`Passed your number out on ${BLOCKS[S.at]}.`)}
   if(a==='pserve')return serveCusto(+el.dataset.i,true);
