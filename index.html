@@ -1285,7 +1285,7 @@ const LICKS={
  pharm:{name:'Rob the pharmacy',sub:'Grab Percs and Xans off the shelves. Big heat if the alarm trips.'},
  store:{name:'Rob the corner store',sub:'Quick cash from the register. Clerk might have a bat.'},
  house:{name:'Hit a house',sub:'Break in while nobody is home and grab what you can.'},
- strap:{name:'Take somebody\'s strap',sub:'Catch a dude slipping and take his gun off him. He might pull it first.'},
+ strap:{name:'Take somebody\'s strap',sub:'High risk, high reward. Take his gun and his cash. He might pull first.'},
  scam:{name:'Fake gun sale',sub:'Post a gun for sale online, meet the buyer, take his money. Some buyers are undercover.'},
 };
 function paneLicks(){
@@ -1332,15 +1332,17 @@ function lick(k){if(stuckHome())return;
     const pay=rnd(800,3000);S.cash+=pay;S.heat=Math.min(100,S.heat+12);addXP(4);addStress(5);drawCard(.2,'In a dresser drawer,');
     lickDone('Clean lick',`In and out without a sound. Jewelry and electronics pawned for ${money(pay)}.`,true)});
   if(k==='strap'){if(S.age&&S.age<18){modal(`<h2>Not yet</h2><p>You too young to be running up on people with straps. Wait till you 18.</p><div class="btns"><button class="btn go" id="ok">Bet</button></div>`);$('ok').onclick=close;return}
-    const pool=['pistol','pistol','smitty','smitty','glizzy','glizzy','revolver','shotgun','micro','switchy','draco'];const g=pick(pool),G2=GUNS[g],who=pick(['A dude outside the gas station','Some opp at the bus stop','A youngin flexing on IG Live','A drunk dude leaving the club']);
-    modal(`<h2>${who}</h2><p>He got a <b>${G2.name}</b> on his hip and he ain't paying attention. You can run up on him or let it go.</p><div class="btns"><button class="btn red" id="y">Run up on him</button><button class="btn" id="n">Let it go</button></div>`);
+    const pool=['smitty','glizzy','glizzy','revolver','shotgun','switchy','micro','micro','baby','rifle','draco','draco'];const g=pick(pool),G2=GUNS[g],fa=AUTOK.includes(g)&&Math.random()<.3,cash=rnd(800,5000),
+      who=pick(['A dude outside the gas station','An opp at the bus stop','A youngin flexing on IG Live','A dude leaving the club','A shooter from across town']),theirs=Math.round(14+G2.str*1.6+(fa?4:0));
+    modal(`<div class="sec" style="margin:0;color:var(--blood)">High risk · high reward</div><h2>${who}</h2><p>He got a <b>${G2.name}${fa?' (full auto)':''}</b> on him and a fat knot in his pocket. He ain't paying attention, but he's dangerous. You can run up on him or let it go.</p><p class="s">Win: his gun, his cash (~${money(cash)}), rep +6. Lose: you get shot up, he might take your gun, and twelve might pull up.</p><p class="s" style="color:var(--dim)">Your strength ${myStr()} vs his ${theirs}.</p><div class="btns"><button class="btn red" id="y">Run up on him</button><button class="btn" id="n">Let it go</button></div>`);
     $('n').onclick=close;
-    $('y').onclick=()=>fightGame(myStr(),Math.round(8+G2.str*1.1),who,win=>{S.heat=Math.min(100,S.heat+8);addStress(8);
+    $('y').onclick=()=>fightGame(myStr(),theirs,who,win=>{S.heat=Math.min(100,S.heat+14);addStress(12);
       if(win){S.guns=S.guns||{};const dup=S.guns[g]||armed().includes(g);let extra='';
-        if(dup){const v=Math.round(G2.cost/2);S.cash+=v;extra=` You already had one, so you pawned it for ${money(v)}.`}else S.guns[g]=1;
-        S.rep+=2;addXP(3);return lickDone('Took his strap',`You caught him slipping and walked off with his ${G2.name.toLowerCase()}.${extra} Rep +2.`,true)}
-      const dmg=rnd(20,40);S.hp-=dmg;let lost='';const mine=Object.keys(S.guns||{});if(mine.length&&Math.random()<.35){const l=pick(mine);delete S.guns[l];if(S.auto)delete S.auto[l];houndGone();lost=` He took your ${GUNS[l].name.toLowerCase()} too.`}
-      lickDone('He pulled first',`He saw you coming. −${dmg} health.${lost}`,false)});return}
+        if(dup){const v=Math.round(G2.cost*.6);S.cash+=v;extra=` You already had one, so you flipped it for ${money(v)}.`}else{S.guns[g]=1;if(fa){S.auto=S.auto||{};S.auto[g]=1}}
+        S.cash+=cash;S.rep+=6;addXP(6);return lickDone('Took his strap',`You caught him slipping and walked off with his ${G2.name.toLowerCase()}${fa&&!dup?' (full auto)':''} and ${money(cash)}.${extra} Rep +6.`,true)}
+      const dmg=rnd(30,60);S.hp-=dmg;S.rep=Math.max(0,S.rep-4);let lost='';const mine=Object.keys(S.guns||{});if(mine.length&&Math.random()<.55){const l=pick(mine);delete S.guns[l];if(S.auto)delete S.auto[l];houndGone();lost=` He took your ${GUNS[l].name.toLowerCase()} too.`}
+      if(S.hp>0&&Math.random()<.2){busted();return lickDone('He pulled first',`He saw you coming and let it fly. −${dmg} health.${lost} Shots fired brought twelve, and they snatched you up.`,false)}
+      lickDone('He pulled first',`He saw you coming and let it fly. −${dmg} health, rep −4.${lost}`,false)});return}
   if(k==='scam')return talkGame(sus=>{
     if(Math.random()<.1+sus*.03-S.sk.talk*.005-girlB()){busted();return lickDone('It was a setup','The "buyer" was undercover. Should have known.',false)}
     if(sus<=1){const pay=rnd(600,1800);S.cash+=pay;S.rep+=2;S.heat=Math.min(100,S.heat+10);addXP(3);addStress(5);
@@ -1656,9 +1658,9 @@ const AUTOK=['micro','baby','rifle','draco'],autoFee=k=>Math.max(3000,Math.round
 const isAuto=k=>!!(GUNS[k]&&(GUNS[k].burst||(S.auto||{})[k]));
 const gStr=k=>GUNS[k]?GUNS[k].str+((S.auto||{})[k]?3:0):0;
 const gName=k=>GUNS[k].name+((S.auto||{})[k]?' (full auto)':'');
-function houndGone(){if(S.hound&&!(S.guns||{}).hound&&!(S.armed||[]).includes('hound')){S.hound=0;S.bodies=0;say('The Bloodhound is gone. It can find you again after 20 more bodies.')}}
+function houndGone(){if(S.hound&&!S.houndLost&&!(S.guns||{}).hound&&!(S.armed||[]).includes('hound')){S.houndLost=1;say('The Bloodhound is gone for good. It was a 1 of 1.')}}
 function houndReveal(){S.hound=1;S.guns=S.guns||{};S.guns.hound=1;say('Unlocked the mythical Bloodhound. 20 bodies.');
-  modal(`<div class="sec" style="margin:0;color:var(--accent)">Mythical unlocked</div><h2>The Bloodhound</h2><p>Word got around. Twenty bodies and your name ring bells. Unc called you to the back of the tire shop and pulled a case from under the floor.</p><p>All black Drako. Full auto from the factory. <b>+24 strength</b>, 40 in the clip, every tap sprays 3. "This one ain't for sale. It picks who holds it."</p><div class="btns"><button class="btn go" id="ok">It's mine</button></div>`);$('ok').onclick=()=>{close();render()}}
+  modal(`<div class="sec" style="margin:0;color:var(--accent)">Mythical unlocked</div><h2>The Bloodhound</h2><p>Word got around. Twenty bodies and your name ring bells. Unc called you to the back of the tire shop and pulled a case from under the floor.</p><p>All black Drako. Full auto from the factory. <b>+24 strength</b>, 40 in the clip, every tap sprays 3. "This one ain't for sale. It picks who holds it. It's a 1 of 1. Lose it and it's gone forever."</p><div class="btns"><button class="btn go" id="ok">It's mine</button></div>`);$('ok').onclick=()=>{close();render()}}
 const swIn=()=>S.swUntil>=S.day;
 function armed(){S.armed=S.armed||[];let p=0;while(S.armed.length>S.soldiers){S.armed.pop();p=1}if(p)houndGone();return S.armed}
 function armedBonus(){return armed().reduce((a,k)=>a+Math.round(gStr(k)*.6),0)}
@@ -1677,7 +1679,7 @@ function paneGuns(){const here=S.at===2;
     :`<div class="row" style="padding:8px 12px"><div class="info"><div class="s">No switches right now. Unc only gets 'em in every once in a while. Check back.</div></div></div>`;
   const autos=AUTOK.filter(k=>g[k]&&!(S.auto||{})[k]);
   if(autos.length)h+=`<div class="row" style="padding:8px 12px;flex-wrap:wrap;gap:6px"><div class="info" style="flex:1 1 200px;min-width:0"><div class="t">Make it full auto</div><div class="s">Everything comes semi. Unc can only make rifles go full: Micro ARP, Baby Drako, Rifle, Drako. +3 strength and it sprays in a shootout. Healthy fee.</div></div>${autos.map(k=>`<button class="btn green" data-a="autogun" data-k="${k}" ${S.cash>=autoFee(k)?'':'disabled'}>${GUNS[k].name} ${money(autoFee(k))}</button>`).join('')}</div>`;
-  h+=S.hound?'':`<div class="row" style="padding:8px 12px;border-color:var(--accent)"><div style="width:56px;height:56px;border-radius:6px;flex:none;background:repeating-linear-gradient(45deg,#222 0 6px,#111 6px 12px);display:flex;align-items:center;justify-content:center;font-family:var(--label);font-weight:800;color:var(--accent);font-size:22px">???</div><div class="info" style="min-width:0"><div class="t" style="letter-spacing:2px">??? ??????? <span class="chip here">Mythical</span></div><div class="s" style="filter:blur(3px);user-select:none">+?? strength · ?? in the clip · ???????</div><div class="s">Unlock: drop 20 bodies in shootouts. <b>${Math.min(20,S.bodies||0)}/20</b></div><div class="bar"><i style="width:${Math.min(100,(S.bodies||0)*5)}%;background:var(--accent)"></i></div></div></div>`;
+  h+=S.houndLost?`<div class="row" style="padding:8px 12px"><div class="info"><div class="t">The Bloodhound <span class="chip">Gone for good</span></div><div class="s">It was a 1 of 1. You'll never see it again.</div></div></div>`:S.hound?'':`<div class="row" style="padding:8px 12px;border-color:var(--accent)"><div style="width:56px;height:56px;border-radius:6px;flex:none;background:repeating-linear-gradient(45deg,#222 0 6px,#111 6px 12px);display:flex;align-items:center;justify-content:center;font-family:var(--label);font-weight:800;color:var(--accent);font-size:22px">???</div><div class="info" style="min-width:0"><div class="t" style="letter-spacing:2px">??? ??????? <span class="chip here">Mythical</span></div><div class="s" style="filter:blur(3px);user-select:none">+?? strength · ?? in the clip · ???????</div><div class="s">Unlock: drop 20 bodies in shootouts. <b>${Math.min(20,S.bodies||0)}/20</b></div><div class="bar"><i style="width:${Math.min(100,(S.bodies||0)*5)}%;background:var(--accent)"></i></div></div></div>`;
   return h+Object.entries(GUNS).filter(([k])=>!GUNS[k].myth&&(k!=='switchy'||swIn()||g.switchy)).map(([k,G2])=>{const own=(S.guns||{})[k];return `<div class="row" style="padding:8px 12px"><div class="info"><div class="t">${gName(k)} ${own?'<span class="chip mine">Yours</span>':''}</div><div class="s">+${gStr(k)} strength · ${G2.burst?'Full auto':AUTOK.includes(k)?'Semi, can go full':'Semi only'} · ${G2.sub} Heat +${G2.heat} when you buy it.</div></div>${own?'':`<button class="btn green" data-a="gun" data-k="${k}" ${S.cash>=G2.cost?'':'disabled'}>${money(G2.cost)}</button>`}</div>`}).join('')}
 function friendBack(){return Math.min(15,(S.friends||[]).filter(f=>f.close>=60).reduce((a,f)=>a+(f.trait==='wild'?5:3),0))}
 function meetFriend(manual){S.friends=S.friends||[];const taken=S.friends.map(f=>f.name);const role=pick(['setup','scam','rob','connect','none','none']);
