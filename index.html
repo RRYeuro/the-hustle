@@ -309,7 +309,7 @@ function plugTips(){if(!S.trust||!S.known)return;
 function say(t){S.log.unshift({d:S.day,t});S.log=S.log.slice(0,40)}
 function used(){return Math.round(GOODS.reduce((a,g)=>a+S.inv[g.id]*g.sp,0)*10)/10}
 function gangBack(){let b=0;(S.crews||[]).forEach(c=>{if(!c.alive)return;if(S.gang===c.id)b+=Math.floor(c.str*.25);else if(c.ally)b+=Math.floor(c.str*.1)});return b+(S.myGang?5:0)}
-function myStr(){return Math.round((6+S.sk.muscle*2+S.soldiers*6+Math.floor(S.rep/10)+friendBack()+gunBonus()+gangBack()+(buf('snow')?8:0)-(buf('phones')?3:0))*(stressed()?.8:1))}
+function myStr(){return Math.round((6+S.sk.muscle*2+S.soldiers*6+armedBonus()+Math.floor(S.rep/10)+friendBack()+gunBonus()+gangBack()+(buf('snow')?8:0)-(buf('phones')?3:0))*(stressed()?.8:1))}
 const slotKey=n=>n===1?'thuglife':'thuglife'+n;
 function curSlot(){try{return +localStorage.getItem('tl-cur')||1}catch(e){return 1}}
 function save(){if(S&&S.ph)return;try{localStorage.setItem(slotKey(S.slot||1),JSON.stringify(S));localStorage.setItem('tl-cur',S.slot||1)}catch(e){}}
@@ -532,6 +532,7 @@ function paneCrew(){
    <div class="sec">Crew and stash</div>
    <div class="row"><div class="info"><div class="t">Soldiers: ${S.soldiers}</div><div class="s">+6 strength each · cost $150/day each</div></div>
     <button class="btn green" data-a="hire" ${S.cash>=1000?'':'disabled'}>Hire $1,000</button></div>
+   ${paneArm()}
    <div class="row"><div class="info"><div class="t">Bigger stash</div><div class="s">+50 space (now ${S.cap})</div></div>
     <button class="btn green" data-a="cap" ${S.cash>=2500?'':'disabled'}>$2,500</button></div>
    <div class="row"><div class="info"><div class="t">Your turf: ${turf} block${turf===1?'':'s'}</div><div class="s">Each block pays $${300} a day and sells 12% higher</div></div></div>`;
@@ -1284,6 +1285,7 @@ const LICKS={
  pharm:{name:'Rob the pharmacy',sub:'Grab Percs and Xans off the shelves. Big heat if the alarm trips.'},
  store:{name:'Rob the corner store',sub:'Quick cash from the register. Clerk might have a bat.'},
  house:{name:'Hit a house',sub:'Break in while nobody is home and grab what you can.'},
+ strap:{name:'Take somebody\'s strap',sub:'Catch a dude slipping and take his gun off him. He might pull it first.'},
  scam:{name:'Fake gun sale',sub:'Post a gun for sale online, meet the buyer, take his money. Some buyers are undercover.'},
 };
 function paneLicks(){
@@ -1329,6 +1331,16 @@ function lick(k){if(stuckHome())return;
     if(woke)return alarmRun('Somebody\'s home','A floorboard creaked and the lights came on. They\'re calling 911.','You got away','Over the back fence and gone.');
     const pay=rnd(800,3000);S.cash+=pay;S.heat=Math.min(100,S.heat+12);addXP(4);addStress(5);drawCard(.2,'In a dresser drawer,');
     lickDone('Clean lick',`In and out without a sound. Jewelry and electronics pawned for ${money(pay)}.`,true)});
+  if(k==='strap'){if(S.age&&S.age<18){modal(`<h2>Not yet</h2><p>You too young to be running up on people with straps. Wait till you 18.</p><div class="btns"><button class="btn go" id="ok">Bet</button></div>`);$('ok').onclick=close;return}
+    const pool=['pistol','pistol','smitty','smitty','glizzy','glizzy','revolver','shotgun','micro','switchy','draco'];const g=pick(pool),G2=GUNS[g],who=pick(['A dude outside the gas station','Some opp at the bus stop','A youngin flexing on IG Live','A drunk dude leaving the club']);
+    modal(`<h2>${who}</h2><p>He got a <b>${G2.name}</b> on his hip and he ain't paying attention. You can run up on him or let it go.</p><div class="btns"><button class="btn red" id="y">Run up on him</button><button class="btn" id="n">Let it go</button></div>`);
+    $('n').onclick=close;
+    $('y').onclick=()=>fightGame(myStr(),Math.round(8+G2.str*1.1),who,win=>{S.heat=Math.min(100,S.heat+8);addStress(8);
+      if(win){S.guns=S.guns||{};const dup=S.guns[g]||armed().includes(g);let extra='';
+        if(dup){const v=Math.round(G2.cost/2);S.cash+=v;extra=` You already had one, so you pawned it for ${money(v)}.`}else S.guns[g]=1;
+        S.rep+=2;addXP(3);return lickDone('Took his strap',`You caught him slipping and walked off with his ${G2.name.toLowerCase()}.${extra} Rep +2.`,true)}
+      const dmg=rnd(20,40);S.hp-=dmg;let lost='';const mine=Object.keys(S.guns||{});if(mine.length&&Math.random()<.35){const l=pick(mine);delete S.guns[l];lost=` He took your ${GUNS[l].name.toLowerCase()} too.`}
+      lickDone('He pulled first',`He saw you coming. −${dmg} health.${lost}`,false)});return}
   if(k==='scam')return talkGame(sus=>{
     if(Math.random()<.1+sus*.03-S.sk.talk*.005){busted();return lickDone('It was a setup','The "buyer" was undercover. Should have known.',false)}
     if(sus<=1){const pay=rnd(600,1800);S.cash+=pay;S.rep+=2;S.heat=Math.min(100,S.heat+10);addXP(3);addStress(5);
@@ -1637,6 +1649,13 @@ micro:{name:'Micro ARP',cost:4500,str:13,heat:8,mag:30,rad:22,rel:950,sub:'Littl
 rifle:{name:'Rifle',cost:6000,str:15,heat:10,mag:20,rad:22,rel:1000,sub:'Serious business. Serious heat.'},
 draco:{name:'Drako',cost:7500,str:17,heat:12,mag:30,rad:26,rel:1100,sub:'The big stick. Nobody on the block want smoke with this.'}};
 const swIn=()=>S.swUntil>=S.day;
+function armed(){S.armed=S.armed||[];while(S.armed.length>S.soldiers)S.armed.pop();return S.armed}
+function armedBonus(){return armed().reduce((a,k)=>a+Math.round((GUNS[k]?GUNS[k].str:0)*.6),0)}
+function paneArm(){if(!S.soldiers)return '';const A=armed(),mine=Object.keys(S.guns||{}).sort((a,b)=>GUNS[b].str-GUNS[a].str);
+  let h=`<div class="row" style="flex-wrap:wrap"><div class="info" style="flex:1 1 200px;min-width:0"><div class="t">Strap up your soldiers · ${A.length}/${S.soldiers} armed</div><div class="s">Pass extra guns to your soldiers. Each armed soldier adds 60% of that gun's strength and shoots more in a shootout. Lose the soldier, lose the gun.</div></div></div>`;
+  if(A.length)h+=A.map((k,i)=>`<div class="row" style="padding:6px 12px"><div class="info"><div class="s">Soldier ${i+1} holding the <b>${GUNS[k].name}</b> (+${Math.round(GUNS[k].str*.6)})</div></div>${(S.guns||{})[k]?'':`<button class="btn" data-a="ungun" data-k="${i}">Take it back</button>`}</div>`).join('');
+  if(A.length<S.soldiers)h+=mine.length?`<div class="row" style="padding:6px 12px;flex-wrap:wrap;gap:6px"><div class="info"><div class="s">Give a soldier:</div></div>${mine.map(k=>`<button class="btn green" data-a="givegun" data-k="${k}">${GUNS[k].name}</button>`).join('')}</div>`:`<div class="row" style="padding:6px 12px"><div class="info"><div class="s">You got no guns to pass out. Buy from Unc or take one off somebody.</div></div></div>`;
+  return h}
 function gunBonus(){return Math.max(0,...Object.keys(S.guns||{}).map(k=>GUNS[k].str))}
 function paneGuns(){const here=S.at===2;
   let h=`<div class="sec">Gun dealer · Unc</div><div class="row"><img src="${UNCPIC}" alt="" style="width:56px;height:56px;border-radius:6px;object-fit:cover;flex:none"><div class="info" style="min-width:0"><div class="t">Unc ${here?'<span class="chip here">Here</span>':''}</div><div class="s">Sells out the back of the tire shop on The Bottom. Your best gun adds to your strength in every fight. Get caught with one and you lose it, plus it's another charge.</div></div></div>`;
@@ -1757,7 +1776,7 @@ function shootoutGame(mine,theirs,who,done){
     if(t>=next&&enemy.filter(e=>e.up).length<2&&left-enemy.filter(e=>e.up).length>0){const free=slots.map((p,i)=>i).filter(i=>!enemy.some(e=>e.up&&e.s===i));if(free.length){const i=pick(free);enemy.push({s:i,x:slots[i][0]+rnd(-14,14),y:slots[i][1]-18,up:true,born:t,fire:t+peek,look:rnd(0,3),skin:pick(['#8a5a3c','#5c3a24','#a06a45','#6b4429','#d9b08c'])})}next=t+rnd(500,1100)*(0.8+share*.4)}
     enemy.forEach(e=>{if(e.up&&t>=e.fire){e.up=false;e.shot=t;if(cover){msg='They missed. You was in cover.'}else{hp-=dmgIn;msg='You got hit!';if(hp<=0)finish(false)}}});
     enemy=enemy.filter(e=>e.up||t-e.born<3000);
-    if(S.soldiers>0&&t>=backupT){backupT=t+Math.max(1500,5000-S.soldiers*600);const u=enemy.find(e=>e.up);if(u&&Math.random()<.55){u.up=false;u.dead=true;left--;msg='Your shooter dropped one!';if(left<=0)finish(true)}}
+    if(S.soldiers>0&&t>=backupT){backupT=t+Math.max(1200,5000-S.soldiers*600-armed().length*500);const u=enemy.find(e=>e.up);if(u&&Math.random()<.55+armed().length*.08){u.up=false;u.dead=true;left--;msg='Your shooter dropped one!';if(left<=0)finish(true)}}
     if(t-t0>DUR){finish(left<=Math.floor(total/2)&&hp>0);return}
     // draw
     const bgOK=bgi.complete&&bgi.naturalWidth;x.fillStyle='#15121a';x.fillRect(0,0,W,H);if(bgOK)x.drawImage(bgi,0,0,W,H);else{x.fillStyle='#211c27';x.fillRect(0,0,W,120);x.fillStyle='#2a2430';x.fillRect(0,118,W,4)}
@@ -2178,6 +2197,8 @@ function act(a,el){
   if(a==='fhelp'){const f=S.friends[+el.dataset.i];S.cash-=200;f.close=Math.min(100,f.close+15);say(`Looked out for ${f.name} with $200.`)}
   if(a==='frole')return friendRole(+el.dataset.i);
   if(a==='fcut'){const f=S.friends.splice(+el.dataset.i,1)[0];say(`Cut ${f.name} off.`)}
+  if(a==='givegun'){const k=el.dataset.k;delete S.guns[k];armed().push(k);say(`Passed the ${GUNS[k].name.toLowerCase()} to one of your soldiers. He's strapped now.`)}
+  if(a==='ungun'){const i=+el.dataset.k,k=armed()[i];if(k&&!(S.guns||{})[k]){S.armed.splice(i,1);S.guns=S.guns||{};S.guns[k]=1;say(`Took the ${GUNS[k].name.toLowerCase()} back.`)}}
   if(a==='swput'){const k=el.dataset.k;S.cash-=2800;delete S.guns[k];S.guns.switchy=1;S.heat=Math.min(100,S.heat+6);S.swUntil=-1;say(`Unc took your ${GUNS[k].name.toLowerCase()} in the back. Came out 20 minutes later full auto. "Don't tell nobody where you got that." That was his last switch.`)}
   if(a==='gun'){const G2=GUNS[el.dataset.k];if(el.dataset.k==='switchy')S.swUntil=-1;S.cash-=G2.cost;S.guns=S.guns||{};S.guns[el.dataset.k]=1;S.heat=Math.min(100,S.heat+G2.heat);say(`Bought a ${G2.name.toLowerCase()} from Unc. +${G2.str} strength in fights.`)}
   if(a==='ptext'){S.texted=S.day;return textAll()}
@@ -2201,8 +2222,8 @@ function act(a,el){
   if(a==='cap'){S.cash-=2500;S.cap+=50;say('Got a bigger stash spot.')}
   checkEnd();render();
 }
-function firepower(){return gunBonus()+S.soldiers*6+(S.gang&&crew(S.gang)?Math.floor(crew(S.gang).str*.25):0)}
-function canWar(){return gunBonus()>0&&(S.soldiers>=2||!!S.gang)}
+function firepower(){return gunBonus()+armedBonus()+S.soldiers*6+(S.gang&&crew(S.gang)?Math.floor(crew(S.gang).str*.25):0)}
+function canWar(){return (gunBonus()>0||armed().length>0)&&(S.soldiers>=2||!!S.gang)}
 function warNeed(){return gunBonus()>0?'Need 2 shooters (soldiers) or a set behind you':'Need a gun first'}
 function war(c){if(!canWar()){modal(`<h2>No firepower</h2><p>You can't take a block with your hands. ${warNeed()}. Unc on The Bottom sells guns, and you can hire soldiers in the Me tab.</p><div class="btns"><button class="btn go" id="ok">Got it</button></div>`);$('ok').onclick=close;return}
   const d=cdef(c.id),mine=myStr()+(S.fx.ride?12:0);
