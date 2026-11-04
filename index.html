@@ -993,7 +993,10 @@ function paneHome(){const H={...HOMES[S.home]};if(S.home==='family')H.name=is('l
   let h=`<div class="sec">Where you stay</div>
    <div class="row" style="border-color:var(--accent)"><div class="info"><div class="t">${H.name} <span class="chip here">Home</span></div>
     <div class="s">${H.sub}</div>${S.home==='couch'&&S.cousinDeal?'<div class="s" style="color:var(--money)">Paying your cousin $250 a week. The plays at your auntie\'s are yours.</div>':''}${true?`<div class="s">Community love ${Math.round(S.comm??30)}/100. ${(S.comm??30)>=60?'The neighbors got your back, so raids are rare.':'Nosy neighbors call the cops. Bless them to win them over.'}</div><div class="bar"><i style="width:${S.comm??30}%;background:var(--money)"></i></div>`:''}<div class="s">${H.rent?`${money(H.rent)} rent a week · next due ${dayTxt(S.rentDay)}`:'No rent'} · +${H.stash} stash · ${H.stress>0?'stress up a little every day':H.stress<0?'stress down every day':'no stress change'} · raid risk ${H.raid>=.08?'high':H.raid>=.04?'medium':'low'} when your heat is up</div></div></div>`;
+  if(S.home==='family'&&S.par)h+=`<div class="row" style="padding:8px 12px;flex-wrap:wrap"><div class="info" style="flex:1 1 180px;min-width:0"><div class="s">Help out at home. ${S.par.strict>=70&&S.age<18?'Careful: '+S.par.name+' is strict and will ask where it came from.':''}</div></div><div class="btns"><button class="btn green" data-a="pargive" data-k="100" ${S.cash>=100&&S.parGive!==S.day?'':'disabled'}>Give ${S.par.who} $100</button><button class="btn green" data-a="pargive" data-k="500" ${S.cash>=500&&S.parGive!==S.day?'':'disabled'}>$500</button></div></div>`;
   if(S.age&&S.age<18)return h+`<div class="row"><div class="info"><div class="s">You can move out when you turn 18.</div></div></div>`;
+  if(S.home!=='family'&&S.par&&!S.grannyLost){const need=S.par.strict>=70?60:40,ok=S.par.trust>=need;
+    h+=`<div class="row" style="padding:8px 12px">${parPic(44)}<div class="info"><div class="t">Move back in with ${S.par.name}</div><div class="s">Free, +20 stash, but they watching what you bring in and nosy neighbors call the cops.${ok?'':` <span style="color:var(--blood)">${S.par.name} needs ${need}+ trust to let you back in (now ${S.par.trust}). Give them money to win them over.</span>`}</div></div><button class="btn green" data-a="moveback" ${ok?'':'disabled'}>Move back</button></div>`}
   h+=Object.entries(HOMES).filter(([k])=>k!==S.home&&k!=='gfplace'&&k!=='family'&&k!=='granny').map(([k,X])=>{const lock=S.lvl<X.lvl,cost=X.rent;
     return `<div class="row" style="padding:8px 12px"><div class="info"><div class="t">${X.name}</div><div class="s">${X.sub}</div>
       <div class="s">${X.rent?`${money(X.rent)}/week`:'Free'} · +${X.stash} stash · raid risk ${X.raid>=.08?'high':X.raid>=.04?'medium':'low'}${lock?` · <span style="color:var(--blood)">Need level ${X.lvl}</span>`:''}</div></div>
@@ -1191,7 +1194,7 @@ function eighteen(){const dip=S.cal?S.school==='grad':S.school==='in'&&S.grades>
 function paneCareer(){if(!S.age&&S.mode!=='life'&&!S.job&&!Object.keys(S.biz||{}).length&&S.lvl<3)return '';
   let h=`<div class="sec">School, work and business</div>`;
   if(S.age&&S.age<18&&is('tank')&&!(S.fate||{}).knee)h+=`<div class="row" style="flex-wrap:wrap"><div class="info" style="flex:1 1 200px;min-width:0"><div class="t">Football · Scout buzz ${S.ball||0}/100</div><div class="s">Practice hard and the scholarship offers come senior year.</div><div class="bar"><i style="width:${S.ball||0}%;background:var(--money)"></i></div></div><button class="btn go" data-a="practice">Go to practice (takes the day)</button></div>`;
-  h+=S.cal?guardianLine():'';
+  h+=guardianLine();
   if(S.cal&&S.school==='in'){const sw=schoolWeek(),br=schoolBreak();
     h+=`<div class="row" style="flex-wrap:wrap"><div class="info" style="flex:1 1 220px;min-width:0"><div class="t">${GRADEN[S.grade]||'High school'} year${S.altSchool?' · Alt school':''} · Grades ${S.grades}/100</div><div class="s">${S.suspended>S.day?'<b style="color:var(--blood)">Suspended.</b> You can\'t go back yet.':sw?'School week. Go all week or skip: skipping costs 7 grade points.':isWknd()?'Weekend. No school, the block is yours.':br+'. No school right now.'}${S.altSchool?' You\'re at alternative school.':''}${S.sStrikes?` School strikes: ${S.sStrikes} of 3.`:''} Pass each year with 50+. Graduation is May of senior year.</div><div class="bar"><i style="width:${S.grades}%;background:var(--accent)"></i></div></div>
       <div class="btns"><button class="btn go" data-a="class" ${sw?'':'disabled'}>${sw?'Go to school this week':'No school'}</button>${S.age>=16?'<button class="btn" data-a="dropout">Drop out</button>':''}</div></div>`;
@@ -2354,6 +2357,7 @@ function act(a,el){
   if(a==='pserve')return serveCusto(+el.dataset.i,true,el.dataset.g?{gid:el.dataset.g,sw:Math.random()<.25}:{});
   if(a==='poffer')return offerElse(+el.dataset.i);
   if(a==='pargive')return parGive(+el.dataset.k);
+  if(a==='moveback'){moveIn('family');S.par.trust=Math.max(0,S.par.trust-5);say(`Moved back in with ${S.par.name}. "My house, my rules."`)}
   if(a==='pignore'){const r=S.texts.splice(+el.dataset.i,1)[0];const c=S.custos[r.ci];if(c)c.loy=Math.max(0,c.loy-6);say(`Left ${c?c.name:'them'} on read.`)}
   if(a==='phit')return hitUp(+el.dataset.i);
   if(a==='pask'){const c=S.custos[+el.dataset.i];const right=S.rep>=70||Math.random()<.8;c.ask=(c.uc===right)?'cop':'ok';say(c.ask==='cop'?`Asked around about ${c.name}. People saying they might be twelve.`:`Asked around about ${c.name}. People say they solid.`)}
@@ -2433,7 +2437,7 @@ function flash(t,good){say(t);window._qf={t,good}}
 function turnsTxt(n){return S&&S.cal?(n===1?'1 turn':n+' turns'):(n===1?'1 day':n+' days')}
 function dayTxt(d){if(!S||!S.cal)return 'day '+d;const n=d-S.day;if(n===0)return 'today';if(n===1)return 'next turn';const dt=calDate(d);return ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][dt.getUTCMonth()]+' '+dt.getUTCDate()}
 function crewCap(){return 22+(S.lvl||1)*7+Math.floor((S.rep||0)/10)}
-function fixLoaded(){if(S&&S.crews)S.crews.forEach(c=>{c.str=Math.min(c.str,crewCap())});if(S&&S.cal&&S.school==='in'&&S.age){const want=Math.min(12,9+(S.age-14));if(S.grade<want-1){S.grade=want;S.schoolQ=[]}if((S.schoolQ||[]).length>4)S.schoolQ=S.schoolQ.slice(-2)}
+function fixLoaded(){if(S&&!S.par&&S.char&&(S.cal||S.age)){const g=GUARD[S.char]||GUARDPOOL[0];S.par={...g,trust:60}}if(S&&S.crews)S.crews.forEach(c=>{c.str=Math.min(c.str,crewCap())});if(S&&S.cal&&S.school==='in'&&S.age){const want=Math.min(12,9+(S.age-14));if(S.grade<want-1){S.grade=want;S.schoolQ=[]}if((S.schoolQ||[]).length>4)S.schoolQ=S.schoolQ.slice(-2)}
   if(S&&S.home==='granny'){S.cap-=HOMES.granny.stash;S.home='couch'}
   if(S&&S.mode==='life'&&S.age<18&&S.home==='couch'&&!(S.fate&&S.fate.cut)){S.home='family';S.cap+=20}
   if(S&&!S.units){GOODS.forEach(g=>{S.cash+=Math.round(S.inv[g.id]*S.paid[g.id]);S.inv[g.id]=0;S.paid[g.id]=0;S.fake[g.id]=0;S.q[g.id]=50});S.units=1;roll()}
