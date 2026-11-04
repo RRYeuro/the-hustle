@@ -1329,8 +1329,23 @@ function lick(k){if(stuckHome())return;
     lickDone('Clerk had a bat',`You froze up and he came over the counter. −${dmg} health.`,false)});
   if(k==='house')return sneakGame((steps,woke)=>{
     if(woke)return alarmRun('Somebody\'s home','A floorboard creaked and the lights came on. They\'re calling 911.','You got away','Over the back fence and gone.');
-    const pay=rnd(800,3000);S.cash+=pay;S.heat=Math.min(100,S.heat+12);addXP(4);addStress(5);drawCard(.2,'In a dresser drawer,');
-    lickDone('Clean lick',`In and out without a sound. Jewelry and electronics pawned for ${money(pay)}.`,true)});
+    const teen=S.age&&S.age<18,r=Math.random(),type=r<.06?'empty':r<.62?'reg':r<.9||teen?'trap':'plug',L=[];
+    const cash=(a,b,t)=>{const v=rnd(a,b);L.push({t:t||`${money(v)} cash`,f:()=>{S.cash+=v}})},dr=(id,n)=>{const g2=G(id);L.push({t:`${id==='loud'&&n>=896?`${n/448} pounds (${n}g)`:amt(n,g2)} of ${g2.name}`,f:()=>{const room=Math.floor((S.cap-used())/g2.sp);const q=Math.max(0,Math.min(n,room));S.inv[id]+=q;return q<n?` (no room for ${amt(n-q,g2)})`:''}})},
+      gun=pool=>{if(teen)return cash(300,900,'a gun you pawned on the way out');const g2=pick(pool);L.push({t:`a ${GUNS[g2].name}`,f:()=>{S.guns=S.guns||{};if(S.guns[g2]||armed().includes(g2)){const v=Math.round(GUNS[g2].cost*.5);S.cash+=v;return ` (already had one, pawned it for ${money(v)})`}S.guns[g2]=1}})};
+    if(type==='reg'){cash(300,2500);cash(400,2500,'jewelry box (pawn)');if(Math.random()<.5)cash(200,900,'a game system and a TV (pawn)');if(Math.random()<.35)dr('loud',28);if(Math.random()<.15)gun(['pistol','revolver','smitty'])}
+    if(type==='trap'){cash(1500,teen?3000:6000);dr('loud',teen?112:448);if(Math.random()<.6)dr('snow',teen?28:pick([56,112,250]));if(Math.random()<.5)dr(pick(['bars','percs']),teen?50:pick([100,300]));if(Math.random()<.45)gun(['glizzy','smitty','shotgun','micro'])}
+    if(type==='plug'){cash(5000,20000);dr('loud',448*rnd(2,4));dr('snow',pick([250,500,1000]));dr(pick(['bars','percs']),500);gun(['micro','baby','draco','rifle']);if(Math.random()<.5)gun(['glizzy','switchy','shotgun'])}
+    if(type==='empty'){S.heat=Math.min(100,S.heat+6);addStress(4);return lickDone('Nothing here','You got in clean, but somebody already cleaned it out. Empty drawers, empty closets. Wasted trip.',false)}
+    L.sort(()=>Math.random()-.5);
+    const nm={reg:'Regular house',trap:'It\'s a trap house',plug:'You hit a plug\'s stash house'}[type];
+    modal(`<div class="sec" style="margin:0;color:${type==='plug'?'var(--accent)':'var(--money)'}">${type==='plug'?'Jackpot':'You\'re in'}</div><h2>${nm}</h2><p>You look around and see:</p><ul style="margin:0 0 8px 18px;padding:0">${L.map(x=>`<li>${x.t}</li>`).join('')}</ul><p class="s">Now get it out. Each grab gets one thing off that list, in the order you find it. Touch the window when somebody pulls up and you're caught out there.</p><div class="btns"><button class="btn go" id="gg0">Start grabbing</button></div>`);
+    $('gg0').onclick=()=>grabGame((got,alarm)=>{const take=L.slice(0,Math.min(got,L.length));const notes=take.map(x=>x.t+(x.f()||''));
+      const heat=type==='plug'?25:type==='trap'?16:12;S.heat=Math.min(100,S.heat+heat);addXP(type==='plug'?8:4);addStress(type==='plug'?12:6);if(type!=='reg')drawCard(.2,'Under the bed,');
+      if(type==='plug')S.rep+=5;
+      const list=take.length?`You got out with: ${notes.join(', ')}.`:'You froze up and got nothing.';
+      if(alarm)return alarmRun('Car pulled up',`Headlights hit the window. ${list} ${type!=='reg'?'And whoever runs this spot is gonna want it back.':''}`,'You got away','Over the back fence with the bag.');
+      lickDone(take.length?'Clean lick':'Empty handed',`${list}${take.length<L.length?` You left ${L.length-take.length} thing${L.length-take.length===1?'':'s'} behind.`:' Cleaned it out.'}`,take.length>0)},
+      {title:'Grab it and get out',txt:'Tap the bag when it shows up. If headlights hit the window, don\'t touch it.',icon:'💰',bad:'🚗',unit:'Grabbed',max:L.length,T:7000})});
   if(k==='strap'){if(S.age&&S.age<18){modal(`<h2>Not yet</h2><p>You too young to be running up on people with straps. Wait till you 18.</p><div class="btns"><button class="btn go" id="ok">Bet</button></div>`);$('ok').onclick=close;return}
     S.sp=S.sp||{};const NM=['Tay','Lil Ced','Boog','Rello','Big Quan','Kodie','Smoove','JJ','Pook','Dirty Red'],nm=pick(NM),P=S.sp[nm]=S.sp[nm]||{trust:0,burned:0};
     const pool=['smitty','glizzy','glizzy','revolver','shotgun','switchy','micro','micro','baby','rifle','draco','draco'];const g=P.g||(P.g=pick(pool)),G2=GUNS[g],fa=P.fa!==undefined?P.fa:(P.fa=AUTOK.includes(g)&&Math.random()<.3),cash=rnd(800,5000);
@@ -1367,16 +1382,16 @@ function lick(k){if(stuckHome())return;
     lickDone('He ghosted',"Your story didn't add up and he blocked you. Nothing happened.",false)});
 }
 /* lick mini games */
-function grabGame(done){
-  mgOn=true;let got=0,lit=-1,red=false,alarm=false;const T=8000,t0=performance.now(),redP=Math.max(.12,.3-(S.sk.smarts-3)*.02)+(stressed()?.05:0);
-  modal(`<h2>Grab and go</h2><p>Tap the shelves when a bag of pills shows up. Don't touch anything in front of the camera.</p>
+function grabGame(done,o){o=o||{};
+  mgOn=true;let got=0,lit=-1,red=false,alarm=false;const T=o.T||8000,t0=performance.now(),redP=Math.max(.12,.3-(S.sk.smarts-3)*.02)+(stressed()?.05:0);
+  modal(`<h2>${o.title||'Grab and go'}</h2><p>${o.txt||'Tap the shelves when a bag of pills shows up. Don\'t touch anything in front of the camera.'}</p>
     <div id="gg" style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px">${Array.from({length:9},(_,i)=>`<button class="btn" data-c="${i}" style="height:64px;font-size:24px"></button>`).join('')}</div>
     <p id="gs" style="text-align:center">Bags 0 · 8s</p>`);
   const cells=[...$('gg').children];
-  const show=()=>{cells.forEach(c=>{c.textContent='';c.style.background=''});lit=rnd(0,8);red=Math.random()<redP;cells[lit].textContent=red?'📷':'💊';cells[lit].style.background=red?'var(--blood)':'var(--money)'};
+  const show=()=>{cells.forEach(c=>{c.textContent='';c.style.background=''});lit=rnd(0,8);red=Math.random()<redP;cells[lit].textContent=red?(o.bad||'📷'):(o.icon||'💊');cells[lit].style.background=red?'var(--blood)':'var(--money)'};
   const fin=()=>{if(!mgOn)return;mgOn=false;clearInterval(iv);setTimeout(()=>done(got,alarm),200)};
-  const iv=setInterval(()=>{if(!mgOn||!$('gg'))return clearInterval(iv);const el=performance.now()-t0;if(el>=T)return fin();show();$('gs').textContent=`Bags ${got} · ${Math.ceil((T-el)/1000)}s`},Math.max(420,700-S.sk.smarts*15));
-  cells.forEach((c,i)=>c.onclick=()=>{if(!mgOn||i!==lit)return;if(red){alarm=true;return fin()}got++;lit=-1;c.textContent='';c.style.background='';$('gs').textContent=`Bags ${got}`});
+  const iv=setInterval(()=>{if(!mgOn||!$('gg'))return clearInterval(iv);const el=performance.now()-t0;if(el>=T)return fin();show();$('gs').textContent=`${o.unit||'Bags'} ${got}${o.max?' of '+o.max:''} · ${Math.ceil((T-el)/1000)}s`},Math.max(420,700-S.sk.smarts*15));
+  cells.forEach((c,i)=>c.onclick=()=>{if(!mgOn||i!==lit)return;if(red){alarm=true;return fin()}got++;lit=-1;c.textContent='';c.style.background='';$('gs').textContent=`${o.unit||'Bags'} ${got}${o.max?' of '+o.max:''}`;if(o.max&&got>=o.max)return fin()});
   show();
 }
 function seqGame(done){
