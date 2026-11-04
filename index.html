@@ -128,7 +128,7 @@ h1{font-family:var(--display);font-weight:400;font-size:34px;letter-spacing:.02e
   <div class="row" id="mission" style="border-color:var(--accent)"></div>
   <div class="sec late">What's happening</div>
   <div class="log late" id="log"></div>
-  <div class="btns late"><button class="btn" id="newgame">Menu</button><button class="btn" id="devbtn" style="border-color:var(--heat);color:var(--heat)">Dev</button><button class="btn go" id="retire" hidden>Retire and see your score</button></div>
+  <div class="btns late"><button class="btn" id="newgame">Menu</button><button class="btn go" id="retire" hidden>Retire and see your score</button></div>
   </div>
   <div class="main">
   <div class="tabs" role="tablist">
@@ -332,6 +332,8 @@ function render(){
   const o=S.owner[S.at];
   $('owner').innerHTML=o==='me'?'<span class="chip mine">Your turf</span>':o==='none'?'<span class="chip">Nobody\'s turf</span>':
     `<span class="chip" style="color:${cdef(o).color};border-color:${cdef(o).color}">${cdef(o).name} turf</span>`;
+  {const at=Math.round((S.att||[])[S.at]||0),jl=jsLeftAt(S.at),cr=o!=='me'&&o!=='none'?crew(o):null;
+   $('owner').innerHTML+=`<div class="ai" style="font-size:11px;line-height:1.35;margin-top:4px;color:var(--fg);opacity:.85;text-align:right;white-space:nowrap">Attention <b style="color:${at>=60?'var(--blood)':at>=30?'var(--accent)':'var(--fg)'}">${at>=60?'High':at>=30?'Some':'Low'}</b><br>Js got ${money(jl)}${cr?`<br>${cdef(o).name}: ${cr.ally||S.gang===o?'with you':cr.beef>=50?'want smoke':cr.respect>=60?'green light':'watching you'}`:''}</div>`}
   document.querySelectorAll('.tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.t===tab));{const n=[...document.querySelectorAll('.tabs button')].filter(b=>!b.hidden).length;document.querySelector('.tabs').style.setProperty('--tc',n<=6?n:Math.ceil(n/2))}
   {const nreq=(S.texts||[]).length;$('phtab').textContent=nreq?`Phone ${nreq}`:'Phone';}
   $('cardtab').textContent=S.hand.length?`Cards ${S.hand.length}`:'Cards';
@@ -511,7 +513,7 @@ function gangOwn(){modal(`<h2>Start your own gang</h2><p>$10,000 to get it going
   $('n').onclick=close;$('y').onclick=()=>{const nm=($('gn').value||'').trim()||`${CHARS.find(x=>x.id===S.char)?.name||'My'} Gang`;S.cash-=10000;S.myGang={name:nm,day:S.day};S.rep+=10;addXP(10);say(`Started your own gang: ${nm}.`);close()}}
 function paneCrew(){
   const turf=S.owner.filter(o=>o==='me').length, need=S.lvl*20;
-  return `<div class="row" style="flex-wrap:wrap"><div class="info"><div class="t">Level ${S.lvl} · ${S.pts} skill point${S.pts===1?'':'s'} to spend</div>
+  return `${(S.traits||[]).length?`<div class="row" style="flex-wrap:wrap"><div class="info"><div class="t">Traits</div><div class="s">${S.traits.map(id=>{const t=TRAITS.find(x=>x.id===id);return t?`<b>${t.name}</b>: ${t.sub.replace(' Can\'t be undone.','')}`:''}).join('<br>')}</div></div></div>`:''}<div class="row" style="flex-wrap:wrap"><div class="info"><div class="t">Level ${S.lvl} · ${S.pts} skill point${S.pts===1?'':'s'} to spend</div>
     <div class="s">XP ${S.xp} / ${need}. Earn XP from profit, fights, taking blocks, missions and mini games.</div><div class="bar"><i style="width:${S.xp/need*100}%;background:var(--accent)"></i></div></div></div>
    ${Object.keys(SKN).map(k=>`<div class="row" style="padding:8px 12px"><div class="info"><div class="t">${SKN[k]} <span style="font-family:var(--label);font-weight:700;color:var(--accent)">${S.sk[k]}</span>/10</div><div class="s">${SKD[k]}</div>
     <div class="bar"><i style="width:${S.sk[k]*10}%;background:var(--accent)"></i></div></div><button class="btn green" data-a="sk" data-k="${k}" ${S.pts>0&&S.sk[k]<10?'':'disabled'}>+1</button></div>`).join('')}
@@ -653,7 +655,38 @@ function paneUse(){if(!adult())return '';const have=GOODS.filter(g=>S.inv[g.id]>
   return `<div class="sec">Use your own stash</div>${S.buff&&S.buff.day===S.day?`<div class="row"><div class="info"><div class="t">On ${G(S.buff.id).name} today</div><div class="s"><span style="color:var(--money)">${DFX[S.buff.id].up}</span> <span style="color:var(--blood)">${DFX[S.buff.id].down}</span></div></div></div>`:''}
    ${(S.habit||0)>=6?`<div class="row" style="border-color:var(--blood)"><div class="info"><div class="t" style="color:var(--blood)">You're hooked</div><div class="s">Stress climbs every day you don't use. Go to the hospital on Northline to detox.</div></div></div>`:''}
    ${have.length?have.map(g=>`<div class="row" style="padding:8px 12px;flex-wrap:wrap"><div class="info" style="flex:1 1 200px;min-width:0"><div class="t">${g.name}</div><div class="s"><span style="color:var(--money)">${DFX[g.id].up}</span> <span style="color:var(--blood)">${DFX[g.id].down}</span></div></div><button class="btn" data-a="usedrug" data-g="${g.id}" ${S.buff&&S.buff.day===S.day?'disabled':''}>${S.buff&&S.buff.day===S.day?'Already on something':'Use 1'}</button></div>`).join(''):`<div class="row"><div class="info"><div class="s">Nothing in your stash to use. One thing at a time, once a day.</div></div></div>`}`}
-function addStress(n){S.stress=Math.max(0,Math.min(100,S.stress+n))}
+function addStress(n){if(n>0)n*=hasT('cold')?.7:hasT('hot')?1.3:1;S.stress=Math.max(0,Math.min(100,S.stress+n))}
+const hasT=t=>!!(S&&S.traits&&S.traits.includes(t));
+const TRAITS=[
+ {id:'tongue',name:'Silver Tongue',cost:4,sub:'+2 Talk. −1 Muscle.',sk:{talk:2,muscle:-1}},
+ {id:'built',name:'Built Different',cost:4,sub:'+2 Muscle. −1 Talk.',sk:{muscle:2,talk:-1}},
+ {id:'hustler',name:'Born Hustler',cost:4,sub:'+2 Hustle. −1 Luck.',sk:{hustle:2,luck:-1}},
+ {id:'nosey',name:'Nosey',cost:3,sub:'+1 Street Smarts. You catch people slipping way more (strap licks, robbing plugs). −1 Hustle.',sk:{smarts:1,hustle:-1}},
+ {id:'charm',name:'Lucky Charm',cost:3,sub:'+2 Luck. −1 Street Smarts.',sk:{luck:2,smarts:-1}},
+ {id:'cold',name:'Ice Cold',cost:3,sub:'Stress builds 30% slower. −1 Talk, people say you cold.',sk:{talk:-1}},
+ {id:'dayone',name:'Got a Day One',cost:4,sub:'Start with a loyal homie at 70 closeness who backs you up.'},
+ {id:'face',name:'Face Card',cost:3,sub:'+10 rep from the jump. But twelve already know your face: start with 20 heat.'},
+ {id:'sketchy',name:'Sketchy Past',cost:-4,sub:'+4 trait points. One crew already hates you and you start with 25 heat. Can\'t be undone.'},
+ {id:'hot',name:'Hothead',cost:-3,sub:'+3 trait points and +1 Muscle. Stress builds 30% faster.',sk:{muscle:1}},
+ {id:'brokestart',name:'Broke Start',cost:-2,sub:'+2 trait points. You start with $0.'},
+];
+function traitPick(after){const base=4;let pick=[];
+  const left=()=>base-pick.reduce((a,id)=>a+TRAITS.find(t=>t.id===id).cost,0);
+  const draw=()=>{const L=left();modal(`<h2>Pick your traits</h2><p>Everybody comes with something. Spend <b>${L}</b> point${L===1?'':'s'}. Bad traits give you more points to spend. Once you start, they're locked in.</p>
+    <div style="display:flex;flex-direction:column;gap:6px">${TRAITS.map(t=>{const on=pick.includes(t.id),can=on||(t.cost<=L)&&!(t.id==='cold'&&pick.includes('hot'))&&!(t.id==='hot'&&pick.includes('cold'));
+      return `<button class="btn ${on?'go':''}" data-tr="${t.id}" ${can?'':'disabled'} style="text-align:left;text-transform:none;letter-spacing:0;font-family:var(--body);padding:10px 12px;line-height:1.35;white-space:normal;width:100%"><b>${t.name}</b> <span style="opacity:.8">· ${t.cost>0?`costs ${t.cost}`:`gives ${-t.cost}`}</span><br><span style="font-weight:400;font-size:13px">${t.sub}</span></button>`}).join('')}</div>
+    <div class="btns"><button class="btn go" id="tgo">${pick.length?'Lock it in':'Skip, no traits'}</button></div>`);
+    $('mcard').querySelectorAll('[data-tr]').forEach(b=>b.onclick=()=>{const id=b.dataset.tr;pick=pick.includes(id)?pick.filter(x=>x!==id):[...pick,id];draw()});
+    $('tgo').onclick=()=>{applyTraits(pick);after()}};
+  draw()}
+function applyTraits(pick){S.traits=pick;pick.forEach(id=>{const t=TRAITS.find(x=>x.id===id);
+  if(t.sk)Object.entries(t.sk).forEach(([k,v])=>S.sk[k]=Math.max(1,Math.min(10,S.sk[k]+v)));
+  if(id==='dayone'){S.friends=S.friends||[];S.friends.push({name:pick2(['Dooley','Mook Jr','Tre','Kash','Bean']),trait:'loyal',role:'none',close:70})}
+  if(id==='face'){S.rep+=10;S.heat=Math.max(S.heat,20)}
+  if(id==='sketchy'){S.heat=Math.max(S.heat,25);const c=S.crews[Math.floor(Math.random()*S.crews.length)];if(c){c.beef=Math.max(c.beef,60);c.respect=Math.min(c.respect,5)}}
+  if(id==='brokestart')S.cash=0});
+  if(pick.length)say(`Traits: ${pick.map(id=>TRAITS.find(t=>t.id===id).name).join(', ')}.`);save()}
+const pick2=a=>a[Math.floor(Math.random()*a.length)];
 const stressed=()=>S.stress>=70;
 /* ---------- trap houses + workers ---------- */
 const WNAMES=['Rosa','Mateo','Chuy','Vinny','Kim','Tyler','Lupe','Sam','Pooh','Lil Mike','Ray Ray','Boo','Kesha','Tay','Juice','Peanut','Dre Dre','Nae Nae','Smurf','Bam','Quez','Tink','Low Low','Spank'];
@@ -1080,9 +1113,9 @@ function lifeCreate(){
 function startLife(ch){pendingDiff='normal';S=fresh(ch,'life');S.diff='normal';S.v5=1;S.safe=0;S.biz={};S.kids=[];S.fate={};teenStart(ch,14);S.cash=ch==='lucky'?1500:400;
   if(ch==='country')S.crews.forEach(c=>c.respect=10);if(ch==='lucky')S.ex=-1;
   roll();tab='block';S.slot=pendingSlot;say(YOUNG[ch]);save();
-  let seen=false;try{seen=localStorage.getItem('tl-tut')==='1'}catch(e){}
+  traitPick(()=>{let seen=false;try{seen=localStorage.getItem('tl-tut')==='1'}catch(e){}
   if(!seen)return tutorial(0,()=>{try{localStorage.setItem('tl-tut','1')}catch(e){}$('modal').hidden=true;render()});
-  $('modal').hidden=true;render()}
+  $('modal').hidden=true;render()})}
 function lifeCustom(){let fem=false,age=14;
   const draw=()=>{modal(`<h2>Start your life</h2><p>Make your own character. Under 18 you're in school, and relationships unlock at 18.</p>
     <label class="s" for="lname" style="color:var(--dim)">Name</label><input id="lname" maxlength="20" value="${$('lname')?$('lname').value:''}" placeholder="Your name" style="padding:10px;border-radius:6px;border:1px solid var(--line);background:#2a252e;color:var(--fg);font-size:16px">
@@ -1199,7 +1232,7 @@ function enemyHit(bi){const nm=plugName(bi),dmg=rnd(10,25),take=Math.round(S.cas
 function plugRob(bi){const P=PINFO[bi],nm=plugName(bi),her=plugFem(bi)?'her':'him';
   const pk=S.pk[bi]=S.pk[bi]||{},big=P.lvl==='Big',kn=S.known.includes(bi),cased=pk.cased&&S.day-pk.cased<=3;
   const trustB=kn?S.trust[bi]/100*(big?.1:.45):0;
-  const odds=Math.max(.05,Math.min(.95,.3+S.sk.muscle*.03+S.soldiers*.06-({Low:0,Mid:.1,Big:.35})[P.lvl]-(stressed()?.1:0)+(S.rob.mask?.05:0)+(big&&S.rob.car?.05:0)+trustB+(cased?.2:0)+girlB()));
+  const odds=Math.max(.05,Math.min(.95,.3+S.sk.muscle*.03+S.soldiers*.06-({Low:0,Mid:.1,Big:.35})[P.lvl]-(stressed()?.1:0)+(S.rob.mask?.05:0)+(big&&S.rob.car?.05:0)+trustB+(cased?.2:0)+girlB()+(hasT('nosey')?.05:0)));
   if(big&&S.soldiers<2){modal(`<h2>${nm} is too heavy</h2><p>Big plugs been through it all. ${nm} got shooters on the roof and cameras on every corner. You need at least 2 soldiers before you even think about it.</p><div class="btns"><button class="btn go" id="n">Got it</button></div>`);$('n').onclick=close;return}
   modal(`<h2>Rob ${nm}?</h2><p>${P.lvl} level plug${big?' with real security':''}. About <b>${Math.round(odds*100)}%</b> chance.</p>
     <p class="s" style="color:var(--dim)">${kn&&!big&&S.trust[bi]>=50?`${nm} trusts you, so ${plugFem(bi)?'she':'he'} won't see it coming. `:''}${big?`Big plugs don't slip, even for people they trust. ${cased?'You cased the spot, so you know the routine.':'Case the spot first to learn the routine (+20%).'}`:''}</p>
@@ -1349,7 +1382,7 @@ function lick(k){if(stuckHome())return;
   if(k==='strap'){if(S.age&&S.age<18){modal(`<h2>Not yet</h2><p>You too young to be running up on people with straps. Wait till you 18.</p><div class="btns"><button class="btn go" id="ok">Bet</button></div>`);$('ok').onclick=close;return}
     S.sp=S.sp||{};const NM=['Tay','Lil Ced','Boog','Rello','Big Quan','Kodie','Smoove','JJ','Pook','Dirty Red'],nm=pick(NM),P=S.sp[nm]=S.sp[nm]||{trust:0,burned:0};
     const pool=['smitty','glizzy','glizzy','revolver','shotgun','switchy','micro','micro','baby','rifle','draco','draco'];const g=P.g||(P.g=pick(pool)),G2=GUNS[g],fa=P.fa!==undefined?P.fa:(P.fa=AUTOK.includes(g)&&Math.random()<.3),cash=rnd(800,5000);
-    const slip=Math.random()<.15+S.sk.smarts*.05,base=Math.round(14+G2.str*1.6+(fa?4:0)),theirs=Math.max(8,Math.round(base*(slip?.7:1)-P.trust*.15));
+    const slip=Math.random()<.15+S.sk.smarts*.05+(hasT('nosey')?.2:0),base=Math.round(14+G2.str*1.6+(fa?4:0)),theirs=Math.max(8,Math.round(base*(slip?.7:1)-P.trust*.15));
     const where=pick(['outside the gas station','at the bus stop','flexing on IG Live','leaving the club','at the cookout']),fOdds=Math.min(.9,.15+S.sk.talk*.06+P.trust/200);
     modal(`${spPic(nm,110)}<div class="sec" style="margin:0;color:var(--blood)">High risk · high reward</div><h2>${nm}</h2><p>${nm} ${where} with a <b>${G2.name}${fa?' (full auto)':''}</b> on him and a fat knot in his pocket.${P.burned?' He knows your face. You took his last one.':P.trust>0?` Y'all cool. He trusts you (${P.trust}/100).`:''}${slip?' <b>He\'s slipping hard</b>, not watching nothing.':''}</p>
       <p class="s">Run up: his gun, his cash (~${money(cash)}), rep +6. Your strength ${myStr()} vs his ${theirs}. Lose and you get shot up.</p>
@@ -2035,7 +2068,7 @@ function qtyModal(kind,g,to,bl){if(to==='js'&&stuckHome())return;
       ${bl==='win'?`<p class="s" style="color:var(--money);font-size:13px">They bought it. The Js are paying top-line prices for your ${grade(S.q[g.id],g)}.</p>`:''}
       ${bl==='lose'?`<p class="s" style="color:var(--blood);font-size:13px">They ain't going for it. "That's ${grade(S.q[g.id],g)} at best." Now they want 20% off.</p>`:''}
       ${noCarry&&!js?`<p class="s" style="color:var(--accent);font-size:13px">${plugName(S.at)} don't carry ${g.name}, so ${plugFem(S.at)?'she':'he'} only pays 30% less to flip it. ${referral(g)||''}</p>`:''}
-      <p class="s" style="color:var(--dim);font-size:13px">${js?`The Js on ${BLOCKS[S.at]} got about ${money(jl)} left to spend today${checkDay()?'. It\'s the first of the month, so they paying 15% more':''}. `:''}${js?`The Js pay about 40% more, but it's loud: way more heat${crewHere()?(crew(S.owner[S.at]).respect>=60?`. The ${cdef(S.owner[S.at]).name} gave you the green light, but eat too good and they get jealous`:` and the ${cdef(S.owner[S.at]).name} get heated`):''}.`:`Wholesale to the plug. Less money, barely any heat, and it builds trust${crewHere()?` and respect with the ${cdef(S.owner[S.at]).name}`:''}.`}</p>`;
+      <p class="s" style="color:var(--dim);font-size:13px">${js?`The Js on ${BLOCKS[S.at]} got about ${money(jl)} left to spend today${checkDay()?'. It\'s the first of the month, so they paying 15% more':''}. `:''}${js&&((S.att||[])[S.at]||0)>=30?`<b style="color:var(--blood)">Attention on ${BLOCKS[S.at]} is ${((S.att||[])[S.at]||0)>=60?'high':'up'}, so serving here brings extra heat. Spread it out or let it cool off.</b> `:''}${js?`The Js pay about 40% more, but it's loud: way more heat${crewHere()?(crew(S.owner[S.at]).respect>=60?`. The ${cdef(S.owner[S.at]).name} gave you the green light, but eat too good and they get jealous`:` and the ${cdef(S.owner[S.at]).name} get heated`):''}.`:`Wholesale to the plug. Less money, barely any heat, and it builds trust${crewHere()?` and respect with the ${cdef(S.owner[S.at]).name}`:''}.`}</p>`;
   modal(`${drugPic(g.id,72).replace('flex:none','align-self:center')}<h2>${kind==='buy'?'Buy':'Sell'} ${g.name}${kind==='buy'&&of.v?`: ${of.v}`:kind==='sell'&&S.vn&&S.vn[g.id]?`: ${S.vn[g.id]}`:''}</h2><p>${js?'The Js pay':`${plugName(S.at)}'s price:`} <b>${money(p)}</b> each${card?` <span class="chip here">${kind==='buy'?'Plug Love −30%':'Hype Day +40%'}</span>`:''}</p>${gl}
     <div class="qty"><input type="range" id="q" min="${g.step}" max="${max}" step="${g.step}" value="${max}"><output id="qo">${amt(max,g)}</output></div>
     <div class="btns">${g.sizes.filter(z=>z[0]<=max||kind==='buy').map(z=>`<button class="btn" data-z="${z[0]}" ${z[0]>max?'disabled':''}>${z[1]}</button>`).join('')}<button class="btn" data-z="${max}">Max</button></div>
@@ -2075,7 +2108,7 @@ function qtyModal(kind,g,to,bl){if(to==='js'&&stuckHome())return;
       if(fk){S.fkKnown=S.fkKnown||{};if(S.fake[g.id]>0)S.fkKnown[g.id]=1;S.rep=Math.max(0,S.rep-3);say(`${fk} of that ${g.name} was ${FAKE[g.id]}. Customers barely paid and your rep took a hit.`)}
       if(S.inv[g.id]===0){S.paid[g.id]=0;S.q[g.id]=50;S.fake[g.id]=0}
       const o=S.owner[S.at];
-      if(js){S.heat=Math.min(100,S.heat+Math.ceil(n*g.sp/8/(is('shade')?2:1)*D().heat));
+      if(js){S.att=S.att||[0,0,0,0,0,0];const am=1+(S.att[S.at]||0)/100;S.att[S.at]=Math.min(100,(S.att[S.at]||0)+Math.ceil(n*g.sp/4)+4);S.heat=Math.min(100,S.heat+Math.ceil(n*g.sp/8/(is('shade')?2:1)*D().heat*am));
         if(crewHere()){const c=crew(o),vol=Math.ceil(n*g.sp/3);
           if(c.ally||S.gang===c.id){say(c.ally?`The ${cdef(o).name} share this block with you. Serve all you want.`:`This your set's block. Eat.`)}else if(c.respect>=60){c.envy=Math.min(100,c.envy+vol+3);say(c.envy>=70?`Some of the ${cdef(o).name} been looking at you sideways. You eating too good on their block.`:`The ${cdef(o).name} gave you the green light. No problem serving here.`)}
           else{c.beef=Math.min(100,c.beef+vol+5);c.respect=Math.max(0,c.respect-3);if(c.beef>=45)say(`The ${cdef(o).name} saw you serving the Js on their block.`)}}}
@@ -2087,7 +2120,7 @@ function qtyModal(kind,g,to,bl){if(to==='js'&&stuckHome())return;
 }
 
 /* ---------- day / events ---------- */
-function nextDay(){if(S.snakeIn&&S.soldiers>0&&Math.random()<.025){S.snakeIn--;S.soldiers--;const h=(S.gangHomies||[]).pop()||'One of your homies';S.heat=Math.min(100,S.heat+20);S.cash=Math.max(0,S.cash-Math.round(S.cash*.1));say(`${h} was a snake the whole time. Ran off with 10% of your cash and started talking to twelve. Heat +20.`)}if(!(S.swUntil>=S.day)&&Math.random()<.1)S.swUntil=S.day+2;
+function nextDay(){if(S.att)S.att=S.att.map(v=>Math.max(0,Math.round(v*.8-2)));if(S.snakeIn&&S.soldiers>0&&Math.random()<.025){S.snakeIn--;S.soldiers--;const h=(S.gangHomies||[]).pop()||'One of your homies';S.heat=Math.min(100,S.heat+20);S.cash=Math.max(0,S.cash-Math.round(S.cash*.1));say(`${h} was a snake the whole time. Ran off with 10% of your cash and started talking to twelve. Heat +20.`)}if(!(S.swUntil>=S.day)&&Math.random()<.1)S.swUntil=S.day+2;
   S.day++;
   const turf=S.owner.filter(o=>o==='me').length;
   if(turf){S.cash+=turf*300;}
@@ -2340,9 +2373,9 @@ function pickChar(mode='story',skip){
     const C=CHARS.find(c=>c.id===S.char);
     say(mode==='sandbox'?`${C.name} hit the streets in sandbox mode with ${money(S.cash)}.`:`${C.name}'s story starts freshman year. ${D().name} difficulty.`);say(mode==='story'?YOUNG[S.char]:C.story);
     S.slot=pendingSlot;save();
-    let seen=false;try{seen=localStorage.getItem('tl-tut')==='1'}catch(e){}
+    const go=()=>{let seen=false;try{seen=localStorage.getItem('tl-tut')==='1'}catch(e){}
     if(!seen)return tutorial(0,()=>{try{localStorage.setItem('tl-tut','1')}catch(e){}$('modal').hidden=true;render()});
-    $('modal').hidden=true;render()});
+    $('modal').hidden=true;render()};if(mode==='sandbox')return go();traitPick(go)});
 }
 function fixLoaded(){
   if(S&&S.home==='granny'){S.cap-=HOMES.granny.stash;S.home='couch'}
@@ -2659,9 +2692,7 @@ function mainMenu(canContinue){
   $('msnd').onclick=()=>{SND.sfx=!SND.sfx;sndSave();mainMenu(canContinue)};$('mmus').onclick=()=>{SND.music=!SND.music;sndSave();SND.music?musicStart():musicStop();mainMenu(canContinue)};
 }
 $('newgame').onclick=()=>mainMenu(!S.over);
-$('devbtn').onclick=()=>devPanel();
-(()=>{let on=false;try{if(location.hash.includes('dev'))localStorage.setItem('hustle-dev','1');on=localStorage.getItem('hustle-dev')==='1'}catch(e){}$('devbtn').hidden=!on;
-  let taps=0,tt=0;const h1=document.querySelector('header h1')||document.querySelector('h1');if(h1)h1.addEventListener('click',()=>{const n=Date.now();taps=n-tt<700?taps+1:1;tt=n;if(taps>=7){taps=0;on=!on;try{localStorage.setItem('hustle-dev',on?'1':'0')}catch(e){}$('devbtn').hidden=!on;say(on?'Dev mode on.':'Dev mode off.');if(S)render()}})})();
+
 start(false);render();if(S.over&&$('modal').hidden)checkEnd();
 </script>
 
