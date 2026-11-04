@@ -1809,7 +1809,7 @@ const custPic=(n,sz)=>CUSTPICS[n]?`<img src="${CUSTPICS[n]}" alt="" style="width
 const CNAMES=['Lil Kev','Big Mike','Lil Shorty','Pooh','Nikki','Dre','Jasmine','Coach','Uncle Ray','Tia','Marco','Stacy','Hector','Trey','Mama Jo','Wes','Lena','Bobby','Kim','Chase','Dwayne','Ashley','Rocky','Ebony'];
 function addCusto(name,gid,src){S.custos=S.custos||[];if(S.custos.length>=15||S.custos.some(c=>c.name===name))return;const g=G(gid);
   const size=g.unit==='g'?(gid==='snow'||gid==='kicks'?pick([1,3.5,7]):pick([3.5,7,14,28])):g.unit==='pills'?pick([5,10,20,50]):pick([1,2,4]);
-  S.custos.push({name,gid,size,loy:40,buys:0,last:S.day});say(`📱 ${name} saved your number. They want ${g.name}.`)}
+  S.custos.push({name,gid,size,loy:40,buys:0,last:S.day,uc:Math.random()<.07});say(`📱 ${name} saved your number. They want ${g.name}.`)}
 function custoPrice(c){const g=G(c.gid);return Math.round(street(g)*gmult(S.q[c.gid])*1.25*(1+c.loy/400))}
 function phoneDay(){S.custos=S.custos||[];S.texts=(S.texts||[]).filter(t=>{if(S.day-t.day>2){const c=S.custos[t.ci];if(c){c.loy=Math.max(0,c.loy-8)}return false}return true});
   S.custos.forEach((c,i)=>{if(S.texts.length<6&&!S.texts.some(t=>t.ci===i)&&Math.random()<.12+c.loy/500)S.texts.push({ci:i,day:S.day})});
@@ -1817,7 +1817,7 @@ function phoneDay(){S.custos=S.custos||[];S.texts=(S.texts||[]).filter(t=>{if(S.
   const n=(S.texts||[]).length;if(n)say(`📱 You got ${n} text${n===1?'':'s'} from your plays.`)}
 function serveCusto(ci,fromText,o){o=o||{};const c=S.custos[ci];if(!c)return;const g=G(c.gid),n=Math.min(Math.round(c.size*(o.mult||1)/g.step)*g.step||c.size,S.inv[c.gid]);
   if(n<g.step){if(fromText){say(`You ain't got no ${g.name} for ${c.name}.`)}else say(`You don't have ${g.name} to bring ${c.name}.`);render();return}
-  if(c.buys<2&&Math.random()<.03){busted();S.custos.splice(ci,1);S.texts=[];return lickDone('New number was the feds','That "new play" was undercover. Should have kept it to people you know.',false,true)}
+  if(c.uc&&c.buys<2&&Math.random()<.6){busted();S.custos.splice(ci,1);S.texts=[];return lickDone('New number was the feds','That "new play" was undercover. Should have kept it to people you know.',false,true)}
   const fk=Math.min(S.fake[c.gid],Math.round(n*S.fake[c.gid]/S.inv[c.gid]));S.fake[c.gid]-=fk;
   const each=Math.round(custoPrice(c)*(o.price||1)),got=Math.round((n-fk)*each+fk*each*.1);S.inv[c.gid]-=n;if(S.inv[c.gid]<=0){S.inv[c.gid]=0;S.paid[c.gid]=0;S.q[c.gid]=50;S.fake[c.gid]=0}
   const profit=got-S.paid[c.gid]*n;S.cash+=got;if(profit>0){S.st.profit+=profit;addXP(Math.floor(profit/500))}S.st.sold+=n*g.sp*5;S.heat=Math.min(100,S.heat+1);
@@ -1848,7 +1848,7 @@ function panePhone(){const C=S.custos||[],T=S.texts||[];
   h+=`<div class="sec">Contacts</div>`;
   h+=C.length?C.map((c,i)=>{const g=G(c.gid);return `<div class="row" style="flex-wrap:wrap;padding:8px 12px">${custPic(c.name,44)}<div class="info" style="flex:1 1 200px;min-width:0"><div class="t">${c.name} <span class="chip ${c.loy>=70?'mine':''}">${c.loy>=70?'Regular':c.loy>=40?'Buys sometimes':'Shaky'}</span></div>
       <div class="s">Wants ${amt(c.size,g)} of ${g.name} · bought ${c.buys} time${c.buys===1?'':'s'}</div><div class="bar"><i style="width:${c.loy}%;background:var(--money)"></i></div></div>
-      <div class="btns"><button class="btn" data-a="phit" data-i="${i}" ${c.hit===S.day||(c.last===S.day&&c.buys>0)||S.inv[c.gid]<g.step?'disabled':''}>${c.last===S.day&&c.buys>0?'Already copped today':c.tmr&&c.tmr<=S.day?'They said hit them today':'Hit them up'}</button><button class="btn" data-a="pdel" data-i="${i}">Delete</button></div></div>`}).join('')
+      <div class="btns"><button class="btn" data-a="phit" data-i="${i}" ${c.hit===S.day||(c.last===S.day&&c.buys>0)||S.inv[c.gid]<g.step?'disabled':''}>${c.last===S.day&&c.buys>0?'Already copped today':c.tmr&&c.tmr<=S.day?'They said hit them today':'Hit them up'}</button>${c.buys<2&&!c.ask?`<button class="btn" data-a="pask" data-i="${i}" ${S.rep>=40?'':'disabled'}>${S.rep>=40?'Ask around about them':'Ask around (need 40 rep)'}</button>`:''}<button class="btn" data-a="pdel" data-i="${i}">Delete</button></div>${c.ask?`<div class="s" style="font-weight:700;color:${c.ask==='cop'?'var(--blood)':'var(--money)'}">${c.ask==='cop'?'Word is they might be twelve.':'Word is they solid.'}</div>`:''}</div>`}).join('')
     :`<div class="row"><div class="info"><div class="s">No plays yet. Serve the Js, sell to your neighbors, or pass out your number and people will save it.</div></div></div>`;
   h+=`<div class="row"><div class="info"><div class="s" style="color:var(--dim)">Serve fakes and they find a new plug. New numbers could be undercover, so watch who you serve.</div></div></div>`;
   return h}
@@ -2135,6 +2135,8 @@ function qtyModal(kind,g,to,bl){if(to==='js'&&stuckHome())return;
     else{const fk=Math.min(S.fake[g.id],Math.round(n*S.fake[g.id]/S.inv[g.id]));S.fake[g.id]-=fk;
       const got=bl==='win'?n*p:(n-fk)*p+fk*Math.round(p*.15);
       if(bl==='win'&&Math.random()<.35){S.rep=Math.max(0,S.rep-1);say('A couple of the Js figured out it wasn\'t really top line. Rep −1.')}
+      if(js&&((S.att||[])[S.at]||0)>=30&&Math.random()<Math.min(.06,(((S.att||[])[S.at]||0)-20)/1000)){if(S.rep>=60){S.heat=Math.min(100,S.heat+5);$('modal').hidden=true;modal(`<h2 style="color:var(--money)">Somebody looked out</h2><p>Right before you served, one of the homies pulled you to the side: "That new J by the store? That's twelve. Don't touch him." Your rep got you that heads up.</p><div class="btns"><button class="btn go" id="ok">Good looking</button></div>`);$('ok').onclick=close;say('A homie warned you a J was undercover. Didn\'t serve him.');return}
+        busted();return lickDone('That J was twelve','One of the Js you served was undercover. Nobody warned you. People who got rep get a heads up.',false,true)}
       S.inv[g.id]-=n;S.cash+=got;if(js){S.jsLeft[S.at]=Math.max(0,jsLeftAt(S.at)-got);if(Math.random()<.15)addCusto(pick(CNAMES),g.id,'block')}const profit=got-S.paid[g.id]*n;S.st.sold+=n*g.sp*5;if(profit>0){S.st.profit+=profit;addXP(Math.floor(profit/500))}
       say(`${js?'Served the Js':'Sold '+plugName(S.at)}: ${amt(n,g)} of ${g.name} for ${money(got)} (${profit>=0?'+':''}${money(profit)}).`);
       if(fk){S.fkKnown=S.fkKnown||{};if(S.fake[g.id]>0)S.fkKnown[g.id]=1;S.rep=Math.max(0,S.rep-3);say(`${fk} of that ${g.name} was ${FAKE[g.id]}. Customers barely paid and your rep took a hit.`)}
@@ -2340,6 +2342,7 @@ function act(a,el){
   if(a==='pserve')return serveCusto(+el.dataset.i,true);
   if(a==='pignore'){const r=S.texts.splice(+el.dataset.i,1)[0];const c=S.custos[r.ci];if(c)c.loy=Math.max(0,c.loy-6);say(`Left ${c?c.name:'them'} on read.`)}
   if(a==='phit')return hitUp(+el.dataset.i);
+  if(a==='pask'){const c=S.custos[+el.dataset.i];const right=S.rep>=70||Math.random()<.8;c.ask=(c.uc===right)?'cop':'ok';say(c.ask==='cop'?`Asked around about ${c.name}. People saying they might be twelve.`:`Asked around about ${c.name}. People say they solid.`)}
   if(a==='pdel'){S.custos.splice(+el.dataset.i,1);S.texts=(S.texts||[]).filter(t=>t.ci!==+el.dataset.i).map(t=>({...t,ci:t.ci>+el.dataset.i?t.ci-1:t.ci}));say('Deleted the number.')}
   if(a==='punch')return punch();
   if(a==='laptop'){S.cash-=2000;S.scam.laptop=1;say('Set up the laptop. Ghost work unlocked.')}
