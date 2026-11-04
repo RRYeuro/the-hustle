@@ -878,7 +878,7 @@ function recordSong(diss,crewId){
     S.cash-=300;const title=diss?`${cdef(crewId).name} Can't Stand Me`:`${pick(TW1)} ${pick(TW2)}`;
     const gain=Math.round(q*(1+S.rap.hype/25)*4+(diss?300:0));
     S.rap.songs.push({title,q,day:S.day,diss:!!diss});S.rap.fans+=gain;S.rap.hype=Math.min(100,S.rap.hype+(diss?30:8));addXP(3);addStress(-5);
-    if(diss){const c=crew(crewId);c.beef=Math.min(100,c.beef+40);}
+    if(diss){const c=crew(crewId);c.beef=Math.min(100,c.beef+25);}
     say(`Dropped "${title}" (quality ${q}). +${gain} fans.`);
     modal(`<h2>"${title}" is out</h2><p>Quality <b>${q}/100</b>. ${q>=80?'This one is going crazy.':q>=50?'Solid song.':'Nobody is really feeling it.'}</p><p>+${gain.toLocaleString()} fans${diss?`. The ${cdef(crewId).name} heard it and they are not happy.`:''}</p>
       <div class="btns"><button class="btn go" id="ok">Continue</button></div>`);
@@ -1038,8 +1038,10 @@ function plugFavor(bi,k){const fm=plugFem(bi),he=fm?'she':'he',He=fm?'She':'He',
     return lickDone(`Handled it for ${nm}`,`You served ${his} people all night so ${he} didn't have to. ${He} gave you ${money(cut)}, trust +12, and ${he}'s telling the whole block you solid. Rep +5${homeCrew?`, and the ${cdef(o).name} respect you more`:''}.`,true,true)}
   const opps=S.crews.filter(c=>c.alive&&c.id!==o);if(!opps.length)return say(`${nm} got no opps left.`);
   const op=pick(opps),od=cdef(op.id),mine=myStr()+(S.fx.ride?12:0);S.fx.ride=0;
-  modal(`<h2>Slide on the ${od.name}</h2><p>${nm} been beefing with the ${od.name}. You slid on them for ${him}.</p><div class="btns"><button class="btn red" id="go">Pull up</button></div>`);
-  $('go').onclick=()=>fightGame(mine,Math.round(op.str*.7),`The ${od.name}`,win=>{S.heat=Math.min(100,S.heat+15);op.beef=Math.min(100,op.beef+30);addStress(10);
+  const squad=Math.round(Math.min(op.str*.7,10+S.lvl*4+Math.floor(S.rep/8)));
+  modal(`<h2>Slide on the ${od.name}</h2><p>${nm} been beefing with the ${od.name}. A few of them hang out by the corner store. You could slide on them for ${him}.</p><p class="s">Your strength ${mine} vs ${squad}.</p><div class="btns"><button class="btn red" id="go">Pull up</button><button class="btn" id="no">Nah</button></div>`);
+  $('no').onclick=close;
+  $('go').onclick=()=>fightGame(mine,squad,`The ${od.name}`,win=>{S.heat=Math.min(100,S.heat+15);op.beef=Math.min(100,op.beef+30);addStress(10);
     if(win){S.trust[bi]=Math.min(100,S.trust[bi]+20);op.str=Math.max(4,op.str-3);addXP(6);brag();S.st.fights++;
       say(`Spun on the ${od.name} for ${nm}. ${He} told the homies.`);
       return lickDone('You ran them off',`The ${od.name} scattered. ${nm} heard about it before you even got back, and ${he}'s telling everybody. Trust +20, rep +5${homeCrew?`, the ${cdef(o).name} respect you more`:''}. The ${od.name} won't forget though.`,true,true)}
@@ -1439,7 +1441,7 @@ function grabGame(done,o){o=o||{};
   mgOn=true;let got=0,lit=-1,red=false,alarm=false;const T=o.T||8000,t0=performance.now(),redP=Math.max(.12,.3-(S.sk.smarts-3)*.02)+(stressed()?.05:0);
   modal(`<h2>${o.title||'Grab and go'}</h2><p>${o.txt||'Tap the shelves when a bag of pills shows up. Don\'t touch anything in front of the camera.'}</p>
     <div id="gg" style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px">${Array.from({length:9},(_,i)=>`<button class="btn" data-c="${i}" style="height:64px;font-size:24px"></button>`).join('')}</div>
-    <p id="gs" style="text-align:center">Bags 0 · 8s</p>`);
+    <p id="gs" style="text-align:center">Bags 0 · 8s</p><p class="s" style="text-align:center;color:var(--dim);font-size:12px">Keyboard: Q W E / A S D / Z X C, or the number pad.</p>`);
   const cells=[...$('gg').children];
   const show=()=>{cells.forEach(c=>{c.textContent='';c.style.background=''});lit=rnd(0,8);red=Math.random()<redP;cells[lit].textContent=red?(o.bad||'📷'):(o.icon||'💊');cells[lit].style.background=red?'var(--blood)':'var(--money)'};
   const fin=()=>{if(!mgOn)return;mgOn=false;clearInterval(iv);setTimeout(()=>done(got,alarm),200)};
@@ -1449,14 +1451,14 @@ function grabGame(done,o){o=o||{};
 }
 function seqGame(done){
   mgOn=true;const A=['◀','▲','▶','▼'],n=4+(S.lvl>=6?1:0),seq=Array.from({length:n},()=>rnd(0,3));let i=0;const lim=4000+S.sk.muscle*300-(stressed()?800:0);
-  modal(`<h2>Stick up the register</h2><p>Memorize the moves, then hit them in order before the clerk reacts.</p>
+  modal(`<h2>Stick up the register</h2><p>Memorize the moves, then hit them in order before the clerk reacts. On a keyboard, use the arrow keys.</p>
     <p id="sq" style="text-align:center;font-size:40px;letter-spacing:8px;min-height:48px">${seq.map(x=>A[x]).join(' ')}</p>
     <div class="bar"><i id="sb" style="width:100%;background:var(--accent)"></i></div>
     <div class="btns" style="justify-content:center">${A.map((x,j)=>`<button class="btn go" data-k="${j}" style="font-size:22px;padding:12px 20px" disabled>${x}</button>`).join('')}</div>`);
   const btns=[...$('mcard').querySelectorAll('[data-k]')];let t0=0,raf;
   const fin=ok=>{if(!mgOn)return;mgOn=false;cancelAnimationFrame(raf);setTimeout(()=>done(ok),250)};
   setTimeout(()=>{if(!mgOn||!$('sq'))return;$('sq').textContent='? '.repeat(n).trim();btns.forEach(b=>b.disabled=false);t0=performance.now();
-    const tick=t=>{if(!mgOn)return;const left=1-(t-t0)/lim;$('sb').style.width=Math.max(0,left*100)+'%';if(left<=0)return fin(false);raf=requestAnimationFrame(tick)};raf=requestAnimationFrame(tick)},1600+S.sk.smarts*100);
+    const tick=t=>{if(!mgOn||!$('sb'))return;const left=1-(t-t0)/lim;$('sb').style.width=Math.max(0,left*100)+'%';if(left<=0)return fin(false);raf=requestAnimationFrame(tick)};raf=requestAnimationFrame(tick)},1600+S.sk.smarts*100);
   btns.forEach(b=>b.onclick=()=>{if(!mgOn)return;if(+b.dataset.k!==seq[i])return fin(false);i++;$('sq').textContent=seq.slice(0,i).map(x=>A[x]).join(' ')+' '+'? '.repeat(n-i);if(i>=n)fin(true)});
 }
 function sneakGame(done){
@@ -1473,7 +1475,7 @@ function sneakGame(done){
 }
 function talkGame(done){
   const R=[
-    {q:'"Is the gun still available? What is it?"',a:[['Yeah, Glock 19, clean. Barely used.',0],['It shoots, that\'s all you need to know.',2],['Uh, a pistol. A black one.',1]]},
+    {q:'"Is the gun still available? What is it?"',a:[['Yeah, a 9, clean. Barely used.',0],['It shoots, that\'s all you need to know.',2],['Uh, a pistol. A black one.',1]]},
     {q:'"Can you send a video of it first?"',a:[['I don\'t do videos, too hot. You\'ll see it in person.',0],['My phone broke.',2],['Maybe later, I\'m busy.',1]]},
     {q:'"Bet. Meet at the gas station on Main by the cameras?"',a:[['Nah, too many cameras. Back of the park.',0],['Wherever, I don\'t care.',1],['I\'ll send you my address.',2]]},
   ];
@@ -2183,7 +2185,7 @@ function event(){
   if(guardianEvent())return;
   // rival hits first
   const angry=S.crews.filter(c=>c.alive&&c.beef>=45&&!c.ally&&S.gang!==c.id).sort((a,b)=>b.beef-a.beef)[0];
-  if(angry&&Math.random()<angry.beef/130*(rankAt(5)?.5:1)*D().risk)return ambush(angry);
+  if(angry&&!(S.ambCD>S.day)&&Math.random()<Math.min(.22,angry.beef/300)*(rankAt(5)?.5:1)*D().risk){S.ambCD=S.day+3;return ambush(angry)}
   if(S.cash>600&&Math.random()<.035*D().risk*(S.cash>5000?1.6:1))return jackboys();
   if(Math.random()<S.heat/160*D().risk*((S.friends||[]).some(f=>f.close>=80)?.85:1)*(S.job?.8:1)*(S.school==='in'?.8:1))return cops();
   const en=Object.keys(S.enemies||{}).map(Number).find(bi=>S.burned[bi]);if(en!==undefined&&Math.random()<.15)return enemyHit(en);
@@ -2423,6 +2425,14 @@ function start(reset){
   if(!S){S=fresh();S.ph=1;roll();mainMenu(false)}
 }
 document.querySelector('.tabs').onclick=e=>{const b=e.target.closest('button');if(b){tab=b.dataset.t;render();if(innerWidth<900){const pn=$('pane'),y=pn.getBoundingClientRect().top+scrollY-8;if(Math.abs(scrollY-y)>40)scrollTo({top:y,behavior:'smooth'})}}};
+// keyboard for the tap mini games: arrows for the register, 1-9 / QWE-ASD-ZXC for grab, 1-3 for DM answers
+document.addEventListener('keydown',e=>{if(e.repeat||$('modal').hidden)return;const tg=e.target;if(tg&&/INPUT|TEXTAREA|SELECT/.test(tg.tagName))return;const mc=$('mcard');
+  const arr={ArrowLeft:0,ArrowUp:1,ArrowRight:2,ArrowDown:3}[e.key];
+  if(arr!==undefined){const b=mc.querySelector(`[data-k="${arr}"]`);if(b&&!b.disabled&&b.closest('.btns')&&mc.querySelector('#sq')){e.preventDefault();b.click();return}}
+  const gk='qweasdzxc'.indexOf(e.key.toLowerCase()),nk=/^[1-9]$/.test(e.key)?+e.key-1:-1;
+  if(mc.querySelector('#gg')){const ix=gk>=0?gk:nk>=0?[6,7,8,3,4,5,0,1,2][nk]:-1;if(ix>=0){const c=mc.querySelector(`[data-c="${ix}"]`);if(c){e.preventDefault();c.click();return}}}
+  if(nk>=0&&nk<3){const j=mc.querySelector(`[data-j="${nk}"]`);if(j&&!j.disabled){e.preventDefault();j.click();return}}
+});
 document.addEventListener('keydown',e=>{if((e.key!==' '&&e.key!=='Enter')||e.repeat)return;if($('modal').hidden)return;const tg=e.target;if(tg&&/INPUT|TEXTAREA|SELECT/.test(tg.tagName))return;
   const b=['sh','sp','st','rl'].map(id=>$('mcard').querySelector('#'+id)).find(x=>x&&!x.disabled&&x.offsetParent);if(!b)return;e.preventDefault();if(document.activeElement&&document.activeElement.blur)document.activeElement.blur();b.click()});
 
