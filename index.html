@@ -1332,17 +1332,33 @@ function lick(k){if(stuckHome())return;
     const pay=rnd(800,3000);S.cash+=pay;S.heat=Math.min(100,S.heat+12);addXP(4);addStress(5);drawCard(.2,'In a dresser drawer,');
     lickDone('Clean lick',`In and out without a sound. Jewelry and electronics pawned for ${money(pay)}.`,true)});
   if(k==='strap'){if(S.age&&S.age<18){modal(`<h2>Not yet</h2><p>You too young to be running up on people with straps. Wait till you 18.</p><div class="btns"><button class="btn go" id="ok">Bet</button></div>`);$('ok').onclick=close;return}
-    const pool=['smitty','glizzy','glizzy','revolver','shotgun','switchy','micro','micro','baby','rifle','draco','draco'];const g=pick(pool),G2=GUNS[g],fa=AUTOK.includes(g)&&Math.random()<.3,cash=rnd(800,5000),
-      who=pick(['A dude outside the gas station','An opp at the bus stop','A youngin flexing on IG Live','A dude leaving the club','A shooter from across town']),theirs=Math.round(14+G2.str*1.6+(fa?4:0));
-    modal(`<div class="sec" style="margin:0;color:var(--blood)">High risk · high reward</div><h2>${who}</h2><p>He got a <b>${G2.name}${fa?' (full auto)':''}</b> on him and a fat knot in his pocket. He ain't paying attention, but he's dangerous. You can run up on him or let it go.</p><p class="s">Win: his gun, his cash (~${money(cash)}), rep +6. Lose: you get shot up, he might take your gun, and twelve might pull up.</p><p class="s" style="color:var(--dim)">Your strength ${myStr()} vs his ${theirs}.</p><div class="btns"><button class="btn red" id="y">Run up on him</button><button class="btn" id="n">Let it go</button></div>`);
+    S.sp=S.sp||{};const NM=['Tay','Lil Ced','Boog','Rello','Big Quan','Kodie','Smoove','JJ','Pook','Dirty Red'],nm=pick(NM),P=S.sp[nm]=S.sp[nm]||{trust:0,burned:0};
+    const pool=['smitty','glizzy','glizzy','revolver','shotgun','switchy','micro','micro','baby','rifle','draco','draco'];const g=P.g||(P.g=pick(pool)),G2=GUNS[g],fa=P.fa!==undefined?P.fa:(P.fa=AUTOK.includes(g)&&Math.random()<.3),cash=rnd(800,5000);
+    const slip=Math.random()<.15+S.sk.smarts*.05,base=Math.round(14+G2.str*1.6+(fa?4:0)),theirs=Math.max(8,Math.round(base*(slip?.7:1)-P.trust*.15));
+    const where=pick(['outside the gas station','at the bus stop','flexing on IG Live','leaving the club','at the cookout']),fOdds=Math.min(.9,.15+S.sk.talk*.06+P.trust/200);
+    modal(`<div class="sec" style="margin:0;color:var(--blood)">High risk · high reward</div><h2>${nm}</h2><p>${nm} ${where} with a <b>${G2.name}${fa?' (full auto)':''}</b> on him and a fat knot in his pocket.${P.burned?' He knows your face. You took his last one.':P.trust>0?` Y'all cool. He trusts you (${P.trust}/100).`:''}${slip?' <b>He\'s slipping hard</b>, not watching nothing.':''}</p>
+      <p class="s">Run up: his gun, his cash (~${money(cash)}), rep +6. Your strength ${myStr()} vs his ${theirs}. Lose and you get shot up.</p>
+      ${P.burned?'':`<p class="s">Finesse: just ask to see it. No gun drawn, no fight. Talk ${S.sk.talk}/10 · ${Math.round(fOdds*100)}% he hands it over.</p>`}
+      <p class="s" style="color:var(--dim)">Smarts helps you catch him slipping. Trust from giving it back makes everything easier with him later.</p>
+      <div class="btns"><button class="btn red" id="y">Run up on him</button>${P.burned?'':'<button class="btn go" id="fz">Finesse him</button>'}<button class="btn" id="n">Let it go</button></div>`);
     $('n').onclick=close;
-    $('y').onclick=()=>fightGame(myStr(),theirs,who,win=>{S.heat=Math.min(100,S.heat+14);addStress(12);
-      if(win){S.guns=S.guns||{};const dup=S.guns[g]||armed().includes(g);let extra='';
-        if(dup){const v=Math.round(G2.cost*.6);S.cash+=v;extra=` You already had one, so you flipped it for ${money(v)}.`}else{S.guns[g]=1;if(fa){S.auto=S.auto||{};S.auto[g]=1}}
-        S.cash+=cash;S.rep+=6;addXP(6);return lickDone('Took his strap',`You caught him slipping and walked off with his ${G2.name.toLowerCase()}${fa&&!dup?' (full auto)':''} and ${money(cash)}.${extra} Rep +6.`,true)}
+    const take=()=>{S.guns=S.guns||{};const dup=S.guns[g]||armed().includes(g);if(dup){const v=Math.round(G2.cost*.6);S.cash+=v;return ` You already had one, so you flipped it for ${money(v)}.`}S.guns[g]=1;if(fa){S.auto=S.auto||{};S.auto[g]=1}return ''};
+    const runUp=(str)=>fightGame(myStr(),str,nm,win=>{S.heat=Math.min(100,S.heat+14);addStress(12);
+      if(win){const extra=take();S.cash+=cash;S.rep+=6;addXP(6);P.burned=1;P.trust=0;P.g=null;P.fa=undefined;return lickDone('Took his strap',`You caught ${nm} slipping and walked off with his ${G2.name.toLowerCase()}${fa?' (full auto)':''} and ${money(cash)}.${extra} Rep +6.`,true)}
       const dmg=rnd(30,60);S.hp-=dmg;S.rep=Math.max(0,S.rep-4);let lost='';const mine=Object.keys(S.guns||{});if(mine.length&&Math.random()<.55){const l=pick(mine);delete S.guns[l];if(S.auto)delete S.auto[l];houndGone();lost=` He took your ${GUNS[l].name.toLowerCase()} too.`}
-      if(S.hp>0&&Math.random()<.2){busted();return lickDone('He pulled first',`He saw you coming and let it fly. −${dmg} health.${lost} Shots fired brought twelve, and they snatched you up.`,false)}
-      lickDone('He pulled first',`He saw you coming and let it fly. −${dmg} health, rep −4.${lost}`,false)});return}
+      if(S.hp>0&&Math.random()<.2){busted();return lickDone('He pulled first',`${nm} saw you coming and let it fly. −${dmg} health.${lost} Shots fired brought twelve, and they snatched you up.`,false)}
+      lickDone('He pulled first',`${nm} saw you coming and let it fly. −${dmg} health, rep −4.${lost}`,false)});
+    $('y').onclick=()=>runUp(theirs);
+    if($('fz'))$('fz').onclick=()=>{const line=pick(['"Damn, that\'s hard. Lemme see that."','"Bro where you got that from? Let me hold it real quick."','"That\'s the new one? Let me see how it feel."']);
+      if(Math.random()>=fOdds){addStress(6);modal(`<h2>${nm} ain't going for it</h2><p>You said ${line} He looked at you sideways and put his hand on it. "Nah, you good." He's on alert now.</p><div class="btns"><button class="btn red" id="y2">Run up anyway</button><button class="btn" id="n2">Walk off</button></div>`);
+        $('y2').onclick=()=>runUp(Math.round(theirs*1.25));$('n2').onclick=()=>lickDone('Walked off','You played it off and left. No gun, no smoke.',false,true);return}
+      const noClip=Math.random()<.45;
+      modal(`<h2>He put it in your hand</h2><p>You said ${line} ${nm} laughed and handed you the ${G2.name.toLowerCase()}${noClip?'. <b>He dropped the clip first.</b> Smart. It\'s empty':''}.</p><p class="s">Steal it and ${nm} is an opp forever.${noClip?' You\'d need Unc to get you a clip before it\'s any use.':''} Give it back and he trusts you more, which makes robbing him later way easier.</p>
+        <div class="btns"><button class="btn red" id="st">Take off with it</button><button class="btn go" id="gb">Give it back</button></div>`);
+      $('st').onclick=()=>{S.heat=Math.min(100,S.heat+8);addStress(8);const extra=take();if(noClip&&!extra){S.noClip=S.noClip||{};S.noClip[g]=1}P.burned=1;P.trust=0;P.g=null;P.fa=undefined;S.rep+=noClip?1:4;addXP(4);
+        lickDone('Gone with it',`You took off before ${nm} could blink.${noClip?` It's empty though. Unc on The Bottom can get you a clip.`:''}${extra} ${nm} is gonna be looking for you.`,true)};
+      $('gb').onclick=()=>{P.trust=Math.min(100,P.trust+25);addXP(2);S.rep+=1;lickDone('Gave it back',`You looked it over and handed it back. "That's clean, bro." ${nm} trusts you more now (${P.trust}/100). Next time you see him, he'll be easier to finesse, and he won't see it coming if you decide to rob him.`,true,true)}};
+    return}
   if(k==='scam')return talkGame(sus=>{
     if(Math.random()<.1+sus*.03-S.sk.talk*.005-girlB()){busted();return lickDone('It was a setup','The "buyer" was undercover. Should have known.',false)}
     if(sus<=1){const pay=rnd(600,1800);S.cash+=pay;S.rep+=2;S.heat=Math.min(100,S.heat+10);addXP(3);addStress(5);
@@ -1656,8 +1672,8 @@ draco:{name:'Drako',cost:7500,str:17,heat:12,mag:30,rad:26,rel:1100,sub:'The big
 hound:{name:'Bloodhound',cost:0,str:24,heat:0,mag:40,rad:32,rel:900,burst:3,myth:1,sub:'Mythical. All black Drako, full auto from the factory. Only real ones hold this.'}};
 const AUTOK=['micro','baby','rifle','draco'],autoFee=k=>Math.max(3000,Math.round(GUNS[k].cost*.6));
 const isAuto=k=>!!(GUNS[k]&&(GUNS[k].burst||(S.auto||{})[k]));
-const gStr=k=>GUNS[k]?GUNS[k].str+((S.auto||{})[k]?3:0):0;
-const gName=k=>GUNS[k].name+((S.auto||{})[k]?' (full auto)':'');
+const gStr=k=>GUNS[k]&&!(S.noClip||{})[k]?GUNS[k].str+((S.auto||{})[k]?3:0):0;
+const gName=k=>GUNS[k].name+((S.auto||{})[k]?' (full auto)':'')+((S.noClip||{})[k]?' (no clip)':'');
 function houndGone(){if(S.hound&&!S.houndLost&&!(S.guns||{}).hound&&!(S.armed||[]).includes('hound')){S.houndLost=1;say('The Bloodhound is gone for good. It was a 1 of 1.')}}
 function houndReveal(){S.hound=1;S.guns=S.guns||{};S.guns.hound=1;say('Unlocked the mythical Bloodhound. 20 bodies.');
   modal(`<div class="sec" style="margin:0;color:var(--accent)">Mythical unlocked</div><h2>The Bloodhound</h2><p>Word got around. Twenty bodies and your name ring bells. Unc called you to the back of the tire shop and pulled a case from under the floor.</p><p>All black Drako. Full auto from the factory. <b>+24 strength</b>, 40 in the clip, every tap sprays 3. "This one ain't for sale. It picks who holds it. It's a 1 of 1. Lose it and it's gone forever."</p><div class="btns"><button class="btn go" id="ok">It's mine</button></div>`);$('ok').onclick=()=>{close();render()}}
@@ -1677,6 +1693,8 @@ function paneGuns(){const here=S.at===2;
   const g=S.guns||{},semi=g.glizzy?'glizzy':g.smitty?'smitty':null,fee=2800;
   h+=swIn()?`<div class="row" style="padding:8px 12px;border-color:var(--accent)"><div class="info"><div class="t">Unc got switches in <span class="chip here">Rare</span></div><div class="s">"Don't ask where I got 'em. They ain't gon' be here long."${semi&&!g.switchy?` Unc can put one on your ${GUNS[semi].name} for a healthy fee.`:''}</div></div>${semi&&!g.switchy?`<button class="btn green" data-a="swput" data-k="${semi}" ${S.cash>=fee?'':'disabled'}>Make it full auto ${money(fee)}</button>`:''}</div>`
     :`<div class="row" style="padding:8px 12px"><div class="info"><div class="s">No switches right now. Unc only gets 'em in every once in a while. Check back.</div></div></div>`;
+  const nc=Object.keys(S.noClip||{}).filter(k=>g[k]||armed().includes(k));
+  if(nc.length)h+=`<div class="row" style="padding:8px 12px;flex-wrap:wrap;gap:6px"><div class="info" style="flex:1 1 200px;min-width:0"><div class="t">Get a clip</div><div class="s">An empty gun don't count in a fight. Unc got clips for anything.</div></div>${nc.map(k=>`<button class="btn green" data-a="clip" data-k="${k}" ${S.cash>=400?'':'disabled'}>${GUNS[k].name} $400</button>`).join('')}</div>`;
   const autos=AUTOK.filter(k=>g[k]&&!(S.auto||{})[k]);
   if(autos.length)h+=`<div class="row" style="padding:8px 12px;flex-wrap:wrap;gap:6px"><div class="info" style="flex:1 1 200px;min-width:0"><div class="t">Make it full auto</div><div class="s">Everything comes semi. Unc can only make rifles go full: Micro ARP, Baby Drako, Rifle, Drako. +3 strength and it sprays in a shootout. Healthy fee.</div></div>${autos.map(k=>`<button class="btn green" data-a="autogun" data-k="${k}" ${S.cash>=autoFee(k)?'':'disabled'}>${GUNS[k].name} ${money(autoFee(k))}</button>`).join('')}</div>`;
   h+=S.houndLost?`<div class="row" style="padding:8px 12px"><div class="info"><div class="t">The Bloodhound <span class="chip">Gone for good</span></div><div class="s">It was a 1 of 1. You'll never see it again.</div></div></div>`:S.hound?'':`<div class="row" style="padding:8px 12px;border-color:var(--accent)"><div style="width:56px;height:56px;border-radius:6px;flex:none;background:repeating-linear-gradient(45deg,#222 0 6px,#111 6px 12px);display:flex;align-items:center;justify-content:center;font-family:var(--label);font-weight:800;color:var(--accent);font-size:22px">???</div><div class="info" style="min-width:0"><div class="t" style="letter-spacing:2px">??? ??????? <span class="chip here">Mythical</span></div><div class="s" style="filter:blur(3px);user-select:none">+?? strength · ?? in the clip · ???????</div><div class="s">Unlock: drop 20 bodies in shootouts. <b>${Math.min(20,S.bodies||0)}/20</b></div><div class="bar"><i style="width:${Math.min(100,(S.bodies||0)*5)}%;background:var(--accent)"></i></div></div></div>`;
@@ -2141,7 +2159,7 @@ function cops(){
   if($('b'))$('b').onclick=()=>{S.cash-=bribe;S.heat=Math.max(0,S.heat-15);say(`Paid the dirty cop ${money(bribe)}. He said he'll see you next week.`);close()};
 }
 function busted(){addStress(20);if(S.fx.lawyer){if(Object.keys(S.guns||{}).length)say('Lawyer got the gun charge thrown out too.');S.fx.lawyer=0;S.heat=Math.max(0,S.heat-20);say('Got jammed up, but your lawyer had you out in an hour. Lost nothing.');return}
-  if(Object.keys(S.guns||{}).length){S.guns={};S.auto={};houndGone();addStress(10);say('They found your gun too. It\'s gone, and that\'s another charge.')}
+  if(Object.keys(S.guns||{}).length){S.guns={};S.auto={};S.noClip={};houndGone();addStress(10);say('They found your gun too. It\'s gone, and that\'s another charge.')}
   const fine=Math.round(S.cash*.35);S.cash-=fine;GOODS.forEach(g=>S.inv[g.id]=0);S.heat=Math.max(0,S.heat-30);S.hp-=5;
   say(`Got jammed up. Lost your whole stash and ${money(fine)}.`);
   S.strikes=(S.strikes||0)+1;const teen=S.age&&S.age<18,place=teen?'juvie':'county';
@@ -2219,6 +2237,7 @@ function act(a,el){
       say(`${f.name} is in ${gname} now. +1 soldier, no hiring fee.`);modal(`<h2>${f.name} is in</h2><p>"Say less. I been waiting on you to ask." ${f.name} is part of ${esc(gname)} now and rides as one of your soldiers. You still pay the daily cut, but no hiring fee.</p>${f.trait==='snake'?'<p class="s" style="color:var(--dim)">You ever really trust them though?</p>':''}<div class="btns"><button class="btn go" id="ok">Welcome</button></div>`);$('ok').onclick=close;if(f.trait==='snake')S.snakeIn=(S.snakeIn||0)+1;return render()}
     f.close=Math.max(0,f.close-5);say(`${f.name} said nah to joining ${gname}.`);modal(`<h2>${f.name} said nah</h2><p>${pick(['"I fuck with you, but I ain\'t tryna be in all that."','"My mama would kill me. I\'m good."','"Gang life ain\'t for me. I\'ll still pull up for you though."','"Ask me again when it\'s really paying."'])}</p><div class="btns"><button class="btn go" id="ok">Bet</button></div>`);$('ok').onclick=close;return render()}
   if(a==='fcut'){const f=S.friends.splice(+el.dataset.i,1)[0];say(`Cut ${f.name} off.`)}
+  if(a==='clip'){if(S.cash<400)return;S.cash-=400;delete S.noClip[el.dataset.k];say(`Unc got you a clip for the ${GUNS[el.dataset.k].name.toLowerCase()}. It's live now.`)}
   if(a==='autogun'){const k=el.dataset.k,f=autoFee(k);if(S.cash<f)return;S.cash-=f;S.auto=S.auto||{};S.auto[k]=1;S.heat=Math.min(100,S.heat+5);say(`Unc made your ${GUNS[k].name} full auto for ${money(f)}. "Don't tell nobody I did that."`)}
   if(a==='givegun'){const k=el.dataset.k;delete S.guns[k];armed().push(k);say(`Passed the ${GUNS[k].name.toLowerCase()} to one of your soldiers. He's strapped now.`)}
   if(a==='ungun'){const i=+el.dataset.k,k=armed()[i];if(k&&!(S.guns||{})[k]){S.armed.splice(i,1);S.guns=S.guns||{};S.guns[k]=1;say(`Took the ${GUNS[k].name.toLowerCase()} back.`)}}
