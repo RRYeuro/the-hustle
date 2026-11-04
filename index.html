@@ -656,6 +656,10 @@ function paneUse(){if(!adult())return '';const have=GOODS.filter(g=>S.inv[g.id]>
    ${(S.habit||0)>=6?`<div class="row" style="border-color:var(--blood)"><div class="info"><div class="t" style="color:var(--blood)">You're hooked</div><div class="s">Stress climbs every day you don't use. Go to the hospital on Northline to detox.</div></div></div>`:''}
    ${have.length?have.map(g=>`<div class="row" style="padding:8px 12px;flex-wrap:wrap"><div class="info" style="flex:1 1 200px;min-width:0"><div class="t">${g.name}</div><div class="s"><span style="color:var(--money)">${DFX[g.id].up}</span> <span style="color:var(--blood)">${DFX[g.id].down}</span></div></div><button class="btn" data-a="usedrug" data-g="${g.id}" ${S.buff&&S.buff.day===S.day?'disabled':''}>${S.buff&&S.buff.day===S.day?'Already on something':'Use 1'}</button></div>`).join(''):`<div class="row"><div class="info"><div class="s">Nothing in your stash to use. One thing at a time, once a day.</div></div></div>`}`}
 function addStress(n){if(n>0)n*=hasT('cold')?.7:hasT('hot')?1.3:1;S.stress=Math.max(0,Math.min(100,S.stress+n))}
+const CUTS={};
+function cut(k,cap){const src=CUTS[k];if(!src)return;let o=document.getElementById('cutov');if(!o){o=document.createElement('div');o.id='cutov';o.style.cssText='position:fixed;inset:0;z-index:9999;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:opacity .3s';document.body.appendChild(o)}
+  o.innerHTML=`<img src="${src}" alt="" style="max-width:100%;max-height:80vh;object-fit:contain"><div style="color:#fff;font-family:var(--label);font-weight:800;letter-spacing:.08em;margin-top:12px;text-align:center;padding:0 16px">${cap||''}</div><div style="color:#aaa;font-size:12px;margin-top:6px">Tap to skip</div>`;o.style.opacity=1;o.hidden=false;
+  const done=()=>{o.style.opacity=0;setTimeout(()=>{o.hidden=true},300);clearTimeout(o._t)};o.onclick=done;clearTimeout(o._t);o._t=setTimeout(done,3200)}
 const hasT=t=>!!(S&&S.traits&&S.traits.includes(t));
 const TRAITS=[
  {id:'tongue',name:'Silver Tongue',cost:4,sub:'+2 Talk. −1 Muscle.',sk:{talk:2,muscle:-1}},
@@ -1360,6 +1364,7 @@ function lick(k){if(stuckHome())return;
     if(ok){const pay=rnd(400,1500);S.cash+=pay;S.heat=Math.min(100,S.heat+15);addXP(3);addStress(5);return lickDone('Register emptied',`You moved too fast for him. Walked out with ${money(pay)}.`,true)}
     const dmg=rnd(10,25);S.hp-=dmg;S.heat=Math.min(100,S.heat+10);addStress(10);
     lickDone('Clerk had a bat',`You froze up and he came over the counter. −${dmg} health.`,false)});
+  if(k==='house'){cut('door','');}
   if(k==='house')return sneakGame((steps,woke)=>{
     if(woke)return alarmRun('Somebody\'s home','A floorboard creaked and the lights came on. They\'re calling 911.','You got away','Over the back fence and gone.');
     const teen=S.age&&S.age<18,r=Math.random(),type=r<.06?'empty':r<.62?'reg':r<.9||teen?'trap':'plug',L=[];
@@ -2221,7 +2226,7 @@ function busted(){addStress(20);if(S.fx.lawyer){if(Object.keys(S.guns||{}).lengt
   if(Object.keys(S.guns||{}).length){S.guns={};S.auto={};S.noClip={};houndGone();addStress(10);say('They found your gun too. It\'s gone, and that\'s another charge.')}
   const fine=Math.round(S.cash*.35);S.cash-=fine;GOODS.forEach(g=>S.inv[g.id]=0);S.heat=Math.max(0,S.heat-30);S.hp-=5;
   say(`Got jammed up. Lost your whole stash and ${money(fine)}.`);
-  S.strikes=(S.strikes||0)+1;const teen=S.age&&S.age<18,place=teen?'juvie':'county';
+  S.strikes=(S.strikes||0)+1;const teen=S.age&&S.age<18,place=teen?'juvie':'county';cut('bust','LOCKED UP');
   if(S.strikes>=3){S.over=true;S.prison=teen?2:1;say(teen?'Third strike. They sent you away until 21.':'Third strike. They gave you life.');return}
   const turns=S.cal?(S.strikes===1?4:26):(S.strikes===1?2:5),label=S.cal?(S.strikes===1?'2 weeks':'3 months'):(S.strikes===1?'2 days':'5 days');
   window.FF=true;S.inJail=1;for(let i=0;i<turns;i++){nextDay();if(S.over)break}S.inJail=0;window.FF=false;
@@ -2336,7 +2341,7 @@ function war(c){if(!canWar()){modal(`<h2>No firepower</h2><p>You can't take a bl
   $('n').onclick=close;
   $('y').onclick=()=>{window.fgGun=1;fightGame(mine,c.str,`the ${d.name} on ${BLOCKS[S.at]}`,win=>{S.heat=Math.min(100,S.heat+(is('shade')?12:25));S.fx.ride=0;
     if(win){S.owner[S.at]='me';S.rep+=15;c.beef=100;c.str=Math.max(4,c.str-5);
-      S.st.blocks++;addXP(15);addStress(8);say(`You took ${BLOCKS[S.at]} from the ${d.name}.`);drawCard(.6,'In their trap house,');
+      S.st.blocks++;addXP(15);addStress(8);say(`You took ${BLOCKS[S.at]} from the ${d.name}.`);cut('took',`${BLOCKS[S.at].toUpperCase()} IS YOURS`);drawCard(.6,'In their trap house,');
       if(!S.owner.includes(c.id)){c.alive=false;say(`The ${d.name} are done. No blocks left.`)}}
     else{const dmg=rnd(25,45);S.hp-=dmg;if(S.soldiers&&Math.random()<.5){S.soldiers--;say('You lost a soldier.')}
       addStress(15);c.beef=100;say(`The ${d.name} held their block. −${dmg} health.`)}
@@ -2347,6 +2352,7 @@ function checkEnd(){
   if(!S.over)return;
   const net=S.cash+(S.safe||0);
   const turf=S.owner.filter(o=>o==='me').length;
+  if(S.prison)cut('prison','THREE STRIKES');else if(S.hp<=0)cut('dead','');
   const title=S.prison?'Three strikes':S.hp<=0?'You got took out':net>=100000?'Kingpin':net>=40000?'Boss':net>=10000?'Hustler':net>=3000?'Corner boy':'Broke';
   setTimeout(()=>{modal(`<h2>${title}</h2>
     <p>${S.prison?(S.prison===2?`Third time locked up at ${S.age}. The judge sent you to a youth facility until you're 21. By the time you get out, the streets moved on without you.`:`Third time locked up. The judge gave you life${S.cal?' at '+S.age:''}. The streets keep going without you.`):S.cal?(S.hp<=0?`The streets got you at ${S.age}. ${calLabel()}.`:`You retired at ${S.age}. ${calLabel()}.`):S.hp<=0?'The streets got you on day '+S.day+'.':(freeMode()?'You retired on day '+S.day+'.':`${maxDay()} days are up and your story was not finished.`)}</p>
