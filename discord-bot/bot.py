@@ -499,7 +499,12 @@ class HustleBot(discord.Client):
         self.add_view(TesterButton())
         guild = discord.Object(id=GUILD_ID)
         self.tree.copy_global_to(guild=guild)
-        await self.tree.sync(guild=guild)
+        try:
+            await self.tree.sync(guild=guild)
+        except discord.Forbidden:
+            print("\nCan't register slash commands (Missing Access). Re-invite the bot with BOTH scopes: "
+                  "bot + applications.commands (Developer Portal > OAuth2 > URL Generator), and make sure "
+                  "GUILD_ID is the server the bot is in. The bot will keep running without slash commands.\n")
         self.watch_build.start()
 
     async def close(self):
