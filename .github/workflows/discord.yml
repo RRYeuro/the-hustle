@@ -8,6 +8,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
       - name: Post to Discord
         env:
           HOOK: ${{ secrets.DISCORD_WEBHOOK }}
@@ -17,8 +19,19 @@ jobs:
           [ -z "$HOOK" ] && echo "No DISCORD_WEBHOOK secret set, skipping" && exit 0
           python3 - <<'PY'
           import json, os, re, urllib.request
-          build = re.search(r"const BUILD='(v\d+)'", open('index.html').read())
-          build = build.group(1) if build else 'new build'
+          import subprocess
+          def b(txt):
+              m = re.search(r"const BUILD='(v\d+)'", txt)
+              return m.group(1) if m else None
+          build = b(open('index.html').read())
+          try:
+              prev = b(subprocess.run(['git', 'show', 'HEAD~1:index.html'], capture_output=True, text=True).stdout)
+          except Exception:
+              prev = None
+          if build and build == prev:
+              print('Build number unchanged, no ping')
+              raise SystemExit(0)
+          build = build or 'new build'
           line = (os.environ.get('MSG') or '').split('\n')[0].strip()
           if line.lower() == 'game update': line = ''
           role = os.environ.get('ROLE', '').strip()
