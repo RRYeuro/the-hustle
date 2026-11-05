@@ -1,0 +1,44 @@
+[
+ {
+  "id": "slick",
+  "name": "Slick",
+  "role": "The Talker",
+  "story": "Jalen \"Slick\" Moore. Started rapping about stealing cars, and the songs were not made up. He could get into anything on four wheels and talk his way out of any stop, until the one he could not. Did three years, came home with a rap name and a plug list, and now he talks his way into every deal.",
+  "perk": "Knows 2 plugs from the jump and they trust him. +20% odds when talking price."
+ },
+ {
+  "id": "tank",
+  "name": "Tank",
+  "role": "The Fallen Star",
+  "story": "Darius \"Tank\" Coleman. Star running back on a full ride, scouts at every game, headed to the league. Tore his knee up in the championship game and it was over. Tried the 9-to-5, got let go, and missed the love he used to get on Friday nights. The streets still know his name, so he started trapping.",
+  "perk": "Knows 1 plug. People still know his name: starts with 15 rep, +10 strength and a soldier. Bad knee: worse at running away."
+ },
+ {
+  "id": "shade",
+  "name": "Shade",
+  "role": "The Ghost",
+  "story": "Andre \"Shade\" Wallace. His songs are all over the city, but nobody has seen his face. No interviews, no pictures, no shows. People argue about who he really is. That mystery is the reason nobody can pin anything on him.",
+  "perk": "Always watching: knows 3 plugs and can spot fakes. Heat builds half as fast. Gets away from cops way more."
+ },
+ {
+  "id": "val",
+  "name": "Val",
+  "role": "The Boss Lady",
+  "story": "Valentina \"Val\" Reyes. Ran the register at her family's taqueria since she was twelve and learned the back door moves more money than the front. When her dad got sick, she took over everything.",
+  "perk": "Knows 2 plugs. Runs it like a business: the Js pay her 10% more and her workers never steal."
+ },
+ {
+  "id": "country",
+  "name": "Casper",
+  "role": "Raised by the Block",
+  "story": "Cody \"Casper\" Walsh. Only white boy on Eastside growing up. His mom worked doubles, so the block raised him: the corner store fed him, the older homies taught him. Everybody knows Casper, and he ain't going nowhere.",
+  "perk": "Knows 1 plug. The block raised him: every crew starts out respecting him, and staying cool with cops is easier."
+ },
+ {
+  "id": "lucky",
+  "name": "Lucky",
+  "role": "The Rich Girl",
+  "story": "Keisha \"Lucky\" Grant. Gated community, private school, daddy's money. She started rapping and nobody took her seriously because she never struggled. Now she is out here to prove she is real, and she is spending her trust fund to do it.",
+  "perk": "Only plug she knows is her ex, Tre. Starts with the most cash, and things just fall her way: double the odds on every card drop."
+ }
+]

@@ -1,0 +1,35 @@
+name: Discord update ping
+on:
+  push:
+    branches: [main]
+    paths: [index.html]
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Post to Discord
+        env:
+          HOOK: ${{ secrets.DISCORD_WEBHOOK }}
+          ROLE: ${{ secrets.DISCORD_ROLE_ID }}
+          MSG: ${{ github.event.head_commit.message }}
+        run: |
+          [ -z "$HOOK" ] && echo "No DISCORD_WEBHOOK secret set, skipping" && exit 0
+          python3 - <<'PY'
+          import json, os, re, urllib.request
+          build = re.search(r"const BUILD='(v\d+)'", open('index.html').read())
+          build = build.group(1) if build else 'new build'
+          line = (os.environ.get('MSG') or '').split('\n')[0].strip()
+          if line.lower() == 'game update': line = ''
+          role = os.environ.get('ROLE', '').strip()
+          body = {
+            'content': f'<@&{role}>' if role else '',
+            'allowed_mentions': {'roles': [role]} if role else {'parse': []},
+            'embeds': [{
+              'title': f'{build} is on the way',
+              'description': (line + '\n\n' if line else '') + 'Live in about 10 to 20 minutes.\nhttps://rryeuro.github.io/the-hustle/',
+              'color': 0xE74C3C}]}
+          req = urllib.request.Request(os.environ['HOOK'], json.dumps(body).encode(),
+                  {'Content-Type': 'application/json', 'User-Agent': 'hustle-ci'})
+          urllib.request.urlopen(req)
+          PY
