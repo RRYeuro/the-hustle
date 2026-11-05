@@ -499,6 +499,7 @@ function paneBeef(){
       <div class="bar"><i style="width:${c.beef}%;background:var(--blood)"></i></div>
       <div class="s">Respect ${c.respect}/100${c.respect<60?' · hit 60 and they let you serve the Js on their blocks':''}</div><div class="bar"><i style="width:${c.respect}%;background:var(--money)"></i></div>
       ${c.respect>=60||c.envy?`<div class="s">Envy ${c.envy}/100${c.envy>=70?' · <b style="color:var(--blood)">jealousy is real, watch your back</b>':''}</div><div class="bar"><i style="width:${c.envy}%;background:var(--accent)"></i></div>`:''}</div>
+      ${theirsHere?`<div class="s" style="width:100%">You on their block. Spend the day building respect: each one takes the whole day, and it gets harder as respect goes up.</div><div class="btns" style="width:100%"><button class="btn green" data-a="resp" data-c="${c.id}" data-k="cookout" ${S.cash>=300?'':'disabled'}>Cookout $300</button><button class="btn green" data-a="resp" data-c="${c.id}" data-k="tribute" ${S.cash>=500?'':'disabled'}>Pay respects $500</button><button class="btn green" data-a="resp" data-c="${c.id}" data-k="run">Run with their guys</button></div>`:''}
       <div class="btns">
        <button class="btn" data-a="squash" data-c="${c.id}" ${c.beef&&S.cash>=squash?'':'disabled'}>Squash ${money(squash)}</button>
        ${S.gang===c.id||c.ally?'':`<button class="btn red" data-a="hit" data-c="${c.id}" ${theirsHere&&canWar()?'':'disabled'}>${canWar()?'Take block':'Take block (no firepower)'}</button>`}
@@ -533,7 +534,7 @@ function gangOwn(){modal(`<h2>Start your own gang</h2><p>$10,000 to get it going
 const capCost=()=>Math.round(2500*Math.pow(1.3,S.capBuys||0)/50)*50,hireCost=()=>Math.min(6000,1000+250*(S.soldiers||0)),trapCost=()=>4000+2500*Object.keys(S.traps||{}).length;
 function paneCrew(){
   const turf=S.owner.filter(o=>o==='me').length, need=S.lvl*20;
-  return `<div class="jump" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:4px">${['Skills','Plugs','Stash','Home','Life','School','Homies','Girl','Trap','Crew'].map(k=>`<button class="btn" style="padding:6px 10px;font-size:12px" data-jump="${k}">${k}</button>`).join('')}</div>${(S.traits||[]).length?`<div class="row" style="flex-wrap:wrap"><div class="info"><div class="t">Traits</div><div class="s">${S.traits.map(id=>{const t=TRAITS.find(x=>x.id===id);return t?`<b>${t.name}</b> · <i>${t.story}</i><br>${t.sub.replace(' Can\'t be undone.','')}`:''}).join('<br>')}</div></div></div>`:''}<div class="row" style="flex-wrap:wrap"><div class="info"><div class="t">Level ${S.lvl} · ${S.pts} skill point${S.pts===1?'':'s'} to spend</div>
+  return `<div class="jump" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:4px">${['Skills','Plugs','Stash','Home','Life','School','Jobs','Homies','Girl','Trap','Crew'].map(k=>`<button class="btn" style="padding:6px 10px;font-size:12px" data-jump="${k}">${k}</button>`).join('')}</div>${(S.traits||[]).length?`<div class="row" style="flex-wrap:wrap"><div class="info"><div class="t">Traits</div><div class="s">${S.traits.map(id=>{const t=TRAITS.find(x=>x.id===id);return t?`<b>${t.name}</b> · <i>${t.story}</i><br>${t.sub.replace(' Can\'t be undone.','')}`:''}).join('<br>')}</div></div></div>`:''}<div class="row" style="flex-wrap:wrap"><div class="info"><div class="t">Level ${S.lvl} · ${S.pts} skill point${S.pts===1?'':'s'} to spend</div>
     <div class="s">XP ${S.xp} / ${need}. Earn XP from profit, fights, taking blocks, missions and mini games.</div><div class="bar"><i style="width:${S.xp/need*100}%;background:var(--accent)"></i></div></div></div>
    ${Object.keys(SKN).map(k=>`<div class="row" style="padding:8px 12px"><div class="info"><div class="t">${SKN[k]} <span style="font-family:var(--label);font-weight:700;color:var(--accent)">${S.sk[k]}</span>/10</div><div class="s">${SKD[k]}</div>
     <div class="bar"><i style="width:${S.sk[k]*10}%;background:var(--accent)"></i></div></div><button class="btn green" data-a="sk" data-k="${k}" ${S.pts>0&&S.sk[k]<10?'':'disabled'}>+1</button></div>`).join('')}
@@ -1309,7 +1310,7 @@ function lifeCustom(){let fem=false,age=14;
       $('modal').hidden=true;render()}};
   draw();
 }
-const JOBS={fast:{name:'Fast food',pay:350},retail:{name:'Retail',pay:450},ware:{name:'Warehouse',pay:600},office:{name:'Office job',pay:1300,degree:1}};
+const JOBS={lawn:{name:'Lawn crew',pay:250},fast:{name:'Fast food',pay:350},retail:{name:'Retail',pay:450},ware:{name:'Warehouse',pay:600},office:{name:'Office job',pay:1300,degree:1}};
 const BIZ={taq:{name:'Family taqueria',cost:0,pay:140,hide:1},barber:{name:'Barbershop',cost:10000,pay:150},wash:{name:'Car wash',cost:15000,pay:220},laundry:{name:'Laundromat',cost:25000,pay:350},club:{name:'Nightclub',cost:60000,pay:900}};
 function lifeDay(){
   if(S.cal){calTick();if(!S.inJail){if(fate())return;if(S.age>=18&&S.fate&&!S.fate.eighteenShown){S.fate.eighteenShown=1;return eighteen()}}}
@@ -1345,6 +1346,7 @@ function fate(){if(!(S.mode==='life'||S.cal)||!S.fate)return false;const F=S.fat
     return show('Everybody wants to know who it is',`<p>One of your songs blew up overnight. It\'s in every car on Eastside. Nobody knows who made it.</p><p>+3,000 fans. Stay a ghost.</p>`)}
   if(is('country')&&a===16&&!F.mom){F.mom=1;addStress(20);say('Your mom lost her job.');
     return show('Mom lost her job',`<p>The restaurant your mom worked doubles at closed down. She\'s looking, but rent is still due.</p><p>Until you\'re 18, you\'re sending her <b>$150 a week</b>.</p>`)}
+  if(a===18&&(S.juv||0)>0&&(S.strikes||0)>0&&(S.strikes||0)<3){S.strikes=0;say('You turned 18. Your juvie record got sealed and your strikes reset. But the cops know your face now, so they stay a little closer.')}
   if(is('country')&&a===18&&!F.block){F.block=1;S.crews.forEach(c=>c.respect=Math.min(100,c.respect+20));say('The block gave you your respect.');
     return show('One of us',`<p>On your 18th birthday, the big homies from every crew on Eastside came through. They watched you grow up.</p><p>Every crew respects you +20.</p>`)}
   return false}
@@ -1364,16 +1366,16 @@ function paneCareer(){if(!S.age&&S.mode!=='life'&&!S.job&&!Object.keys(S.biz||{}
       <div class="btns"><button class="btn go" data-a="class" ${sw?'':'disabled'}>${sw?'Go to school this week':'No school'}</button>${S.age>=16?'<button class="btn" data-a="dropout">Drop out</button>':''}</div></div>`;
     if(S.age>=18)return h}
   if(S.age&&S.age<18){
-    if(S.cal&&S.school==='in'){if(S.age>=16){h+=`<div class="sec">Part-time work (16+)</div>`+['fast','retail'].map(k=>{const J=JOBS[k],on=S.job===k;return `<div class="row" style="padding:8px 12px"><div class="info"><div class="t">${J.name} ${on?'<span class="chip mine">Your job</span>':''}</div><div class="s">${money(Math.round(J.pay/2))} a week during school, ${money(J.pay)} in the summer. Keeps twelve off you a little.</div></div>${on?`<button class="btn" data-a="quitjob">Quit</button>`:`<button class="btn" data-a="job" data-k="${k}" ${S.job?'disabled':''}>Apply</button>`}</div>`}).join('')}return h}
+    if(S.cal&&S.school==='in'){if(S.age>=14){h+=`<div class="sec">Jobs${S.age<16?' (summer lawn work at 14, more at 16)':''}</div>`+(S.age>=16?['fast','retail']:['lawn']).map(k=>{const J=JOBS[k],on=S.job===k;return `<div class="row" style="padding:8px 12px"><div class="info"><div class="t">${J.name} ${on?'<span class="chip mine">Your job</span>':''}</div><div class="s">${money(Math.round(J.pay/2))} a week during school, ${money(J.pay)} in the summer. Keeps twelve off you a little.</div></div>${on?`<button class="btn" data-a="quitjob">Quit</button>`:`<button class="btn" data-a="job" data-k="${k}" ${S.job?'disabled':''}>Apply</button>`}</div>`}).join('')}return h}
     if(S.school==='in')h+=`<div class="row" style="flex-wrap:wrap"><div class="info"><div class="t">High school · Grades ${S.grades}/100</div><div class="s">Grades drop every day you skip. Keep them at 50+ to graduate at 18. Being a student keeps twelve off you a little.</div><div class="bar"><i style="width:${S.grades}%;background:var(--accent)"></i></div></div>
       <div class="btns"><button class="btn go" data-a="class">Go to class (takes the day)</button><button class="btn" data-a="dropout">Drop out</button></div></div>`;
-    else h+=`<div class="row"><div class="info"><div class="t">Dropped out</div><div class="s">No diploma means no college. You can still work at 18 or stay in the streets.</div></div></div>`;
+    else h+=`<div class="row"><div class="info"><div class="t">Dropped out</div><div class="s">No diploma means no college. You can still work at 18 or stay in the streets.</div></div></div>`+(S.age>=16?`<div class="sec">Jobs</div>`+['fast','retail'].map(k=>{const J=JOBS[k],on=S.job===k;return `<div class="row" style="padding:8px 12px"><div class="info"><div class="t">${J.name} ${on?'<span class="chip mine">Your job</span>':''}</div><div class="s">${money(J.pay)} a week. Keeps twelve off you a little.</div></div>${on?`<button class="btn" data-a="quitjob">Quit</button>`:`<button class="btn" data-a="job" data-k="${k}" ${S.job?'disabled':''}>Apply</button>`}</div>`}).join(''):'');
     return h}
   if(S.college==='in')h+=`<div class="row" style="flex-wrap:wrap"><div class="info"><div class="t">College · Degree ${S.cprog}/100</div><div class="s">Trap out the dorms: the college kids on Northline spend more while you're enrolled.</div><div class="bar"><i style="width:${S.cprog}%;background:var(--accent)"></i></div></div>
       <div class="btns"><button class="btn go" data-a="class">Go to class (takes the day)</button><button class="btn" data-a="cdrop">Drop out</button></div></div>`;
   else if(S.college==='grad')h+=`<div class="row"><div class="info"><div class="t">College grad <span class="chip mine">Degree</span></div><div class="s">Office jobs unlocked, and your businesses earn 20% more.</div></div></div>`;
   else if(S.diploma||S.mode!=='life')h+=`<div class="row"><div class="info"><div class="t">Go to college</div><div class="s">$3,000 to enroll. Get a degree for better jobs and bigger business money.</div></div><button class="btn green" data-a="enroll" ${S.cash>=3000?'':'disabled'}>Enroll $3,000</button></div>`;
-  h+=Object.entries(JOBS).map(([k,J])=>{const on=S.job===k,lock=J.degree&&S.college!=='grad';
+  h+=`<div class="sec">Jobs</div>`+Object.entries(JOBS).filter(([k])=>k!=='lawn').map(([k,J])=>{const on=S.job===k,lock=J.degree&&S.college!=='grad';
     return `<div class="row" style="padding:8px 12px"><div class="info"><div class="t">${J.name} ${on?'<span class="chip mine">Your job</span>':''}</div><div class="s">${money(J.pay)} a week. Legit cover keeps twelve off you a little, but it's stressful.${lock?' Needs a degree.':''}</div></div>
       ${on?`<button class="btn" data-a="quitjob">Quit</button>`:`<button class="btn" data-a="job" data-k="${k}" ${lock?'disabled':''}>Apply</button>`}</div>`}).join('');
   h+=`<div class="sec">Own a business</div><div class="row"><div class="info"><div class="s">Legit money every day, and it washes your heat down. Run it as a front and stay in the streets.</div></div></div>`;
@@ -2375,7 +2377,7 @@ function qtyModal(kind,g,to,bl){if(to==='js'&&stuckHome())return;
 
 /* ---------- day / events ---------- */
 function nextDay(){if(S.att)S.att=S.att.map(v=>Math.max(0,Math.round(v*.8-2)));if(S.snakeIn&&S.soldiers>0&&Math.random()<.025){S.snakeIn--;S.soldiers--;const h=(S.gangHomies||[]).pop()||'One of your homies';S.heat=Math.min(100,S.heat+20);S.cash=Math.max(0,S.cash-Math.round(S.cash*.1));say(`${h} was a snake the whole time. Ran off with 10% of your cash and started talking to twelve. Heat +20.`)}if(!(S.swUntil>=S.day)&&Math.random()<.1)S.swUntil=S.day+2;
-  S.day++;checkKick();
+  S.day++;checkKick();if((S.juv||0)>0){const fl=Math.min(20,8*S.juv);if(S.heat<fl)S.heat=fl}
   const turf=S.owner.filter(o=>o==='me').length;
   if(turf){S.cash+=turf*300;}
   {const sh=S.owner.filter(o=>o!=='me'&&o!=='none'&&crew(o)&&crew(o).ally).length;if(sh)S.cash+=sh*100}
@@ -2476,7 +2478,7 @@ function busted(){addStress(20);if(S.fx.lawyer){if(Object.keys(S.guns||{}).lengt
   if(Object.keys(S.guns||{}).length){S.guns={};S.auto={};S.noClip={};houndGone();addStress(10);say('They found your gun too. It\'s gone, and that\'s another charge.')}
   const fine=Math.round(S.cash*.35);S.cash-=fine;GOODS.forEach(g=>S.inv[g.id]=0);S.heat=Math.max(0,S.heat-30);S.hp-=5;
   say(`Got jammed up. Lost your whole stash and ${money(fine)}.`);
-  S.strikes=(S.strikes||0)+1;const teen=S.age&&S.age<18,place=teen?'juvie':'county';cut('bust','LOCKED UP');
+  S.strikes=(S.strikes||0)+1;const teen=S.age&&S.age<18,place=teen?'juvie':'county';if(teen)S.juv=(S.juv||0)+1;cut('bust','LOCKED UP');
   if(S.strikes>=3){S.over=true;S.prison=teen?2:1;say(teen?'Third strike. They sent you away until 21.':'Third strike. They gave you life.');return}
   const turns=S.cal?(S.strikes===1?4:26):(S.strikes===1?2:5),label=S.cal?(S.strikes===1?'2 weeks':'3 months'):(S.strikes===1?'2 days':'5 days');
   window.FF=true;S.inJail=1;for(let i=0;i<turns;i++){nextDay();if(S.over)break}S.inJail=0;window.FF=false;
@@ -2495,6 +2497,7 @@ function act(a,el){
   if(a==='go'){S.at=+el.dataset.i;say(`Pulled up to ${BLOCKS[S.at]}.`);nextDay()}
   if(a==='adv'){say('Let the day go by.');nextDay();return}
   if(a==='lay'){if(!atHome()){say('You gotta be at your place to lay low.');return render()}S.heat=Math.max(0,S.heat-15);S.hp=Math.min(100,S.hp+15);addStress(-25);say('Laid low for a day.');nextDay()}
+  if(a==='resp'){const c=crew(el.dataset.c),k=el.dataset.k;if(!c||S.owner[S.at]!==c.id)return;const RS={cookout:{cost:300,r:10,b:2,st:-6,t:'Threw a cookout on their block. Everybody ate.'},tribute:{cost:500,r:12,b:6,st:0,t:'Paid your respects to their shot caller.'},run:{cost:0,r:6,b:0,st:4,t:'Ran with their guys all day. You ran errands and kept your mouth shut.',h:2}}[k];if(!RS||S.cash<RS.cost)return;const gain=Math.max(1,Math.round(RS.r*(1-c.respect/140)));S.cash-=RS.cost;c.respect=Math.min(100,c.respect+gain);c.beef=Math.max(0,c.beef-RS.b);addStress(RS.st);if(RS.h)S.heat=Math.min(100,S.heat+RS.h);if(k==='cookout')S.comm=Math.min(100,(S.comm==null?30:S.comm)+3);say(`${RS.t} ${cdef(c.id).name} respect +${gain}.`);nextDay();return}
   if(a==='squash'){const c=crew(el.dataset.c),cost=Math.round(300+c.beef*25);S.cash-=cost;c.beef=0;say(`Squashed it with the ${cdef(c.id).name} for ${money(cost)}.`)}
   if(a==='hit')return war(crew(el.dataset.c));
   if(a==='conn')return connectOrder();
@@ -2777,11 +2780,12 @@ function schoolRandom(){if(!S.cal||S.school!=='in'||S.classDay!==S.day-1||Math.r
   if(S.grades>=70){S.sk.smarts=Math.min(10,S.sk.smarts+(Math.random()<.3?1:0));addStress(-5);modal(`<h2>A teacher pulled you aside</h2><p>"You're smarter than you act. You could really go somewhere." It stuck with you.</p><div class="btns"><button class="btn go" id="ok">Okay</button></div>`);$('ok').onclick=close;return true}
   return false}
 function guardianEvent(){const P=S.par;if(!S.cal||!P||S.home!=='family'||S.age>=18)return false;const strict=P.strict/100;
-  if(isWknd()&&S.heat>15&&Math.random()<strict*.18+(S.heat/600)-(P.trust/1000)){
+  const tf=Math.max(.25,1-P.trust/110);
+  if(isWknd()&&S.heat>15&&Math.random()<(strict*.18+(S.heat/600))*tf){
     modal(`${parPic(84)}<h2>${P.name} was up waiting</h2><p>You came in way past curfew. ${P.name} is sitting in the dark, looking at you.</p><div class="btns"><button class="btn go" id="a">Tell the truth (kind of)</button><button class="btn" id="b">Lie</button></div>`);
     $('a').onclick=()=>{P.trust=Math.min(100,P.trust+4);if(P.strict>=60){S.grounded=S.day+2;say(`${P.name} grounded you for the week.`)}else say(`${P.name} let it slide this time.`);close()};
     $('b').onclick=()=>{if(Math.random()<.3+S.sk.talk*.06-strict*.3){say(`Talked your way past ${P.name}.`)}else{P.trust=Math.max(0,P.trust-12);S.grounded=S.day+4;addStress(8);say(`${P.name} caught the lie. Grounded for two weeks.`)}close()};return true}
-  if(weekTick()&&used()>0&&Math.random()<strict*.05){const take=P.strict>=60;
+  if(weekTick()&&used()>0&&Math.random()<strict*.05*tf){const take=P.strict>=60;
     if(take){GOODS.forEach(g=>{S.inv[g.id]=0;S.fake[g.id]=0});P.trust=Math.max(0,P.trust-14);S.grounded=S.day+4;addStress(15)}else{P.trust=Math.max(0,P.trust-8)}
     modal(`${parPic(84)}<h2>${P.name} went through your room</h2><p>${take?`Found everything and flushed it. Then came the yelling. You're grounded for two weeks and ${P.name} is watching you now.`:`Found your stash. ${P.name} just looked at you and said "Keep that out my house." That's it.`}</p><div class="btns"><button class="btn go" id="ok">Damn</button></div>`);$('ok').onclick=close;
     if(P.trust<=10&&S.age>=16){S.home='couch';S.cap+=HOMES.couch.stash-HOMES.family.stash;say(`${P.name} put you out. You're on your cousin's couch now.`)}return true}
@@ -2972,7 +2976,7 @@ function ckReport(){try{ckState()}catch(e){}const done=CKL.filter(x=>{try{return
   $('ckb').onclick=devPanel;$('ckc').onclick=()=>{const ta=$('ckt');const ok=()=>{$('ckm').textContent='Copied. Paste it to Claude.'};try{navigator.clipboard.writeText(ta.value).then(ok,()=>{ta.select();document.execCommand('copy');ok()})}catch(e){ta.select();try{document.execCommand('copy')}catch(_){}ok()}}}
 $('pane').onclick=e=>{sfx('tap');const pp=e.target.closest('.mapp');if(pp)return openPlace(pp.dataset.p);const m=e.target.closest('.mapb');if(m){if(m.dataset.a==='go')act('go',m);return}const b=e.target.closest('button[data-a]');if(b&&!b.disabled){const top=S&&S.log&&S.log[0];act(b.dataset.a,b);const nw=S&&S.log&&S.log[0];if(nw&&nw!==top&&$('modal').hidden)toast(nw.t)}};
 $('retire').onclick=()=>{S.over=true;checkEnd()};
-const BUILD='v156';
+const BUILD='v157';
 function mainMenu(canContinue){
   modal(`<div style="text-align:center;display:flex;flex-direction:column;gap:10px">
     <div style="position:relative;margin:-18px -18px 0;height:190px;border-radius:8px 8px 0 0;background:url(${TITLEART}) center 60%/cover"><div style="position:absolute;inset:0;border-radius:8px 8px 0 0;background:linear-gradient(to bottom,rgba(20,17,24,0) 30%,var(--panel))"></div></div>
@@ -2996,7 +3000,7 @@ function mainMenu(canContinue){
   $('msnd').onclick=()=>{SND.sfx=!SND.sfx;sndSave();mainMenu(canContinue)};$('mmus').onclick=()=>{SND.music=!SND.music;sndSave();SND.music?musicStart():musicStop();mainMenu(canContinue)};
 }
 $('newgame').onclick=()=>mainMenu(!S.over);
-document.addEventListener('click',e=>{const b=e.target.closest('[data-jump]');if(!b)return;const k=b.dataset.jump.toLowerCase(),map={skills:'level',plugs:'your plugs',stash:'put up',home:'where you stay',life:'life choices',school:'school',homies:'your homies',girl:'your girl',trap:'trap houses',crew:'crew and stash'};
+document.addEventListener('click',e=>{const b=e.target.closest('[data-jump]');if(!b)return;const k=b.dataset.jump.toLowerCase(),map={jobs:'jobs',skills:'level',plugs:'your plugs',stash:'put up',home:'where you stay',life:'life choices',school:'school',homies:'your homies',girl:'your girl',trap:'trap houses',crew:'crew and stash'};
   const t=[...document.querySelectorAll('#pane .sec')].find(x=>x.textContent.toLowerCase().includes(map[k]));if(t)t.scrollIntoView({behavior:'smooth',block:'start'})});
 {const tt=document.createElement('button');tt.className='totop';tt.textContent='↑';tt.setAttribute('aria-label','Back to top');tt.hidden=true;tt.onclick=()=>window.scrollTo({top:0,behavior:'smooth'});document.body.appendChild(tt);
  addEventListener('scroll',()=>{tt.hidden=scrollY<500},{passive:true})}
