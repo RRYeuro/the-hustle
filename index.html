@@ -2108,7 +2108,7 @@ function plugDrop(bi){if((ptxo().n[bi]||0)>=PTX_MAX){modal(`<h2>${plugName(bi)} 
   $('mcard').querySelectorAll('[data-dg]').forEach(b=>b.onclick=()=>{const g=G(b.dataset.dg),n=+b.dataset.dn,pr=priceOf(g);S.at=bi;const of=S.offer[bi][g.id];S.at=here;
     const tot=Math.round(pr*n*bulk(n,g));if(tot>S.cash)return;of.stock=Math.max(0,(of.stock??0)-n);S.dropDay=S.day;{const pt=ptxo();pt.n[bi]=(pt.n[bi]||0)+1}
     const realHave=S.inv[g.id]-S.fake[g.id];if(of.fake){$('modal').hidden=true;modal(`<h2>${plugName(bi)} kept it real</h2><p>"Don't take this batch. It ain't right. I'll hit you when the good stuff land."</p><div class="btns"><button class="btn go" id="ok">Good looking</button></div>`);$('ok').onclick=close;S.trust[bi]=Math.min(100,S.trust[bi]+1);return}
-    S.q[g.id]=Math.round((S.q[g.id]*realHave+of.real*n)/(realHave+n));S.paid[g.id]=Math.round((S.paid[g.id]*S.inv[g.id]+tot)/(S.inv[g.id]+n));S.inv[g.id]+=n;S.cash-=tot;S.heat=Math.min(100,S.heat+1);
+    S.q[g.id]=Math.round((S.q[g.id]*realHave+of.real*n)/(realHave+n));S.paid[g.id]=Math.round((S.paid[g.id]*S.inv[g.id]+tot)/(S.inv[g.id]+n));S.inv[g.id]+=n;S.cash-=tot;S.heat=Math.min(100,S.heat+1);{S.lb=S.lb||{};const k=bi+':'+g.id,u=tot/n,o0=S.lb[k];S.lb[k]={d:S.day,u:o0&&S.day-o0.d<=4?Math.min(o0.u,u):u}}
     say(`${plugName(bi)} dropped off ${amt(n,g)} of ${g.name} for ${money(tot)}.`);render();plugDrop(bi)})}
 function panePhone(){const C=S.custos||[],T=S.texts||[];
   let h=paneConnect()+phonePlugs()+`<div class="row" style="flex-wrap:wrap;border-color:var(--accent)"><div class="info"><div class="t" style="font-family:var(--display);font-size:20px;font-weight:400">Trap phone</div><div class="s">${C.length} plays saved · plays pay more than the Js, and more the longer they've been buying from you. They come to you, wherever you at.</div></div>
@@ -2318,7 +2318,8 @@ function gchip(q,g){const c=GCOL[tier(q)];return `<span class="chip" style="colo
 function street(g){return Math.round((g.lo+g.hi)/2)}
 function jTryOdds(){return Math.min(90,Math.round(25+S.rep*.8+(S.rapOn&&S.rap.fans>=2000?15:0)))}
 function bulk(n,g){const t=g.unit==='g'?[[1000,.78],[448,.84],[112,.9],[28,.95],[14,.98]]:g.unit==='pills'?[[2000,.8],[500,.86],[100,.93],[50,.97]]:[[32,.82],[16,.88],[4,.95]];const f=t.find(x=>n>=x[0]);return f?f[1]:1}
-function plugPrice(kind,g,raw){
+function plugPrice(kind,g,raw){let p=plugPrice0(kind,g,raw);if(kind==='sell'&&!raw){const lb=(S.lb||{})[S.at+':'+g.id];if(lb&&S.day-lb.d<=4)p=Math.min(p,Math.max(1,Math.round(lb.u*.85)))}return p}
+function plugPrice0(kind,g,raw){
   if(!raw&&S.deal&&S.deal.bi===S.at&&S.deal.g===g.id&&S.deal.kind===kind)return S.deal.p;
   const o=S.offer[S.at][g.id];
   const p=S.prices[S.at][g.id]*(kind==='buy'&&S.gf&&S.gf.plug===S.at?.85:1)*(kind==='buy'&&S.whole&&S.whole[S.at]?.8:1)*gmult(kind==='buy'?o.q:S.q[g.id])*(kind==='buy'?LVL[PINFO[S.at].lvl].mult*(o.tip||1)*D().buy:(1+(S.sk.hustle-3)*.02)*(S.rapOn&&S.rap.fans>=2000?1.05:1)*demand(S.at,g.id));
@@ -2427,7 +2428,7 @@ function qtyModal(kind,g,to,bl){if(to==='js'&&stuckHome())return;
     if(kind==='buy'&&firstTx)S.trust[S.at]=Math.min(100,S.trust[S.at]+1);
     if(kind==='buy'&&firstTx&&crewHere()){const c=crew(S.owner[S.at]);c.beef=Math.max(0,c.beef-1);c.respect=Math.min(100,c.respect+1)}
     if(!js&&!known&&firstTx){S.deals[S.at]=(S.deals[S.at]||0)+1;if(S.deals[S.at]>=(rankAt(4)?1:3)){S.known.push(S.at);say(`${plugName(S.at)} knows you now. Better prices and you can talk to ${plugFem(S.at)?'her':'him'}.`)}}
-    if(kind==='buy'){of.stock=Math.max(0,stockOf(S.at,g)-n);S.vn=S.vn||{};S.vn[g.id]=of.v;if(of.fake){S.fakeFrom=S.fakeFrom||{};S.fakeFrom[g.id]=S.at}const realHave=S.inv[g.id]-S.fake[g.id];if(of.fake)S.fake[g.id]+=n;else S.q[g.id]=Math.round((S.q[g.id]*realHave+of.real*n)/(realHave+n));const tot=Math.round(p*n*bulk(n,g));S.paid[g.id]=Math.round((S.paid[g.id]*S.inv[g.id]+tot)/(S.inv[g.id]+n));S.inv[g.id]+=n;S.cash-=tot;if(bulk(n,g)<=.9)ck('s:bulk');say(`Copped ${amt(n,g)} of ${of.v?of.v+' ':''}${g.name} for ${money(tot)}${bulk(n,g)<1?` (bulk −${Math.round((1-bulk(n,g))*100)}%)`:''}.`)}
+    if(kind==='buy'){of.stock=Math.max(0,stockOf(S.at,g)-n);S.vn=S.vn||{};S.vn[g.id]=of.v;if(of.fake){S.fakeFrom=S.fakeFrom||{};S.fakeFrom[g.id]=S.at}const realHave=S.inv[g.id]-S.fake[g.id];if(of.fake)S.fake[g.id]+=n;else S.q[g.id]=Math.round((S.q[g.id]*realHave+of.real*n)/(realHave+n));const tot=Math.round(p*n*bulk(n,g));S.paid[g.id]=Math.round((S.paid[g.id]*S.inv[g.id]+tot)/(S.inv[g.id]+n));S.inv[g.id]+=n;S.cash-=tot;{S.lb=S.lb||{};const k=S.at+':'+g.id,u=tot/n,o0=S.lb[k];S.lb[k]={d:S.day,u:o0&&S.day-o0.d<=4?Math.min(o0.u,u):u}}if(bulk(n,g)<=.9)ck('s:bulk');say(`Copped ${amt(n,g)} of ${of.v?of.v+' ':''}${g.name} for ${money(tot)}${bulk(n,g)<1?` (bulk −${Math.round((1-bulk(n,g))*100)}%)`:''}.`)}
     else{const fk=Math.min(S.fake[g.id],Math.round(n*S.fake[g.id]/S.inv[g.id]));S.fake[g.id]-=fk;
       const got=bl==='win'?n*p:(n-fk)*p+fk*Math.round(p*.15);
       if(bl==='win'&&Math.random()<.35){S.rep=Math.max(0,S.rep-1);say('A couple of the Js figured out it wasn\'t really top line. Rep −1.')}
