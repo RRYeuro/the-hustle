@@ -2430,7 +2430,7 @@ function panePhone(){const C=S.custos||[],T=S.texts||[];
 
 /* ---------- shootout mini game ---------- */
 const NOGUNFIGHT=['Him','Test dummy'];
-function fightGame(mine,theirs,who,done){
+function fightGameB(mine,theirs,who,done){
   if(window.fgGun||NOGUNFIGHT.includes(who)||!(typeof gunBonus==='function'&&gunBonus()>0))return fightGame0(mine,theirs,who,done);
   const wants=Math.random()<Math.min(.7,.15+theirs/70),gname=gName(Object.keys(S.guns).sort((a,b)=>gStr(b)-gStr(a))[0]);
   modal(`<h2>${who} want smoke</h2><p>You got your <b>${gname}</b> on you. ${wants?'Their hands are near their waistbands. They might pull it out.':'They look like they want to throw hands, not bang it out.'}</p><p class="s" style="color:var(--dim)">If you bang it out, it's a shootout. If you throw hands and they got a strap, they will pull it and it turns into a shootout anyway.</p>
@@ -2438,7 +2438,32 @@ function fightGame(mine,theirs,who,done){
   $('bg').onclick=()=>{window.fgGun=1;fightGame0(mine,theirs,who,done)};
   $('fh').onclick=()=>{if(wants){say(`${who} pulled out on you.`);window.fgGun=1}fightGame0(mine,theirs,who,done)};
 }
-function shootoutGame(mine,theirs,who,done){
+function fightGame(mine,theirs,who,done){
+  if(window.fgGun||window.noTalk||(typeof NOTALK!=='undefined'&&NOTALK.includes(who)))return fightGameB(mine,theirs,who,done);
+  const diff=theirs/(mine+theirs),notes=12,need=Math.round(notes*Math.max(.4,Math.min(.85,.45+diff*.4-(S.sk.talk-3)*.03-(stressed()?-.05:0))));
+  modal(`<h2>${who} want smoke</h2><p>It is about to pop off. You can try to talk it down, or throw down.</p><p class="s" style="color:var(--dim)">Talking it down is a rhythm game: hit ${need} of ${notes} notes to calm it down. Miss too many and it gets physical anyway.</p><div class="btns"><button class="btn go" id="td">Talk it out</button><button class="btn red" id="fl">Fight</button></div>`);
+  $('fl').onclick=()=>fightGameB(mine,theirs,who,done);
+  $('td').onclick=()=>talkDown(diff,notes,need,ok=>{if(ok){S.rep+=1;addXP(2);addStress(-4);say(`You talked ${who} down. Nobody got hurt.`);modal(`<h2 style="color:var(--money)">You talked it down</h2><p>${who} backed off. Sometimes the smartest move is the one nobody sees.</p><div class="btns"><button class="btn go" id="ok">Continue</button></div>`);$('ok').onclick=()=>{close();render()}}
+    else{say(`${who} did not buy it.`);modal(`<h2 style="color:var(--blood)">It's going down</h2><p>${who} was not trying to hear it.</p><div class="btns"><button class="btn red" id="ok">Throw down</button></div>`);$('ok').onclick=()=>fightGameB(mine,theirs,who,done)}})}
+function talkDown(diff,notes,need,cb){mgOn=true;const FALL=Math.max(900,1500-Math.round(diff*500)),WIN=Math.max(95,170-Math.round(diff*60)),LANES=['Calm','Real','Firm'],H=220;
+  let hits=0,miss=0,spawned=0,lane=[],t0=performance.now()+700,bub=[],nextSp=t0,over=false;
+  const sched=[];for(let i=0;i<notes;i++)sched.push({l:rnd(0,2),t:700+i*Math.max(520,900-diff*250)});
+  modal(`<h2>Talk it out</h2><p class="s" style="color:var(--dim)">Hit the lane when the bubble reaches the line. Need ${need} of ${notes}.</p>
+   <div id="tdb" style="position:relative;height:${H}px;border-radius:8px;background:#17141b;border:1px solid var(--line);overflow:hidden;display:grid;grid-template-columns:repeat(3,1fr)">
+     ${[0,1,2].map(i=>`<div style="border-right:${i<2?'1px solid var(--line)':'0'}"></div>`).join('')}<div style="position:absolute;left:0;right:0;bottom:34px;height:3px;background:var(--accent);opacity:.8"></div></div>
+   <p id="tdf" style="text-align:center;font-family:var(--label);min-height:22px">Get ready…</p>
+   <div class="btns" style="justify-content:center">${LANES.map((n,i)=>`<button class="btn" data-ln="${i}" style="padding:14px 18px;font-size:16px;flex:1">${n}</button>`).join('')}</div>`);
+  const box=$('tdb');const els=sched.map(n=>{const d=document.createElement('div');d.style.cssText=`position:absolute;width:30%;left:${n.l*33.3+1.7}%;height:30px;border-radius:15px;background:var(--accent);opacity:.92;display:none;text-align:center;line-height:30px;font-size:13px;color:#111`;d.textContent=LANES[n.l];box.appendChild(d);return d});
+  sched.forEach(n=>{n.y=0;n.done=0});
+  const fin=()=>{if(over)return;over=true;mgOn=false;setTimeout(()=>cb(hits>=need),500)};
+  const press=l=>{if(over)return;const t=performance.now()-t0;let best=null,bd=1e9;sched.forEach(n=>{if(n.done||n.l!==l)return;const d=Math.abs(t-(n.t+FALL));if(d<bd){bd=d;best=n}});
+    if(best&&bd<=WIN*1.6){best.done=1;best.hit=1;hits++;els[sched.indexOf(best)].style.display='none';$('tdf').textContent=bd<WIN*.5?'Perfect':'Good';$('tdf').style.color='var(--money)'}
+    else{miss++;$('tdf').textContent='Off';$('tdf').style.color='var(--blood)'}};
+  box.parentElement.querySelectorAll('[data-ln]').forEach(b=>b.onpointerdown=e=>{e.preventDefault();press(+b.dataset.ln)});
+  const loop=now=>{if(over||!box.isConnected)return;const t=now-t0;
+    sched.forEach((n,i)=>{if(n.done)return;const p=(t-n.t)/FALL;if(p<0){return}els[i].style.display='block';els[i].style.top=(p*(H-34-33))+'px';if(t>n.t+FALL+WIN*1.6){n.done=1;n.hit=0;els[i].style.display='none';miss++;$('tdf').textContent='Missed one';$('tdf').style.color='var(--blood)'}});
+    if(t>sched[sched.length-1].t+FALL+WIN*2){fin();return}requestAnimationFrame(loop)};requestAnimationFrame(loop)}
+function shootoutArcade(mine,theirs,who,done){
   mgOn=true;const W=320,H=240,share=mine/(mine+theirs);
   const best=Object.keys(S.guns||{}).sort((a,b)=>gStr(b)-gStr(a))[0]||'pistol';
   const GS=Object.assign({},GUNS[best]||GUNS.pistol);if(isAuto(best)&&!GUNS[best].burst){GS.burst=3;GS.rad+=6}
@@ -2495,10 +2520,36 @@ function shootoutGame(mine,theirs,who,done){
     $('shp').textContent=`You ${Math.max(0,hp)}`;$('sam').textContent=reload?'Reloading…':`${GUNS[best]?gName(best):'Pistol'} ${ammo}/${GS.mag}`;$('sleft').textContent=`${left} left`;
     requestAnimationFrame(loop)};
   requestAnimationFrame(loop)}
+function shootoutGame(mine,theirs,who,done){mgOn=true;
+  const share=mine/(mine+theirs),best=Object.keys(S.guns||{}).sort((a,b)=>gStr(b)-gStr(a))[0]||'pistol',auto=typeof isAuto==='function'&&isAuto(best),tol=(auto?1:0);
+  const total=Math.max(3,Math.min(7,3+Math.round(theirs/10))),dmgIn=Math.round(9+(1-share)*11),nC=total>=6?6:5,TMS=Math.max(5200,Math.round(11000+S.sk.smarts*450-theirs*30-(stressed()?1800:0)));
+  let hp=100,left=total,myK=0,round=0,sel=[],cards=[],target=0,tEnd=0,over=false,msg='Do the math. Add the cards to match their cover.';
+  modal(`<div class="sec" style="margin:0;color:var(--blood)">Shootout</div><h2>You vs ${who}</h2>
+   <div style="display:flex;justify-content:space-between;font-family:var(--label);font-size:13px"><span id="s2h"></span><span id="s2l"></span></div>
+   <div style="text-align:center;padding:6px"><div class="s" style="color:var(--dim)">Their cover number</div><div id="s2t" style="font-family:var(--display);font-size:54px;line-height:1"></div><div id="s2s" style="font-size:18px;min-height:24px"></div></div>
+   <div class="bar" style="height:8px"><i id="s2b" style="width:100%;background:var(--heat)"></i></div>
+   <div id="s2c" class="btns" style="justify-content:center;margin:10px 0"></div>
+   <p id="s2m" class="s" style="text-align:center;min-height:20px"></p>
+   <div class="btns" style="justify-content:center"><button class="btn red" id="s2f" style="padding:14px 40px;font-size:20px">FIRE</button></div>
+   <p class="s" style="text-align:center;color:var(--dim)">Tap cards to add them up. Match their number ${tol?'(or be 1 off with your '+gName(best)+')':'exactly'} and hit FIRE before the bar runs out. Miss and they shoot back.</p>`);
+  const deal=()=>{round++;const k=rnd(2,3);const base=[];for(let i=0;i<k;i++)base.push(rnd(2,9+(total>=6?3:0)));target=base.reduce((a,b)=>a+b,0);cards=base.slice();while(cards.length<nC)cards.push(rnd(1,9+(total>=6?3:0)));cards.sort(()=>Math.random()-.5);sel=[];tEnd=performance.now()+TMS;draw()};
+  const sum=()=>sel.reduce((a,i)=>a+cards[i],0);
+  const draw=()=>{if(!$('s2c'))return;$('s2t').textContent=target;$('s2s').textContent=`Your total: ${sum()}`;$('s2h').textContent=`You ${Math.max(0,hp)}`;$('s2l').textContent=`${left} left`;$('s2m').textContent=msg;
+    $('s2c').innerHTML=cards.map((c,i)=>`<button class="btn ${sel.includes(i)?'go':''}" data-ci="${i}" style="width:54px;height:76px;font-size:24px;font-family:var(--display)">${c}</button>`).join('');
+    $('s2c').querySelectorAll('[data-ci]').forEach(b=>b.onclick=()=>{const i=+b.dataset.ci;const j=sel.indexOf(i);if(j>=0)sel.splice(j,1);else sel.push(i);draw()})};
+  const finish=win=>{if(over)return;over=true;mgOn=false;S.bodies=(S.bodies||0)+myK;
+    setTimeout(()=>{modal(`<h2 style="color:${win?'var(--money)':'var(--blood)'}">${win?'They fell back':'You had to fall back'}</h2><p>${win?`You dropped ${total-left} of them. ${who} scattered.`:`${who} had you pinned. You took ${100-Math.max(0,hp)} damage getting out.`}</p><div class="btns"><button class="btn go" id="ok">Continue</button></div>`);$('ok').onclick=()=>done(win)},350)};
+  const next=()=>{if(over)return;if(left<=0)return finish(true);if(hp<=0||round>=total*3)return finish(left<=Math.floor(total/2)&&hp>0);deal()};
+  const theyShoot=why=>{hp-=dmgIn;msg=why+` −${dmgIn}.`;
+    if(S.soldiers>0&&Math.random()<Math.min(.7,.12*S.soldiers+(typeof armed==='function'?armed().length*.08:0))){left--;msg+=' Your shooter dropped one.';}
+    draw();setTimeout(next,700)};
+  $('s2f').onclick=()=>{if(over||!sel.length)return;const d=Math.abs(sum()-target);if(d<=tol){left--;myK++;msg=pick(['Got one.','Dropped him.','He\'s down.']);draw();setTimeout(next,600)}else theyShoot(d===1?'Close, but it was off.':'Wrong number.')};
+  const loop=t=>{if(over||!mgOn||!$('s2b'))return;const p=Math.max(0,(tEnd-t)/TMS);$('s2b').style.width=(p*100)+'%';if(t>tEnd&&!window.__s2lock){window.__s2lock=1;theyShoot('Too slow.');setTimeout(()=>{window.__s2lock=0},750);tEnd=t+1e9}requestAnimationFrame(loop)};
+  deal();requestAnimationFrame(loop)}
 function fightGame0(mine,theirs,who,done){const gun=!!window.fgGun;window.fgGun=0;if(gun)return shootoutGame(mine,theirs,who,done);const L=gun?{d:'Take cover',h:'Shoot',tip:'When they shoot, take cover. When they peek out, shoot. Keys: ← cover, → or space shoot.',sw:'THEY SHOOTING',op:'THEY PEEKED OUT',slip:'Ducked behind the car.',walk:'You stood up into it.',nothing:'You shot at nothing.',landed:'Hit him.',back:'You stayed down. They reset.',caught:'Took one.',miss:'Missed your shot.',time:'Sirens. Everybody scattered.',won:'They fell back',lost:'You had to fall back'}:{d:'Dodge',h:'Hit',tip:'When it says THEY SWING (red), hit Dodge. When it says OPENING (green), hit Hit. Be quick. Keys: ← dodge, → or space hit.',sw:'THEY SWING',op:'OPENING',slip:'Slipped it.',walk:'You walked right into it.',nothing:'You swung at nothing.',landed:'Landed clean.',back:'You backed off. They reset.',caught:'Caught you.',miss:'Missed the opening.',time:'Time. Somebody broke it up.',won:'You won the fight',lost:'You lost the fight'};
-  mgOn=true;let me=100,op=100,prompt=null,deadline=0,next=performance.now()+900,last=performance.now(),msg='Get ready...';const t0=performance.now(),DUR=20000;
+  mgOn=true;let cc=0,me=100,op=100,prompt=null,deadline=0,next=performance.now()+900,last=performance.now(),msg='Get ready...';const t0=performance.now(),DUR=20000;
   const share=mine/(mine+theirs),sh2=share*share/(share*share+(1-share)*(1-share)),myDmg=Math.round(5+sh2*30),opDmg=Math.round(5+(1-sh2)*30),wScale=Math.max(.45,Math.min(1.15,.3+share*1.4));let dbl=false;
-  const win0=Math.max(380,650+(buf('bars')?80:0)+(buf('percs')?50:0)-(buf('phones')?60:0)+S.sk.smarts*30-(stressed()?120:0)-(is('tank')&&(S.fate||{}).knee===1?60:0)),win=Math.round(win0*wScale);
+  const win0=Math.max(340,.88*(650+(buf('bars')?80:0)+(buf('percs')?50:0)-(buf('phones')?60:0)+S.sk.smarts*30-(stressed()?120:0)-(is('tank')&&(S.fate||{}).knee===1?60:0))),win=Math.round(win0*wScale);
   modal(`<div class="sec" style="margin:0;color:var(--blood)">${gun?'Shootout':'Fight'}</div><h2>You vs ${who}</h2>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
       <div><div class="s">You · strength ${mine}</div><div class="bar" style="height:10px"><i id="fme" style="width:100%;background:var(--money)"></i></div></div>
@@ -2506,7 +2557,7 @@ function fightGame0(mine,theirs,who,done){const gun=!!window.fgGun;window.fgGun=
     <div id="fp" style="height:96px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:var(--display);font-size:30px;letter-spacing:.03em;background:#221e27;transition:background .08s"></div>
     <p id="fm" class="s" style="text-align:center;min-height:20px"></p>
     <div class="btns" style="justify-content:center"><button class="btn" id="fd" style="padding:14px 26px;font-size:18px;background:var(--heat);color:#08121e;border-color:var(--heat)">${L.d}</button><button class="btn red" id="fh" style="padding:14px 34px;font-size:18px">${L.h}</button></div>
-    <p class="s" style="text-align:center;color:var(--dim)">${L.tip}</p>`);
+    <p class="s" style="text-align:center;color:var(--dim)">${L.tip}${gun?'':' Yellow with a ? is a fake: do nothing. COMBO: tap Hit three times fast.'}</p>`);
   const fp=$('fp'),fm=$('fm');
   const show=()=>{$('fme').style.width=Math.max(0,me)+'%';$('fop').style.width=Math.max(0,op)+'%';fm.textContent=msg};
   const end=()=>{if(!mgOn)return;mgOn=false;document.removeEventListener('keydown',key);const w=op<=0||(me>0&&op<me);
@@ -2515,14 +2566,16 @@ function fightGame0(mine,theirs,who,done){const gun=!!window.fgGun;window.fgGun=
     if(!prompt){msg=kind==='hit'?L.nothing:'Nothing to dodge.';if(kind==='hit'){me-=4}show();return}
     const late=t>deadline;
     if(prompt==='swing'){if(kind==='dodge'&&!late){msg=L.slip;}else{me-=opDmg;msg=kind==='hit'?L.walk:'Too slow.'}}
+    else if(prompt==='feint'){me-=Math.round(opDmg*.5);msg='You bit on the fake. Wait for the real one.'}
+    else if(prompt==='combo'){if(kind==='hit'&&!late){cc++;if(cc<3){msg='Keep going '+cc+'/3';fp.textContent='COMBO '+cc+'/3';show();return}op-=Math.round(myDmg*1.7);msg='Full combo!'}else{if(cc)op-=Math.round(myDmg*.3*cc);msg=late?'Too slow, combo dropped.':'You dropped the combo.'}cc=0}
     else{if(kind==='hit'&&!late){op-=myDmg;msg=L.landed}else{msg=kind==='dodge'?L.back:'Too slow.'}}
     const wasSwing=prompt==='swing';prompt=null;fp.textContent='';fp.style.background='#221e27';next=t+rnd(250,1500);if(wasSwing&&theirs>mine*1.25&&Math.random()<.4){dbl=true;next=t+rnd(120,260)}show();if(me<=0||op<=0)end()};
   const key=e=>{if(e.key==='ArrowLeft'){e.preventDefault();act('dodge')}if(e.key==='ArrowRight'||e.key===' '){e.preventDefault();act('hit')}};document.addEventListener('keydown',key);
   $('fd').onclick=()=>act('dodge');$('fh').onclick=()=>act('hit');
   const loop=t=>{if(!mgOn||!fp.isConnected)return;
-    if(prompt&&t>deadline){if(prompt==='swing'){me-=opDmg;msg=L.caught}else msg=L.miss;prompt=null;fp.textContent='';fp.style.background='#221e27';next=t+rnd(250,1500);show();if(me<=0)return end()}
-    if(!prompt&&t>=next){prompt=dbl?'swing':Math.random()<.5+(1-share)*.25?'swing':'open';dbl=false;deadline=t+Math.round(win*(.8+Math.random()*.4));
-      fp.textContent=prompt==='swing'?L.sw:L.op;fp.style.background=prompt==='swing'?'#3a1d22':'#1d3a26'}
+    if(prompt&&t>deadline){if(prompt==='swing'){me-=opDmg;msg=L.caught}else if(prompt==='feint'){op-=Math.round(myDmg*.5);msg='Did not bite. He stumbled on the fake.'}else if(prompt==='combo'){if(cc)op-=Math.round(myDmg*.3*cc);msg='Combo timed out.';cc=0}else msg=L.miss;prompt=null;fp.textContent='';fp.style.background='#221e27';next=t+rnd(250,1500);show();if(me<=0)return end()}
+    if(!prompt&&t>=next){{const r=Math.random();prompt=dbl?'swing':r<.14?'feint':r<.5+(1-share)*.2?'swing':Math.random()<.35?'combo':'open'}dbl=false;cc=0;deadline=t+Math.round(win*(.8+Math.random()*.4)*(prompt==='combo'?1.9:1));
+      fp.textContent=prompt==='swing'?L.sw:prompt==='feint'?L.sw+'?':prompt==='combo'?'COMBO: TAP HIT x3':L.op;fp.style.background=prompt==='swing'?'#3a1d22':prompt==='feint'?'#3a381d':'#1d3a26'}
     if(t-t0>DUR){msg=L.time;show();return end()}
     requestAnimationFrame(loop)};
   show();requestAnimationFrame(loop);
@@ -3425,8 +3478,8 @@ function gateGame(title,txt,go){modal(`<h2>${title}</h2><p>${txt}</p><p class="s
   sneakGame:()=>['Sneak through the house','Only step when the marker is in the quiet zone (tap Step or press Space). Two loud steps and they wake up. Beat the clock.'],
   padGame:()=>['Program the key','Lock it in when the marker hits the green (tap Lock in or press Space). Get 2 of 3 before the clock runs out.'],
   chase:()=>['Twelve on your tail','Dodge the cop cars for 15 seconds. The last 5 seconds they floor it. Tap left or right, or use the arrow keys.'],
-  shootoutGame:a=>['Shootout vs '+a[2],'Tap them when they peek out. When one turns red they are about to shoot: hold cover. Keys: hold Shift or the down arrow for cover, R to reload, click to shoot.'],
-  fightGame0:a=>['Fight vs '+a[2],'When it says THEY SWING (red) hit Dodge. When it says OPENING (green) hit Hit. Be quick. Keys: left arrow dodge, right arrow or space hit.']};
+  shootoutGame:a=>['Shootout vs '+a[2],'Do the math. Each round shows their cover number and a hand of cards. Tap cards that add up to the number, then hit FIRE before the timer ends. Wrong number or too slow and they shoot you.'],
+  fightGame0:a=>['Fight vs '+a[2],'THEY SWING (red): hit Dodge. OPENING (green): hit Hit. Yellow with a question mark is a fake, so do nothing. COMBO: tap Hit three times fast. Keys: left arrow dodge, right arrow or space hit.']};
  const wrap=(name,fn)=>function(...a){if(window._ing||(name==='fightGame0'&&window.fgGun))return fn.apply(this,a);const [t,x]=INFO[name](a);
    gateGame(t,x,()=>{window._ing=1;try{fn.apply(this,a)}finally{window._ing=0}})};
  flowGame=wrap('flowGame',flowGame);grabGame=wrap('grabGame',grabGame);seqGame=wrap('seqGame',seqGame);sneakGame=wrap('sneakGame',sneakGame);padGame=wrap('padGame',padGame);chase=wrap('chase',chase);shootoutGame=wrap('shootoutGame',shootoutGame);fightGame0=wrap('fightGame0',fightGame0)}
