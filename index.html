@@ -519,7 +519,7 @@ function paneMove(){
       `<span class="chip" style="color:${cdef(o).color};border-color:${cdef(o).color}">${cdef(o).name}</span>`;
     const hm=homeBlock()===i?' <span class="chip here">Your place</span>':'';
     return `<div class="row" style="${BLOCKART[i]?`background:linear-gradient(90deg,rgba(28,25,31,.95) 35%,rgba(28,25,31,.55)),url(${BLOCKART[i]}) center 55%/cover`:''}">${avatar(i,40)}<div class="info"><div class="t">${b}${hm}</div><div class="s">${chip} · ${plugName(i)}, <span style="color:${LVL[PINFO[i].lvl].col}">${PINFO[i].lvl} plug</span> ${S.known.includes(i)?'<span class="chip mine">Knows you</span>':'<span class="chip">Stranger</span>'}</div></div>
-      ${i===S.at?'<span class="chip here">Here</span>':`<button class="btn go" data-a="go" data-i="${i}">Go</button>`}</div>`;
+      ${i===S.at?'<span class="chip here">Here</span><button class="btn" data-a="adv">Stay here, next day</button>':`<button class="btn go" data-a="go" data-i="${i}">Go</button>`}</div>`;
   }).join('');
   h+=`<div class="sec">Mini games on ${BLOCKS[S.at]}</div>
    <div class="row"><div class="info"><div class="t">Hoop at the park</div><div class="s">Bet on a 5-shot shootout. Once a day.${is('tank')?' Tank still got it: bigger green zone.':''}</div></div><button class="btn go" data-a="hoops" ${S.park===S.day||S.cash<100?'disabled':''}>${S.park===S.day?'Played today':'Play'}</button></div>
