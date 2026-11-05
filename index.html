@@ -938,7 +938,7 @@ const rapFat=()=>S.rap.fat||0;
 const songPay=x=>Math.round(x.q*(1+S.rap.fans/3000)*Math.pow(.9,S.day-x.day)*(S.rap.signed?1.4:1)*.25);
 const rapCut=()=>S.rap.bad&&S.rap.bad.until>S.day?1-S.rap.bad.cut:1;
 const showPay=()=>Math.round((150+S.rap.fans*.18+S.rap.hype*8)/(1+rapFat()*.45)*rapCut());
-function rapDay(){const R=S.rap;if(!R.songs.length)return;let t=0;R.songs.forEach(x=>t+=songPay(x));t=Math.round(t);
+function rapDay(){const R=S.rap;if(S.rapOn&&R.fans>=1500&&!S.engCon&&canNewConnect()&&Math.random()<.1){S.engCon=1;S.pconn='eng'}if(!R.songs.length)return;let t=0;R.songs.forEach(x=>t+=songPay(x));t=Math.round(t);
   R.fat=Math.max(0,rapFat()-.5);t=Math.min(t,Math.round(120+R.fans*.03));t=Math.round(t*rapCut());if(R.frz>S.day)t=0;R.fans+=Math.round(R.hype*1.2);R.hype=Math.max(0,R.hype-6);if(t>0){S.cash+=t;say(`Your music made ${money(t)} in streams today.`)}}
 function flowGame(title,done){
   mgOn=true;const BEAT=900,N=8;let taps=0,score=0,t0=performance.now()+900;
@@ -1247,8 +1247,13 @@ function plugFavor(bi,k){const fm=plugFem(bi),he=fm?'she':'he',He=fm?'She':'He',
     const dmg=vcut(rnd(15,30));S.hp-=dmg;S.trust[bi]=Math.min(100,S.trust[bi]+5);
     lickDone(`The ${od.name} were ready`,`It went bad and you took ${dmg} damage. ${nm} still respects that you tried. Trust +5.`,false,true)});
 }
-const CONNECTS=['Silk','Javi','Mr. Kim','Big Chief','OG Mook','Nadia'];
-function connectCand(){if(S.connect)return;const ok=bi=>S.known.includes(bi)&&!S.burned[bi]&&!(S.conAsk||{})[bi];
+const CONNECTS=['Silk','Javi','Mr. Kim','Big Chief','OG Mook','Nadia','Marisol','Deacon','Uncle Sol','Tasha K'];
+const CSPEC={'Silk':['snow','kicks'],'Javi':['loud','bars'],'Mr. Kim':['phones','percs'],'Big Chief':['snow','loud'],'OG Mook':['loud','bars'],'Nadia':['snow','phones'],'Marisol':['kicks','phones'],'Deacon':['percs','bars'],'Uncle Sol':['loud','percs'],'Tasha K':['bars','snow']};
+const conList=()=>{if(S.connect&&!S.cons)S.cons=[S.connect];return S.cons||[]};
+const canNewConnect=()=>{const n=conList().length;return n<3&&S.rep>=[0,25,55][n]};
+const newConName=()=>{const own=conList().map(c=>c.name),L=CONNECTS.filter(c=>!own.includes(c));return pick(L.length?L:CONNECTS)};
+function addConnect(o){const L=conList();if(L.some(c=>c.name===o.name))return false;S.cons=L;S.cons.push(o);S.connect=S.cons[0];S.conSrv=(S.srvU||0)+rnd(180,300)*S.cons.length;return true}
+function connectCand(){if(!canNewConnect())return;const ok=bi=>S.known.includes(bi)&&!S.burned[bi]&&!(S.conAsk||{})[bi];
   if(S.conTh==null)S.conTh=rnd(-8,6);const th=S.conTh;
   if(S.gf&&S.gf.plug!=null&&ok(S.gf.plug)&&S.trust[S.gf.plug]>=85+th)return S.gf.plug;
   if(!isF()&&ok(3)&&S.trust[3]>=90+th/2&&((S.pk[3]||{}).favs||0)>=2)return 3;
@@ -1260,20 +1265,22 @@ function connectMeet(bi){S.conAsk=S.conAsk||{};S.conAsk[bi]=1;const nm=plugName(
 function connectReveal(bi){const nm=plugName(bi),fm=plugFem(bi),He=fm?'She':'He',he=fm?'she':'he',his=fm?'her':'his',dated=S.gf&&S.gf.plug===bi;
   if(Math.random()<.35){S.whole=S.whole||{};S.whole[bi]=1;say(`${nm} started giving you wholesale prices.`);
     modal(`<h2>${nm} looking out</h2><p>You asked ${nm} about ${his} plug. ${He} laughed. "Nah, that's my money right there."</p><p>But ${he} ain't trying to lose you either. From now on ${nm} gives you <b>wholesale prices: 20% off</b> everything.</p><div class="btns"><button class="btn go" id="ok">Bet</button></div>`);$('ok').onclick=close;return}
-  const cn=pick(CONNECTS);S.connect={name:cn,from:bi,last:-9};say(`${nm} put you on with ${his} plug, ${cn}.`);
+  const cn=newConName();addConnect({name:cn,from:bi,last:-9});say(`${nm} put you on with ${his} plug, ${cn}.`);
   const line=dated?`"I trust you. Meet my plug."`:bi===3?`"You showed your loyalty. Time you meet the plug."`:`"You been solid since day one. I'ma put you on with my people."`;
   modal(`${CONNPICS[cn]?`<img src="${CONNPICS[cn]}" alt="" style="width:120px;height:120px;border-radius:8px;object-fit:cover;align-self:center">`:''}<h2>Meet the connect</h2><p>${nm} pulled you to the side. ${line}</p><p>That's <b>${cn}</b>. ${cn} only moves weight: QP and up, 500 pills and up, 16 oz and up. Real product, way cheaper than any block. Hit ${cn} from your phone every couple days.</p><p class="s" style="color:var(--dim)">Don't burn ${nm}. If ${he} goes, the connect goes with ${him(fm)}.</p><div class="btns"><button class="btn go" id="ok">Say less</button></div>`);$('ok').onclick=close}
 function him(fm){return fm?'her':'him'}
 function connectSizes(g){return g.unit==='g'?WEIGHTS.filter(w=>w[0]>=112&&g.sizes.some(z=>z[0]===w[0])):g.unit==='pills'?[[500,'500'],[2000,'2,000']]:[[16,'16 oz'],[64,'64 oz']]}
-function connectPrice(g){const avg=BLOCKS.reduce((a,b,i)=>a+(S.prices[i]?.[g.id]??street(g)),0)/BLOCKS.length;return Math.max(1,Math.round(avg*gmult(88)*.65))}
-function connectOrder(){const C=S.connect;if(!C)return;
-  modal(`<h2>Text ${C.name}</h2><p>Weight only. Real, ${'fire'} product. Shows up today.</p><div class="pane">${GOODS.map(g=>{const pr=connectPrice(g);return `<div class="row" style="flex-wrap:wrap;padding:8px 12px"><div class="info" style="flex:1 1 160px"><div class="t">${g.name}</div><div class="s">${money(pr)} each</div></div><div class="btns">${connectSizes(g).map(z=>{const n=z[0],c=Math.round(pr*n),room=used()+n*g.sp<=S.cap;return `<button class="btn go" data-cg="${g.id}" data-cn="${n}" ${S.cash>=c&&room?'':'disabled'}>${z[1]} · ${money(c)}</button>`}).join('')}</div></div>`}).join('')}</div><div class="btns"><button class="btn" id="no">Not now</button></div>`);
+function connectPrice(g,C){const sp=C&&CSPEC[C.name]&&CSPEC[C.name].includes(g.id)?.88:1;return Math.round(connectPrice0(g)*sp)}
+function connectPrice0(g){const avg=BLOCKS.reduce((a,b,i)=>a+(S.prices[i]?.[g.id]??street(g)),0)/BLOCKS.length;return Math.max(1,Math.round(avg*gmult(88)*.65))}
+function connectOrder(i){const C=conList()[i||0];if(!C)return;
+  modal(`<h2>Text ${C.name}</h2><p>Weight only. Real, ${'fire'} product. Shows up today.</p><div class="pane">${GOODS.map(g=>{const pr=connectPrice(g,C);const spc=CSPEC[C.name]&&CSPEC[C.name].includes(g.id);return `<div class="row" style="flex-wrap:wrap;padding:8px 12px"><div class="info" style="flex:1 1 160px"><div class="t">${g.name}${spc?' <span class="chip mine">Specialty</span>':''}</div><div class="s">${money(pr)} each</div></div><div class="btns">${connectSizes(g).map(z=>{const n=z[0],c=Math.round(pr*n),room=used()+n*g.sp<=S.cap;return `<button class="btn go" data-cg="${g.id}" data-cn="${n}" ${S.cash>=c&&room?'':'disabled'}>${z[1]} · ${money(c)}</button>`}).join('')}</div></div>`}).join('')}</div><div class="btns"><button class="btn" id="no">Not now</button></div>`);
   $('no').onclick=close;
-  $('mcard').querySelectorAll('[data-cg]').forEach(b=>b.onclick=()=>{const g=G(b.dataset.cg),n=+b.dataset.cn,pr=connectPrice(g),c=Math.round(pr*n);
+  $('mcard').querySelectorAll('[data-cg]').forEach(b=>b.onclick=()=>{const g=G(b.dataset.cg),n=+b.dataset.cn,pr=connectPrice(g,C),c=Math.round(pr*n);
     const realHave=S.inv[g.id]-S.fake[g.id];S.q[g.id]=Math.round((S.q[g.id]*realHave+88*n)/(realHave+n));S.paid[g.id]=Math.round((S.paid[g.id]*S.inv[g.id]+c)/(S.inv[g.id]+n));S.inv[g.id]+=n;S.cash-=c;C.last=S.day;S.heat=Math.min(100,S.heat+4);
     say(`${C.name} dropped off ${amt(n,g)} of ${g.name} for ${money(c)}.`);close()})}
-function paneConnect(){const C=S.connect;if(!C)return '';const ready=S.day-C.last>=2;
-  return `<div class="row" style="flex-wrap:wrap;border-color:var(--money)">${cpic(C.name,52)}<div class="info" style="flex:1 1 180px;min-width:0"><div class="t">${C.name} <span class="chip mine">The connect</span></div><div class="s">${C.from<0?'Found you on the street.':'Met through '+plugName(C.from)+'.'} Weight only, real product, about a third under block prices.</div></div><button class="btn go" data-a="conn" ${ready?'':'disabled'}>${ready?'Text '+C.name:'Hit back in '+(2-(S.day-C.last))+'d'}</button></div>`}
+function paneConnect(){return conList().map((C,i)=>paneConnect1(C,i)).join('')}
+function paneConnect1(C,i){const ready=S.day-C.last>=2;
+  return `<div class="row" style="flex-wrap:wrap;border-color:var(--money)">${cpic(C.name,52)}<div class="info" style="flex:1 1 180px;min-width:0"><div class="t">${C.name} <span class="chip mine">The connect</span></div><div class="s">${C.from<0?'Found you on the street.':'Met through '+plugName(C.from)+'.'} Weight only, real product, about a third under block prices. Specialty: ${(CSPEC[C.name]||[]).map(id=>G(id).name).join(' and ')||'everything'}.</div></div><button class="btn go" data-a="conn" data-i="${i}" ${ready?'':'disabled'}>${ready?'Text '+C.name:'Hit back in '+(2-(S.day-C.last))+'d'}</button></div>`}
 function plugDate(bi){if(!adult())return;const nm=plugName(bi),fem=plugFem(bi),go=()=>{if(S.gf)endGF();S.gf={name:nm,rel:70,plug:bi};addStress(-15);say(`You and ${nm} made it official.`);
     modal(`<h2>It's official</h2><p>You and ${nm} are together now. ${fem?'She':'He'} gives you 15% off every buy and always tells you if a batch is fake.</p><p style="color:var(--dim)">Mixing love and business is risky. Rob ${fem?'her':'him'}, or let it go bad, and you lose your ${fem?'girl':'man'} and your plug.</p><div class="btns"><button class="btn go" id="ok">Bet</button></div>`);$('ok').onclick=close};
   if(S.gf){modal(`<h2>Make it official with ${nm}?</h2><p>You'll have to end it with ${S.gf.name} first.${S.home==='gfplace'?" You'll be moving out too.":''}${gUsed()>0?' Whatever you kept at their place stays there.':''}</p><div class="btns"><button class="btn go" id="y">Do it</button><button class="btn" id="n">Never mind</button></div>`);
@@ -1456,7 +1463,7 @@ function plugRob(bi){const P=PINFO[bi],nm=plugName(bi),her=plugFem(bi)?'her':'hi
     say(`Tried to rob ${nm} and it went bad. −${dmg} health.${lost}`);
     modal(`<h2 style="color:var(--blood)">${nm} was ready</h2><p>${P.lvl==='Low'?'He':'Their people'} had heat waiting. You barely got out. −${dmg} health.${lost}</p><div class="btns"><button class="btn go" id="ok">Continue</button></div>`);$('ok').onclick=close};
 }
-function newPlug(bi){if(S.connect&&S.connect.from===bi){say(`${S.connect.name} stopped answering. Your connect went with ${plugName(bi)}.`);S.connect=null}if(S.whole)delete S.whole[bi];if(S.conAsk)delete S.conAsk[bi];if(S.enemies)delete S.enemies[bi];if(S.gf&&S.gf.plug===bi)endGF();delete S.burned[bi];const fem=Math.random()<.5;const nm=pick(fem?NEWF:NEWM);S.pname[bi]=nm;S.pfem[bi]=fem?1:0;
+function newPlug(bi){{const L=conList(),g=L.find(c=>c.from===bi);if(g){say(`${g.name} stopped answering. Your connect went with ${plugName(bi)}.`);S.cons=L.filter(c=>c!==g);S.connect=S.cons[0]||null}}if(S.whole)delete S.whole[bi];if(S.conAsk)delete S.conAsk[bi];if(S.enemies)delete S.enemies[bi];if(S.gf&&S.gf.plug===bi)endGF();delete S.burned[bi];const fem=Math.random()<.5;const nm=pick(fem?NEWF:NEWM);S.pname[bi]=nm;S.pfem[bi]=fem?1:0;
   S.pbio[bi]=`New plug on ${BLOCKS[bi]}. Took over after the last one got robbed. Don't know much about ${fem?'her':'him'} yet.`;S.trust[bi]=20;S.deals[bi]=0;
   say(`${nm} took over as the plug on ${BLOCKS[bi]}.`)}
 /* ---------- relationships ---------- */
@@ -1499,7 +1506,7 @@ const netWorth=()=>Math.round(S.cash+GOODS.reduce((a,g)=>a+(S.inv[g.id]||0)*(S.p
 const relLbl=v=>v>=80?'Ride or die':v>=60?'Tight':v>=40?'Cool':v>=20?'Familiar':'Strangers';
 const relRow=(who,v,pk)=>`<div class="row" style="padding:8px 12px;flex-wrap:wrap">${pk?artFace(pk,64):''}<div class="info" style="flex:1 1 180px"><div class="t">${who} <span class="chip ${v>=40?'mine':''}">${relLbl(v)}</span></div><div class="s">Relationship ${Math.round(v)}/100</div><div class="bar"><i style="width:${v}%;background:var(--money)"></i></div></div></div>`;
 function relUp(k,n){const R=RL();R.d=R.d||{};R[k]=Math.min(100,(R[k]||0)+n)}
-function connectIntro(h,txt){const cn=pick(CONNECTS);S.connect={name:cn,from:-1,last:-9};say(`${cn} is your connect now.`);addXP(6);
+function connectIntro(h,txt){const cn=newConName();addConnect({name:cn,from:-1,last:-9});say(`${cn} is your connect now.`);addXP(6);
   modal(`${CONNPICS[cn]?`<img src="${CONNPICS[cn]}" alt="" style="width:120px;height:120px;border-radius:8px;object-fit:cover;align-self:center">`:''}<h2>${h}</h2><p>${txt}</p><p>That's <b>${cn}</b>. ${cn} only moves weight: QP and up, 500 pills and up, 16 oz and up. Real product, way cheaper than any block. Hit ${cn} from your phone every couple days.</p><div class="btns"><button class="btn go" id="ok">Bet</button></div>`);$('ok').onclick=close}
 function lawBody(row,b){const R=RL(),v=R.law||0,d=R.d||{},disc=v>=40?.75:1,pr=n=>Math.round(n*disc),nw=netWorth(),pay=S.lawPay;
   let h=relRow('Attorney Cole',v,'cole');
@@ -1507,7 +1514,7 @@ function lawBody(row,b){const R=RL(),v=R.law||0,d=R.d||{},disc=v>=40?.75:1,pr=n=
   h+=row('Keep a lawyer on call',`Next time you get jammed up, you lose nothing.${disc<1?' (25% off, he likes you)':''}`,pay?'<span class="chip mine">On payroll</span>':S.fx.lawyer?'<span class="chip mine">On call</span>':b('law',money(pr(3000)),S.cash<pr(3000)));
   h+=row('Clean up your name',pay?'Free while he is on payroll. Heat −30.':'Heat −30.',b('clean',pay?'Free':money(pr(2000)),!pay&&S.cash<pr(2000)||S.heat<1));
   if(v>=25)h+=row('Cole as a customer','He asks for a little something for the weekends.',(S.custos||[]).some(c=>c.name==='Cole')?'<span class="chip mine">Customer</span>':b('lcust','Offer',(S.custos||[]).length>=15));
-  if(v>=60&&!S.connect&&!R.lawCon)h+=row('Ask about his people','"I know a guy in your line of work." Could be big.',b('lguy','Ask',false));
+  if(v>=60&&canNewConnect()&&!R.lawCon)h+=row('Ask about his people','"I know a guy in your line of work." Could be big.',b('lguy','Ask',false));
   h+=row('Lawyer on payroll',pay?'Cole is on payroll: $1,500 a week. You never lose a retainer, heat cools faster, and cleanups are free.':nw>=200000?'Full time. $1,500 a week. Never lose your retainer, heat cools faster, free cleanups.':`Needs a net worth of ${money(200000)}. You are at ${money(nw)}.`,pay?b('lfire','Let go',false,'red'):b('lpay','Hire',nw<200000||S.cash<1500));
   return h}
 function storeBody(row,b){const R=RL(),v=R.store||0,d=R.d||{};
@@ -1515,7 +1522,7 @@ function storeBody(row,b){const R=RL(),v=R.store||0,d=R.d||{};
   h+=row('Chat with Raj','Talk about the block, his family, the prices.',b('schat',d.store===S.day?'Talked today':'Free',d.store===S.day));
   h+=row('Tip Raj','$50 for keeping an eye out. He remembers.',b('stip',money(50),S.cash<50))+row('Energy drink','+25 energy. Stress +2.',b('sdrink','$15',S.cash<15||(S.en!=null&&S.en>=enMax())));
   if(v>=25)h+=row('Raj as a customer','He wants to cop for himself and a couple cousins.',(S.custos||[]).some(c=>c.name==='Raj')?'<span class="chip mine">Customer</span>':b('scust','Offer',(S.custos||[]).length>=15));
-  if(v>=50&&!S.connect&&!R.storeCon)h+=row('Raj knows somebody','"My cousin\'s partner moves real weight."',b('sguy','Ask',false));
+  if(v>=50&&canNewConnect()&&!R.storeCon)h+=row('Raj knows somebody','"My cousin\'s partner moves real weight."',b('sguy','Ask',false));
   if(v>=60)h+=row('Imported vest','Bulletproof vest, brought over from his family overseas. Gunfire and fights hurt 35% less.',S.vest?'<span class="chip mine">Owned</span>':b('svest','$2,500',S.cash<2500||(S.age&&S.age<18)));
   else h+=row('Imports in the back','Raj might have something special once he trusts you (relationship 60+).','<span class="s">Locked</span>');
   if(v>=75)h+=row('Imported AK','Full auto, straight from overseas. Hits harder than anything Unc sells.',(S.guns||{}).ak?'<span class="chip mine">Owned</span>':b('sak','$9,000',S.cash<9000||(S.age&&S.age<18)));
@@ -1608,7 +1615,7 @@ function warUI(){const W=S.war;S.war=null;if(!W)return false;const A=crew(W.a),D
   return true}
 /* ---------- street connect scenes ---------- */
 function srvTick(n,g){S.srvU=(S.srvU||0)+n*g.sp;if(atHome())S.homeSale=S.day;
-  if(!S.connect&&!S.scene&&(S.age||25)>=16&&S.srvU>=(S.conSrv||(S.conSrv=rnd(110,190))))S.scene=1}
+  if(canNewConnect()&&!S.scene&&(S.age||25)>=16&&S.srvU>=(S.conSrv||(S.conSrv=rnd(110,190))))S.scene=1}
 const SCENES={
  'Silk':{h:'Black van',t:'You step out the store and a van door slides open. Hands grab you, a bag goes over your head. You hear tires and a lot of silence. When the bag comes off you are in the back of a closed salon, a woman in a high chair with her legs crossed. "You been feeding my city for a minute. Sit down."',a:'Stay calm and sit',b:'Swing on them',ok:'"Smart. Most people scream." Silk slides you a card. "Weight only. Hit me when you ready."',bad:'You got one good swing in before three of them put you on the floor. Silk laughed. "Feisty. I like that, still."'},
  'Javi':{h:'Red light',t:'A car pulls up next to you at a light and the window rolls down. A man in sunglasses says your street name. Then your real name. "Get in. You not in trouble, you in demand." The doors lock. Ten minutes later you are in the back of a taqueria with the chairs up on the tables.',a:'Hear him out',b:'Go for the door',ok:'Javi pushes a plate toward you. "Eat. Then we talk numbers." You walk out with a number saved.',bad:'The door was bolted. Javi\'s cousin met you with a forearm. "Relax, hermano. Sit." You sit.'},
@@ -1616,9 +1623,18 @@ const SCENES={
  'Big Chief':{h:'Traffic stop',t:'Blue lights come on behind you. Your heart drops. The officer taps the glass, hands you your own license back and quietly says, "Park around the corner. Chief wants a word." There is no ticket, no report, just a long black Escalade waiting in a dark lot.',a:'Walk to the Escalade',b:'Run for it',ok:'Big Chief barely looks up from his phone. "You move enough to be worth my time." The officer walks off like nothing happened.',bad:'You made it forty feet. A hand on your collar and a knee in your side. Chief shrugged. "Now we can be serious."'},
  'OG Mook':{h:'Barbershop chair',t:'You get a fresh cut at a shop you never been to. The barber spins the chair around and the door locks behind you. A man sits in the corner with a toothpick and an old scar. "You been hitting my corners with product that ain\'t mine."',a:'Own it, stay cool',b:'Stand up',ok:'OG Mook grins. "Respect. Most dudes lie." He tosses you a card with a number. "Do it my way."',bad:'The barber pushed you back down hard enough to rattle your teeth. OG Mook waved him off. "Y\'all done? Good. Now we talk."'},
  'Nadia':{h:'Gas station',t:'You are pumping gas when a clean white SUV pulls up on the other side. The back window slides down and a woman in a cream coat nods at your trunk. "Nice, nobody looks inside." She knows exactly what you carry. "Get in. It\'s warm."',a:'Get in',b:'Walk away',ok:'Nadia pours you a drink you do not touch. "Quantity. Consistency. That\'s all I ask." She writes a number on your hand.',bad:'Two men stepped out and walked you back to the SUV regardless. Nadia sighed. "Dramatic. Anyway."'}};
-function connectScene(){const cn=pick(CONNECTS),sc=SCENES[cn];if(!sc||S.connect){S.scene=0;return false}S.scene=0;
+SCENES['Marisol']={h:'Quinceañera',t:'You get invited to a quinceañera by somebody you barely know. Halfway through the party an aunt walks you out the back to a kitchen where a woman in a gold dress stirs a pot like nothing is wrong. "My cousin says you been moving a lot. Sit."',a:'Sit and eat',b:'Walk out',ok:'Marisol serves you a plate and writes a number on a napkin. "Family first. Then business."',bad:'Two cousins blocked the door until you sat. Marisol smiled. "Rude. But okay."'};
+SCENES['Deacon']={h:'Church lot',t:'You are cutting through a church parking lot when a deacon in a pressed suit says your name from the steps. "Come inside, son." The sanctuary is empty. In the front pew there is a duffel bag and a very calm man.',a:'Take the pew',b:'Check the bag',ok:'Deacon folds his hands. "The Lord provides, and so do I." He slides you a folded bulletin with a number inside.',bad:'The usher stepped on your hand. Deacon sighed. "Patience, child. Sit."'};
+SCENES['Uncle Sol']={h:'Fishing trip',t:'A man you do not know hands you a fishing rod at the pier at dawn. "Uncle Sol says you are the one." Forty minutes later you are on a small boat with an old man who has not looked up from his line once.',a:'Cast a line',b:'Ask questions',ok:'Uncle Sol finally speaks. "Patience. That is what I look for." He hands you a bait tin with a number inside.',bad:'You got louder and his guys got closer. Sol only said, "Cast. Quietly."'};
+SCENES['Tasha K']={h:'Rooftop',t:'You get an invite to a rooftop lounge from a number you do not recognize. The door is held by a guy in a headset and the whole floor goes quiet when you walk in. A woman in a silver jacket raises her glass. "The one everyone is talking about."',a:'Join her table',b:'Stay by the door',ok:'Tasha K slides a card across the table. "Real quantity, fair price, zero drama."',bad:'Her security walked you to the table anyway. "Ma\'am says sit." You sat.'};
+const COFFER={cell:['Your cellmate had a cousin','Before they moved you out, the guy in the next bunk slid you a folded paper. "When you touch back down, call my cousin. Tell him I sent you."'],
+ unc:['Unc knows somebody','Unc wiped his hands on a rag. "You been a good customer. I got a guy who moves weight and does not talk to just anybody. Do not make me regret this."'],
+ eng:['The engineer\'s cousin','The engineer paused the playback. "My cousin runs a real operation. You got fans and cash now. He should meet you."'],
+ gang:['The big homie put you on','The shot caller pulled you aside after the meeting. "You earned it. Let me put you on with somebody outside the set."']};
+function connectOffer(src){const o=COFFER[src];if(!o||!canNewConnect())return false;connectIntro(o[0],o[1]);return true}
+function connectScene(){const cn=newConName(),sc=SCENES[cn];if(!sc||!canNewConnect()){S.scene=0;return false}S.scene=0;
   modal(`${artImg(SCENEKEY[cn],420)}<div class="sec" style="margin:0;color:var(--blood)">Somebody noticed you</div><h2>${sc.h}</h2><p>${sc.t}</p><div class="btns"><button class="btn go" id="sa">${sc.a}</button><button class="btn red" id="sb">${sc.b}</button></div>`);
-  const fin=(txt,hurt)=>{S.connect={name:cn,from:-1,last:-9};say(`${cn} found you on the street. You got ${cn}'s number.`);addXP(8);S.rep+=3;
+  const fin=(txt,hurt)=>{addConnect({name:cn,from:-1,last:-9});say(`${cn} found you on the street. You got ${cn}'s number.`);addXP(8);S.rep+=3;
     modal(`${CONNPICS[cn]?`<img src="${CONNPICS[cn]}" alt="" style="width:120px;height:120px;border-radius:8px;object-fit:cover;align-self:center">`:''}<h2>Meet the connect</h2><p>${txt}</p>${hurt?`<p style="color:var(--blood)">${hurt}</p>`:''}<p>That's <b>${cn}</b>. ${cn} only moves weight: QP and up, 500 pills and up, 16 oz and up. Real product, way cheaper than any block. Hit ${cn} from your phone every couple days.</p><div class="btns"><button class="btn go" id="ok">Bet</button></div>`);$('ok').onclick=()=>{close()}};
   $('sa').onclick=()=>{const ok=Math.random()<.8+S.sk.smarts*.02;if(ok)return fin(sc.ok);const d=rnd(4,10);S.hp-=d;addStress(8);fin(sc.bad,`They roughed you up first. −${d} health.`)};
   $('sb').onclick=()=>{const w=Math.random()<Math.max(.2,Math.min(.8,.25+(myStr()-10)*.02));if(w){S.rep+=2;return fin(sc.ok.replace(/^"?/,'They respected the nerve. "'))}const d=rnd(10,22);S.hp-=d;addStress(12);fin(sc.bad,`You took a beating. −${d} health.`)};
@@ -1632,7 +1648,8 @@ const FAVS=[
  {t:'Dead battery',txt:(n,b)=>`${n}'s car won't start in front of the store on ${b}.`,help:'Give her a jump',love:1,rob:p=>`Check ${p.his} glove box`}];
 function favorRoll(){if(window.FF||S.inJail||S.over||S.favPop||(S.age&&S.age<14)||Math.random()>.12)return;
   const f=pick(FAVS),nm=f.love?pick(isF()?BNAMES:GNAMES):f.names?pick(f.names):pick(CNAMES);S.favPop={i:FAVS.indexOf(f),nm,bi:S.at}}
-function favorUI(){if(S.war&&$('modal').hidden&&!S.over&&!S.inJail&&warUI())return true;
+function favorUI(){if(S.pconn&&$('modal').hidden&&!S.over&&!S.inJail){const k=S.pconn;S.pconn=null;if(connectOffer(k))return true}
+  if(S.war&&$('modal').hidden&&!S.over&&!S.inJail&&warUI())return true;
   if(S.scene&&$('modal').hidden&&!S.over&&!S.inJail&&connectScene())return true;
   if(S.favMsg&&$('modal').hidden&&!S.over){const m=S.favMsg;S.favMsg=null;modal(`<h2>${m.h}</h2><p>${m.t}</p><div class="btns"><button class="btn go" id="ok">Smh</button></div>`);$('ok').onclick=close;return true}
   const F=S.favPop;if(!F||!$('modal').hidden||S.over)return false;S.favPop=null;const f=FAVS[F.i],b=BLOCKS[F.bi],nm=F.nm,p=PR(),love=f.love&&adult(),cust=(S.custos||[]).length<15;
@@ -2076,7 +2093,7 @@ function devDo(k){
   if(k==='hook'){S.habit=8;S.lastUse=S.day-3;return done('hooked')}
   if(k==='crewok'){S.crews.forEach(c=>{c.respect=75;c.beef=0;c.envy=0});S.rep=Math.max(S.rep,30);return done('crews 75 respect')}
   if(k==='crewmad'){S.crews.forEach(c=>{if(!c.ally&&S.gang!==c.id)c.beef=80});return done('crews want smoke')}
-  if(k==='nogang'){S.gang=null;S.myGang=null;S.crews.forEach(c=>c.ally=0);S.connect=null;S.whole={};S.conAsk={};return done('gang + connect reset')}
+  if(k==='nogang'){S.gang=null;S.myGang=null;S.crews.forEach(c=>c.ally=0);S.connect=null;S.cons=[];S.whole={};S.conAsk={};return done('gang + connect reset')}
   if(k==='dateplug'){if(!adult())return done('under 18');S.known.includes(S.at)||S.known.push(S.at);S.trust[S.at]=95;if(S.gf)endGF();S.gf={name:plugName(S.at),rel:80,plug:S.at};(S.pk[S.at]=S.pk[S.at]||{}).hooked=1;return done(`dating ${plugName(S.at)}`)}
   if(k==='jail'){$('modal').hidden=true;busted();render();return checkEnd()}
   if(k==='sstrike'){const m=schoolStrike('testing');return done(m.replace(/<[^>]+>/g,''))}
@@ -2093,7 +2110,7 @@ function devDo(k){
   if(k==='ejack'){if(S.cash<600)S.cash+=1000;return jackboys()}
   if(k==='elink'){if(!adult())return done('under 18, no link-ups');return linkup(false)}
   if(k==='eraid')return raid();
-  if(k==='econn'){S.known.includes(S.at)||S.known.push(S.at);delete (S.conAsk||{})[S.at];S.connect=null;return connectMeet(S.at)}
+  if(k==='econn'){S.known.includes(S.at)||S.known.push(S.at);delete (S.conAsk||{})[S.at];S.connect=null;S.cons=[];return connectMeet(S.at)}
   if(k==='gcall'){if(!S.gang){const c=S.crews.find(c=>c.alive);S.gang=c.id;c.respect=80}return gangCall()}
   if(k==='gally'){let c=S.crews.find(c=>c.alive&&c.ally);if(!c){c=S.crews.find(c=>c.alive&&c.id!==S.gang);c.ally=1;c.respect=80}return Math.random()<.5?allyNervous(c):allyHelp(c)}
   if(k==='bizev'){if(!Object.keys(S.biz||{}).length){S.biz=S.biz||{};S.biz.wash=1}const R=Math.random;Math.random=()=>0.01;let fired;try{fired=bizEvent()}finally{Math.random=R}if(!fired)return done('no business event');return}
@@ -2684,7 +2701,7 @@ function event(){
   const fe=friendEvent();if(fe)return;
   if(gangEvent())return;
   if(bizEvent())return;
-  if(!S.connect&&Math.random()<rnd(3,9)/100){const ce=connectCand();if(ce!==undefined)return connectMeet(ce)}
+  if(canNewConnect()&&Math.random()<rnd(3,9)/100){const ce=connectCand();if(ce!==undefined)return connectMeet(ce)}
   {const bf=bigFateCand();if(bf!==undefined&&Math.random()<.07)return bigFate(bf)}
   if(!quiet&&(S.rapOn||S.robOn)&&Math.random()<.09&&pathNeg())return;
   if(adult()&&Math.random()<.06)return linkup(false);
@@ -2728,7 +2745,7 @@ function cops(){
   $('s').onclick=()=>{const odds=C.cool+(is('country')?.2:0)+(S.sk.talk-3)*.03+(S.sk.smarts-3)*.02;if(used()===0||Math.random()<odds){S.st.cops++;say(`The ${C.name.toLowerCase()} let you go.`);S.heat=Math.max(0,S.heat-10)}else busted();close()};
   if($('b'))$('b').onclick=()=>{S.cash-=bribe;S.heat=Math.max(0,S.heat-15);say(`Paid the dirty cop ${money(bribe)}. He said he'll see you next week.`);close()};
 }
-function busted(){addStress(20);if(S.fx.lawyer||S.lawPay){if(Object.keys(S.guns||{}).length)say('Lawyer got the gun charge thrown out too.');if(!S.lawPay)S.fx.lawyer=0;relUp('law',4);S.heat=Math.max(0,S.heat-20);say('Got jammed up, but your lawyer had you out in an hour. Lost nothing.');return}
+function busted(){addStress(20);if(canNewConnect()&&!S.cellCon&&Math.random()<.3){S.cellCon=1;S.pconn='cell'}if(S.fx.lawyer||S.lawPay){if(Object.keys(S.guns||{}).length)say('Lawyer got the gun charge thrown out too.');if(!S.lawPay)S.fx.lawyer=0;relUp('law',4);S.heat=Math.max(0,S.heat-20);say('Got jammed up, but your lawyer had you out in an hour. Lost nothing.');return}
   if(Object.keys(S.guns||{}).length){S.guns={};S.auto={};S.noClip={};houndGone();addStress(10);say('They found your gun too. It\'s gone, and that\'s another charge.')}
   if(S.car==='stolen'){S.cap-=CARS.stolen.trunk;S.car=null;say('The cops impounded your stolen car.')}
   const fine=Math.round(S.cash*.35);S.cash-=fine;GOODS.forEach(g=>S.inv[g.id]=0);S.heat=Math.max(0,S.heat-30);S.hp-=5;
@@ -2764,7 +2781,7 @@ function act(a,el){
   if(a==='resp'){const c=crew(el.dataset.c),k=el.dataset.k;if(!c||S.owner[S.at]!==c.id)return;const RS={cookout:{cost:300,r:10,b:2,st:-6,t:'Threw a cookout on their block. Everybody ate.'},tribute:{cost:500,r:12,b:6,st:0,t:'Paid your respects to their shot caller.'},run:{cost:0,r:6,b:0,st:4,t:'Ran with their guys all day. You ran errands and kept your mouth shut.',h:2}}[k];if(!RS||S.cash<RS.cost)return;c.rc=c.rc||{};if(RS.cost>0){if(c.respect>=45){say(`The ${cdef(c.id).name} respect your hustle, not your money. Run with their guys to earn more.`);return render()}if(c.rc[k]!=null&&S.day-c.rc[k]<3){say(`You just did that for the ${cdef(c.id).name}. Wait ${3-(S.day-c.rc[k])} more day${3-(S.day-c.rc[k])===1?'':'s'}.`);return render()}c.rc[k]=S.day}const gain=Math.max(1,Math.round(RS.r*(1-c.respect/140)));S.cash-=RS.cost;c.respect=Math.min(100,c.respect+gain);c.beef=Math.max(0,c.beef-RS.b);addStress(RS.st);if(RS.h)S.heat=Math.min(100,S.heat+RS.h);if(k==='cookout')S.comm=Math.min(100,(S.comm==null?30:S.comm)+3);say(`${RS.t} ${cdef(c.id).name} respect +${gain}.`);nextDay();return}
   if(a==='squash'){const c=crew(el.dataset.c),cost=Math.round(300+c.beef*25);S.cash-=cost;c.beef=0;say(`Squashed it with the ${cdef(c.id).name} for ${money(cost)}.`)}
   if(a==='hit'){const br=blockReq();if(br){say(br);return render()}return war(crew(el.dataset.c))}
-  if(a==='conn')return connectOrder();
+  if(a==='conn')return connectOrder(+el.dataset.i||0);
   if(a==='kidtime'){const c=S.kids[+el.dataset.i];c.t=S.day;c.bond=Math.min(100,(c.bond??60)+8);addStress(-6);say(`Spent time with ${c.name}. Stress −6.`)}
   if(a==='kidgift'){const c=S.kids[+el.dataset.i];S.cash-=500;c.bond=Math.min(100,(c.bond??60)+5);say(`Got ${c.name} something nice.`)}
   if(a==='bizsec'){S.cash-=2000;S.bizSec=S.bizSec||{};S.bizSec[el.dataset.k]=1;say(`Hired security for your ${BIZ[el.dataset.k].name.toLowerCase()}.`)}
@@ -2834,7 +2851,7 @@ function act(a,el){
   if(a==='givegun'){const k=el.dataset.k;delete S.guns[k];armed().push(k);say(`Passed the ${GUNS[k].name.toLowerCase()} to one of your soldiers. He's strapped now.`)}
   if(a==='ungun'){const i=+el.dataset.k,k=armed()[i];if(k&&!(S.guns||{})[k]){S.armed.splice(i,1);S.guns=S.guns||{};S.guns[k]=1;say(`Took the ${GUNS[k].name.toLowerCase()} back.`)}}
   if(a==='swput'){const k=el.dataset.k;S.cash-=2800;delete S.guns[k];S.guns.switchy=1;S.heat=Math.min(100,S.heat+6);S.swUntil=-1;say(`Unc took your ${GUNS[k].name.toLowerCase()} in the back. Came out 20 minutes later full auto. "Don't tell nobody where you got that." That was his last switch.`)}
-  if(a==='gun'){const G2=GUNS[el.dataset.k];if(el.dataset.k==='switchy')S.swUntil=-1;S.cash-=G2.cost;S.guns=S.guns||{};S.guns[el.dataset.k]=1;S.heat=Math.min(100,S.heat+G2.heat);say(`Bought a ${G2.name.toLowerCase()} from Unc. +${G2.str} strength in fights.`)}
+  if(a==='gun'){S.gunBuys=(S.gunBuys||0)+1;if(S.gunBuys>=3&&!S.uncCon&&canNewConnect()){S.uncCon=1;S.pconn='unc'}const G2=GUNS[el.dataset.k];if(el.dataset.k==='switchy')S.swUntil=-1;S.cash-=G2.cost;S.guns=S.guns||{};S.guns[el.dataset.k]=1;S.heat=Math.min(100,S.heat+G2.heat);say(`Bought a ${G2.name.toLowerCase()} from Unc. +${G2.str} strength in fights.`)}
   if(a==='ptext'){S.texted=S.day;return textAll()}
   if(a==='pcard'){S.passed=S.day;const n=rnd(1,2);for(let i=0;i<n;i++)addCusto(pick(CNAMES),pick(PINFO[S.at].carries),'block');S.heat=Math.min(100,S.heat+3);say(`Passed your number out on ${BLOCKS[S.at]}.`)}
   if(a==='pserve'){if(!spendEn('serve'))return}
@@ -3101,7 +3118,8 @@ function gangDay(){
     if(S.cash>=h.owe){S.cash-=h.owe;c.respect=Math.min(100,c.respect+8);say(`Paid the ${cdef(c.id).name} back ${money(h.owe)} for the pack. They trust you with more now.`)}
     else{const pay=Math.max(0,S.cash);S.cash=0;c.respect=Math.max(0,c.respect-25);c.beef=Math.min(100,c.beef+30);say(`Came up short on the pack. Gave the ${cdef(c.id).name} ${money(pay)} of ${money(h.owe)}. Respect −25, and they mad.`)}}
 }
-function gangEvent(){
+function gangEvent(){if(S.gang&&!S.gangCon&&crew(S.gang)&&crew(S.gang).respect>=75&&canNewConnect()&&Math.random()<.1){S.gangCon=1;S.pconn='gang';return false}
+  
   if(S.gang&&!S.gHold&&Math.random()<.12){gangCall();return true}
   if(S.myGang&&S.soldiers>0&&Math.random()<.06){memberEvent();return true}
   const al=(S.crews||[]).filter(c=>c.alive&&c.ally);
