@@ -606,7 +606,17 @@ function missionUI(){
   $('mission').innerHTML=`<div class="info"><div class="sec" style="margin:0;color:var(--accent)">${teenCount()?(S.ms<teenCount()?'Chapter 1 · ':'Chapter 2 · '):''}Mission ${S.ms+1} of ${list.length} · ${m.name}</div>
     <div class="t">${m.goal}</div><div class="s">${show}</div><div class="bar"><i style="width:${cur/m.n*100}%;background:var(--accent)"></i></div></div>`;
 }
-function finishMission(m){
+// adult story missions finished while still a teen get age-right text (no 'years inside' at 14)
+const TEENB={
+ slick:['Still a teenager and already talking grown plugs down. Smooth talker for his age.','Barely old enough to drive and half the plugs in the city got his number.','He ain\'t even graduated and he already out-hustling grown men.'],
+ tank:['Took a couple fights like he took hits on the field. Still standing.','The whole school knows his name, and now the block does too.','Still in high school and he running the field off it too.'],
+ shade:['Twelve rolled right past a high schooler. Nobody suspected a thing.','His product is everywhere and his teachers think he\'s just quiet.','A teenager with money and no heat. Nobody even knows it\'s him.'],
+ val:['Still doing homework at the register, and she got a trap house running.','A teenager with a payroll. Papá thinks she\'s just good at math.','Two spots before graduation. She runs it like the family business.'],
+ country:['The big homies look out for the kid now. He earned it young.','Still a teenager and the whole block eats off him.','He ain\'t even grown and he already got his mom out the doubles.'],
+ lucky:['Still in private school, already making her own money.','She keeps playing her hand right, and she ain\'t even 18.','A high schooler took a block. Nobody calls her the rich girl now.']};
+const TEENB2=['Still in high school and three blocks got your name on them.','A teenager just took out a whole crew. The whole city is talking.'];
+function finishMission(m){if(S.age&&S.age<18&&S.mode==='story'&&teenCount()&&S.ms>=teenCount()){const i=S.ms-teenCount(),t=(TEENB[S.char]||[])[i]||TEENB2[i-3];if(t)m={...m,beat:t}}
+  else if(S.cal&&S.char==='slick'&&m.name==='Back in the game')m={...m,beat:(S.fate||{}).jail?'Two years inside and he did not lose a step. The plugs remember that voice.':'He did not lose a step. The plugs remember that voice.'};
   S.ms++;addXP(10);const r=m.reward,got=[];
   if(r.cash){S.cash+=r.cash;got.push(money(r.cash))}
   if(r.soldier){S.soldiers+=r.soldier;got.push('a soldier')}
