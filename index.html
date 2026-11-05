@@ -62,6 +62,7 @@ h1{font-family:var(--display);font-weight:400;font-size:34px;letter-spacing:.02e
 .log{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:10px 12px;max-height:180px;overflow:auto;font-size:13px;display:flex;flex-direction:column;gap:4px}
 .log p{margin:0;color:var(--dim)} .log p:first-child{color:var(--fg)}
 .log .d{font-family:var(--label);color:var(--accent);margin-right:6px}
+.gcell{position:relative}.gcell::after{content:attr(data-l);position:absolute;top:3px;left:6px;font-size:11px;font-weight:700;letter-spacing:.04em;opacity:.7;pointer-events:none}@media(hover:none){.gcell::after{display:none}}
 .modal{position:fixed;inset:0;background:rgba(5,4,6,.82);display:flex;align-items:center;justify-content:center;padding:20px;z-index:20}
 .modal.splash{background:#0b0910;padding:0;align-items:stretch;overflow:hidden}
 .modal.splash::before{content:"";position:absolute;inset:-30px;background:var(--sp) center/cover no-repeat;filter:blur(16px) brightness(.55) saturate(1.2)}
@@ -1682,7 +1683,7 @@ function lick(k){if(stuckHome())return;
 function grabGame(done,o){o=o||{};
   mgOn=true;let got=0,lit=-1,red=false,alarm=false;const T=o.T||8000,t0=performance.now(),redP=Math.max(.12,.3-(S.sk.smarts-3)*.02)+(stressed()?.05:0);
   modal(`<h2>${o.title||'Grab and go'}</h2><p>${o.txt||'Tap the shelves when a bag of pills shows up. Don\'t touch anything in front of the camera.'}</p>
-    <div id="gg" style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px">${Array.from({length:9},(_,i)=>`<button class="btn" data-c="${i}" style="height:64px;font-size:24px"></button>`).join('')}</div>
+    <div id="gg" style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px">${Array.from({length:9},(_,i)=>`<button class="btn gcell" data-c="${i}" data-l="${'QWEASDZXC'[i]} · ${[7,8,9,4,5,6,1,2,3][i]}" style="height:64px;font-size:24px"></button>`).join('')}</div>
     <p id="gs" style="text-align:center">Bags 0 · 8s</p><p class="s" style="text-align:center;color:var(--dim);font-size:12px">Keyboard: Q W E / A S D / Z X C, or the number pad.</p>`);
   const cells=[...$('gg').children];
   const show=()=>{cells.forEach(c=>{c.textContent='';c.style.background=''});lit=rnd(0,8);red=Math.random()<redP;cells[lit].textContent=red?(o.bad||'📷'):(o.icon||'💊');cells[lit].style.background=red?'var(--blood)':'var(--money)'};
