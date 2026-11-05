@@ -385,6 +385,7 @@ function paneBlock(){
   let h=`<div class="row" style="align-items:flex-start;border-color:${L.col}">${avatar(S.at)}<div class="info"><div class="t" style="font-family:var(--display);font-size:20px;font-weight:400">${plugName(S.at)}</div>
     <div class="btns" style="margin:2px 0 4px"><span class="chip" style="color:${L.col};border-color:${L.col}">${P.lvl} level plug</span>${(S.fell||{})[S.at]!==undefined?'<span class="chip mine">Works under you</span>':''}${kn?'<span class="chip mine">Knows you</span>':'<span class="chip">Stranger</span>'}${is('lucky')&&S.at===S.ex?`<span class="chip">${S.age&&S.age<18?'Your cousin\'s homeboy':'Your ex'}</span>`:''}</div>
     <div class="s" style="font-style:italic">${S.pbio[S.at]||P.bio}</div>
+    ${(()=>{const sc=secOf(S.at);return sc?`<div class="s" style="color:var(--accent)">Their second: <b>${sc.name}</b>. If something happens to ${plugFem(S.at)?'her':'him'}, ${sc.fem?'she':'he'} steps up fast and you start with more trust.</div>`:''})()}
     <div class="s">Carries ${P.carries.map(id=>G(id).name).join(', ')} · ${P.lvl==='Big'?'moves keys, 15% cheaper':P.lvl==='Mid'?'moves pounds, normal prices':'small stock, 10% higher'}</div>
     ${recd?`<div class="s" style="color:var(--accent)"><b>Works for you now.</b> ${plugFem(S.at)?'She':'He'} runs your traps and doesn't sell to you anymore, but ${plugFem(S.at)?'she':'he'} still buys from you. ${plugFem(S.at)?'She':'He'} hits you up in the phone when ${plugFem(S.at)?'she':'he'} needs work.</div>`:locked?`<div class="s" style="color:var(--blood)">Won't serve you until you got ${L.rep} rep.</div>`:''}
     ${(S.enemies||{})[S.at]?`<div class="s" style="color:var(--blood)"><b>Enemy.</b> ${plugName(S.at)} wants you hurt. ${plugFem(S.at)?'Her':'His'} people will come for you until somebody new takes over.</div>`:''}
@@ -1220,7 +1221,7 @@ function bigFate(bi){S.fate2=S.fate2||{};S.fate2[bi]=1;const nm=plugName(bi),he=
   if(Math.random()<p){S.fell=S.fell||{};S.fell[bi]=S.day;S.whole=S.whole||{};S.whole[bi]=1;S.trust[bi]=100;
     say(`${nm} fell back and put ${his} whole operation under you. Wholesale prices and a cut every week.`);
     modal(`<h2>${nm} fell down to you</h2><p>"You moving different. I ain't gonna fight it, I'ma ride with it." ${nm} is putting ${his} people under you. You get wholesale prices, and ${he} will kick up money every week.</p><div class="btns"><button class="btn go" id="ok">Real</button></div>`)}
-  else{S.enemies=S.enemies||{};S.enemies[bi]=1;S.burned[bi]=S.day+15;S.known=S.known.filter(i=>i!==bi);S.trust[bi]=0;S.heat=Math.min(100,S.heat+10);
+  else{S.enemies=S.enemies||{};S.enemies[bi]=1;{const bp=burnPlan(bi,15,'fate');S.burned[bi]=S.day+bp.d;}S.known=S.known.filter(i=>i!==bi);S.trust[bi]=0;S.heat=Math.min(100,S.heat+10);
     say(`${nm} sees you as a threat now. ${nm} is beefing with you and ${BLOCKS[bi]} is closed to you.`);
     modal(`<h2 style="color:var(--blood)">${nm} wants smoke</h2><p>"You got too big too fast. I can't have that." ${nm} cut you off and put the word out. ${BLOCKS[bi]} is closed to you and ${his} people will come for you until somebody new takes over.</p><div class="btns"><button class="btn go" id="ok">Watch your back</button></div>`)}
   $('ok').onclick=close;return true}
@@ -1461,7 +1462,7 @@ function plugRob(bi){const P=PINFO[bi],nm=plugName(bi),her=plugFem(bi)?'her':'hi
     <div class="btns"><button class="btn red" id="y">Run it</button>${big&&!cased?'<button class="btn go" id="cs">Case the spot (takes the day)</button>':''}<button class="btn" id="n">Nah</button></div>`);
   $('n').onclick=close;
   if($('cs'))$('cs').onclick=()=>{pk.cased=S.day;S.heat=Math.min(100,S.heat+3);say(`Spent the day watching ${nm}'s spot. You know when the shift changes now.`);$('modal').hidden=true;nextDay();checkEnd();render()};
-  $('y').onclick=()=>{if(S.gf&&S.gf.plug===bi){say(`You robbed your own ${plugFem(bi)?'girl':'man'}. ${nm} is done with you.`);endGF()}S.burned[bi]=S.day+10;S.known=S.known.filter(i=>i!==bi);S.trust[bi]=0;S.heat=Math.min(100,S.heat+25);
+  $('y').onclick=()=>{if(S.gf&&S.gf.plug===bi){say(`You robbed your own ${plugFem(bi)?'girl':'man'}. ${nm} is done with you.`);endGF()}{const bp=burnPlan(bi,10,'rob');S.burned[bi]=S.day+bp.d;if(bp.sec||bp.vouch)say(`${bp.sec?'Their second is waiting to step up. ':''}${bp.vouch?'A plug you trust is vouching for the new one. ':''}Back in ${bp.d} days.`)}S.known=S.known.filter(i=>i!==bi);S.trust[bi]=0;S.heat=Math.min(100,S.heat+25);
     if(Math.random()<odds){const got=[];const cash=({Low:[1000,3000],Mid:[3000,8000],Big:[10000,25000]})[P.lvl];const c=rnd(cash[0],cash[1]);S.cash+=c;got.push(money(c));
       P.carries.forEach(id=>{const g=G(id);let n=lvlMax(bi,g)*rnd(5,10)/10;n=Math.min(n,(S.cap-used())/g.sp);n=g.step<1?Math.floor(n*2)/2:Math.floor(n);if(n<=0)return;
         const have=S.inv[id],q=rnd(55,90);S.q[id]=Math.round((S.q[id]*have+q*n)/(have+n));S.paid[id]=Math.round(S.paid[id]*have/(have+n));S.inv[id]+=n;got.push(`${amt(n,g)} of ${g.name}`)});
@@ -1471,9 +1472,17 @@ function plugRob(bi){const P=PINFO[bi],nm=plugName(bi),her=plugFem(bi)?'her':'hi
     say(`Tried to rob ${nm} and it went bad. −${dmg} health.${lost}`);
     modal(`<h2 style="color:var(--blood)">${nm} was ready</h2><p>${P.lvl==='Low'?'He':'Their people'} had heat waiting. You barely got out. −${dmg} health.${lost}</p><div class="btns"><button class="btn go" id="ok">Continue</button></div>`);$('ok').onclick=close};
 }
-function newPlug(bi){{const L=conList(),g=L.find(c=>c.from===bi);if(g){say(`${g.name} stopped answering. Your connect went with ${plugName(bi)}.`);S.cons=L.filter(c=>c!==g);S.connect=S.cons[0]||null}}if(S.whole)delete S.whole[bi];if(S.conAsk)delete S.conAsk[bi];if(S.enemies)delete S.enemies[bi];if(S.gf&&S.gf.plug===bi)endGF();delete S.burned[bi];const fem=Math.random()<.5;const nm=pick(fem?NEWF:NEWM);S.pname[bi]=nm;S.pfem[bi]=fem?1:0;
-  S.pbio[bi]=`New plug on ${BLOCKS[bi]}. Took over after the last one got robbed. Don't know much about ${fem?'her':'him'} yet.`;S.trust[bi]=20;S.deals[bi]=0;
-  say(`${nm} took over as the plug on ${BLOCKS[bi]}.`)}
+/* ---------- backup plugs ---------- */
+function secOf(bi){S.sec=S.sec||{};if(!S.sec[bi]&&(S.trust[bi]||0)>=50&&S.known.includes(bi)&&!S.burned[bi]){const fem=Math.random()<.5;S.sec[bi]={name:pick(fem?NEWF:NEWM),fem:fem?1:0}}return S.sec[bi]}
+function vouchOf(bi){return S.known.some(j=>j!==bi&&!S.burned[j]&&(S.trust[j]||0)>=70)}
+function burnPlan(bi,base,why){const sec=(S.sec||{})[bi],vouch=vouchOf(bi);let d=base,tr=why==='rob'?20:10;
+  if(sec){d=why==='rob'?5:5;tr=why==='rob'?15:30}
+  if(vouch){d=Math.max(3,d-2);tr+=10}
+  S.nt=S.nt||{};S.nt[bi]=tr;return {d,sec,vouch}}
+function newPlug(bi){{const L=conList(),g=L.find(c=>c.from===bi);if(g){say(`${g.name} stopped answering. Your connect went with ${plugName(bi)}.`);S.cons=L.filter(c=>c!==g);S.connect=S.cons[0]||null}}if(S.whole)delete S.whole[bi];if(S.conAsk)delete S.conAsk[bi];if(S.enemies)delete S.enemies[bi];if(S.gf&&S.gf.plug===bi)endGF();delete S.burned[bi];const sec=(S.sec||{})[bi],fem=sec?!!sec.fem:Math.random()<.5;const nm=sec?sec.name:pick(fem?NEWF:NEWM);S.pname[bi]=nm;S.pfem[bi]=fem?1:0;
+  const nt=(S.nt||{})[bi]??20;if(S.sec)delete S.sec[bi];if(S.nt)delete S.nt[bi];
+  S.pbio[bi]=sec?`Was ${fem?'her':'his'} boss's second on ${BLOCKS[bi]}. Stepped up when the last plug fell off. ${nt<=15?'Knows what you did. Walk careful.':'Heard good things about you.'}`:`New plug on ${BLOCKS[bi]}. Took over after the last one got robbed. Don't know much about ${fem?'her':'him'} yet.`;S.trust[bi]=nt;S.deals[bi]=0;
+  say(`${nm} ${sec?'stepped up as':'took over as'} the plug on ${BLOCKS[bi]}.`)}
 /* ---------- relationships ---------- */
 const GNAMES=['Maria','Sofia','Jenny','Emily','Aaliyah','Mei','Priya','Ashanti','Kiana','Dee','Brianna','Tasha','Jada','Imani','Shay','Kayla','Monae','Destiny','Tiara'];
 const BNAMES=['Carlos','Tyler','Kenji','Diego','Jake','Omar','Marcus','Jay','Tre','Kevo','Dom','Malik','Andre','Jalen','Rico','Zay'];
