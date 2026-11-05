@@ -53,10 +53,26 @@ GAME = "The Hustle: No Days Off"
 RED, GREEN, GOLD, DARK = 0xE74C3C, 0x2ECC71, 0xF1C40F, 0x2B2D31
 TESTER = "Hustle Tester"
 
+# (name, colour, mentionable, self-pick?, menu description)
+ROLE_DEFS = [
+    (TESTER, 0x2ECC71, True, True, "Get pinged on every new build"),
+    ("Phone Player", 0x3498DB, False, True, "I play on my phone"),
+    ("Laptop Player", 0x9B59B6, False, True, "I play on a laptop or Chromebook"),
+    ("Main: Slick", 0xE67E22, False, True, "Slick is my guy"),
+    ("Main: Tank", 0xE74C3C, False, True, "Tank is my guy"),
+    ("Main: Shade", 0x7F8C8D, False, True, "Shade is my guy"),
+    ("Main: Val", 0xE91E63, False, True, "Val is my girl"),
+    ("Main: Casper", 0x1ABC9C, False, True, "Casper is my guy"),
+    ("Main: Lucky", 0xF1C40F, False, True, "Lucky is my guy"),
+    ("Bug Hunter", 0xE74C3C, False, False, "Found real bugs (given by admin)"),
+    ("Day One", 0xF1C40F, False, False, "Here from the start (given by admin)"),
+    ("Top Hustler", 0xFFD700, False, False, "Biggest bag on the leaderboard (given by admin)"),
+]
+
 CH = {
     "play": "hustle-play", "notes": "hustle-patch-notes", "feedback": "hustle-feedback",
     "bugs": "hustle-bugs", "ideas": "hustle-ideas", "scores": "hustle-high-scores",
-    "welcome": "welcome", "rules": "rules", "ann": "announcements",
+    "welcome": "welcome", "rules": "rules", "roles": "pick-your-roles", "ann": "announcements",
     "crew": "meet-the-crew", "blocks": "the-blocks", "whips": "whips-and-safes",
 }
 
@@ -273,6 +289,35 @@ class ScoreForm(discord.ui.Modal, title="Post your run"):
         await inter.response.send_message("Saved. Check /leaderboard.", ephemeral=True)
 
 
+class RoleSelect(discord.ui.Select):
+    def __init__(self):
+        opts = [discord.SelectOption(label=n, description=d[:100]) for n, _, _, pick, d in ROLE_DEFS if pick]
+        super().__init__(placeholder="Pick your roles (this replaces your picks)", min_values=0, max_values=len(opts),
+                         options=opts, custom_id="hustle:roles")
+
+    async def callback(self, inter: discord.Interaction):
+        pickable = {n for n, _, _, pick, _ in ROLE_DEFS if pick}
+        want = set(self.values)
+        have = {r.name for r in inter.user.roles}
+        add = [r for r in inter.guild.roles if r.name in want and r.name not in have]
+        drop = [r for r in inter.guild.roles if r.name in pickable - want and r.name in have]
+        try:
+            if add:
+                await inter.user.add_roles(*add)
+            if drop:
+                await inter.user.remove_roles(*drop)
+        except discord.Forbidden:
+            return await inter.response.send_message(
+                "I can't hand out those roles yet. An admin needs to drag my role to the top in Server Settings > Roles.", ephemeral=True)
+        await inter.response.send_message("Roles updated: " + (", ".join(sorted(want)) or "none"), ephemeral=True)
+
+
+class RoleMenu(discord.ui.View):
+    def __init__(self):
+        super().__init__(timeout=None)
+        self.add_item(RoleSelect())
+
+
 class TesterButton(discord.ui.View):
     def __init__(self):
         super().__init__(timeout=None)
@@ -362,10 +407,12 @@ async def build_server(guild: discord.Guild, dry: bool, say, refresh_icon: bool 
         say(f"{added} emoji to add")
 
     roles = {r.name: r for r in guild.roles}
-    if TESTER not in roles:
-        say(f"role {TESTER}")
-        if not dry:
-            await guild.create_role(name=TESTER, colour=discord.Colour(GREEN), mentionable=True, reason="Hustle setup")
+    for name, colour, mention, _pick, _d in ROLE_DEFS:
+        if name not in roles:
+            say(f"role {name}")
+            if not dry:
+                await guild.create_role(name=name, colour=discord.Colour(colour), mentionable=mention, reason="Hustle setup")
+                await asyncio.sleep(0.5)
 
     async def get_cat(name, position=None):
         cat = discord.utils.find(lambda c: c.name.lower() == name.lower(), guild.categories)
@@ -394,6 +441,7 @@ async def build_server(guild: discord.Guild, dry: bool, say, refresh_icon: bool 
     start = await get_cat("START HERE", 0)
     welcome = await get_chan(start, "welcome", "What this server is and how to play.", True)
     rules = await get_chan(start, "rules", "Short rules. Keep it cool.", True)
+    rolech = await get_chan(start, "roles", "Pick your roles.", True)
     ann = await get_chan(start, "ann", "Big news about the game.", True)
     game = await get_cat("THE HUSTLE (GAME)")
     play = await get_chan(game, "play", "Link to the newest build.", True)
@@ -433,6 +481,15 @@ async def build_server(guild: discord.Guild, dry: bool, say, refresh_icon: bool 
         for t, d in RULES:
             e.add_field(name=t, value=d, inline=False)
         await send_embed(rules, e, pin=True)
+    if rolech and await channel_empty(rolech):
+        e = discord.Embed(title="Pick your roles",
+                          description="Use the menu below. Choose your device, your main character, and whether you want update pings. "
+                                      "You can change it any time.", color=GREEN)
+        m = await rolech.send(embed=e, view=RoleMenu())
+        try:
+            await m.pin()
+        except discord.HTTPException:
+            pass
     if ann and await channel_empty(ann):
         e = discord.Embed(title="The server is open",
                           description=f"**{GAME}** is playable right now.\n[Play it]({GAME_URL})\n\nBugs: `/bug`. Ideas: `/idea`.",
@@ -506,6 +563,7 @@ class HustleBot(discord.Client):
     async def setup_hook(self):
         self.http_session = aiohttp.ClientSession()
         self.add_view(TesterButton())
+        self.add_view(RoleMenu())
         guild = discord.Object(id=GUILD_ID)
         self.tree.copy_global_to(guild=guild)
         try:
@@ -592,6 +650,30 @@ async def cmd_update(inter: discord.Interaction, title: str, text: str, ping: bo
     await ch.send(content=role.mention if (ping and role) else None, embed=e,
                   allowed_mentions=discord.AllowedMentions(roles=True))
     await inter.response.send_message(f"Posted in {ch.mention}.", ephemeral=True)
+
+
+@tree.command(name="roles", description="Admin: post the pick-your-roles menu in this channel.")
+async def cmd_roles(inter: discord.Interaction):
+    if not is_admin(inter):
+        return await inter.response.send_message("Admins only.", ephemeral=True)
+    e = discord.Embed(title="Pick your roles", description="Use the menu below. You can change it any time.", color=GREEN)
+    await inter.channel.send(embed=e, view=RoleMenu())
+    await inter.response.send_message("Posted.", ephemeral=True)
+
+
+@tree.command(name="award", description="Admin: give someone a special role.")
+@app_commands.choices(role=[app_commands.Choice(name=n, value=n) for n in ("Bug Hunter", "Day One", "Top Hustler")])
+async def cmd_award(inter: discord.Interaction, member: discord.Member, role: app_commands.Choice[str]):
+    if not is_admin(inter):
+        return await inter.response.send_message("Admins only.", ephemeral=True)
+    r = discord.utils.find(lambda x: x.name == role.value, inter.guild.roles)
+    if not r:
+        return await inter.response.send_message("Role missing. Run /setup first.", ephemeral=True)
+    try:
+        await member.add_roles(r)
+    except discord.Forbidden:
+        return await inter.response.send_message("Move my role above that role in Server Settings > Roles.", ephemeral=True)
+    await inter.response.send_message(f"{member.mention} is now **{r.name}**.", allowed_mentions=discord.AllowedMentions.none())
 
 
 @tree.command(name="play", description="Link to the game.")
