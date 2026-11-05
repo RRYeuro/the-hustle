@@ -1486,6 +1486,32 @@ function linkup(fromDM){
       if(Math.random()<.15){addSide(name);msg+=` ${name} caught feelings and kept texting. ${name} is on your side list now.`}
       say(msg);modal(`<h2>No strings</h2><p>${msg}</p><div class="btns"><button class="btn go" id="ok">Okay</button></div>`);$('ok').onclick=close}};
 }
+/* ---------- crews claim and fight over blocks ---------- */
+function crewWorld(){if(window.FF||!S.crews||S.over||S.inJail||(S.age&&S.age<14))return;const live=S.crews.filter(c=>c.alive);if(!live.length)return;
+  const open=S.owner.map((o,i)=>o==='none'?i:-1).filter(i=>i>=0);
+  if(open.length&&Math.random()<.07){const bi=pick(open),c=pick(live);S.owner[bi]=c.id;c.str=Math.min(crewCap(),c.str+1);say(`The ${cdef(c.id).name} moved in and claimed ${BLOCKS[bi]}.${S.gang===c.id?' Your set got a new block.':''}`);return}
+  if(S.war||Math.random()>(S.gang?.14:.06))return;
+  const pairs=[];S.owner.forEach((o,bi)=>{if(o==='me'||o==='none')return;const D=crew(o);if(!D)return;live.forEach(A=>{if(A.id!==D.id&&S.owner.filter(x=>x===A.id).length<3)pairs.push({A,D,bi})})});
+  if(!pairs.length)return;
+  let pr=pairs;if(S.gang&&Math.random()<.7){const mine=pairs.filter(x=>x.A.id===S.gang||x.D.id===S.gang);if(mine.length)pr=mine}
+  const w=pick(pr),A=w.A,D=w.D,bi=w.bi,n=BLOCKS[bi];
+  if(S.gang&&(A.id===S.gang||D.id===S.gang)&&(S.age||25)>=15){S.war={a:A.id,d:D.id,bi};return}
+  crewResolve(A,D,bi,0)}
+function crewResolve(A,D,bi,bonus){const n=BLOCKS[bi],an=cdef(A.id).name,dn=cdef(D.id).name;
+  const cnt=id=>S.owner.filter(o=>o===id).length,win=A.str+bonus+rnd(0,8)-cnt(A.id)*3>D.str+3+rnd(0,8)+(cnt(D.id)<=1?4:0);
+  if(win){S.owner[bi]=A.id;D.str=Math.max(8,D.str-2);A.str=Math.min(crewCap(),A.str+1);say(`Shots fired on ${n}. The ${an} took the block from the ${dn}.`)}
+  else{A.str=Math.max(4,A.str-2);say(`Shots fired on ${n}. The ${dn} held it against the ${an}.`)}
+  return win}
+function warUI(){const W=S.war;S.war=null;if(!W)return false;const A=crew(W.a),D=crew(W.d),n=BLOCKS[W.bi];if(!A||!D||S.gang!==W.a&&S.gang!==W.d)return false;
+  const atk=S.gang===A.id,me=atk?A:D,op=atk?D:A,md=cdef(me.id),od=cdef(op.id);
+  modal(`<div class="sec" style="margin:0;color:var(--blood)">Set war</div><h2 style="color:${md.color}">${atk?`Rolling on ${n}`:`${n} under fire`}</h2><p>${atk?`The ${md.name} are pushing on ${n}, the ${od.name}'s block. "We taking it tonight. You coming?"`:`The ${od.name} are rolling up on ${n}. "They want our block. We need everybody."`}</p><div class="btns"><button class="btn red" id="wy">${atk?'Ride with them':'Defend the block'}</button><button class="btn" id="wn">Sit this one out</button></div>`);
+  $('wn').onclick=()=>{me.respect=Math.max(0,me.respect-8);const w=crewResolve(A,D,W.bi,0);say(`You sat out the fight over ${n}. Respect with the ${md.name} −8.`);close()};
+  $('wy').onclick=()=>fightGame(myStr()+Math.floor(me.str*.25),Math.round(op.str*.9),`The ${od.name}`,win=>{S.heat=Math.min(100,S.heat+12);op.beef=Math.min(100,op.beef+20);addStress(10);
+    if(win){S.owner[W.bi]=me.id;op.str=Math.max(4,op.str-3);me.respect=Math.min(100,me.respect+8);S.rep+=5;addXP(6);S.st.fights++;say(`${n} is ${atk?'taken':'held'} for the ${md.name}.`);
+      return lickDone(atk?`${n} is ours now`:'Block held',`The ${od.name} ran. ${n} belongs to the ${md.name}. Respect +8, rep +5, heat +12.`,true,true)}
+    const dmg=rnd(14,30);S.hp-=dmg;S.owner[W.bi]=op.id;me.str=Math.max(4,me.str-2);me.respect=Math.min(100,me.respect+3);say(`Lost the fight over ${n}. The ${od.name} have it now.`);
+    lickDone('It went bad',`Bullets everywhere. You took ${dmg} damage and the ${od.name} ${atk?'held':'took'} ${n}. The homies saw you show up.`,false,true)})
+  return true}
 /* ---------- street connect scenes ---------- */
 function srvTick(n,g){S.srvU=(S.srvU||0)+n*g.sp;if(atHome())S.homeSale=S.day;
   if(!S.connect&&!S.scene&&(S.age||25)>=16&&S.srvU>=(S.conSrv||(S.conSrv=rnd(110,190))))S.scene=1}
@@ -1512,7 +1538,8 @@ const FAVS=[
  {t:'Dead battery',txt:(n,b)=>`${n}'s car won't start in front of the store on ${b}.`,help:'Give her a jump',love:1,rob:p=>`Check ${p.his} glove box`}];
 function favorRoll(){if(window.FF||S.inJail||S.over||S.favPop||(S.age&&S.age<14)||Math.random()>.12)return;
   const f=pick(FAVS),nm=f.love?pick(isF()?BNAMES:GNAMES):f.names?pick(f.names):pick(CNAMES);S.favPop={i:FAVS.indexOf(f),nm,bi:S.at}}
-function favorUI(){if(S.scene&&$('modal').hidden&&!S.over&&!S.inJail&&connectScene())return true;
+function favorUI(){if(S.war&&$('modal').hidden&&!S.over&&!S.inJail&&warUI())return true;
+  if(S.scene&&$('modal').hidden&&!S.over&&!S.inJail&&connectScene())return true;
   if(S.favMsg&&$('modal').hidden&&!S.over){const m=S.favMsg;S.favMsg=null;modal(`<h2>${m.h}</h2><p>${m.t}</p><div class="btns"><button class="btn go" id="ok">Smh</button></div>`);$('ok').onclick=close;return true}
   const F=S.favPop;if(!F||!$('modal').hidden||S.over)return false;S.favPop=null;const f=FAVS[F.i],b=BLOCKS[F.bi],nm=F.nm,p=PR(),love=f.love&&adult(),cust=(S.custos||[]).length<15;
   modal(`<div class="sec" style="margin:0;color:var(--accent)">Pop-up · ${b}</div><h2>${f.t}</h2><p>${f.txt(nm,b).replace(/\bher\b/g,f.love?p.his:'her').replace(/\bshe\b/gi,m=>f.love?p.he[0].toUpperCase()+p.he.slice(1):m)}</p><div class="btns" style="flex-direction:column;align-items:stretch"><button class="btn green" id="fa">${f.help}</button><button class="btn" id="fb" ${cust?'':'disabled'}>Make ${f.love?p.him:'them'} a customer${cust?'':' (phone full)'}</button>${love?`<button class="btn" id="fc">Shoot your shot${S.gf?' (you got a '+p.who+')':''}</button>`:''}<button class="btn red" id="fd">${f.rob(p)}</button><button class="btn" id="fe">Keep walking</button></div>`);
@@ -2513,8 +2540,8 @@ function nextDay(){if(S.att)S.att=S.att.map(v=>Math.max(0,Math.round(v*.8-2)));i
   addStress(S.heat>50?3:-2);
   if(S.stress>=100){S.hp-=15;S.stress=60;say('You hit your breaking point. Lost a day in your head and took −15 health. Lay low sometimes.');}
   if(S.soldiers){const cost=S.soldiers*(S.myGang?100:150);S.cash-=cost;if(S.cash<0){S.soldiers=Math.max(0,S.soldiers-1);say('Couldn\'t pay the crew. A soldier walked.');S.cash=Math.max(0,S.cash)}}
-  S.heat=Math.max(0,S.heat-3);
-  S.crews.forEach(c=>{if(c.alive){if(Math.random()<(S.cal?.15:.5))c.str+=1;c.str=Math.min(c.str,crewCap());if(c.beef>0&&c.beef<45)c.beef=Math.max(0,c.beef-2);c.envy=Math.max(0,c.envy-2);if(c.beef>=45)c.respect=Math.max(0,c.respect-2)}});
+  S.heat=Math.max(0,S.heat-4);
+  S.crews.forEach(c=>{if(c.alive){if(Math.random()<(S.cal?.15:.5))c.str+=1;c.str=Math.min(c.str,crewCap());if(c.beef>0&&c.beef<45)c.beef=Math.max(0,c.beef-2);c.envy=Math.max(0,c.envy-2);if(c.beef>=45)c.respect=Math.max(0,c.respect-2)}});crewWorld();
   roll();
   if(S.day>maxDay()&&!freeMode()){S.over=true;return}
   drawCard(.09,'Out on the block,');
@@ -2536,7 +2563,7 @@ function event(){
   const angry=S.crews.filter(c=>c.alive&&c.beef>=45&&!c.ally&&S.gang!==c.id).sort((a,b)=>b.beef-a.beef)[0];
   if(!quiet&&angry&&!(S.ambCD>S.day)&&Math.random()<Math.min(.22,angry.beef/300)*(rankAt(5)?.5:1)*D().risk){S.ambCD=S.day+3;return ambush(angry)}
   if(!quiet&&S.cash>600&&Math.random()<.035*D().risk*(S.cash>5000?1.6:1))return jackboys();
-  if(!quiet&&Math.random()<S.heat/160*D().risk*((S.friends||[]).some(f=>f.close>=80)?.85:1)*(S.job?.8:1)*(S.school==='in'?.8:1))return cops();
+  if(!quiet&&!(S.copCD>S.day)&&Math.random()<S.heat/320*D().risk*((S.friends||[]).some(f=>f.close>=80)?.85:1)*(S.job?.8:1)*(S.school==='in'?.8:1))return cops();
   const en=Object.keys(S.enemies||{}).map(Number).find(bi=>S.burned[bi]);if(!quiet&&en!==undefined&&Math.random()<.15)return enemyHit(en);
   const jel=S.crews.find(c=>c.alive&&c.envy>=70&&!c.ally&&S.gang!==c.id);if(!quiet&&jel&&Math.random()<.3)return jealous(jel);
   if(!quiet&&S.heat>=40&&Math.random()<HOMES[S.home].raid*(1.4-(S.comm??30)/80)*S.heat/100)return raid();
@@ -2580,7 +2607,7 @@ const COPS={
 };
 let copSpd=1;
 function cops(){
-  sfx('siren');
+  sfx('siren');S.copCD=S.day+3;
   const r=Math.random(),k=S.heat>=70&&r<.4?'det':r<.25?'rookie':r<.45?'dirty':'regular',C=COPS[k];
   const bribe=Math.max(300,Math.round(S.cash*.2));
   modal(`<div class="sec" style="margin:0;color:${C.col}">${C.name}</div><h2 style="color:${C.col}">Twelve pulled up</h2><p>${C.txt} Your heat is ${S.heat}.</p>
