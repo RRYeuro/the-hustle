@@ -2461,7 +2461,10 @@ function busted(){addStress(20);if(S.fx.lawyer){if(Object.keys(S.guns||{}).lengt
   if(S.strikes>=3){S.over=true;S.prison=teen?2:1;say(teen?'Third strike. They sent you away until 21.':'Third strike. They gave you life.');return}
   const turns=S.cal?(S.strikes===1?4:26):(S.strikes===1?2:5),label=S.cal?(S.strikes===1?'2 weeks':'3 months'):(S.strikes===1?'2 days':'5 days');
   window.FF=true;S.inJail=1;for(let i=0;i<turns;i++){nextDay();if(S.over)break}S.inJail=0;window.FF=false;
-  S.lockPop={n:S.strikes,place,label};say(`Did ${label} in ${place}. Strike ${S.strikes} of 3.`)}
+  S.lockPop={n:S.strikes,place,label};say(`Did ${label} in ${place}. Strike ${S.strikes} of 3.`)
+  if(S.par){const P=S.par,strict=(P.strict||0)>=60;P.trust=Math.max(0,P.trust-(teen?20:12));
+    say(teen?(strict?`${P.name} was furious picking you up from juvie. "You're done running these streets."`:`${P.name} cried picking you up from juvie. "I can't keep doing this."`):`${P.name} heard you got locked up. "I raised you better than this."`);
+    if(teen&&strict)S.grounded=S.day+(S.cal?14:4)}}
 function lockPopUI(){const L=S.lockPop;if(!L||!$('modal').hidden||S.over)return false;S.lockPop=null;
   modal(`<div class="sec" style="margin:0;color:var(--blood)">Strike ${L.n} of 3</div><h2>${L.n===1?'Locked up':'Locked up again'}</h2><p>You did <b>${L.label}</b> in ${L.place}. Time kept moving without you.</p><p>${L.n===1?'That\'s your first strike. Two more and you\'re never coming home.':'<b style="color:var(--blood)">One more strike and it\'s over for good.</b> Lay low. Get a lawyer on call.'}</p><div class="btns"><button class="btn go" id="ok">${L.n===1?'Never again':'I hear you'}</button></div>`);$('ok').onclick=close;return true}
 
@@ -2949,7 +2952,7 @@ function ckReport(){try{ckState()}catch(e){}const done=CKL.filter(x=>{try{return
   $('ckb').onclick=devPanel;$('ckc').onclick=()=>{const ta=$('ckt');const ok=()=>{$('ckm').textContent='Copied. Paste it to Claude.'};try{navigator.clipboard.writeText(ta.value).then(ok,()=>{ta.select();document.execCommand('copy');ok()})}catch(e){ta.select();try{document.execCommand('copy')}catch(_){}ok()}}}
 $('pane').onclick=e=>{sfx('tap');const pp=e.target.closest('.mapp');if(pp)return openPlace(pp.dataset.p);const m=e.target.closest('.mapb');if(m){if(m.dataset.a==='go')act('go',m);return}const b=e.target.closest('button[data-a]');if(b&&!b.disabled){const top=S&&S.log&&S.log[0];act(b.dataset.a,b);const nw=S&&S.log&&S.log[0];if(nw&&nw!==top&&$('modal').hidden)toast(nw.t)}};
 $('retire').onclick=()=>{S.over=true;checkEnd()};
-const BUILD='v152';
+const BUILD='v153';
 function mainMenu(canContinue){
   modal(`<div style="text-align:center;display:flex;flex-direction:column;gap:10px">
     <div style="position:relative;margin:-18px -18px 0;height:190px;border-radius:8px 8px 0 0;background:url(${TITLEART}) center 60%/cover"><div style="position:absolute;inset:0;border-radius:8px 8px 0 0;background:linear-gradient(to bottom,rgba(20,17,24,0) 30%,var(--panel))"></div></div>
