@@ -35,7 +35,7 @@ jobs:
           lines = [l.rstrip() for l in (os.environ.get('MSG') or '').split('\n') if l.strip() and not l.startswith(('Co-Authored-By','Claude-Session'))]
           head = lines[0].strip() if lines else ''
           if head.lower() == 'game update': head = ''
-          line = '\n'.join(([('**' + re.sub(r'^v\d+:\s*', '', head) + '**')] if head else []) + lines[1:])[:1500]
+          line = '\n'.join(([('**' + re.sub(r'^v\d+:\s*', '', head) + '**')] if head else []) + lines[1:])[:3800]
           role = os.environ.get('ROLE', '').strip()
           body = {
             'content': f'<@&{role}>' if role else '',
