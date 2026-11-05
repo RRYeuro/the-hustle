@@ -1023,11 +1023,11 @@ function vUsed(){const n=(S&&S.vault&&S.vault.n)||{};return Math.round(GOODS.red
 const SAFEUP=[{n:'Small safe',c:800,v:30},{n:'Floor safe',c:4000,v:80},{n:'Vault room',c:15000,v:200}];
 function vaultCap(){return 20+(HOMES[S.home]||HOMES.couch).stash+SAFEUP.slice(0,S.safeLv||0).reduce((a,u)=>a+u.v,0)}
 const VGUNS=3;
-function vPut(id,m){const g=G(id),v=vt(),real=S.inv[id]-S.fake[id];let n=vstep(g,Math.min(m==='half'?real/2:real,(vaultCap()-vUsed())/g.sp));
+function vPut(id,m){const g=G(id),v=vt(),real=S.inv[id]-S.fake[id];let n=vstep(g,Math.min(m==='half'?real/2:typeof m==='number'?m:real,(vaultCap()-vUsed())/g.sp));
   if(n<=0)return say(vaultCap()-vUsed()<g.sp?'The safe is full.':`Not enough ${g.name} to put up.`);
   const h=v.n[id]||0;v.q[id]=Math.round(((v.q[id]||50)*h+S.q[id]*n)/(h+n));v.paid[id]=Math.round(((v.paid[id]||0)*h+S.paid[id]*n)/(h+n));v.n[id]=h+n;
   S.inv[id]-=n;if(S.inv[id]<=0){S.inv[id]=0;S.paid[id]=0;S.q[id]=50;S.fake[id]=0}say(`Put ${amt(n,g)} of ${g.name} in the safe.`)}
-function vTake(id,m,quiet){const g=G(id),v=vt(),h=v.n[id]||0;if(h<=0)return;let n=m==='half'?vstep(g,h/2):h;if(n<=0)n=h;
+function vTake(id,m,quiet){const g=G(id),v=vt(),h=v.n[id]||0;if(h<=0)return;let n=typeof m==='number'?Math.min(h,vstep(g,m)):m==='half'?vstep(g,h/2):h;if(n<=0&&typeof m!=='number')n=h;if(n<=0)return;
   const have=S.inv[id];S.q[id]=Math.round((S.q[id]*have+v.q[id]*n)/(have+n));S.paid[id]=Math.round((S.paid[id]*have+(v.paid[id]||0)*n)/(have+n));S.inv[id]+=n;
   v.n[id]=Math.round((h-n)*10)/10;if(v.n[id]<=0){delete v.n[id];delete v.q[id];delete v.paid[id]}if(!quiet)say(`Took ${amt(n,g)} of ${g.name} out of the safe.`)}
 function safeFix(){if(!S||!S.vault||vUsed()<=vaultCap())return;GOODS.forEach(g=>{if(vUsed()>vaultCap()&&S.vault.n[g.id])vTake(g.id,'all',1)});say('Your safe got smaller after the move. Some product came back out into your pockets.')}
@@ -1036,6 +1036,7 @@ function invAct(i,k,m){
   else if(i==='vtake')vTake(k,m);
   else if(i==='gput'){S.vgun=S.vgun||{};if(Object.keys(S.vgun).length>=VGUNS)return say('The safe only holds '+VGUNS+' guns.');if(!(S.guns||{})[k])return;delete S.guns[k];S.vgun[k]=1;say(`Locked the ${GUNS[k].name.toLowerCase()} in the safe. It won't count in fights until you take it out.`)}
   else if(i==='gtake'){S.vgun=S.vgun||{};if(!S.vgun[k])return;delete S.vgun[k];S.guns=S.guns||{};S.guns[k]=1;say(`Took the ${GUNS[k].name.toLowerCase()} back out.`)}
+  else if(i==='cashamt'){const n=Math.floor(+m);if(n>0){if(k==='put'){const x=Math.min(S.cash,n);S.cash-=x;S.safe=(S.safe||0)+x;say(`Put ${money(x)} in the safe.`)}else{const x=Math.min(S.safe||0,n);S.safe=(S.safe||0)-x;S.cash+=x;say(`Took ${money(x)} out of the safe.`)}}}
   else if(i==='cash'){const sf=S.safe||0;if(k==='out'){S.cash+=sf;S.safe=0;if(sf)say(`Took ${money(sf)} out of the safe.`)}else{const x=k==='all'?S.cash:Math.floor(S.cash/2);S.cash-=x;S.safe=sf+x;if(x)say(`Put ${money(x)} in the safe.`)}}
 }
 const HOMEPOS={sec8:0,low:1,apt:3,condo:5,house:4},FAMPOS={tank:1,slick:4,shade:0,val:3,country:2,lucky:5,life:2,own:3};
@@ -1044,15 +1045,29 @@ function homeBlock(){const h=S.home;if(HOMEPOS[h]!==undefined)return HOMEPOS[h];
   const f=FAMPOS[S.char]!==undefined?FAMPOS[S.char]:hs(S.char)%6;
   if(h==='family')return f;if(h==='couch')return (f+2)%6;if(h==='granny')return (f+3)%6;if(h==='gfplace')return hs((S.gf&&S.gf.name)||'gf')%6;return 0}
 const atHome=()=>homeBlock()===S.at;
+function moveModal(k,dir){const cash=k==='cash',g=cash?null:G(k),v=vt(),put=dir==='put';
+  const max=cash?(put?S.cash:(S.safe||0)):put?vstep(g,Math.min(S.inv[k]-S.fake[k],(vaultCap()-vUsed())/g.sp)):(v.n[k]||0);
+  if(!(max>0))return invModal();
+  const fmt=n=>cash?money(n):amt(n,g),clamp=x=>{x=Math.max(0,Math.min(max,+x||0));return cash?Math.floor(x):vstep(g,x)};
+  modal(`<h2>${put?'Put in the safe':'Take out'}: ${cash?'cash':g.name}</h2><p class="s" style="color:var(--dim)">${put?'You can put up to':'There is'} ${fmt(max)}${put?'':' in the safe'}. Drag the bar or type the number.</p>
+    <div class="qty"><input type="range" id="mq" min="0" max="${max}" step="${cash?'any':g.step}" value="${max}"></div>
+    <div class="qty"><input type="number" id="mn" min="0" max="${max}" step="${cash?1:g.step}" value="${max}" inputmode="decimal" style="width:130px;padding:8px;border-radius:6px;border:1px solid var(--line);background:var(--bg);color:var(--fg);font:inherit"><output id="mo" style="flex:1;text-align:left;font-size:18px"></output><button class="btn" id="mm">Max</button></div>
+    <div class="btns"><button class="btn go" id="mok">${put?'Put in':'Take out'}</button><button class="btn" id="mbk">Back</button></div>`);
+  const upd=n=>{$('mo').textContent=fmt(n)};upd(max);
+  $('mq').oninput=()=>{const n=clamp($('mq').value);$('mn').value=n;upd(n)};
+  $('mn').oninput=()=>{const n=clamp($('mn').value);$('mq').value=n;upd(n)};
+  $('mm').onclick=()=>{$('mq').value=max;$('mn').value=max;upd(max)};
+  $('mbk').onclick=invModal;
+  $('mok').onclick=()=>{const n=clamp($('mn').value);if(n<=0)return;if(cash)invAct('cashamt',put?'put':'take',n);else invAct(put?'vput':'vtake',k,n);render();invModal()}}
 function invModal(){
   if(!S||S.over)return;const v=vt(),mc=$('mcard'),md=$('modal'),st=mc.scrollTop,st2=md.scrollTop,vg=Object.keys(S.vgun||{}),mine=Object.keys(S.guns||{}),home=atHome(),hb=BLOCKS[homeBlock()],wide=innerWidth>=900;
-  const B=(i,k,m,l,off,cls)=>`<button class="btn ${cls||(i==='vput'||i==='gput'||(i==='cash'&&k!=='out')?'green':'')}" data-i="${i}" data-k="${k}" data-m="${m||''}" ${off?'disabled':''}>${l}</button>`;
+  const B=(i,k,m,l,off,cls)=>`<button class="btn ${cls||(i==='vput'||i==='gput'||(i==='mv'&&m==='put')||(i==='cash'&&k!=='out')?'green':'')}" data-i="${i}" data-k="${k}" data-m="${m||''}" ${off?'disabled':''}>${l}</button>`;
   const lock=!home;
-  let L=`<div class="sec">Cash</div><div class="row" style="flex-wrap:wrap;padding:8px 12px"><div class="info"><div class="t">${money(S.cash)} on you</div><div class="s">${money(S.safe||0)} in the safe</div></div><div class="btns">${B('cash','half','','Put half',lock||S.cash<2)}${B('cash','all','','Put all',lock||S.cash<1)}${B('cash','out','','Take all',lock||!(S.safe>0))}</div></div>`;
+  let L=`<div class="sec">Cash</div><div class="row" style="flex-wrap:wrap;padding:8px 12px"><div class="info"><div class="t">${money(S.cash)} on you</div><div class="s">${money(S.safe||0)} in the safe</div></div><div class="btns">${B('mv','cash','put','Put in…',lock||S.cash<1)}${B('mv','cash','take','Take out…',lock||!(S.safe>0))}</div></div>`;
   const gl=GOODS.filter(g=>S.inv[g.id]>0||v.n[g.id]>0),ad=adult(),busy=S.buff&&S.buff.day===S.day;
   L+=`<div class="sec">Product</div>`+(gl.length?gl.map(g=>{const on=S.inv[g.id],sv=v.n[g.id]||0,real=on-S.fake[g.id],full=vaultCap()-vUsed()<g.sp,known=(S.fkKnown||{})[g.id];
     return `<div class="row" style="flex-wrap:wrap;padding:8px 12px">${drugPic(g.id,34)}<div class="info" style="min-width:0"><div class="t">${g.name}</div><div class="s">On you: ${on>0?`${amt(on,g)} (${grade(S.q[g.id],g)})`:'none'} · In safe: ${sv>0?`${amt(sv,g)} (${grade(v.q[g.id],g)})`:'none'}</div><div class="s" style="color:var(--dim)">Takes ${g.sp} space per ${g.unit==='g'?'gram':g.unit==='pills'?'pill':'oz'} · ${Math.round((on+sv)*g.sp*10)/10} space total</div>${ad?`<div class="s"><span style="color:var(--money)">${DFX[g.id].up}</span> <span style="color:var(--blood)">${DFX[g.id].down}</span></div>`:''}</div>
-      <div class="btns">${B('vput',g.id,'half','Put half',lock||real<=0||full)}${B('vput',g.id,'all','Put all',lock||real<=0||full)}${B('vtake',g.id,'half','Take half',lock||sv<=0)}${B('vtake',g.id,'all','Take all',lock||sv<=0)}</div>
+      <div class="btns">${B('mv',g.id,'put','Put in…',lock||real<=0||full)}${B('mv',g.id,'take','Take out…',lock||sv<=0)}</div>
       <div class="btns" style="flex-basis:100%">${ad?B('use',g.id,'','Try 1 myself',on<1||busy,busy?'':'go'):''}${B('chk',g.id,'',`Test if real $75`,on<=0||S.cash<75||(known&&S.fake[g.id]>0))}</div></div>`}).join(''):`<div class="row"><div class="info"><div class="s">No product on you or in the safe.</div></div></div>`);
   let R=`<div class="sec">Guns</div>`;
   const A=(typeof armed==='function'?armed():[]);
@@ -1072,6 +1087,7 @@ function invModal(){
     if(i==='use'){$('modal').hidden=true;return act('usedrug',{dataset:{g:b.dataset.k}})}
     if(i==='chk'){checkStash(G(b.dataset.k));return invModal()}
     if(!atHome()){say('You gotta be at your place to use the safe.');render();return invModal()}
+    if(i==='mv')return moveModal(b.dataset.k,b.dataset.m);
     invAct(i,b.dataset.k,b.dataset.m);render();invModal()});
   $('invx').onclick=close;
 }
