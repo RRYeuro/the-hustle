@@ -2695,6 +2695,7 @@ function start(reset){
   if(S&&!S.units){GOODS.forEach(g=>{S.cash+=Math.round(S.inv[g.id]*S.paid[g.id]);S.inv[g.id]=0;S.paid[g.id]=0;S.fake[g.id]=0;S.q[g.id]=50});S.units=1;roll()}
   if(S&&(!S.offer||!S.offer[0]||!S.offer[0].percs||!S.prices[0].percs)){const sv=S.prev;roll();S.prev=sv}
   if(!S){S=fresh();S.ph=1;roll();mainMenu(false)}
+  else if(!reset)mainMenu(!S.over)
 }
 document.querySelector('.tabs').onclick=e=>{const b=e.target.closest('button');if(b){tab=b.dataset.t;render();if(innerWidth<900){const pn=$('pane'),y=pn.getBoundingClientRect().top+scrollY-8;if(Math.abs(scrollY-y)>40)scrollTo({top:y,behavior:'smooth'})}}};
 // keyboard for the tap mini games: arrows for the register, 1-9 / QWE-ASD-ZXC for grab, 1-3 for DM answers
@@ -2997,7 +2998,7 @@ function ckReport(){try{ckState()}catch(e){}const done=CKL.filter(x=>{try{return
   $('ckb').onclick=devPanel;$('ckc').onclick=()=>{const ta=$('ckt');const ok=()=>{$('ckm').textContent='Copied. Paste it to Claude.'};try{navigator.clipboard.writeText(ta.value).then(ok,()=>{ta.select();document.execCommand('copy');ok()})}catch(e){ta.select();try{document.execCommand('copy')}catch(_){}ok()}}}
 $('pane').onclick=e=>{sfx('tap');const pp=e.target.closest('.mapp');if(pp)return openPlace(pp.dataset.p);const m=e.target.closest('.mapb');if(m){if(m.dataset.a==='go')act('go',m);return}const b=e.target.closest('button[data-a]');if(b&&!b.disabled){const top=S&&S.log&&S.log[0];act(b.dataset.a,b);const nw=S&&S.log&&S.log[0];if(nw&&nw!==top&&$('modal').hidden)toast(nw.t)}};
 $('retire').onclick=()=>{S.over=true;checkEnd()};
-const BUILD='v160';
+const BUILD='v161';
 function mainMenu(canContinue){
   modal(`<div style="text-align:center;display:flex;flex-direction:column;gap:10px">
     <div style="position:relative;margin:-18px -18px 0;height:190px;border-radius:8px 8px 0 0;background:url(${TITLEART}) center 60%/cover"><div style="position:absolute;inset:0;border-radius:8px 8px 0 0;background:linear-gradient(to bottom,rgba(20,17,24,0) 30%,var(--panel))"></div></div>
