@@ -1480,16 +1480,16 @@ function linkup(fromDM){
 }
 /* ---------- favors, community, side partners ---------- */
 const FAVS=[
- {t:'Lady needs a hand',txt:(n,b)=>`${n}, an older lady, is stuck at the corner on ${b} with her groceries while traffic flies by.`,help:'Walk her across',gain:'She tells the whole block you are respectful.',rob:'Snatch her purse'},
- {t:'Cookout on the block',txt:(n,b)=>`The ${b} neighborhood is throwing a cookout. ${n} waves you over to the grill.`,help:'Pull up and help out',gain:'You flipped burgers and everybody saw it.',rob:'Hit the money jar'},
- {t:'Flat tire',txt:(n,b)=>`${n} is on the side of the road on ${b} with a flat tire and no spare.`,help:'Change the tire',love:1,rob:'Take her bag'},
- {t:'Too many bags',txt:(n,b)=>`${n} is carrying way too many bags up the stairs on ${b}.`,help:'Carry them up',love:1,rob:'Grab a bag and go'},
- {t:'Dead battery',txt:(n,b)=>`${n}'s car won't start in front of the store on ${b}.`,help:'Give her a jump',love:1,rob:'Check her glove box'}];
+ {t:'Lady needs a hand',txt:(n,b)=>`${n}, an older lady, is stuck at the corner on ${b} with her groceries while traffic flies by.`,help:'Walk her across',gain:'She tells the whole block you are respectful.',names:['Miss Pat','Miss Gloria','Ms. Betty','Miss Loretta','Miss Dorothy','Ms. Mae'],rob:()=>'Snatch her purse'},
+ {t:'Cookout on the block',txt:(n,b)=>`The ${b} neighborhood is throwing a cookout. ${n} waves you over to the grill.`,help:'Pull up and help out',gain:'You flipped burgers and everybody saw it.',rob:()=>'Hit the money jar'},
+ {t:'Flat tire',txt:(n,b)=>`${n} is on the side of the road on ${b} with a flat tire and no spare.`,help:'Change the tire',love:1,rob:p=>`Take ${p.his} bag`},
+ {t:'Too many bags',txt:(n,b)=>`${n} is carrying way too many bags up the stairs on ${b}.`,help:'Carry them up',love:1,rob:()=>'Grab a bag and go'},
+ {t:'Dead battery',txt:(n,b)=>`${n}'s car won't start in front of the store on ${b}.`,help:'Give her a jump',love:1,rob:p=>`Check ${p.his} glove box`}];
 function favorRoll(){if(window.FF||S.inJail||S.over||S.favPop||(S.age&&S.age<14)||Math.random()>.12)return;
-  const f=pick(FAVS),love=f.love&&adult(),nm=love?pick(isF()?BNAMES:GNAMES):pick(CNAMES);S.favPop={i:FAVS.indexOf(f),nm,bi:S.at}}
+  const f=pick(FAVS),nm=f.love?pick(isF()?BNAMES:GNAMES):f.names?pick(f.names):pick(CNAMES);S.favPop={i:FAVS.indexOf(f),nm,bi:S.at}}
 function favorUI(){if(S.favMsg&&$('modal').hidden&&!S.over){const m=S.favMsg;S.favMsg=null;modal(`<h2>${m.h}</h2><p>${m.t}</p><div class="btns"><button class="btn go" id="ok">Smh</button></div>`);$('ok').onclick=close;return true}
   const F=S.favPop;if(!F||!$('modal').hidden||S.over)return false;S.favPop=null;const f=FAVS[F.i],b=BLOCKS[F.bi],nm=F.nm,p=PR(),love=f.love&&adult(),cust=(S.custos||[]).length<15;
-  modal(`<div class="sec" style="margin:0;color:var(--accent)">Pop-up · ${b}</div><h2>${f.t}</h2><p>${f.txt(nm,b)}</p><div class="btns" style="flex-direction:column;align-items:stretch"><button class="btn green" id="fa">${f.help}</button><button class="btn" id="fb" ${cust?'':'disabled'}>Make ${love?p.him:'them'} a customer${cust?'':' (phone full)'}</button>${love?`<button class="btn" id="fc">Shoot your shot${S.gf?' (you got a '+p.who+')':''}</button>`:''}<button class="btn red" id="fd">${f.rob}</button><button class="btn" id="fe">Keep walking</button></div>`);
+  modal(`<div class="sec" style="margin:0;color:var(--accent)">Pop-up · ${b}</div><h2>${f.t}</h2><p>${f.txt(nm,b).replace(/\bher\b/g,f.love?p.his:'her').replace(/\bshe\b/gi,m=>f.love?p.he[0].toUpperCase()+p.he.slice(1):m)}</p><div class="btns" style="flex-direction:column;align-items:stretch"><button class="btn green" id="fa">${f.help}</button><button class="btn" id="fb" ${cust?'':'disabled'}>Make ${f.love?p.him:'them'} a customer${cust?'':' (phone full)'}</button>${love?`<button class="btn" id="fc">Shoot your shot${S.gf?' (you got a '+p.who+')':''}</button>`:''}<button class="btn red" id="fd">${f.rob(p)}</button><button class="btn" id="fe">Keep walking</button></div>`);
   const done=(t,c)=>{say(t);save();$('modal').hidden=true;render()};
   $('fe').onclick=close;
   $('fa').onclick=()=>{const g=rnd(5,9);S.comm=Math.min(100,(S.comm??30)+g);S.rep+=1;addStress(-3);const tip=Math.random()<.35?rnd(20,80):0;S.cash+=tip;done(`${f.help}. ${f.gain||nm+' appreciated it.'} Community love +${g}.${tip?` ${nm} slid you ${money(tip)}.`:''}`)};
