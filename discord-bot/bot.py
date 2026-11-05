@@ -283,9 +283,17 @@ class TesterButton(discord.ui.View):
         if not role:
             return await inter.response.send_message("The role doesn't exist yet. An admin needs to run /setup.", ephemeral=True)
         if role in inter.user.roles:
-            await inter.user.remove_roles(role)
+            try:
+                await inter.user.remove_roles(role)
+            except discord.Forbidden:
+                return await inter.response.send_message("Move my role above 'Hustle Tester' in Server Settings > Roles first.", ephemeral=True)
             return await inter.response.send_message("Tester role removed. You won't get update pings.", ephemeral=True)
-        await inter.user.add_roles(role)
+        try:
+            await inter.user.add_roles(role)
+        except discord.Forbidden:
+            return await inter.response.send_message(
+                "I can't hand out that role yet. An admin needs to drag my role above 'Hustle Tester' in Server Settings > Roles.",
+                ephemeral=True)
         await inter.response.send_message("You're a Hustle Tester now. You'll get update pings.", ephemeral=True)
 
 
