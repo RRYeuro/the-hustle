@@ -667,7 +667,7 @@ function finishMission(m){if(S.age&&S.age<18&&S.mode==='story'&&teenCount()&&S.m
 }
 /* ---------- stats ---------- */
 const SKN={hustle:'Hustle',talk:'Talk',muscle:'Muscle',smarts:'Street Smarts',luck:'Luck'};
-const SKD={hustle:'Plugs pay you more when you sell.',talk:'Better odds when you talk price.',muscle:'More strength in fights and block wars.',smarts:'Easier police chases and getting away from crews.',luck:'More card drops and second chances on dice.'};
+const SKD={hustle:'Better prices, more customers, bigger profit.',talk:'Haggle prices, talk parents and cops down, win people over.',muscle:'Win fights, block wars and robberies.',smarts:'Escape cops and crews, spot setups and fakes.',luck:'Better card drops, closer calls go your way.'};
 function addXP(n){if(!n)return;S.xp+=n;while(S.xp>=S.lvl*20){S.xp-=S.lvl*20;S.lvl++;S.pts++;say(`Level up! You're level ${S.lvl}. Spend your skill point in the Me tab.`)}
   const ri=RANKS.indexOf(rank());if(ri>S.rk){S.rk=ri;const r=RANKS[ri];if(r[3])r[3]();S.rankPop=ri;say(`Moved up to ${rname(ri)}! ${r[2]}`)}}
 const RANKS=[[1,'Corner Boy','Just starting out.'],[3,'Petty Dealer','+25 stash space.',()=>{S.cap+=25}],[6,'Middle Man','Big plugs serve you no matter your rep.'],
