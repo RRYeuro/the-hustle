@@ -932,9 +932,10 @@ function paneRap(){const R=S.rap,top=R.songs.slice().sort((a,b)=>b.q-a.q)[0];
 }
 const rapFat=()=>S.rap.fat||0;
 const songPay=x=>Math.round(x.q*(1+S.rap.fans/3000)*Math.pow(.9,S.day-x.day)*(S.rap.signed?1.4:1)*.25);
-const showPay=()=>Math.round((150+S.rap.fans*.18+S.rap.hype*8)/(1+rapFat()*.45));
+const rapCut=()=>S.rap.bad&&S.rap.bad.until>S.day?1-S.rap.bad.cut:1;
+const showPay=()=>Math.round((150+S.rap.fans*.18+S.rap.hype*8)/(1+rapFat()*.45)*rapCut());
 function rapDay(){const R=S.rap;if(!R.songs.length)return;let t=0;R.songs.forEach(x=>t+=songPay(x));t=Math.round(t);
-  R.fat=Math.max(0,rapFat()-.5);t=Math.min(t,Math.round(120+R.fans*.03));R.fans+=Math.round(R.hype*1.2);R.hype=Math.max(0,R.hype-6);if(t>0){S.cash+=t;say(`Your music made ${money(t)} in streams today.`)}}
+  R.fat=Math.max(0,rapFat()-.5);t=Math.min(t,Math.round(120+R.fans*.03));t=Math.round(t*rapCut());if(R.frz>S.day)t=0;R.fans+=Math.round(R.hype*1.2);R.hype=Math.max(0,R.hype-6);if(t>0){S.cash+=t;say(`Your music made ${money(t)} in streams today.`)}}
 function flowGame(title,done){
   mgOn=true;const BEAT=900,N=8;let taps=0,score=0,t0=performance.now()+900;
   modal(`<h2>${title}</h2><p>Tap "Spit" (or press Space) when the circle fills up and turns <b style="color:var(--money)">green</b>. 8 bars.</p>
@@ -1532,6 +1533,48 @@ function lawStoreAct(k){const R=RL();R.d=R.d||{};
   if(k==='sak'){S.cash-=9000;S.guns=S.guns||{};S.guns.ak=1;S.heat=Math.min(100,S.heat+GUNS.ak.heat);say('Raj brought an imported AK up from the back. Full auto. Strength +21.');return 1}
   return 0}
 function lawDay(){if(S.lawPay){S.heat=Math.max(0,S.heat-2);if(weekTick()){if(S.cash>=1500){S.cash-=1500;say('Paid Attorney Cole $1,500.')}else{S.lawPay=0;say("Couldn't pay Cole this week. He walked off payroll.")}}}}
+/* ---------- negative events: rapper + robber ---------- */
+const lawFree=()=>!!(S.fx.lawyer||S.lawPay);
+const lawFee=()=>lawFree()?0:Math.round(400*((RL().law||0)>=40?.6:1));
+const smOdds=()=>Math.min(.85,.3+(S.sk.smarts||3)*.07-(stressed()?.1:0));
+function negModal(h,t,opts){modal(`<div class="sec" style="margin:0;color:var(--blood)">Bad news</div><h2>${h}</h2><p>${t}</p><div class="btns" style="flex-direction:column;align-items:stretch">${opts.map((o,i)=>`<button class="btn ${o.c||''}" id="ng${i}" ${o.dis?'disabled':''}>${o.l}</button>`).join('')}</div>`);
+  opts.forEach((o,i)=>$('ng'+i).onclick=()=>{$('modal').hidden=true;o.f();save();render()})}
+function negDone(h,t,good){modal(`<h2 style="color:${good?'var(--money)':'var(--blood)'}">${h}</h2><p>${t}</p><div class="btns"><button class="btn go" id="ok">Okay</button></div>`);$('ok').onclick=close}
+const lawOpt=(f)=>({l:lawFee()?`Have a lawyer handle it (${money(lawFee())})`:'Have your lawyer handle it (free)',c:'green',dis:S.cash<lawFee()||(!lawFree()&&(RL().law||0)<1&&false),f:()=>{S.cash-=lawFee();relUp('law',3);f()}});
+function pathNeg(){const R=S.rap,rap=S.rapOn&&R.songs.length>=1,rob=S.robOn&&(S.st.licks||0)+(S.rob.heists||0)>=1;if(!rap&&!rob||!adult())return false;
+  const pool=[];if(rap){if(R.fans>=400&&!(R.bad&&R.bad.until>S.day))pool.push('contract');if(R.show)pool.push('promoter');if(R.songs.length>=2&&!(R.frz>S.day))pool.push('takedown')}
+  if(rob){if(S.soldiers>0)pool.push('snitch');pool.push('fence');if(S.cash>1500)pool.push('marked')}
+  if(!pool.length)return false;const k=pick(pool);
+  if(k==='contract'){const adv=Math.round(R.fans*.8+2000);
+    negModal('"Sign today, this offer expires"',`A man in a nice jacket says he is with a label and slides you a contract. ${money(adv)} advance, "standard terms," and he keeps saying you need to sign right now. The small print is a wall of text.`,[
+      {l:'Sign it, he seems legit',c:'red',f:()=>{S.cash+=adv;R.bad={until:S.day+30,cut:.5};say(`Signed a bad contract. Got ${money(adv)}, but the label takes 50% of your streams and show pay for 30 days.`);negDone('You got played',`Page 14 gave the "label" 50% of everything for a month. You took ${money(adv)} up front and now it is on you.`,false)}},
+      {l:`Read it carefully yourself (Street Smarts ${Math.round(smOdds()*100)}%)`,f:()=>{if(Math.random()<smOdds()){addXP(4);say('Read the contract line by line and caught the trap. Walked away.');negDone('You caught it','Buried on page 14 was a clause giving them half of everything you make. You tore it up and walked.',true)}else{S.cash+=adv;R.bad={until:S.day+30,cut:.5};say(`Missed the trap and signed. The label takes 50% for 30 days.`);negDone('You missed it','You read it twice and still missed the clause on page 14. It is signed. They get 50% of your streams and show pay for 30 days.',false)}}},
+      lawOpt(()=>{addXP(3);say('Your lawyer read the contract and found the trap.');negDone('Lawyer caught it',`He found a clause on page 14 giving them half of everything. He told you to walk, and the guy in the jacket disappeared.`,true)}),
+      {l:'Pass, you do not sign things you can not read',f:()=>{say('Passed on a sketchy contract.')}}]);return true}
+  if(k==='promoter'){const owe=Math.round(300+R.fans*.08+rnd(0,500));
+    negModal('The promoter ain\'t paying',`The promoter from your last show is "short" and says he will get it to you "next week." He owes you ${money(owe)}. You can tell he is not going to.`,[
+      {l:`Go find him (Street Smarts ${Math.round(smOdds()*100)}%)`,f:()=>{if(Math.random()<smOdds()){S.cash+=owe;say(`Tracked down the promoter and got your ${money(owe)}.`);negDone('You got paid',`You caught him at his own event and he paid in cash.`,true)}else{S.heat=Math.min(100,S.heat+6);say('Went at the promoter and it went nowhere. Heat +6.');negDone('He blew you off','He had security walk you out. No money, and now people are talking. Heat +6.',false)}}},
+      lawOpt(()=>{const g=Math.round(owe*1.2);S.cash+=g;say(`Lawyer got you ${money(g)} from the promoter.`);negDone('Lawyer got your money',`A demand letter did the work. You got ${money(g)}, plus extra for the trouble.`,true)}),
+      {l:'Let it go',f:()=>{addStress(5);say(`The promoter stiffed you for ${money(owe)}. Stress +5.`)}}]);return true}
+  if(k==='takedown'){negModal('Your songs got pulled',`A copyright claim on your beats froze your streaming income. Nothing pays out until it is sorted.`,[
+      lawOpt(()=>{R.frz=0;say('Lawyer cleared the claim. Streams are back.');negDone('Cleared','Your lawyer sent the paperwork and the songs are back up.',true)}),
+      {l:'Wait it out (5 days of no streams)',f:()=>{R.frz=S.day+5;say('Songs pulled. No streaming income for 5 days.')}}]);return true}
+  if(k==='snitch'){const hush=rnd(1200,2800);
+    negModal('One of your guys been talking',`Word is one of your crew has been running his mouth to somebody close to twelve. If it spreads, the heat is going to be real.`,[
+      {l:`Pay him to stay quiet (${money(hush)})`,dis:S.cash<hush,f:()=>{S.cash-=hush;say(`Paid your guy ${money(hush)} to keep quiet.`)}},
+      {l:'Confront him (Muscle)',c:'red',f:()=>{if(Math.random()<.35+(S.sk.muscle||3)*.05){S.rep+=2;say('Confronted him. He swore on his mama and shut up.');negDone('He backed down','Nobody is talking anymore. The crew saw you handle it.',true)}else{S.soldiers=Math.max(0,S.soldiers-1);S.heat=Math.min(100,S.heat+25);say('He ran, and he took your name with him. Heat +25.');negDone('He ran','He was gone before you finished the sentence. Heat +25 and you are down a man.',false)}}},
+      lawOpt(()=>{S.heat=Math.max(0,S.heat-5);say('Lawyer got ahead of it and nothing stuck.');negDone('Handled','Your lawyer made some calls and the story died.',true)})]);return true}
+  if(k==='fence'){const loss=rnd(800,3200);
+    negModal('The fence shorted you',`The guy who moves your stolen goods says half of it was "junk" and cuts you down. You are pretty sure he is lying.`,[
+      {l:`Argue it (Street Smarts ${Math.round(smOdds()*100)}%)`,f:()=>{if(Math.random()<smOdds()){S.cash+=loss;say(`Out-talked the fence and got ${money(loss)} more.`);negDone('You got your money','You knew the going rate and he caved.',true)}else{addStress(6);say('The fence stuck to his number. Stress +6.');negDone('No luck','He stuck to his number. You gave up.',false)}}},
+      {l:'Intimidate him (Muscle)',c:'red',f:()=>{if(Math.random()<.3+(S.sk.muscle||3)*.05){S.cash+=loss;S.heat=Math.min(100,S.heat+8);say(`Leaned on the fence for ${money(loss)}. Heat +8.`);negDone('He paid up','He paid. Everybody saw it though. Heat +8.',true)}else{const d=rnd(8,18);S.hp-=vcut(d);S.heat=Math.min(100,S.heat+10);say('The fence had people in the back. You took a beating.');negDone('He had help','His guys were in the back. You got hurt and the fence is gone.',false)}}},
+      {l:'Eat the loss',f:()=>{S.cash=Math.max(0,S.cash-loss);say(`The fence cost you ${money(loss)}.`)}}]);return true}
+  if(k==='marked'){const m=Math.round(S.cash*.15);
+    negModal('Some of that cash is marked',`A teller recognized a serial number. About ${money(m)} of what you got is traceable.`,[
+      lawOpt(()=>{say('Lawyer laundered the marked bills through a business account.');negDone('Cleaned','Your lawyer moved it quietly. Nothing came back to you.',true)}),
+      {l:'Burn it',f:()=>{S.cash-=m;say(`Burned ${money(m)} of marked bills.`)}},
+      {l:'Spend it anyway (gamble)',c:'red',f:()=>{S.heat=Math.min(100,S.heat+20);if(Math.random()<.3){say('A store clerk flagged your cash.');busted()}else say('Spent the marked bills. Heat +20 and you got lucky.')}}]);return true}
+  return false}
 /* ---------- crews claim and fight over blocks ---------- */
 function crewWorld(){if(window.FF||!S.crews||S.over||S.inJail||(S.age&&S.age<14))return;const live=S.crews.filter(c=>c.alive);if(!live.length)return;
   const open=S.owner.map((o,i)=>o==='none'?i:-1).filter(i=>i>=0);
@@ -2638,6 +2681,7 @@ function event(){
   if(bizEvent())return;
   if(!S.connect&&Math.random()<rnd(3,9)/100){const ce=connectCand();if(ce!==undefined)return connectMeet(ce)}
   {const bf=bigFateCand();if(bf!==undefined&&Math.random()<.07)return bigFate(bf)}
+  if(!quiet&&(S.rapOn||S.robOn)&&Math.random()<.09&&pathNeg())return;
   if(adult()&&Math.random()<.06)return linkup(false);
   if(adult()&&S.gf&&S.gf.rel>=80&&(S.age||25)>=19&&(S.kids||[]).length<3&&Math.random()<.02)return baby();
   if(S.day>=2&&!S.rapOn&&!S.rapNo&&Math.random()<.07)return lifeOffer('rap',false);
