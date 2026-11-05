@@ -3288,7 +3288,7 @@ function ckReport(){try{ckState()}catch(e){}const done=CKL.filter(x=>{try{return
   $('ckb').onclick=devPanel;$('ckc').onclick=()=>{const ta=$('ckt');const ok=()=>{$('ckm').textContent='Copied. Paste it to Claude.'};try{navigator.clipboard.writeText(ta.value).then(ok,()=>{ta.select();document.execCommand('copy');ok()})}catch(e){ta.select();try{document.execCommand('copy')}catch(_){}ok()}}}
 $('pane').onclick=e=>{sfx('tap');const pp=e.target.closest('.mapp');if(pp)return openPlace(pp.dataset.p);const m=e.target.closest('.mapb');if(m){if(m.dataset.a==='go')act('go',m);return}const b=e.target.closest('button[data-a]');if(b&&!b.disabled){const top=S&&S.log&&S.log[0];act(b.dataset.a,b);const nw=S&&S.log&&S.log[0];if(nw&&nw!==top&&$('modal').hidden)toast(nw.t)}};
 $('retire').onclick=()=>{S.over=true;checkEnd()};
-const BUILD='v169';
+const BUILD='v170';
 function mainMenu(canContinue){
   modal(`<div class="swrap" style="text-align:center;display:flex;flex-direction:column;gap:10px">
     <div class="stitle"><h2 style="font-size:54px;color:var(--accent);line-height:1">THE HUSTLE</h2><div style="font-family:var(--label);font-weight:700;letter-spacing:.24em;color:#fff;margin-top:6px">NO DAYS OFF</div></div>
