@@ -311,16 +311,17 @@ def square(path, size, mode="icon"):
     return b.getvalue()
 
 
-async def build_server(guild: discord.Guild, dry: bool, say):
+async def build_server(guild: discord.Guild, dry: bool, say, refresh_icon: bool = False):
     me = guild.me
     title = art("titleart", "titleart.jpg")
     if Image is None:
         say("Pillow isn't installed, so I'll skip the icon and emojis.")
-    if title and Image and not guild.icon:
-        say("server icon from the title art")
+    icon = art("icon.png")
+    if icon and (refresh_icon or not guild.icon):
+        say("server icon")
         if not dry:
-            await guild.edit(icon=square(title, 512), reason="Hustle setup")
-
+            with open(icon, "rb") as f:
+                await guild.edit(icon=f.read(), reason="Hustle setup")
     if Image:
         have = {e.name for e in guild.emojis}
         wanted = []
@@ -555,14 +556,14 @@ CHARS = ["slick", "tank", "shade", "val", "casper", "lucky"]
 
 
 @tree.command(name="setup", description="Admin: build and decorate the server for The Hustle.")
-@app_commands.describe(dry_run="Only list what it would do")
-async def cmd_setup(inter: discord.Interaction, dry_run: bool = False):
+@app_commands.describe(dry_run="Only list what it would do", refresh_icon="Replace the server icon with the newest one")
+async def cmd_setup(inter: discord.Interaction, dry_run: bool = False, refresh_icon: bool = False):
     if not is_admin(inter):
         return await inter.response.send_message("Admins only.", ephemeral=True)
     await inter.response.defer(ephemeral=True, thinking=True)
     lines = []
     try:
-        await build_server(inter.guild, dry_run, lines.append)
+        await build_server(inter.guild, dry_run, lines.append, refresh_icon)
     except discord.Forbidden as e:
         return await inter.followup.send(f"Missing a permission. Give me Administrator. ({e})", ephemeral=True)
     head = "Dry run, nothing changed:" if dry_run else "Done:"
