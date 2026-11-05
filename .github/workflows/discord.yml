@@ -41,8 +41,8 @@ jobs:
             'content': f'<@&{role}>' if role else '',
             'allowed_mentions': {'roles': [role]} if role else {'parse': []},
             'embeds': [{
-              'title': f'{build} is on the way: patch notes',
-              'description': (line + '\n\n' if line else '') + 'Live in about 10 to 20 minutes.\nhttps://rryeuro.github.io/the-hustle/',
+              'title': f'🔥 {build} JUST DROPPED 🔥',
+              'description': (line + '\n\n' if line else '') + '\n⏳ Live in 10-20 min\n🎮 Run it: https://rryeuro.github.io/the-hustle/\n💬 Found a bug or a bad take? Drop it in the chat.',
               'color': 0xE74C3C}]}
           req = urllib.request.Request(os.environ['HOOK'], json.dumps(body).encode(),
                   {'Content-Type': 'application/json', 'User-Agent': 'hustle-ci'})
