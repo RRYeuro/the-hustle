@@ -32,14 +32,16 @@ jobs:
               print('Build number unchanged, no ping')
               raise SystemExit(0)
           build = build or 'new build'
-          line = (os.environ.get('MSG') or '').split('\n')[0].strip()
-          if line.lower() == 'game update': line = ''
+          lines = [l.rstrip() for l in (os.environ.get('MSG') or '').split('\n') if l.strip() and not l.startswith(('Co-Authored-By','Claude-Session'))]
+          head = lines[0].strip() if lines else ''
+          if head.lower() == 'game update': head = ''
+          line = '\n'.join(([('**' + re.sub(r'^v\d+:\s*', '', head) + '**')] if head else []) + lines[1:])[:1500]
           role = os.environ.get('ROLE', '').strip()
           body = {
             'content': f'<@&{role}>' if role else '',
             'allowed_mentions': {'roles': [role]} if role else {'parse': []},
             'embeds': [{
-              'title': f'{build} is on the way',
+              'title': f'{build} is on the way: patch notes',
               'description': (line + '\n\n' if line else '') + 'Live in about 10 to 20 minutes.\nhttps://rryeuro.github.io/the-hustle/',
               'color': 0xE74C3C}]}
           req = urllib.request.Request(os.environ['HOOK'], json.dumps(body).encode(),
