@@ -309,7 +309,7 @@ function plugTips(){if(!S.trust||!S.known)return;
     say(`📱 ${nm}: "${trash?`I know that last ${G1.name} was some bullshit. `:''}New load of ${G1.name} landing tomorrow on ${BLOCKS[bi]}. Real fire. I got you at ${Math.round((1-disc)*100)}% off."`)});
 }
 function say(t){S.log.unshift({d:S.day,t});S.log=S.log.slice(0,40)}
-function used(){return Math.round(GOODS.reduce((a,g)=>a+S.inv[g.id]*g.sp,0)*10)/10}
+function used(){return Math.round((GOODS.reduce((a,g)=>a+S.inv[g.id]*g.sp,0)+vUsed())*10)/10}
 function gangBack(){let b=0;(S.crews||[]).forEach(c=>{if(!c.alive)return;if(S.gang===c.id)b+=Math.floor(c.str*.25);else if(c.ally)b+=Math.floor(c.str*.1)});return b+(S.myGang?5:0)}
 function myStr(){return Math.round((6+S.sk.muscle*2+S.soldiers*6+armedBonus()+Math.floor(S.rep/10)+friendBack()+gunBonus()+gangBack()+(buf('snow')?8:0)-(buf('phones')?3:0))*(stressed()?.8:1))}
 const slotKey=n=>n===1?'thuglife':'thuglife'+n;
@@ -326,7 +326,7 @@ function render(){
   $('stress').textContent=S.stress+(S.stress>=70?' · stressed':'');$('stressb').style.width=S.stress+'%';
   const C=CHARS.find(c=>c.id===S.char);$('who').textContent=C.name;
   $('me').innerHTML=`${PORTRAITS[C.id]?`<img src="${PORTRAITS[C.id]}" alt="${C.name}" style="width:56px;height:56px;border-radius:6px;object-fit:cover;flex:none">`:`<div style="width:56px;height:56px;border-radius:6px;background:#2a2430;display:flex;align-items:center;justify-content:center;font-family:var(--display);font-size:26px;color:var(--accent);flex:none">${C.name[0]}</div>`}<div class="info"><div class="t" style="font-family:var(--display);font-size:20px;font-weight:400">${C.name}</div><div class="s">${roleOf(C)}</div></div>`;$('rk').textContent=identity();$('rtab').hidden=!S.rapOn;$('htab').hidden=!S.robOn;if((tab==='rap'&&!S.rapOn)||(tab==='rob'&&!S.robOn))tab='block';
-  $('stash').textContent=Math.round(used())+'/'+S.cap;
+  $('stash').textContent=Math.round(used())+'/'+S.cap;safeFix();{const sp=$('stash').parentElement;if(!sp._inv){sp._inv=1;sp.style.cursor='pointer';sp.onclick=invModal;sp.querySelector('.k').textContent='Stash ›'}}
   $('hp').textContent=S.hp<=35?S.hp+' · hospital':S.hp;$('hp').style.color=S.hp<=35?'var(--blood)':'';$('hpb').style.width=S.hp+'%';$('hpb').style.background=S.hp<=35?'var(--blood)':'var(--money)';
   $('heat').textContent=S.heat;$('heatb').style.width=S.heat+'%';
   $('rep').textContent=S.rep;
@@ -969,7 +969,49 @@ const HOMES={
 };
 function paneSafe(){const sf=S.safe||0;
   return `<div class="sec">Money put up</div><div class="row" style="flex-wrap:wrap"><div class="info"><div class="t">${money(sf)} put up at the house</div><div class="s">Cash on you can get taken by jackboys. Money you put up is safe.</div></div>
-   <div class="btns"><button class="btn green" data-a="safe" data-k="all" ${S.cash>0?'':'disabled'}>Put up all</button><button class="btn green" data-a="safe" data-k="half" ${S.cash>1?'':'disabled'}>Put up half</button><button class="btn" data-a="safe" data-k="out" ${sf>0?'':'disabled'}>Take it all out</button></div></div>`}
+   <div class="btns"><button class="btn green" data-a="safe" data-k="all" ${S.cash>0?'':'disabled'}>Put up all</button><button class="btn green" data-a="safe" data-k="half" ${S.cash>1?'':'disabled'}>Put up half</button><button class="btn" data-a="safe" data-k="out" ${sf>0?'':'disabled'}>Take it all out</button></div></div><div class="row"><div class="info"><div class="t">Safe &amp; inventory</div><div class="s">Put product and guns in the safe too. Tap Stash up top any time.</div></div><button class="btn go" data-a="inv">Open</button></div>`}
+/* ---------- inventory + safe ---------- */
+const vstep=(g,n)=>g.step<1?Math.floor(n*2)/2:Math.floor(n);
+function vt(){return S.vault||(S.vault={n:{},q:{},paid:{}})}
+function vUsed(){const n=(S&&S.vault&&S.vault.n)||{};return Math.round(GOODS.reduce((a,g)=>a+(n[g.id]||0)*g.sp,0)*10)/10}
+function vaultCap(){return 20+(HOMES[S.home]||HOMES.couch).stash}
+const VGUNS=3;
+function vPut(id,m){const g=G(id),v=vt(),real=S.inv[id]-S.fake[id];let n=vstep(g,Math.min(m==='half'?real/2:real,(vaultCap()-vUsed())/g.sp));
+  if(n<=0)return say(vaultCap()-vUsed()<g.sp?'The safe is full.':`Not enough ${g.name} to put up.`);
+  const h=v.n[id]||0;v.q[id]=Math.round(((v.q[id]||50)*h+S.q[id]*n)/(h+n));v.paid[id]=Math.round(((v.paid[id]||0)*h+S.paid[id]*n)/(h+n));v.n[id]=h+n;
+  S.inv[id]-=n;if(S.inv[id]<=0){S.inv[id]=0;S.paid[id]=0;S.q[id]=50;S.fake[id]=0}say(`Put ${amt(n,g)} of ${g.name} in the safe.`)}
+function vTake(id,m,quiet){const g=G(id),v=vt(),h=v.n[id]||0;if(h<=0)return;let n=m==='half'?vstep(g,h/2):h;if(n<=0)n=h;
+  const have=S.inv[id];S.q[id]=Math.round((S.q[id]*have+v.q[id]*n)/(have+n));S.paid[id]=Math.round((S.paid[id]*have+(v.paid[id]||0)*n)/(have+n));S.inv[id]+=n;
+  v.n[id]=Math.round((h-n)*10)/10;if(v.n[id]<=0){delete v.n[id];delete v.q[id];delete v.paid[id]}if(!quiet)say(`Took ${amt(n,g)} of ${g.name} out of the safe.`)}
+function safeFix(){if(!S||!S.vault||vUsed()<=vaultCap())return;GOODS.forEach(g=>{if(vUsed()>vaultCap()&&S.vault.n[g.id])vTake(g.id,'all',1)});say('Your safe got smaller after the move. Some product came back out into your pockets.')}
+function invAct(i,k,m){
+  if(i==='vput')vPut(k,m);
+  else if(i==='vtake')vTake(k,m);
+  else if(i==='gput'){S.vgun=S.vgun||{};if(Object.keys(S.vgun).length>=VGUNS)return say('The safe only holds '+VGUNS+' guns.');if(!(S.guns||{})[k])return;delete S.guns[k];S.vgun[k]=1;say(`Locked the ${GUNS[k].name.toLowerCase()} in the safe. It won't count in fights until you take it out.`)}
+  else if(i==='gtake'){S.vgun=S.vgun||{};if(!S.vgun[k])return;delete S.vgun[k];S.guns=S.guns||{};S.guns[k]=1;say(`Took the ${GUNS[k].name.toLowerCase()} back out.`)}
+  else if(i==='cash'){const sf=S.safe||0;if(k==='out'){S.cash+=sf;S.safe=0;if(sf)say(`Took ${money(sf)} out of the safe.`)}else{const x=k==='all'?S.cash:Math.floor(S.cash/2);S.cash-=x;S.safe=sf+x;if(x)say(`Put ${money(x)} in the safe.`)}}
+}
+function invModal(){
+  if(!S||S.over)return;const v=vt(),mc=$('mcard'),md=$('modal'),st=mc.scrollTop,st2=md.scrollTop,vg=Object.keys(S.vgun||{}),mine=Object.keys(S.guns||{});
+  const B=(i,k,m,l,off)=>`<button class="btn ${i==='vput'||i==='gput'||(i==='cash'&&k!=='out')?'green':''}" data-i="${i}" data-k="${k}" data-m="${m||''}" ${off?'disabled':''}>${l}</button>`;
+  let h=`<h2>Inventory</h2><p class="s" style="color:var(--dim)">${HOMES[S.home].name}. Safe space ${Math.round(vUsed())}/${vaultCap()}. Whatever is in the safe can't get jacked, raided, snitched on or busted with you.</p>`;
+  h+=`<div class="sec">Cash</div><div class="row" style="flex-wrap:wrap;padding:8px 12px"><div class="info"><div class="t">${money(S.cash)} on you</div><div class="s">${money(S.safe||0)} in the safe</div></div><div class="btns">${B('cash','half','','Put half',S.cash<2)}${B('cash','all','','Put all',S.cash<1)}${B('cash','out','','Take all out',!(S.safe>0))}</div></div>`;
+  const gl=GOODS.filter(g=>S.inv[g.id]>0||v.n[g.id]>0);
+  h+=`<div class="sec">Product</div>`+(gl.length?gl.map(g=>{const on=S.inv[g.id],sv=v.n[g.id]||0,real=on-S.fake[g.id],full=vaultCap()-vUsed()<g.sp;
+    return `<div class="row" style="flex-wrap:wrap;padding:8px 12px">${drugPic(g.id,34)}<div class="info" style="min-width:0"><div class="t">${g.name}</div><div class="s">On you: ${on>0?`${amt(on,g)} (${grade(S.q[g.id],g)})`:'none'} · In safe: ${sv>0?`${amt(sv,g)} (${grade(v.q[g.id],g)})`:'none'}</div></div>
+      <div class="btns">${B('vput',g.id,'half','Put half',real<=0||full)}${B('vput',g.id,'all','Put all',real<=0||full)}${B('vtake',g.id,'half','Take half',sv<=0)}${B('vtake',g.id,'all','Take all',sv<=0)}</div></div>`}).join(''):`<div class="row"><div class="info"><div class="s">No product on you or in the safe.</div></div></div>`);
+  h+=`<div class="sec">Guns</div>`;
+  const A=(typeof armed==='function'?armed():[]);
+  if(!mine.length&&!vg.length&&!A.length)h+=`<div class="row"><div class="info"><div class="s">No guns. Unc at The Bottom sells them.</div></div></div>`;
+  h+=mine.map(k=>`<div class="row" style="padding:6px 12px">${gunPic(k,40)}<div class="info"><div class="t">${gName(k)}</div><div class="s">On you · +${gStr(k)} strength</div></div>${B('gput',k,'','Put in safe',vg.length>=VGUNS)}</div>`).join('')
+    +vg.map(k=>`<div class="row" style="padding:6px 12px">${gunPic(k,40)}<div class="info"><div class="t">${gName(k)}</div><div class="s">In the safe · not counting in fights</div></div>${B('gtake',k,'','Take out')}</div>`).join('')
+    +A.map(k=>`<div class="row" style="padding:6px 12px">${gunPic(k,40)}<div class="info"><div class="t">${gName(k)}</div><div class="s">One of your soldiers is holding it</div></div></div>`).join('');
+  const gear=[S.bag?'Bookbag (+25 space)':'',S.rob&&S.rob.mask?'Ski mask':'',S.rob&&S.rob.car?'Getaway car':'',S.fx&&S.fx.lawyer?'Lawyer on call':'',S.soldiers?`${S.soldiers} soldier${S.soldiers>1?'s':''}`:'',S.hand&&S.hand.length?`${S.hand.length} card${S.hand.length>1?'s':''} in hand`:''].filter(Boolean);
+  h+=`<div class="sec">Gear</div><div class="row"><div class="info"><div class="s">${gear.length?gear.join(' · '):'Nothing yet. The mall has a bookbag and a ski mask.'}</div></div></div><div class="btns"><button class="btn go" id="invx">Done</button></div>`;
+  modal(h);mc.scrollTop=st;md.scrollTop=st2;
+  mc.querySelectorAll('[data-i]').forEach(b=>b.onclick=()=>{invAct(b.dataset.i,b.dataset.k,b.dataset.m);render();invModal()});
+  $('invx').onclick=close;
+}
 function auntiePlay(){const order=['loud','bars','percs','phones','kicks','snow'];const g=order.map(G).find(x=>S.inv[x.id]>=x.step);if(!g)return;
   const n=Math.min(S.inv[g.id],g.unit==='g'?pick([3.5,7]):g.unit==='pills'?pick([5,10]):1);const each=Math.round(street(g)*gmult(S.q[g.id])*1.2);const got=Math.round(n*each);
   S.inv[g.id]-=n;if(S.inv[g.id]<=0){S.inv[g.id]=0;S.paid[g.id]=0;S.q[g.id]=50;S.fake[g.id]=0}S.cash+=got;S.heat=Math.min(100,S.heat+1);S.st.sold+=n*g.sp*5;
@@ -1759,7 +1801,7 @@ const AUTOK=['micro','baby','rifle','draco'],autoFee=k=>Math.max(3000,Math.round
 const isAuto=k=>!!(GUNS[k]&&(GUNS[k].burst||(S.auto||{})[k]));
 const gStr=k=>GUNS[k]&&!(S.noClip||{})[k]?GUNS[k].str+((S.auto||{})[k]?3:0):0;
 const gName=k=>(k==='smitty'&&(S.auto||{}).smitty?'Smitty w/ FRT':GUNS[k].name+((S.auto||{})[k]?' (full auto)':''))+((S.noClip||{})[k]?' (no clip)':'');
-function houndGone(){if(S.hound&&!S.houndLost&&!(S.guns||{}).hound&&!(S.armed||[]).includes('hound')){S.houndLost=1;say('The Bloodhound is gone for good. It was a 1 of 1.')}}
+function houndGone(){if(S.hound&&!S.houndLost&&!(S.guns||{}).hound&&!(S.vgun||{}).hound&&!(S.armed||[]).includes('hound')){S.houndLost=1;say('The Bloodhound is gone for good. It was a 1 of 1.')}}
 function houndReveal(){S.hound=1;S.guns=S.guns||{};S.guns.hound=1;say('Unlocked the mythical Bloodhound. 20 bodies.');
   modal(`<img src="${HOUNDART}" alt="" style="width:100%;max-width:300px;border-radius:8px;align-self:center"><div class="sec" style="margin:0;color:var(--accent)">Mythical unlocked</div><h2>The Bloodhound</h2><p>Word got around. Twenty bodies and your name ring bells. Unc called you to the back of the tire shop and pulled a case from under the floor.</p><p>All black Drako. Full auto from the factory. <b>+24 strength</b>, 40 in the clip, every tap sprays 3. "This one ain't for sale. It picks who holds it. It's a 1 of 1. Lose it and it's gone forever."</p><div class="btns"><button class="btn go" id="ok">It's mine</button></div>`);$('ok').onclick=()=>{close();render()}}
 const swIn=()=>S.swUntil>=S.day;
@@ -2350,6 +2392,7 @@ function act(a,el){
   if(a==='job'){S.job=el.dataset.k;say(`Got hired at the ${JOBS[S.job].name.toLowerCase()}.`)}
   if(a==='quitjob'){say(`Quit the ${JOBS[S.job].name.toLowerCase()} job.`);S.job=null}
   if(a==='buybiz'){const B=BIZ[el.dataset.k];S.cash-=B.cost;S.biz=S.biz||{};S.biz[el.dataset.k]=1;say(`Bought a ${B.name.toLowerCase()}. It's a front now.`)}
+  if(a==='inv')return invModal();
   if(a==='safe'){const k=el.dataset.k;if(k==='out'){S.cash+=S.safe;say(`Took ${money(S.safe)} out from the house.`);S.safe=0}else{const m=k==='all'?S.cash:Math.floor(S.cash/2);S.cash-=m;S.safe=(S.safe||0)+m;say(`Put ${money(m)} up at the house.`)}}
   if(a==='pkick')plugKick(+el.dataset.i);
   if(a==='phook')return plugHook(+el.dataset.i);
