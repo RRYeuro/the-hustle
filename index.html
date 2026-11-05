@@ -512,7 +512,7 @@ function placeAct(k,id){const back=()=>{render();openPlace(id)};
   {const r=lawStoreAct(k);if(r===2)return render();if(r)return back()}
 }
 function paneMove(){
-  let h='<div class="sec">The city</div>'+cityMap()+demandList();
+  let h=`<div class="row" style="border:1px solid var(--accent);background:rgba(0,0,0,.25)"><div class="info"><div class="t">🌙 Lay low</div><div class="s">Stay in a day: heat −15, health +15, stress −25, energy back.${atHome()?'':` <b style="color:var(--blood)">Head to your place on ${BLOCKS[homeBlock()]} first.</b>`}</div></div><button class="btn go" data-a="lay" ${atHome()?'':'disabled'}>Lay low</button></div><div class="sec">The city</div>`+cityMap()+demandList();
   h+=BLOCKS.map((b,i)=>{
     const o=S.owner[i];
     const chip=o==='me'?'<span class="chip mine">Yours</span>':o==='none'?'<span class="chip">Open</span>':
@@ -527,8 +527,7 @@ function paneMove(){
    ${S.robOn?'':paneLicks()}
    ${S.scamOn?paneScam():''}
    ${paneGuns()}
-   <div class="sec">Rest</div>`;
-  h+=`<div class="row"><div class="info"><div class="t">Lay low</div><div class="s">Stay in a day. Heat drops, health comes back.${atHome()?'':` <b style="color:var(--blood)">You gotta be at your place to lay low. It's on ${BLOCKS[homeBlock()]}.</b>`}</div></div><button class="btn" data-a="lay" ${atHome()?'':'disabled'}>Lay low</button></div>`;
+   `;
   return h;
 }
 function beefLabel(b){return b>=75?'<span class="chip war">War</span>':b>=45?'<span class="chip war">Beefing</span>':b>=20?'<span class="chip">Tense</span>':'<span class="chip">Cool</span>'}
@@ -550,7 +549,6 @@ function paneBeef(){
        ${S.gang===c.id||c.ally?'':`<button class="btn red" data-a="hit" data-c="${c.id}" ${theirsHere&&canWar()&&!blockReq()?'':'disabled'}>${blockReq()?'Take block (locked)':canWar()?'Take block':'Take block (no firepower)'}</button>`}
       </div>${gangBtns(c,theirsHere)}</div>`;
   }).join('');
-  h+=`<div class="sec">Time</div><div class="row"><div class="info"><div class="t">Advance day</div><div class="s">Let the day go by without doing anything. No heat or health back like laying low.</div></div><button class="btn" data-a="adv">Advance day</button></div>`;
   h+=`<div class="s" style="color:var(--dim);font-size:13px;padding:0 2px">"Take block" only works on a block they run, and you need a gun plus 2 soldiers or a set behind you. Go there first.</div>`;
   return h;
 }
@@ -1588,6 +1586,14 @@ function plugRob(bi){const P=PINFO[bi],nm=plugName(bi),her=plugFem(bi)?'her':'hi
     say(`Tried to rob ${nm} and it went bad. −${dmg} health.${lost}`);
     modal(`<h2 style="color:var(--blood)">${nm} was ready</h2><p>${P.lvl==='Low'?'He':'Their people'} had heat waiting. You barely got out. −${dmg} health.${lost}</p><div class="btns"><button class="btn go" id="ok">Continue</button></div>`);$('ok').onclick=close})};
 }
+/* ---------- plug mood and checkpoints ---------- */
+function moodPen(bi){const k=(S.pk&&S.pk[bi])||{};if(!k.mad)return 0;if(S.day-(k.madDay||0)>3){k.mad=0;return 0}return Math.min(.3,k.mad*.1)}
+function checkpointDay(){if(!(S.dr&&S.dr.until>=S.day)||S.inJail||Math.random()>.1)return;const carry=GOODS.reduce((a,g)=>a+(S.inv[g.id]||0),0);if(carry<=0)return;
+  modal(`<h2 style="color:var(--blood)">Checkpoint</h2><p>Drought szn has twelve out in force. There is a checkpoint on the road and you are holding.</p><div class="btns" style="flex-direction:column;align-items:stretch"><button class="btn red" id="cr">Ride through</button><button class="btn" id="ct">Turn around (lose half a day)</button></div>`);
+  $('ct').onclick=()=>{S.en=Math.max(0,(S.en||0)-Math.round(enMax()/2));say('You turned around and took the long way. Half your energy gone.');close();render()};
+  $('cr').onclick=()=>{const risk=Math.min(.85,.25+S.heat/200+(hasT('sketchy')?.1:0)-(hasT('nosey')?.08:0)-(S.sk.smarts||0)*.02);close();
+    if(Math.random()<risk){const cut=GOODS.filter(g=>S.inv[g.id]>0).slice(0,3).map(g=>{const t=Math.ceil(S.inv[g.id]*.4/g.step)*g.step,tk=Math.min(S.inv[g.id],t);S.inv[g.id]-=tk;S.fake[g.id]=Math.min(S.fake[g.id]||0,S.inv[g.id]);return tk+' '+g.name}),fine=Math.min(S.cash,rnd(100,400));S.cash-=fine;S.heat=Math.min(100,S.heat+12);addStress(10);say(`Pulled over. They took ${cut.join(', ')} and fined you ${money(fine)}.`)}
+    else{addXP(3);say('Rolled through the checkpoint clean. Heart still pounding.')}render()}}
 /* ---------- fronts and debt ---------- */
 const PCARE=['principle','principle','amount','principle','amount','amount'];
 const debtOf=bi=>(S.debt||[]).find(d=>d.bi===bi);
@@ -2481,7 +2487,7 @@ function plugDrop(bi){if((ptxo().n[bi]||0)>=PTX_MAX){modal(`<h2>${plugName(bi)} 
   const maxOf=g=>{S.at=bi;const st=stockOf(bi,g);S.at=here;return Math.floor(Math.min(S.cash/priceOf(g),(S.cap-used())/g.sp,st,teenCap(g))/g.step)*g.step};
   modal(`${avatar(bi,64)}<h2>Text ${plugName(bi)}</h2><p>"What you need? I'll pull up."</p><div class="btns"><button class="btn" id="hg" ${(S.dh&&S.dh.d===S.day&&S.dh.bi===bi)||S.sk.talk<4?'disabled':''}>${S.sk.talk<4?'Haggle the trip fee (Talk 4+)':S.dh&&S.dh.d===S.day&&S.dh.bi===bi?'Already haggled today':'Haggle the trip fee'}</button></div>${goods.map(g=>{const mx=maxOf(g);return `<div class="row" style="padding:8px 12px;flex-wrap:wrap">${drugPic(g.id,32)}<div class="info" style="flex:1 1 140px;min-width:0"><div class="t">${g.name}</div><div class="s">${money(priceOf(g))} each delivered · up to ${mx>=g.step?amt(mx,g):'none'}</div></div><div class="btns">${g.sizes.filter(z=>z[0]<=mx).slice(-3).map(z=>`<button class="btn green" data-dg="${g.id}" data-dn="${z[0]}">${z[1]}</button>`).join('')||'<span class="s">Can\'t afford or no room</span>'}</div></div>`}).join('')}<div class="btns"><button class="btn" id="no">Done</button></div>`);
   $('no').onclick=close;
-  if($('hg'))$('hg').onclick=()=>{if(!spendEn('talk'))return;const win=Math.random()<.3+S.sk.talk*.06+S.trust[bi]/400+(hasT('tongue')?.08:0)+(hasT('charm')?.03:0)-(hasT('hot')?.07:0)-(hasT('sketchy')?.05:0);S.dh={bi,d:S.day,m:win?.95:1.18};if(!win)S.trust[bi]=Math.max(0,S.trust[bi]-2);say(win?`${plugName(bi)} waived the trip fee and took 5% off.`:`${plugName(bi)} did not like the haggling. The drop costs 18% extra today.`);plugDrop(bi)};
+  if($('hg'))$('hg').onclick=()=>{if(!spendEn('talk'))return;const win=Math.random()<.3+S.sk.talk*.06+S.trust[bi]/400+(hasT('tongue')?.08:0)+(hasT('charm')?.03:0)-(hasT('hot')?.07:0)-(hasT('sketchy')?.05:0)-moodPen(bi);S.dh={bi,d:S.day,m:win?.95:1.18};if(!win){S.trust[bi]=Math.max(0,S.trust[bi]-2);const k=S.pk[bi]=S.pk[bi]||{};k.mad=(k.mad||0)+1;k.madDay=S.day;if(k.mad>=3){S.dh.m=1.3;S.trust[bi]=Math.max(0,S.trust[bi]-4);say(plugName(bi)+' is sick of the haggling. Prices are up and the trust took a hit.')}}say(win?`${plugName(bi)} waived the trip fee and took 5% off.`:`${plugName(bi)} did not like the haggling. The drop costs 18% extra today.`);plugDrop(bi)};
   $('mcard').querySelectorAll('[data-dg]').forEach(b=>b.onclick=()=>{const g=G(b.dataset.dg),n=+b.dataset.dn,pr=priceOf(g);S.at=bi;const of=S.offer[bi][g.id];S.at=here;
     const tot=Math.round(pr*n*bulk(n,g));if(tot>S.cash)return;of.stock=Math.max(0,(of.stock??0)-n);S.dropDay=S.day;{const pt=ptxo();pt.n[bi]=(pt.n[bi]||0)+1}
     const realHave=S.inv[g.id]-S.fake[g.id];if(of.fake){$('modal').hidden=true;modal(`<h2>${plugName(bi)} kept it real</h2><p>"Don't take this batch. It ain't right. I'll hit you when the good stuff land."</p><div class="btns"><button class="btn go" id="ok">Good looking</button></div>`);$('ok').onclick=close;S.trust[bi]=Math.min(100,S.trust[bi]+1);return}
@@ -2911,7 +2917,7 @@ function nextDay(){S.en=S.restDay?enMax():Math.max(30,enMax()-(S.stress>=70?20:0
   if(S.myGang&&S.soldiers)S.cash+=S.soldiers*50;
   runTraps();
   gfDay();sideDay();if(S.car==='stolen'){S.heat=Math.min(100,S.heat+2);addXP(1)}favorRoll();
-  shipDay();debtDay();rapDay();
+  shipDay();debtDay();checkpointDay();rapDay();
   if(S.cal?calCheck():(S.day-1)%30===0)say("It's the first of the month. Checks hit and the Js got money to spend.");
   demandDay();
   homeDay();
