@@ -705,12 +705,12 @@ const TRAITS=[
 const BASEPTS={tank:3,slick:4,shade:6,val:5,country:5,lucky:3};
 function traitPick(after){const base=BASEPTS[S&&S.char]||4;let pick=[];
   const left=()=>base-pick.reduce((a,id)=>a+TRAITS.find(t=>t.id===id).cost,0);
-  const draw=()=>{const L=left();modal(`<h2>Pick your traits</h2><p>Everybody comes with something. ${CHARS.find(c=>c.id===S.char)?CHARS.find(c=>c.id===S.char).name:'You'} starts with <b>${base}</b> point${base===1?'':'s'} to work with. Spend <b>${L}</b> point${L===1?'':'s'}. Bad traits give you more points to spend. Once you start, they're locked in.</p>
+  const draw=()=>{const L=left();modal(`<h2>Pick your traits</h2><p>Everybody comes with something. ${CHARS.find(c=>c.id===S.char)?CHARS.find(c=>c.id===S.char).name:'You'} starts with <b>${base}</b> point${base===1?'':'s'} to work with. Spend <b>${L}</b> point${L===1?'':'s'}. Bad traits give you more points to spend. Any points you don't spend turn into skill points. Once you start, they're locked in.</p>
     <div style="display:flex;flex-direction:column;gap:6px">${TRAITS.map(t=>{const on=pick.includes(t.id),can=on||(t.cost<=L)&&!(t.id==='cold'&&pick.includes('hot'))&&!(t.id==='hot'&&pick.includes('cold'));
       return `<button class="btn ${on?'go':''}" data-tr="${t.id}" ${can?'':'disabled'} style="text-align:left;text-transform:none;letter-spacing:0;font-family:var(--body);padding:10px 12px;line-height:1.35;white-space:normal;width:100%"><b>${t.name}</b> <span style="opacity:.8">· ${t.cost>0?`costs ${t.cost}`:`gives ${-t.cost}`}</span><br><i style="font-weight:400;font-size:13px;opacity:.85">${t.story}</i><br><span style="font-weight:400;font-size:13px">${t.sub}</span></button>`}).join('')}</div>
     <div class="btns"><button class="btn go" id="tgo">${pick.length?'Lock it in':'Skip, no traits'}</button></div>`);
     $('mcard').querySelectorAll('[data-tr]').forEach(b=>b.onclick=()=>{const id=b.dataset.tr;pick=pick.includes(id)?pick.filter(x=>x!==id):[...pick,id];draw()});
-    $('tgo').onclick=()=>{applyTraits(pick);after()}};
+    $('tgo').onclick=()=>{applyTraits(pick);const lf=left();if(lf>0){S.pts=(S.pts||0)+lf;say(`${lf} unspent trait point${lf===1?'':'s'} turned into skill point${lf===1?'':'s'}.`);save()}after()}};
   draw()}
 function applyTraits(pick){S.traits=pick;pick.forEach(id=>{const t=TRAITS.find(x=>x.id===id);
   if(t.sk)Object.entries(t.sk).forEach(([k,v])=>S.sk[k]=Math.max(1,Math.min(10,S.sk[k]+v)));
@@ -2949,7 +2949,7 @@ function ckReport(){try{ckState()}catch(e){}const done=CKL.filter(x=>{try{return
   $('ckb').onclick=devPanel;$('ckc').onclick=()=>{const ta=$('ckt');const ok=()=>{$('ckm').textContent='Copied. Paste it to Claude.'};try{navigator.clipboard.writeText(ta.value).then(ok,()=>{ta.select();document.execCommand('copy');ok()})}catch(e){ta.select();try{document.execCommand('copy')}catch(_){}ok()}}}
 $('pane').onclick=e=>{sfx('tap');const pp=e.target.closest('.mapp');if(pp)return openPlace(pp.dataset.p);const m=e.target.closest('.mapb');if(m){if(m.dataset.a==='go')act('go',m);return}const b=e.target.closest('button[data-a]');if(b&&!b.disabled){const top=S&&S.log&&S.log[0];act(b.dataset.a,b);const nw=S&&S.log&&S.log[0];if(nw&&nw!==top&&$('modal').hidden)toast(nw.t)}};
 $('retire').onclick=()=>{S.over=true;checkEnd()};
-const BUILD='v151';
+const BUILD='v152';
 function mainMenu(canContinue){
   modal(`<div style="text-align:center;display:flex;flex-direction:column;gap:10px">
     <div style="position:relative;margin:-18px -18px 0;height:190px;border-radius:8px 8px 0 0;background:url(${TITLEART}) center 60%/cover"><div style="position:absolute;inset:0;border-radius:8px 8px 0 0;background:linear-gradient(to bottom,rgba(20,17,24,0) 30%,var(--panel))"></div></div>
