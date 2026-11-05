@@ -1328,7 +1328,8 @@ function him(fm){return fm?'her':'him'}
 const CMODE={'Silk':'fly','Javi':'drop','Mr. Kim':'mule','Big Chief':'fly','OG Mook':'drop','Nadia':'mail','Marisol':'mule','Deacon':'drop','Uncle Sol':'mail','Tasha K':'mule'};
 const MODEI={drop:['Local drop-off','Brought to you today.'],fly:['You fly out','Costs $250 for the flight and the trip takes your day. You bring it home yourself.'],mail:['Send the money','You mail the money up front. Package lands in 2 days.'],mule:['Mule delivers','You pay up front. A mule brings it in 2 days. Risky.']};
 const GRADES=[['Low grade',20,40],['Mid grade',50,68],['Exotic',80,95]];
-const ctier=C=>{if(C.tier==null)C.tier=Math.max(0,CONNECTS.indexOf(C.name))%3;return C.tier};
+const CTIER={'Uncle Sol':0,'OG Mook':0,'Javi':0,'Deacon':0,'Tasha K':0,'Silk':1,'Mr. Kim':1,'Marisol':1,'Big Chief':2,'Nadia':2};
+const ctier=C=>{if(CTIER[C.name]!=null)C.tier=CTIER[C.name];else if(C.tier==null)C.tier=Math.max(0,CONNECTS.indexOf(C.name))%3;return C.tier};
 const cmode=C=>CMODE[C.name]||'drop';
 const ctr=C=>{if(C.tr==null)C.tr=20;return C.tr};
 function ccap(g,C){const t=ctier(C),base=g.unit==='g'?[112,448,1000][t]:g.unit==='pills'?[500,1000,2000][t]:[16,32,64][t];return Math.round(base*(1+ctr(C)/200))}
