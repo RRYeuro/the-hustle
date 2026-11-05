@@ -2493,7 +2493,15 @@ function lockPopUI(){const L=S.lockPop;if(!L||!$('modal').hidden||S.over)return 
 function act(a,el){
   if(S.over)return;
   if(a==='buy'||a==='sell')return qtyModal(a,GOODS.find(g=>g.id===el.dataset.g));
-  if(S.grounded>S.day&&['go','lick','heist','hoops','dice','fmeet','pkick','pfav','phit','hit','gjoin'].includes(a)){say(`You're grounded. ${S.par?S.par.name:'They'} ain't letting you leave the house. Lay low, go to school, or text your plays to come to you.`);render();return}
+  if(S.grounded>S.day&&S.sneakOK!==S.day&&['go','lick','heist','hoops','dice','fmeet','pkick','pfav','phit','hit','gjoin'].includes(a)){
+    const nm=S.par?S.par.name:'They',snap={dataset:{...(el&&el.dataset||{})}};
+    if(S.sneakTry===S.day){say(`You're grounded and you already tried sneaking out today. ${nm} is up now.`);render();return}
+    modal(`<h2>You're grounded</h2><p>${nm} ain't letting you leave. You can wait it out, lay low, or try to sneak out the window. Get caught and it's worse: trust drops and you stay in longer.</p><div class="btns"><button class="btn red" id="sn">Sneak out</button><button class="btn go" id="sx">Stay in</button></div>`);
+    $('sx').onclick=close;
+    $('sn').onclick=()=>{S.sneakTry=S.day;sneakGame((steps,caught)=>{
+      if(caught){const P=S.par;if(P)P.trust=Math.max(0,P.trust-10);S.grounded=S.grounded+2;addStress(8);say(`${nm} heard you at the window. Caught. Trust −10 and two more days grounded.`);close();return}
+      S.sneakOK=S.day;say('Out the window and gone.');$('modal').hidden=true;act(a,snap)})};
+    return}
   if(a==='go'){S.at=+el.dataset.i;say(`Pulled up to ${BLOCKS[S.at]}.`);nextDay()}
   if(a==='adv'){say('Let the day go by.');nextDay();return}
   if(a==='lay'){if(!atHome()){say('You gotta be at your place to lay low.');return render()}S.heat=Math.max(0,S.heat-15);S.hp=Math.min(100,S.hp+15);addStress(-25);say('Laid low for a day.');nextDay()}
@@ -2976,7 +2984,7 @@ function ckReport(){try{ckState()}catch(e){}const done=CKL.filter(x=>{try{return
   $('ckb').onclick=devPanel;$('ckc').onclick=()=>{const ta=$('ckt');const ok=()=>{$('ckm').textContent='Copied. Paste it to Claude.'};try{navigator.clipboard.writeText(ta.value).then(ok,()=>{ta.select();document.execCommand('copy');ok()})}catch(e){ta.select();try{document.execCommand('copy')}catch(_){}ok()}}}
 $('pane').onclick=e=>{sfx('tap');const pp=e.target.closest('.mapp');if(pp)return openPlace(pp.dataset.p);const m=e.target.closest('.mapb');if(m){if(m.dataset.a==='go')act('go',m);return}const b=e.target.closest('button[data-a]');if(b&&!b.disabled){const top=S&&S.log&&S.log[0];act(b.dataset.a,b);const nw=S&&S.log&&S.log[0];if(nw&&nw!==top&&$('modal').hidden)toast(nw.t)}};
 $('retire').onclick=()=>{S.over=true;checkEnd()};
-const BUILD='v157';
+const BUILD='v158';
 function mainMenu(canContinue){
   modal(`<div style="text-align:center;display:flex;flex-direction:column;gap:10px">
     <div style="position:relative;margin:-18px -18px 0;height:190px;border-radius:8px 8px 0 0;background:url(${TITLEART}) center 60%/cover"><div style="position:absolute;inset:0;border-radius:8px 8px 0 0;background:linear-gradient(to bottom,rgba(20,17,24,0) 30%,var(--panel))"></div></div>
