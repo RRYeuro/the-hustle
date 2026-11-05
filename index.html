@@ -907,15 +907,102 @@ function lifeOffer(k,manual){const O=OFFERS[k];
     modal(`<h2>${k==='rap'?'New life: Rapper':'New life: Robber'}</h2><p>${k==='rap'?'The Studio tab is open. Record songs, build fans, do shows and chase a record deal.':'The Heists tab is open. Gear up, hit licks, put a crew together and go for the big jobs.'}</p><p style="color:var(--dim)">You can still trap on the side, and you can quit anytime.</p><div class="btns"><button class="btn go" id="ok">Let's go</button></div>`);
     $('ok').onclick=close};
 }
+/* ---------- scam and hack minigames ---------- */
+const skv=n=>(S.sk&&S.sk[n])||3;
+const mgLv=b=>Math.max(1,b-(stressed()?1:0));
+const mgCv=(w,h,extra)=>`<canvas id="mgc" width="${w}" height="${h}" style="touch-action:none;display:block;width:100%;max-width:${w}px;margin:8px auto;border-radius:8px;border:1px solid var(--line);background:#07090d"></canvas>${extra||''}`;
+const mgHud=t=>`<div class="s" id="mgmsg" style="text-align:center;min-height:18px">${t||''}</div><div class="bar"><i id="mgt" style="width:100%;background:var(--accent)"></i></div>`;
+function mgPt(cv,e){const r=cv.getBoundingClientRect();return [(e.clientX-r.left)*cv.width/r.width,(e.clientY-r.top)*cv.height/r.height]}
+function mgFin(cb,ok,msg){if(!mgOn)return;mgOn=false;const m=$('mgmsg');if(m){m.textContent=msg;m.style.color=ok?'var(--money)':'var(--blood)'}setTimeout(()=>cb(ok),800)}
+function mgMaze(o,cb){mgOn=true;const C=7,R=9,T=22,GW=2*C+1,GH=2*R+1,W=GW*T,H=GH*T,d=o.d||0;
+  const g=Array.from({length:GH},()=>Array(GW).fill(1));g[1][1]=0;const seen=new Set(['0,0']),stk=[[0,0]];
+  while(stk.length){const [cx,cy]=stk[stk.length-1];const nb=[[1,0],[-1,0],[0,1],[0,-1]].map(([dx,dy])=>[cx+dx,cy+dy,dx,dy]).filter(([x,y])=>x>=0&&y>=0&&x<C&&y<R&&!seen.has(x+','+y));
+    if(!nb.length){stk.pop();continue}const [nx,ny,dx,dy]=pick(nb);seen.add(nx+','+ny);g[2*ny+1][2*nx+1]=0;g[2*cy+1+dy][2*cx+1+dx]=0;stk.push([nx,ny])}
+  for(let i=0;i<Math.round(8-d*5);i++){const x=rnd(1,GW-2),y=rnd(1,GH-2);if(g[y][x]===1&&((g[y][x-1]===0&&g[y][x+1]===0)||(g[y-1][x]===0&&g[y+1][x]===0)))g[y][x]=0}
+  const maxS=mgLv(2+Math.floor(skv('smarts')/3)),LIM=(o.T||42000)+skv('smarts')*1500,ex=2*C-1,ey=2*R-1;let strikes=0,act=false,last=null,pos=null;const T0=performance.now();
+  modal(`<h2>${o.title||'Tunnel the VPN'}</h2>${mgHud(`Strikes 0 of ${maxS}. Put your finger on the green node and drag to the exit.`)}${mgCv(W,H)}`);
+  const cv=$('mgc'),x=cv.getContext('2d');
+  const wall=(px,py)=>{const tx=Math.floor(px/T),ty=Math.floor(py/T);return tx<0||ty<0||tx>=GW||ty>=GH||g[ty][tx]===1};
+  const draw=()=>{x.fillStyle='#07090d';x.fillRect(0,0,W,H);for(let j=0;j<GH;j++)for(let i=0;i<GW;i++)if(g[j][i]){x.fillStyle='#1b2a46';x.fillRect(i*T,j*T,T,T);x.fillStyle='#27406b';x.fillRect(i*T,j*T,T,2)}
+    x.fillStyle='#3ddc84';x.beginPath();x.arc(1.5*T,1.5*T,T*.42,0,7);x.fill();x.fillStyle='#ffd23f';x.beginPath();x.arc((ex+.5)*T,(ey+.5)*T,T*.42,0,7);x.fill();
+    if(pos){x.fillStyle='#fff';x.beginPath();x.arc(pos[0],pos[1],4,0,7);x.fill()}};
+  const hit=()=>{strikes++;act=false;pos=null;$('mgmsg').textContent=`Hit a wall. Strikes ${strikes} of ${maxS}.`;$('mgmsg').style.color='var(--blood)';if(strikes>=maxS)mgFin(cb,false,'Traced. The connection dropped.')};
+  cv.onpointerdown=e=>{if(!mgOn)return;const p=mgPt(cv,e);if(Math.hypot(p[0]-1.5*T,p[1]-1.5*T)<T*1.4){act=true;last=p;pos=p;try{cv.setPointerCapture(e.pointerId)}catch(_){}}};
+  cv.onpointermove=e=>{if(!act||!mgOn)return;const p=mgPt(cv,e),n=Math.max(1,Math.ceil(Math.hypot(p[0]-last[0],p[1]-last[1])/3));for(let i=1;i<=n;i++){const qx=last[0]+(p[0]-last[0])*i/n,qy=last[1]+(p[1]-last[1])*i/n;if(wall(qx,qy))return hit()}
+    last=p;pos=p;if(Math.floor(p[0]/T)===ex&&Math.floor(p[1]/T)===ey){act=false;mgFin(cb,true,'Connected. You are in.')}};
+  cv.onpointerup=cv.onpointercancel=()=>{act=false;pos=null};
+  const loop=()=>{if(!mgOn||!cv.isConnected)return;const left=1-(performance.now()-T0)/LIM;if($('mgt'))$('mgt').style.width=Math.max(0,left*100)+'%';if(left<=0)return mgFin(cb,false,'Out of time. The session expired.');draw();requestAnimationFrame(loop)};loop()}
+function mgInv(o,cb){mgOn=true;const W=320,H=400,d=o.d||0,rows=3+(d>.5?1:0),cols=6;let px=W/2,lives=mgLv(3+(skv('muscle')>=7?1:0)),bul=[],eb=[],gx=0,gy=0,dir=1,inv=0,lastF=0,lastE=0,lt=performance.now();const T0=lt,LIM=48000;
+  const en=[];for(let r=0;r<rows;r++)for(let c=0;c<cols;c++)en.push({x:34+c*44,y:30+r*28,a:1});
+  const sp=(34+d*24)*(1-Math.min(.35,skv('smarts')*.03)),fireMs=Math.max(200,430-skv('hustle')*24),eMs=Math.max(450,1000-d*350);
+  modal(`<h2>${o.title||'Hold the firewall'}</h2>${mgHud('Drag to move. Your gun fires on its own.')}${mgCv(W,H)}`);
+  const cv=$('mgc'),x=cv.getContext('2d');const mv=e=>{if(mgOn)px=Math.max(16,Math.min(W-16,mgPt(cv,e)[0]))};cv.onpointerdown=e=>{try{cv.setPointerCapture(e.pointerId)}catch(_){}mv(e)};cv.onpointermove=mv;
+  const loop=t=>{if(!mgOn||!cv.isConnected)return;const dt=Math.min(.05,(t-lt)/1000);lt=t;const left=1-(t-T0)/LIM;if($('mgt'))$('mgt').style.width=Math.max(0,left*100)+'%';if(left<=0)return mgFin(cb,false,'Out of time. They rebuilt the wall.');
+    const al=en.filter(e=>e.a);if(!al.length)return mgFin(cb,true,'Firewall down. You are through.');
+    gx+=dir*sp*dt;const mn=Math.min(...al.map(e=>e.x))+gx,mx=Math.max(...al.map(e=>e.x))+gx;if((dir>0&&mx>W-16)||(dir<0&&mn<16)){dir*=-1;gy+=14}
+    if(Math.max(...al.map(e=>e.y))+gy>H-62)return mgFin(cb,false,'They reached your line. Traced.');
+    if(t-lastF>fireMs){lastF=t;bul.push({x:px,y:H-34})}if(t-lastE>eMs){lastE=t;const s=pick(al);eb.push({x:s.x+gx,y:s.y+gy+8})}
+    bul.forEach(b=>b.y-=380*dt);eb.forEach(b=>b.y+=170*dt);bul=bul.filter(b=>b.y>-8);
+    bul.forEach(b=>{al.forEach(e=>{if(e.a&&Math.abs(b.x-(e.x+gx))<11&&Math.abs(b.y-(e.y+gy))<9){e.a=0;b.y=-99}})});
+    if(t>inv)eb.forEach(b=>{if(b.y>H-40&&Math.abs(b.x-px)<14){b.y=H+9;lives--;inv=t+900;$('mgmsg').textContent=`Hit. ${lives} ${lives===1?'life':'lives'} left.`;if(lives<=0)mgFin(cb,false,'Your connection was killed.')}});eb=eb.filter(b=>b.y<H);
+    x.fillStyle='#07090d';x.fillRect(0,0,W,H);en.forEach(e=>{if(!e.a)return;x.fillStyle='#4be39b';x.fillRect(e.x+gx-10,e.y+gy-7,20,14);x.fillStyle='#07090d';x.fillRect(e.x+gx-6,e.y+gy-3,4,4);x.fillRect(e.x+gx+2,e.y+gy-3,4,4)});
+    x.fillStyle='#ffd23f';bul.forEach(b=>x.fillRect(b.x-1.5,b.y-8,3,10));x.fillStyle='#ff5a5a';eb.forEach(b=>x.fillRect(b.x-2,b.y-6,4,10));
+    x.globalAlpha=t<inv&&Math.floor(t/90)%2?.3:1;x.fillStyle='#fff';x.beginPath();x.moveTo(px,H-48);x.lineTo(px-14,H-28);x.lineTo(px+14,H-28);x.fill();x.globalAlpha=1;requestAnimationFrame(loop)};requestAnimationFrame(loop)}
+const PACM=['###########','#.........#','#.##.#.##.#','#.........#','#.##.#.##.#','#....#....#','#.##.#.##.#','#.........#','#.##.#.##.#','#.........#','###########'];
+function mgPac(o,cb){mgOn=true;const R=PACM.length,C=PACM[0].length,T=28,W=C*T,H=R*T,d=o.d||0,dots=new Set();PACM.forEach((row,y)=>[...row].forEach((ch,xx)=>{if(ch==='.')dots.add(xx+','+y)}));
+  const free=(a,b)=>PACM[b]&&PACM[b][a]&&PACM[b][a]!=='#';let me={x:5,y:9,dx:0,dy:0,nx:0,ny:0},gh=[{x:1,y:1,c:'#ff5a5a'},{x:9,y:1,c:'#5ab8ff'}];if(d>.4)gh.push({x:9,y:9,c:'#ffb347'});let lives=mgLv(2+(skv('luck')>=6?1:0));const T0=performance.now(),LIM=55000;
+  const reset=()=>{me={x:5,y:9,dx:0,dy:0,nx:0,ny:0};gh[0].x=1;gh[0].y=1;gh[1].x=9;gh[1].y=1;if(gh[2]){gh[2].x=9;gh[2].y=9}};
+  modal(`<h2>${o.title||'Pull the files'}</h2>${mgHud(`Swipe or use the arrows. Eat every file. Lives ${lives}.`)}${mgCv(W,H,`<div class="btns" style="justify-content:center"><button class="btn" id="pu">▲</button><button class="btn" id="pl">◀</button><button class="btn" id="pd">▼</button><button class="btn" id="pr">▶</button></div>`)}`);
+  const cv=$('mgc'),x=cv.getContext('2d'),dirb=(a,b)=>{me.nx=a;me.ny=b};$('pu').onclick=()=>dirb(0,-1);$('pd').onclick=()=>dirb(0,1);$('pl').onclick=()=>dirb(-1,0);$('pr').onclick=()=>dirb(1,0);
+  let sx=0,sy=0;cv.onpointerdown=e=>{sx=e.clientX;sy=e.clientY};cv.onpointerup=e=>{const a=e.clientX-sx,b=e.clientY-sy;if(Math.max(Math.abs(a),Math.abs(b))<12)return;Math.abs(a)>Math.abs(b)?dirb(a>0?1:-1,0):dirb(0,b>0?1:-1)};
+  const key=e=>{const k={ArrowUp:[0,-1],ArrowDown:[0,1],ArrowLeft:[-1,0],ArrowRight:[1,0]}[e.key];if(k){dirb(...k);e.preventDefault()}};document.addEventListener('keydown',key);
+  const stop=()=>{document.removeEventListener('keydown',key);clearInterval(i1);clearInterval(i2);clearInterval(i3)};
+  const caught=()=>{if(!gh.some(g=>g.x===me.x&&g.y===me.y))return false;lives--;if(lives<=0){stop();mgFin(cb,false,'Traced. They found you.');return true}$('mgmsg').textContent=`Caught. Lives ${lives}.`;$('mgmsg').style.color='var(--blood)';reset();return true};
+  const draw=()=>{x.fillStyle='#07090d';x.fillRect(0,0,W,H);for(let b=0;b<R;b++)for(let a=0;a<C;a++){if(PACM[b][a]==='#'){x.fillStyle='#1b2a46';x.fillRect(a*T+1,b*T+1,T-2,T-2)}}
+    x.fillStyle='#ffd23f';dots.forEach(k=>{const [a,b]=k.split(',').map(Number);x.beginPath();x.arc(a*T+T/2,b*T+T/2,3,0,7);x.fill()});
+    x.fillStyle='#fff';x.beginPath();x.arc(me.x*T+T/2,me.y*T+T/2,T*.38,0,7);x.fill();gh.forEach(g=>{x.fillStyle=g.c;x.beginPath();x.arc(g.x*T+T/2,g.y*T+T/2,T*.38,0,7);x.fill()})};
+  const i1=setInterval(()=>{if(!mgOn){stop();return}if(free(me.x+me.nx,me.y+me.ny)&&(me.nx||me.ny)){me.dx=me.nx;me.dy=me.ny}if(free(me.x+me.dx,me.y+me.dy)){me.x+=me.dx;me.y+=me.dy}dots.delete(me.x+','+me.y);
+    if(!caught()&&!dots.size){stop();mgFin(cb,true,'Every file pulled.')}draw()},200);
+  const gms=Math.max(210,340-d*60+skv('smarts')*7);
+  const i2=setInterval(()=>{if(!mgOn)return;gh.forEach(g=>{const opts=[[1,0],[-1,0],[0,1],[0,-1]].filter(([a,b])=>free(g.x+a,g.y+b)&&!(g.px===-a&&g.py===-b));const op=opts.length?opts:[[1,0],[-1,0],[0,1],[0,-1]].filter(([a,b])=>free(g.x+a,g.y+b));
+      let ch;if(Math.random()<.55+d*.15){ch=op.slice().sort((A,B)=>Math.hypot(g.x+A[0]-me.x,g.y+A[1]-me.y)-Math.hypot(g.x+B[0]-me.x,g.y+B[1]-me.y))[0]}else ch=pick(op);g.x+=ch[0];g.y+=ch[1];g.px=ch[0];g.py=ch[1]});caught();draw()},gms);
+  const i3=setInterval(()=>{if(!mgOn||!cv.isConnected){stop();return}const left=1-(performance.now()-T0)/LIM;if($('mgt'))$('mgt').style.width=Math.max(0,left*100)+'%';if(left<=0){stop();mgFin(cb,false,'Out of time. The session closed.')}},200);draw()}
+function mgSimon(o,cb){mgOn=true;const d=o.d||0,len=5+Math.round(d*3),seq=Array.from({length:len},()=>rnd(0,3)),CL=['#e5484d','#3ddc84','#4aa3ff','#ffd23f'],allow=(skv('talk')>=6?1:0)+(skv('talk')>=9?1:0),fl=Math.max(260,520-skv('talk')*18);let i=0,miss=0,show=true;
+  modal(`<h2>${o.title||'Phish the login'}</h2><div class="s" id="mgmsg" style="text-align:center;min-height:18px">Watch the pattern.</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px auto;max-width:260px">${CL.map((c,k)=>`<button id="sm${k}" style="height:84px;border-radius:12px;border:0;background:${c};opacity:.35"></button>`).join('')}</div>`);
+  const lit=(k,on)=>{const b=$('sm'+k);if(b)b.style.opacity=on?'1':'.35'};
+  const play=()=>{show=true;i=0;$('mgmsg').textContent='Watch the pattern.';$('mgmsg').style.color='';let t=500;seq.forEach(k=>{setTimeout(()=>mgOn&&lit(k,1),t);setTimeout(()=>lit(k,0),t+fl*.7);t+=fl});setTimeout(()=>{if(!mgOn)return;show=false;$('mgmsg').textContent=`Your turn. ${allow-miss>0?'You can slip up '+(allow-miss)+' more time'+(allow-miss===1?'':'s')+'.':'No slips.'}`},t)};play();
+  [0,1,2,3].forEach(k=>{$('sm'+k).onclick=()=>{if(!mgOn||show)return;lit(k,1);setTimeout(()=>lit(k,0),160);if(k===seq[i]){i++;if(i>=len)mgFin(cb,true,'Logged in. They never noticed.')}else{miss++;if(miss>allow)return mgFin(cb,false,'Wrong code. The account locked.');$('mgmsg').textContent='Wrong one. Replaying.';$('mgmsg').style.color='var(--blood)';setTimeout(play,800)}}})}
+const MG={maze:mgMaze,inv:mgInv,pac:mgPac,simon:mgSimon};
+const MGTXT={maze:'Tunnel the network. Drag from the green node to the yellow exit without touching a wall. <b>Smarts</b> gives you more strikes.',inv:'Hold the firewall. Drag to move, your gun fires itself. Kill every ICE block before it reaches your line. <b>Hustle</b> fires faster and <b>Smarts</b> slows them down.',pac:'Pull the files. Swipe or use the arrows to eat every data file and dodge the traces. <b>Smarts</b> slows the traces and <b>Luck</b> gives an extra life.',simon:'Phish the login. Watch the pattern, then repeat it. <b>Talk</b> slows the pattern and lets you slip up.'};
+const SCAMDEF={
+ fake:{n:'Fake rental deposits',t:'List a house that is not yours and take deposits. Two steps.',noto:0,cost:0,st:['simon','maze'],pay:[1300,2300],heat:6},
+ phish:{n:'Phish a business',t:'Fake invoices to a company that pays without checking. Three steps.',noto:15,cost:300,st:['simon','maze','inv'],pay:[4200,6800],heat:10},
+ skim:{n:'ATM skim ring',t:'Skimmers on a row of machines, then clean it all out. Five steps.',noto:60,cost:1500,st:['simon','maze','pac','inv','pac'],pay:[19000,29000],heat:20},
+ drain:{n:'Drain a wallet',t:'Get into a rich mark\'s crypto. Four steps.',shade:1,st:['maze','simon','pac','inv'],pay:[10000,16000],heat:14},
+ wipe:{n:'Wipe your record',t:'Tunnel in on a VPN, pull your file and hold the firewall. Heat goes to zero. Three steps.',shade:1,st:['maze','pac','inv'],heat:0,wipe:1},
+ tap:{n:'Tap an opp\'s phone',t:'Read a rival crew\'s messages. Two steps.',shade:1,st:['maze','simon'],heat:8,tap:1}};
+function scamRun(k){const D=SCAMDEF[k],sc=S.scam=S.scam||{noto:0,laptop:0,did:{}};if(!D)return;sc.hist=sc.hist||{};
+  if(sc.did[k]===S.day)return say('Already did that today.'),render();if(D.shade&&!(is('shade')&&sc.laptop))return say('Only Shade can do the ghost work.'),render();if(D.noto&&sc.noto<D.noto)return say('Nobody trusts you with that yet. Build your name.'),render();if(D.cost&&S.cash<D.cost)return say('Need '+money(D.cost)+' to set that up.'),render();
+  if(D.wipe&&S.heat<15)return say('Your heat is already low. Not worth the risk.'),render();
+  const N=D.st.length;if(!spendEn(8+N*3))return;S.cash-=D.cost||0;sc.did[k]=S.day;let i=0,bail=false;
+  const lose=()=>{S.heat=Math.min(100,S.heat+Math.round((D.heat||10)*1.6+8));addStress(8+N*2);if(D.tap){const c=pick(S.crews.filter(c=>c.alive));if(c)c.beef=Math.min(100,c.beef+15)}say(`${D.n} fell through. Heat up.`);lickDone('It fell through',`You got burned on step ${i+1} of ${N}.${D.cost?` The ${money(D.cost)} setup is gone.`:''} Heat went up.`,false,true)};
+  const win=()=>{let t,x,x0='';
+    if(D.wipe){S.heat=0;sc.noto+=6;addXP(5);t='Record wiped';x='Your file is clean. Heat is 0.'}
+    else if(D.tap){const c=pick(S.crews.filter(c=>c.alive));c.str=Math.max(4,c.str-5);c.beef=Math.max(0,c.beef-10);sc.noto+=5;addXP(5);S.heat=Math.min(100,S.heat+D.heat);t='Phones tapped';x=`You read everything the ${cdef(c.id).name} been saying. They are weaker now (−5 strength).`}
+    else{const h=sc.hist[k]=(sc.hist[k]||[]).filter(d=>S.day-d<5);const sat=Math.pow(.6,h.length);h.push(S.day);
+      let v=rnd(D.pay[0],D.pay[1])*(1+skv('hustle')*.02+skv('talk')*.015)*sat;if(Math.random()<skv('luck')*.015){v*=1.5;x0=' Luck had it paying extra.'}v=Math.round(v/10)*10;S.cash+=v;sc.noto+=Math.ceil(N*2+v/2500);addXP(N*2);S.heat=Math.min(100,S.heat+D.heat);
+      t=D.n+' paid off';x=`${N} steps done. You walked away with ${money(v)}.${x0}${sat<1?' The same hustle again so soon pays less.':''} Heat +${D.heat}.`}
+    say(`${t}.`);lickDone(t,x,true,true)};
+  const next=()=>{if(i>=N)return win();const g=D.st[i];gateGame(`${D.n}: step ${i+1} of ${N}`,MGTXT[g],()=>MG[g]({d:N>1?i/(N-1):0},ok=>{if(!ok&&!bail&&Math.random()<skv('luck')*.02){bail=true;ok=true;say('Luck bailed you out on that step.')}ok?(i++,next()):lose()}))};
+  next()}
 function scamTitle(){const n=(S.scam||{}).noto||0;return n>=150?'Scam Kingpin':n>=60?'Fraud Plug':n>=20?'Card Puncher':'Scam Rookie'}
 function paneScam(){const sc=S.scam=S.scam||{noto:0,laptop:0,did:{}};
   let h=`<div class="sec">Scams · ${scamTitle()}</div>
    <div class="row"><div class="info"><div class="t">Punch cards</div><div class="s">Buy a list for $400, then swipe card after card at the mall. Each one goes through or gets declined. Two declines and the store calls it in. Cash out whenever.</div></div><button class="btn go" data-a="punch" ${S.cash>=400&&sc.did.punch!==S.day?'':'disabled'}>${sc.did.punch===S.day?'Done today':'Get a list'}</button></div>`;
+  const row=k=>{const D=SCAMDEF[k],lock=D.noto&&sc.noto<D.noto,pr=D.pay?` Pays ${money(D.pay[0])} to ${money(D.pay[1])}.`:'';return `<div class="row"><div class="info"><div class="t">${D.n}</div><div class="s">${D.t}${pr}${D.cost?' Setup '+money(D.cost)+'.':''}${lock?` <b style="color:var(--blood)">Need ${D.noto} notoriety.</b>`:''}</div></div><button class="btn ${D.shade?'red':'go'}" data-a="scam" data-k="${k}" ${sc.did[k]===S.day||lock||(D.cost&&S.cash<D.cost)?'disabled':''}>${sc.did[k]===S.day?'Done today':'Run it'}</button></div>`};
+  h+=['fake','phish','skim'].map(row).join('');
   if(is('shade')){
-    h+=sc.laptop?`<div class="sec">Shade's laptop · ghost work</div>
-     <div class="row"><div class="info"><div class="t">Drain a wallet</div><div class="s">Get into a rich mark's crypto. Big money, takes the day.</div></div><button class="btn red" data-a="hack" data-k="drain" ${sc.did.drain===S.day?'disabled':''}>Hack</button></div>
-     <div class="row"><div class="info"><div class="t">Wipe your record</div><div class="s">Get into the police system and make your heat disappear. Takes the day.</div></div><button class="btn red" data-a="hack" data-k="wipe" ${sc.did.wipe===S.day?'disabled':''}>Hack</button></div>
-     <div class="row"><div class="info"><div class="t">Tap an opp's phone</div><div class="s">Read a rival crew's messages. They get weaker and you see them coming.</div></div><button class="btn red" data-a="hack" data-k="tap" ${sc.did.tap===S.day?'disabled':''}>Hack</button></div>`
+    h+=sc.laptop?`<div class="sec">Shade's laptop · ghost work</div>`+['drain','wipe','tap'].map(row).join('')
     :`<div class="row"><div class="info"><div class="t">Set up a laptop</div><div class="s">Only Shade knows how to do the real ghost work: wallets, records, phones.</div></div><button class="btn green" data-a="laptop" ${S.cash>=2000?'':'disabled'}>$2,000</button></div>`}
   return h}
 function punch(){const sc=S.scam;sc.did.punch=S.day;S.cash-=400;let cards=6,dec=0,got=0;const odds=.6+S.sk.talk*.02+(is('shade')?.1:0)-(stressed()?.08:0)+(friendWith('scam')?.08:0);
@@ -929,7 +1016,7 @@ function punch(){const sc=S.scam;sc.did.punch=S.day;S.cash-=400;let cards=6,dec=
         draw('Declined. The cashier looked at you funny.')}};
     $('co').onclick=()=>{S.cash+=got;sc.noto+=Math.ceil(got/800);addXP(Math.ceil(got/700));say(`Punched cards for ${money(got)}.`);close()}};
   draw('You got 6 cards on the list. Take your time.')}
-function hack(k){const sc=S.scam;sc.did[k]=S.day;const odds=.45+S.sk.smarts*.05-(stressed()?.1:0);const win=Math.random()<odds;
+function hackOld(k){const sc=S.scam;sc.did[k]=S.day;const odds=.45+S.sk.smarts*.05-(stressed()?.1:0);const win=Math.random()<odds;
   let t,x;
   if(k==='drain'){if(win){const v=rnd(3000,9000);S.cash+=v;sc.noto+=10;addXP(6);t='Wallet drained';x=`You got in and moved ${money(v)} before they knew. Nobody will ever know it was you.`}else{S.heat=Math.min(100,S.heat+10);t='Locked out';x='Their security kicked you out. Heat +10.'}}
   if(k==='wipe'){if(win){S.heat=0;sc.noto+=6;addXP(4);t='Record wiped';x='Your file is clean. Heat is 0.'}else{S.heat=Math.min(100,S.heat+20);t='They noticed';x='Somebody saw the login. Heat +20.'}}
@@ -951,7 +1038,7 @@ function paneRap(){const R=S.rap,top=R.songs.slice().sort((a,b)=>b.q-a.q)[0];
   let h=`<div class="row" style="flex-wrap:wrap;border-color:var(--accent)"><div class="info"><div class="t" style="font-family:var(--display);font-size:20px;font-weight:400">${fame()} artist</div>
     <div class="s">${R.fans.toLocaleString()} fans · Hype ${R.hype}/100 · ${R.songs.length} song${R.songs.length===1?'':'s'} out${R.signed?' · <b style="color:var(--accent)">Signed</b>':''}</div>
     <div class="bar"><i style="width:${R.hype}%;background:var(--accent)"></i></div><div class="s">Songs pay a little each day in streams. Your <b>active listeners</b> (~${listeners().toLocaleString()}) boost streams and keep fans from drifting. Keep hype up so they stay.</div>
-    <div class="s">Street cred: ${S.st.profit>5000||(S.st.licks||0)>=3?'<b style="color:var(--money)">Real.</b> You rap what you live, so your songs come out better.':'Make real money in the streets or hit some licks and your songs come out better.'}${S.rap.fans>=1000?' Fans buy from you too: you sell 5% higher.':''}</div></div></div>`;
+    <div class="s">Every song has a shot at going viral. Better songs, more hype and a good ear raise the odds. When one blows up, fans and streams jump for about a week.</div><div class="s">Street cred: ${S.st.profit>5000||(S.st.licks||0)>=3?'<b style="color:var(--money)">Real.</b> You rap what you live, so your songs come out better.':'Make real money in the streets or hit some licks and your songs come out better.'}${S.rap.fans>=1000?' Fans buy from you too: you sell 5% higher.':''}</div></div></div>`;
   h+=`<div class="sec">Make music</div>
    <div class="row"><div class="info"><div class="t">Studio session</div><div class="s">Ride the beat to record a song, then drop it. $300, takes the day.</div></div><button class="btn go" data-a="rec" ${S.cash>=300?'':'disabled'}>Record</button></div>
    <div class="row"><div class="info"><div class="t">Diss track</div><div class="s">Go at a rival crew on wax. Big hype, but their beef goes way up.</div></div><button class="btn red" data-a="diss" ${S.cash>=300?'':'disabled'}>Record</button></div>
@@ -966,13 +1053,13 @@ function paneRap(){const R=S.rap,top=R.songs.slice().sort((a,b)=>b.q-a.q)[0];
 }
 const rapFat=()=>S.rap.fat||0;
 const listeners=()=>Math.round(S.rap.fans*.12*(.35+S.rap.hype/100));
-const songPay=x=>+(x.q*.07*(1+listeners()/600)*Math.pow(.93,S.day-x.day)*dealMul()).toFixed(1);
+const songPay=x=>+(x.q*.07*(1+listeners()/600)*Math.pow(.93,S.day-x.day)*dealMul()*(x.viral&&x.viral.until>=S.day?x.viral.mult:1)).toFixed(1);
 const vidCost=()=>Math.round(1000+S.rap.fans*.5+(S.rap.vid||0)*750);
 const vidGain=()=>Math.max(6,Math.round(25/(1+(S.rap.vid||0)*.3)));
 const rapCut=()=>S.rap.bad&&S.rap.bad.until>S.day?1-S.rap.bad.cut:1;
 const showPay=()=>Math.round((110+S.rap.fans*.1+S.rap.hype*1.5)/(1+rapFat()*.45)*rapCut());
 function rapDay(){const R=S.rap;if(S.rapOn&&R.fans>=800&&!S.engCon&&canNewConnect()&&Math.random()<.1){S.engCon=1;S.pconn='eng'}if(!R.songs.length)return;let t=0;R.songs.forEach(x=>t+=songPay(x));t=Math.round(t);
-  R.fat=Math.max(0,rapFat()-.5);t=Math.min(t,Math.round(Math.min(150,25+R.fans*.04)*dealMul()));t=Math.round(t*rapCut());if(R.frz>S.day)t=0;R.fans+=Math.round(R.hype*.05+listeners()*.02);if(R.hype<15&&R.fans>200)R.fans-=Math.max(1,Math.round(R.fans*.004));if(S.day%7===0&&R.vid)R.vid--;R.hype=Math.max(0,R.hype-4);if(t>0){S.cash+=t;say(`Your music made ${money(t)} in streams today.`)}}
+  R.fat=Math.max(0,rapFat()-.5);t=Math.min(t,Math.round(Math.min(150,25+R.fans*.04)*dealMul()*(R.songs.some(x=>x.viral&&x.viral.until>=S.day)?2.2:1)));if(Math.random()<.03&&R.songs.length){const x=pick(R.songs);if(!(x.viral&&x.viral.until>=S.day)){x.viral={until:S.day+5,mult:1.8};R.fans+=Math.round(R.hype*2+30);say(`A big playlist added "${x.title}". It is climbing again.`)}}t=Math.round(t*rapCut());if(R.frz>S.day)t=0;R.fans+=Math.round(R.hype*.05+listeners()*.02);if(R.hype<15&&R.fans>200)R.fans-=Math.max(1,Math.round(R.fans*.004));if(S.day%7===0&&R.vid)R.vid--;R.hype=Math.max(0,R.hype-4);if(t>0){S.cash+=t;say(`Your music made ${money(t)} in streams today.`)}}
 function flowGame(title,done){
   mgOn=true;const BEAT=900,N=8;let taps=0,score=0,t0=performance.now()+900;
   modal(`<h2>${title}</h2><p>Tap "Spit" (or press Space) when the circle fills up and turns <b style="color:var(--money)">green</b>. 8 bars.</p>
@@ -998,10 +1085,10 @@ function recordSong(diss,crewId){if(rapFat()>=4){say('Your voice is shot and the
   function release(title,q){
     S.cash-=300;
     const fat=rapFat(),gain=Math.round((q*1.5*(1+S.rap.hype/120)+(diss?60:0))/(1+fat*.35));S.rap.fat=fat+1;
-    S.rap.songs.push({title,q,day:S.day,diss:!!diss});S.rap.fans+=gain;S.rap.hype=Math.min(100,S.rap.hype+(diss?25:12));addXP(3);addStress(-5);
+    const vp=.03+q/1500+S.rap.hype/900+skv('luck')*.003+skv('talk')*.003,viral=Math.random()<vp;S.rap.songs.push({title,q,day:S.day,diss:!!diss,viral:viral?{until:S.day+10,mult:+(2.2+Math.random()*1.6).toFixed(1)}:null});const gain2=viral?gain*rnd(3,6):gain;S.rap.fans+=gain2;if(viral)S.rap.hype=Math.min(100,S.rap.hype+30);S.rap.hype=Math.min(100,S.rap.hype+(diss?25:12));addXP(3);addStress(-5);
     if(diss){const c=crew(crewId);c.beef=Math.min(100,c.beef+25);}
-    say(`Dropped "${title}" (quality ${q}). +${gain} fans.`);
-    modal(`<h2>"${title}" is out</h2><p>Quality <b>${q}/100</b>. ${q>=80?'This one is going crazy.':q>=50?'Solid song.':'Nobody is really feeling it.'}</p><p>+${gain.toLocaleString()} fans${diss?`. The ${cdef(crewId).name} heard it and they are not happy.`:''}</p>
+    say(viral?`"${title}" BLEW UP. +${gain2} fans.`:`Dropped "${title}" (quality ${q}). +${gain} fans.`);
+    modal(`<h2>"${title}" is out</h2><p>Quality <b>${q}/100</b>. ${viral?'<b style="color:var(--money)">IT BLEW UP.</b> Everybody is posting it. Streams are way up for about a week and your hype jumped.':q>=80?'This one is going crazy.':q>=50?'Solid song.':'Nobody is really feeling it.'}</p><p>+${gain2.toLocaleString()} fans${diss?`. The ${cdef(crewId).name} heard it and they are not happy.`:''}</p>
       <div class="btns"><button class="btn go" id="ok">Continue</button></div>`);
     $('ok').onclick=()=>{$('modal').hidden=true;nextDay();checkEnd();render()}}
 }
@@ -3137,7 +3224,7 @@ function act(a,el){
   if(a==='pdel'){S.custos.splice(+el.dataset.i,1);S.texts=(S.texts||[]).filter(t=>t.ci!==+el.dataset.i).map(t=>({...t,ci:t.ci>+el.dataset.i?t.ci-1:t.ci}));say('Deleted the number.')}
   if(a==='punch')return punch();
   if(a==='laptop'){S.cash-=2000;S.scam.laptop=1;say('Set up the laptop. Ghost work unlocked.')}
-  if(a==='hack')return hack(el.dataset.k);
+  if(a==='hack'||a==='scam')return scamRun(el.dataset.k);
   if(a==='scamstart'){S.scamOn=1;S.scam=S.scam||{noto:0,laptop:0,did:{}};say(is('shade')?'Shade opened the laptop. Scamming is a thing now.':'Your homie put you on to scamming. Check the Move tab.')}
   if(a==='life')return lifeOffer(el.dataset.k,true);
   if(a==='quit'){const k=el.dataset.k;if(k==='rap'){S.rapOn=0;say('You stepped away from music. Your old songs still pay.')}else{S.robOn=0;say('You put the mask up. No more licks.')}S.path=S.robOn?'rob':S.rapOn?'rap':'trap';tab='block'}
@@ -3539,7 +3626,7 @@ function ckReport(){try{ckState()}catch(e){}const done=CKL.filter(x=>{try{return
   $('ckb').onclick=devPanel;$('ckc').onclick=()=>{const ta=$('ckt');const ok=()=>{$('ckm').textContent='Copied. Paste it to Claude.'};try{navigator.clipboard.writeText(ta.value).then(ok,()=>{ta.select();document.execCommand('copy');ok()})}catch(e){ta.select();try{document.execCommand('copy')}catch(_){}ok()}}}
 $('pane').onclick=e=>{sfx('tap');const pp=e.target.closest('.mapp');if(pp)return openPlace(pp.dataset.p);const m=e.target.closest('.mapb');if(m){if(m.dataset.a==='go')act('go',m);return}const b=e.target.closest('button[data-a]');if(b&&!b.disabled){const top=S&&S.log&&S.log[0];act(b.dataset.a,b);const nw=S&&S.log&&S.log[0];if(nw&&nw!==top&&$('modal').hidden)toast(nw.t)}};
 $('retire').onclick=()=>{S.over=true;checkEnd()};
-const BUILD='v173';
+const BUILD='v174';
 const DISCORD_INVITE='https://discord.gg/bVsvWzbGW';const OG_UNTIL=Date.UTC(2026,10,13);
 const ogBox=()=>DISCORD_INVITE&&Date.now()<OG_UNTIL?`<a href="${DISCORD_INVITE}" target="_blank" rel="noopener" style="display:block;text-decoration:none;border:2px solid var(--accent);border-radius:10px;padding:10px 12px;background:rgba(0,0,0,.55);color:#fff;text-align:left"><div style="font-family:var(--label);font-weight:700;letter-spacing:.14em;color:var(--accent);font-size:12px">OG TESTER · FIRST WEEK ONLY</div><div style="font-size:13px;margin-top:3px">Join the Discord now and get the <b>OG Tester</b> role. Pitch ideas, report bugs, help shape the game. Tap to join →</div></a>`:'';
 function mainMenu(canContinue){
