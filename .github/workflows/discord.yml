@@ -17,6 +17,7 @@ jobs:
           MSG: ${{ github.event.head_commit.message }}
         run: |
           [ -z "$HOOK" ] && echo "No DISCORD_WEBHOOK secret set, skipping" && exit 0
+          case "$MSG" in *"[silent]"*) echo "Silent bump, no ping"; exit 0;; esac
           python3 - <<'PY'
           import json, os, re, urllib.request
           import subprocess
