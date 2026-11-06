@@ -2992,7 +2992,7 @@ function qtyModal(kind,g,to,bl){if(to==='js'&&stuckHome())return;if(kind==='buy'
         if(crewHere()){const c=crew(o),vol=Math.ceil(n*g.sp/3);
           if(!PINFO[S.at].carries.includes(g.id)){say(`The ${cdef(o).name} don't move ${g.name} on this block, so nobody minds you serving it.`)}else if(c.ally||S.gang===c.id){say(c.ally?`The ${cdef(o).name} share this block with you. Serve all you want.`:`This your set's block. Eat.`)}else if(c.respect>=60){c.envy=Math.min(100,c.envy+vol+3);say(c.envy>=70?`Some of the ${cdef(o).name} been looking at you sideways. You eating too good on their block.`:`The ${cdef(o).name} gave you the green light. No problem serving here.`)}
           else{c.beef=Math.min(100,c.beef+vol+5);c.respect=Math.max(0,c.respect-3);if(c.beef>=45)say(`The ${cdef(o).name} saw you serving the Js on their block.`)}}}
-      else{S.heat=Math.min(100,S.heat+Math.ceil(n*g.sp/40*D().heat*heatProf()));if(known&&firstTx)S.trust[S.at]=Math.min(100,S.trust[S.at]+2);
+      else{S.heat=Math.min(100,S.heat+Math.min(10,Math.ceil((.8+n*g.sp/14)*D().heat*heatProf())));if(known&&firstTx)S.trust[S.at]=Math.min(100,S.trust[S.at]+2);
         if(firstTx&&crewHere()){const c=crew(o);c.beef=Math.max(0,c.beef-2);c.respect=Math.min(100,c.respect+2)}}
       if(profit>0)S.rep+=Math.min(5,Math.ceil(profit/2000));
     }
@@ -3027,7 +3027,7 @@ function nextDay(){S.en=S.restDay?enMax():Math.max(30,enMax()-(S.stress>=70?20:0
   addStress(S.heat>50?3:-2);
   if(S.stress>=100){S.hp-=15;S.stress=60;say('You hit your breaking point. Lost a day in your head and took −15 health. Lay low sometimes.');}
   if(S.soldiers){const cost=S.soldiers*(S.myGang?100:150);S.cash-=cost;if(S.cash<0){S.soldiers=Math.max(0,S.soldiers-1);say('Couldn\'t pay the crew. A soldier walked.');S.cash=Math.max(0,S.cash)}}
-  S.heat=Math.max(0,S.heat-4-((S.job||Object.keys(S.biz||{}).length)?1:0)-(['condo','house'].includes(S.home)?1:0));
+  S.heat=Math.max(0,S.heat-(2+Math.ceil(S.heat/12))-((S.job||Object.keys(S.biz||{}).length)?1:0)-(['condo','house'].includes(S.home)?1:0));
   S.crews.forEach(c=>{if(c.alive){if(Math.random()<(S.cal?.15:.5))c.str+=1;c.str=Math.min(c.str,crewCap());if(c.beef>0&&c.beef<45)c.beef=Math.max(0,c.beef-2);c.envy=Math.max(0,c.envy-2);if(c.beef>=45)c.respect=Math.max(0,c.respect-2)}});crewWorld();lawDay();
   roll();
   if(S.day>maxDay()&&!freeMode()){S.over=true;return}
