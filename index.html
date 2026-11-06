@@ -3665,7 +3665,7 @@ function mainMenu(canContinue){
   $('ms').onclick=()=>slotsModal('new','story');$('mb').onclick=()=>slotsModal('new','sandbox');$('ml').onclick=()=>slotsModal('load');$('mlife').onclick=()=>slotsModal('new','life');
   $('mh').onclick=()=>tutorial(0,()=>mainMenu(canContinue));
   $('mcode').onclick=()=>{modal(`<h2>Enter a code</h2><input id="cin" maxlength="24" autocomplete="off" autocapitalize="characters" placeholder="Code" style="width:100%;padding:10px;border-radius:6px;border:1px solid var(--line);background:var(--bg);color:var(--fg);font:inherit;text-transform:uppercase"><p id="cmsg" class="s" style="min-height:1.2em"></p><div class="btns"><button class="btn go" id="cok">Enter</button><button class="btn" id="cbk">Back</button></div>`);
-    const go=()=>{const c=$('cin').value.trim().toUpperCase().replace(/\s+/g,'');const r=CODES[c];$('cmsg').textContent=r?r():'That code ain\'t it.';$('cmsg').style.color=r?'var(--money)':'var(--blood)'};
+    const go=()=>{const c=$('cin').value.trim().toUpperCase().replace(/\s+/g,'');const r=CODES[CH(c)];$('cmsg').textContent=r?r():'That code ain\'t it.';$('cmsg').style.color=r?'var(--money)':'var(--blood)'};
     $('cok').onclick=go;$('cin').onkeydown=e=>{if(e.key==='Enter')go()};$('cbk').onclick=()=>mainMenu(canContinue);setTimeout(()=>$('cin')&&$('cin').focus(),50)};
   $('msnd').onclick=()=>{SND.sfx=!SND.sfx;sndSave();mainMenu(canContinue)};$('mmus').onclick=()=>{SND.music=!SND.music;sndSave();SND.music?musicStart():musicStop();mainMenu(canContinue)};
 }
@@ -3677,8 +3677,9 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-jump]');if
 $('devbtn').onclick=()=>devPanel();
 const devOn=()=>{try{return localStorage.getItem('hustle-dev')==='1'}catch(e){return false}};
 function devShow(){$('devbtn').hidden=!devOn()}devShow();
+const CH=c=>{let x=0x811c9dc5;for(let i=0;i<c.length;i++){x^=c.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0}return x.toString(16)};
 const CODES={
-  'RRYEURO182':()=>{const on=!devOn();try{localStorage.setItem('hustle-dev',on?'1':'0')}catch(e){}devShow();return on?'Dev menu unlocked. The Dev button is next to Menu.':'Dev menu turned off.'},
+  'ba015468':()=>{const on=!devOn();try{localStorage.setItem('hustle-dev',on?'1':'0')}catch(e){}devShow();return on?'Dev menu unlocked. The Dev button is next to Menu.':'Dev menu turned off.'},
 };
 
 /* ---------- start button before mini games ---------- */
