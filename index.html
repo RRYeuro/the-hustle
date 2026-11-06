@@ -537,9 +537,22 @@ function paneMove(){
   return h;
 }
 function beefLabel(b){return b>=75?'<span class="chip war">War</span>':b>=45?'<span class="chip war">Beefing</span>':b>=20?'<span class="chip">Tense</span>':'<span class="chip">Cool</span>'}
+
+/* ---------- your fighting style ---------- */
+const FSDEF={tank:'brawler',val:'brawler',country:'brawler',slick:'street',shade:'boxer',lucky:'boxer'};
+const FSLV=[0,3,8,15,25],FSN={boxer:'Boxer',brawler:'Brawler',street:'Street fighter'};
+const FSPERK={boxer:['Footwork: dodging costs less stamina','Tighter guard: you tire slower','Counter-puncher: dodging costs even less','Iron lungs: you recover stamina faster','Pro boxer: huge stamina edge'],
+ brawler:['Heavy hands: you hit harder','Brawn: hits land harder again','Bully: heavier hits','Wrecking ball: hits hurt more','Knockout power: you hit like a truck'],
+ street:['Dirty tricks: a little more time to react','Street smarts: more time again','Read him: even more time to react','Hard to fool: you see everything coming','Street legend: massive reaction edge']};
+function fsState(){if(!S.fs)S.fs={style:FSDEF[S.char]||'boxer',xp:{boxer:0,brawler:0,street:0}};if(!S.fs.xp)S.fs.xp={boxer:0,brawler:0,street:0};return S.fs}
+function fsLvl(st){const f=fsState(),x=f.xp[st||f.style]||0;let l=1;FSLV.forEach((v,i)=>{if(x>=v)l=i+1});return l}
+function fsWin(){const f=fsState(),old=fsLvl();f.xp[f.style]=(f.xp[f.style]||0)+1;const nw=fsLvl();if(nw>old)say(`Your ${FSN[f.style]} style hit level ${nw}. ${FSPERK[f.style][nw-1]}.`)}
+function paneFight(){const f=fsState(),l=fsLvl(),x=f.xp[f.style]||0,nx=FSLV[l];
+  return `<div class="sec">Your fight style</div><div class="row" style="flex-wrap:wrap"><div class="info" style="flex:1 1 220px;min-width:0"><div class="t">${FSN[f.style]} · Level ${l}${l>=5?' (max)':''}</div><div class="s">${FSPERK[f.style][l-1]}.</div>${nx?`<div class="bar"><i style="width:${Math.round((x-FSLV[l-1])/(nx-FSLV[l-1])*100)}%;background:var(--money)"></i></div><div class="s">${nx-x} more win${nx-x===1?'':'s'} to level ${l+1}.</div>`:''}</div></div>
+   <div class="btns" style="margin-top:4px">${Object.keys(FSN).map(k=>`<button class="btn ${k===f.style?'go':''}" data-a="fstyle" data-k="${k}" ${k===f.style?'disabled':''}>${FSN[k]} L${fsLvl(k)}</button>`).join('')}</div><div class="s" style="color:var(--dim)">Pick the style you fight with. Each one levels up separately when you win fights.</div>`}
 function paneBeef(){
   const jb=['Trap','Family','Homies','Girl','Crews'].map(k=>`<button class="btn" style="padding:6px 10px;font-size:12px" data-jump="${k}">${k}</button>`).join('');
-  return `<div class="jump" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:4px">${jb}</div>`+paneTraps()+paneFamily()+paneFriends()+paneGF()+paneBeefCore();
+  return `<div class="jump" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:4px">${jb}</div>`+paneFight()+paneTraps()+paneFamily()+paneFriends()+paneGF()+paneBeefCore();
 }
 function paneBeefCore(){
   let h=`<div class="sec">Your strength: ${myStr()}</div><div class="row"><div class="info"><div class="t">Firepower ${firepower()}</div><div class="s">${canWar()?'You strapped and got shooters. You can go to war for a block.':`Taking a block takes guns and people. ${warNeed()}.`}</div></div></div>`+paneGang();
@@ -2792,9 +2805,9 @@ const FSTYLES={boxer:{nm:'Boxer',tip:'Quick jabs, little warning.',w:.85,f:.1,d:
 function fightStyle(who){if(window.fgStyle)return FSTYLES[window.fgStyle];const ks=Object.keys(FSTYLES);let h=0;for(const c of String(who))h=(h*31+c.charCodeAt(0))>>>0;return FSTYLES[ks[h%ks.length]]}
 function fightGame0(mine,theirs,who,done){const gun=!!window.fgGun;window.fgGun=0;if(gun)return shootoutGame(mine,theirs,who,done);const L=gun?{d:'Take cover',h:'Shoot',tip:'When they shoot, take cover. When they peek out, shoot. Keys: ← cover, → or space shoot.',sw:'THEY SHOOTING',op:'THEY PEEKED OUT',slip:'Ducked behind the car.',walk:'You stood up into it.',nothing:'You shot at nothing.',landed:'Hit him.',back:'You stayed down. They reset.',caught:'Took one.',miss:'Missed your shot.',time:'Sirens. Everybody scattered.',won:'They fell back',lost:'You had to fall back'}:{d:'Dodge',h:'Hit',tip:'When it says THEY SWING (red), hit Dodge. When it says OPENING (green), hit Hit. Be quick. Keys: ← dodge, → or space hit.',sw:'THEY SWING',op:'OPENING',slip:'Slipped it.',walk:'You walked right into it.',nothing:'You swung at nothing.',landed:'Landed clean.',back:'You backed off. They reset.',caught:'Caught you.',miss:'Missed the opening.',time:'Time. Somebody broke it up.',won:'You won the fight',lost:'You lost the fight'};
   mgOn=true;let cc=0,me=100,op=100,prompt=null,deadline=0,next=performance.now()+900,last=performance.now(),msg='Get ready...';const t0=performance.now(),DUR=20000;
-  const share=mine/(mine+theirs),sh2=share*share/(share*share+(1-share)*(1-share)),myDmg=Math.round(5+sh2*30),opDmg0=Math.round(5+(1-sh2)*30),wScale=Math.max(.45,Math.min(1.15,.3+share*1.4));let dbl=false;const ST=fightStyle(who),opDmg=Math.round(opDmg0*ST.d);let sta=100,lastT=performance.now();const gap=t=>Math.round(rnd(250,1500)*ST.g*Math.max(.6,1-(t-t0)/DUR*.4));
+  const share=mine/(mine+theirs),sh2=share*share/(share*share+(1-share)*(1-share)),myDmg=Math.round(5+sh2*30),opDmg0=Math.round(5+(1-sh2)*30),wScale=Math.max(.45,Math.min(1.15,.3+share*1.4));let dbl=false;const MS=fsState().style,ML=fsLvl(),ST=fightStyle(who),opDmg=Math.round(opDmg0*ST.d);let sta=100,lastT=performance.now();const gap=t=>Math.round(rnd(250,1500)*ST.g*Math.max(.6,1-(t-t0)/DUR*.4));
   const win0=Math.max(260,.74*(650+(buf('bars')?80:0)+(buf('percs')?50:0)-(buf('phones')?60:0)+S.sk.smarts*30-(stressed()?120:0)-(is('tank')&&(S.fate||{}).knee===1?60:0))),win=Math.round(win0*wScale);
-  modal(`<div class="sec" style="margin:0;color:var(--blood)">${gun?'Shootout':'Fight'}</div><h2>You vs ${who}</h2>
+  modal(`<div class="sec" style="margin:0;color:var(--blood)">${gun?'Shootout':'Fight'} · ${FSN[fsState().style]} L${fsLvl()}</div><h2>You vs ${who}</h2>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
       <div><div class="s">You · strength ${mine}</div><div class="bar" style="height:10px"><i id="fme" style="width:100%;background:var(--money)"></i></div><div class="bar" style="height:5px;margin-top:3px"><i id="fst" style="width:100%;background:var(--heat)"></i></div></div>
       <div><div class="s" style="text-align:right">${who} · ${ST.nm}</div><div class="bar" style="height:10px"><i id="fop" style="width:100%;background:var(--blood);margin-left:auto"></i></div></div></div>
@@ -2804,9 +2817,9 @@ function fightGame0(mine,theirs,who,done){const gun=!!window.fgGun;window.fgGun=
     <p class="s" style="text-align:center;color:var(--dim)">${L.tip}${gun?'':' Yellow with a ? is a fake: do nothing. COMBO: tap Hit three times fast.'}</p>`);
   const fp=$('fp'),fm=$('fm');
   const show=()=>{$('fst').style.width=Math.max(0,sta)+'%';$('fme').style.width=Math.max(0,me)+'%';$('fop').style.width=Math.max(0,op)+'%';fm.textContent=msg};
-  const end=()=>{if(!mgOn)return;mgOn=false;document.removeEventListener('keydown',key);const w=op<=0||(me>0&&op<me);
+  const end=()=>{if(!mgOn)return;mgOn=false;document.removeEventListener('keydown',key);const w=op<=0||(me>0&&op<me);if(w)fsWin();
     setTimeout(()=>{modal(`<h2 style="color:${w?'var(--money)':'var(--blood)'}">${w?L.won:L.lost}</h2><p>${w?`${who} ain't want it no more.`:`${who} got the best of you.`}</p><div class="btns"><button class="btn go" id="ok">Continue</button></div>`);$('ok').onclick=()=>done(w)},350)};
-  const act=kind=>{if(!mgOn)return;const t=performance.now();const gassed=sta<15,md=Math.round(myDmg*(gassed?.5:1));sta=Math.max(0,sta-(kind==='dodge'?11:12));
+  const act=kind=>{if(!mgOn)return;const t=performance.now();const gassed=sta<15,md=Math.round(myDmg*(gassed?.5:1)*(MS==='brawler'?1+.08*ML:1));sta=Math.max(0,sta-(kind==='dodge'?11:12)*(MS==='boxer'?1-.07*ML:1));
     if(!prompt){msg=kind==='hit'?L.nothing:'Nothing to dodge.';if(kind==='hit'){me-=4}show();return}
     const late=t>deadline;
     if(prompt==='swing'){if(kind==='dodge'&&!late&&!gassed){msg=L.slip;}else{me-=opDmg;msg=kind==='hit'?L.walk:gassed?'Too tired to dodge.':'Too slow.'}}
@@ -2816,9 +2829,9 @@ function fightGame0(mine,theirs,who,done){const gun=!!window.fgGun;window.fgGun=
     const wasSwing=prompt==='swing';prompt=null;fp.textContent='';fp.style.background='#221e27';next=t+gap(t);if(wasSwing&&(theirs>mine*1.25||t-t0>8000)&&Math.random()<(t-t0>8000?.45:.4)){dbl=true;next=t+rnd(120,260)}show();if(me<=0||op<=0)end()};
   const key=e=>{if(e.key==='ArrowLeft'){e.preventDefault();act('dodge')}if(e.key==='ArrowRight'||e.key===' '){e.preventDefault();act('hit')}};document.addEventListener('keydown',key);
   $('fd').onclick=()=>act('dodge');$('fh').onclick=()=>act('hit');
-  const loop=t=>{if(!mgOn||!fp.isConnected)return;sta=Math.min(100,sta+(t-lastT)*.0065);lastT=t;if(!prompt)show();
+  const loop=t=>{if(!mgOn||!fp.isConnected)return;sta=Math.min(100,sta+(t-lastT)*.0065*(MS==='boxer'&&ML>=4?1.25:1));lastT=t;if(!prompt)show();
     if(prompt&&t>deadline){if(prompt==='swing'){me-=opDmg;msg=L.caught}else if(prompt==='feint'){op-=Math.round(myDmg*.5);msg='Did not bite. He stumbled on the fake.'}else if(prompt==='combo'){if(cc)op-=Math.round(myDmg*.3*cc);msg='Combo timed out.';cc=0}else msg=L.miss;prompt=null;fp.textContent='';fp.style.background='#221e27';next=t+gap(t);show();if(me<=0)return end()}
-    if(!prompt&&t>=next){{const r=Math.random();prompt=dbl?'swing':r<.1+ST.f?'feint':r<.58+(1-share)*.2?'swing':Math.random()<.35?'combo':'open'}dbl=false;cc=0;deadline=t+Math.round(win*ST.w*Math.max(.6,1-(t-t0)/DUR*.4)*(.8+Math.random()*.4)*(prompt==='combo'?1.9:1));
+    if(!prompt&&t>=next){{const r=Math.random();prompt=dbl?'swing':r<.1+ST.f?'feint':r<.58+(1-share)*.2?'swing':Math.random()<.35?'combo':'open'}dbl=false;cc=0;deadline=t+Math.round(win*(MS==='street'?1+.05*ML:1)*ST.w*Math.max(.6,1-(t-t0)/DUR*.4)*(.8+Math.random()*.4)*(prompt==='combo'?1.9:1));
       fp.textContent=prompt==='swing'?L.sw:prompt==='feint'?L.sw+'?':prompt==='combo'?'COMBO: TAP HIT x3':L.op;fp.style.background=prompt==='swing'?'#3a1d22':prompt==='feint'?'#3a381d':'#1d3a26'}
     if(t-t0>DUR){msg=L.time;show();return end()}
     requestAnimationFrame(loop)};
@@ -3233,6 +3246,7 @@ function act(a,el){
   if(a==='heist')return heist(el.dataset.k);
   if(a==='move'){moveIn(el.dataset.k)}
   if(a&&a.indexOf('sh_')===0)return schoolHustle(a.slice(3));
+  if(a==='fstyle'){fsState().style=el.dataset.k;say(`You are fighting like a ${FSN[el.dataset.k]} now.`)}
   if(a==='practice'){S.ball=Math.min(100,(S.ball||0)+8);S.sk.muscle=Math.min(10,S.sk.muscle+(Math.random()<.2?1:0));addStress(-3);say('Went to practice. The scouts are watching.');nextDay()}
   if(a==='class'){if(S.cal&&S.school==='in'&&!schoolWeek()){say(isWknd()?'No school on the weekend.':`No school: ${schoolBreak()}.`);render();return}S.classDay=S.day;if(S.par&&S.cal)S.par.trust=Math.min(100,S.par.trust+1);if(S.cal?S.school==='in':S.age<18){S.grades=Math.min(100,S.grades+(S.cal?(S.altSchool?4:6)+Math.floor(S.sk.smarts/3):8))}else{S.cprog=Math.min(100,(S.cprog||0)+6);if(S.cprog>=100){S.college='grad';S.sk.smarts=Math.min(10,S.sk.smarts+1);S.sk.talk=Math.min(10,S.sk.talk+1);say('You graduated college. Smarts and Talk +1.')}}S.heat=Math.max(0,S.heat-5);addStress(2);say(S.cal&&S.school==='in'?'Went to school all week.':'Went to class.');nextDay()}
   if(a==='dropout'){S.school='out';say('You dropped out of school.')}
