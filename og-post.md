@@ -1,26 +1,37 @@
-🔥 **OG TESTERS: v177 is live** 🔥
+🚨 **IMPORTANT, READ NOW** 🚨
 
-Reopen or hard refresh so the menu says Build v177. This one changes a lot, so here's what I need you hitting:
+**TL;DR:** I'm thinking about adding more things to do at school, plus girlfriends who text you and act different from each other. Nothing is final. I need to know what you'd actually play. It's a 1 minute read.
 
-🏫 **SCHOOL**: Class and football practice live in the School tab now. Skip a day and your people call you. Weekend almost over? They text you. Your first move each school day or weekend is free. Is it easier to go to class and still move around?
+🏫 **SCHOOL IDEAS** (it has its own tab now)
+Stuff I'm thinking about:
+• Fights at school
+• Serving your classmates
+• Skipping class to go trap or steal something
+• Hacking the school to boost your grades
+• Rapping at the lunch table. If you picked the right life choices you get a small boost. If you got skill, they tell you to drop something. If you're bad, they laugh at you and you take stress, but it still builds your talent
+• You gotta be home for school
+• A skill or specialty based on your character
 
-👟 **FIRST DAY OF SCHOOL**: Wear what your people got you (if they got it like that) or buy a fit for $150. Does it feel fair for your character?
+More I'm adding:
+• Getting caught serving at school costs you, with strikes and suspension
+• Cheating on tests, based on your Smarts
+• A school rep: popular, feared or smart, and it changes who buys from you and who snitches
+• Teachers who like you vs teachers who don't
 
-⚔️ **BLOCK TAKEOVERS**: Take a block by force and that crew is your enemy for real, with no jump in, ally or squash. They only come back with a white flag when they're tired of losing. Buy a block and they become allies. Test both. Does the white flag show up too soon or never? Is the payout fair?
+💬 **GIRLFRIEND TEXTS**
+• When you're older she texts you: "where you been?" and "you cheating?"
+• Every girl is different: some laid back, some crazy
+• She changes during the relationship, so a chill one can turn jealous and a crazy one can calm down
 
-🗂️ **CIRCLE TAB**: Beef is now Circle. Trap, family, homies and girl moved there from Me. Can you find everything? Is Me less cluttered?
+More I'm adding:
+• How you treat her changes how she acts
+• The crazy ones can pull up to your block
+• A loyal one helps you out when you need it
 
-🛞 **UNC**: He only shows on the Block tab when you're at The Bottom.
+👇 **WHAT I NEED FROM YOU**
+Reply in #hustle-ideas with:
+1️⃣ Your top 3 ideas you'd actually want
+2️⃣ Anything you'd cut
+3️⃣ Your own idea
 
-🔥 **HEAT BY DRUG**: Weed is low heat. Coke and molly are high. Carrying the hard stuff gets you stopped more. Does selling different drugs feel different?
-
-↩️ **BACK BUTTONS**: Every new game screen has Back, and more popups have a close ✕. Anywhere you still feel stuck?
-
-📱 **PHONE PEOPLE**: Still watching for lag, slow loading, hot phones and art that loads late.
-
-Report in #hustle-ideas like this:
-🐞 BUG: what happened + your phone/browser
-⚖️ BALANCE: what felt too easy or too hard
-💡 IDEA: what you want added
-
-Screenshots help a lot. Thanks for keeping it real 🙏
+Thanks for keeping it real 🙏
