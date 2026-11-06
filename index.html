@@ -703,7 +703,7 @@ function finishMission(m){if(S.age&&S.age<18&&S.mode==='story'&&teenCount()&&S.m
 }
 /* ---------- stats ---------- */
 const SKN={hustle:'Hustle',talk:'Talk',muscle:'Muscle',smarts:'Street Smarts',luck:'Luck'};
-const SKD={hustle:'Better prices, more customers, bigger profit.',talk:'Haggle prices, talk parents and cops down, win people over.',muscle:'Win fights, block wars and robberies.',smarts:'Escape cops and crews, spot setups and fakes.',luck:'Better card drops, closer calls go your way.'};
+const SKD={hustle:'Better prices, more customers, bigger profit and bigger scam payouts. Faster fire in the firewall game.',talk:'Haggle plugs and the label, talk parents and cops down, win people over. A wider window in talk-it-out and slower patterns in phishing.',muscle:'Win fights, block wars and robberies. More energy. An extra life in the firewall game at 7.',smarts:'Escape cops and crews, spot setups and fakes. More maze strikes, slower traces, and ghost work at 6.',luck:'Better card drops, closer calls go your way. Gambling, viral songs, and a shot at saving a failed scam step.'};
 function addXP(n){if(!n)return;S.xp+=n;while(S.xp>=S.lvl*20){S.xp-=S.lvl*20;S.lvl++;S.pts++;say(`Level up! You're level ${S.lvl}. Spend your skill point in the Me tab.`)}
   const ri=RANKS.indexOf(rank());if(ri>S.rk){S.rk=ri;const r=RANKS[ri];if(r[3])r[3]();S.rankPop=ri;say(`Moved up to ${rname(ri)}! ${r[2]}`)}}
 const RANKS=[[1,'Corner Boy','Just starting out.'],[3,'Petty Dealer','+25 stash space.',()=>{S.cap+=25}],[6,'Middle Man','Big plugs serve you no matter your rep.'],
@@ -976,10 +976,10 @@ function mgSimon(o,cb){mgOn=true;const d=o.d||0,len=5+Math.round(d*3),seq=Array.
 const MG={maze:mgMaze,inv:mgInv,pac:mgPac,simon:mgSimon};
 const MGTXT={maze:'Tunnel the network. Drag from the green node to the yellow exit without touching a wall. <b>Smarts</b> gives you more strikes.',inv:'Hold the firewall. Drag to move, your gun fires itself. Kill every ICE block before it reaches your line. <b>Hustle</b> fires faster and <b>Smarts</b> slows them down.',pac:'Pull the files. Swipe or use the arrows to eat every data file and dodge the traces. <b>Smarts</b> slows the traces and <b>Luck</b> gives an extra life.',simon:'Phish the login. Watch the pattern, then repeat it. <b>Talk</b> slows the pattern and lets you slip up.'};
 const SCAMDEF={
- fake:{n:'Fake rental deposits',t:'List a house that is not yours and take deposits. Two steps.',noto:0,cost:0,st:['simon','maze'],pay:[1300,2300],heat:6},
- phish:{n:'Phish a business',t:'Fake invoices to a company that pays without checking. Three steps.',noto:15,cost:300,st:['simon','maze','inv'],pay:[4200,6800],heat:10},
- skim:{n:'ATM skim ring',t:'Skimmers on a row of machines, then clean it all out. Five steps.',noto:60,cost:1500,st:['simon','maze','pac','inv','pac'],pay:[19000,29000],heat:20},
- drain:{n:'Drain a wallet',t:'Get into a rich mark\'s crypto. Four steps.',shade:1,st:['maze','simon','pac','inv'],pay:[10000,16000],heat:14},
+ fake:{n:'Fake rental deposits',t:'List a house that is not yours and take deposits. Two steps.',noto:0,cost:0,st:['simon','maze'],pay:[450,800],heat:6},
+ phish:{n:'Phish a business',t:'Fake invoices to a company that pays without checking. Three steps.',noto:15,cost:300,st:['simon','maze','inv'],pay:[1400,2300],heat:10},
+ skim:{n:'ATM skim ring',t:'Skimmers on a row of machines, then clean it all out. Five steps.',noto:60,cost:1500,st:['simon','maze','pac','inv','pac'],pay:[6500,9500],heat:20},
+ drain:{n:'Drain a wallet',t:'Get into a rich mark\'s crypto. Four steps.',shade:1,st:['maze','simon','pac','inv'],pay:[3200,5200],heat:14},
  wipe:{n:'Wipe your record',t:'Tunnel in on a VPN, pull your file and hold the firewall. Heat goes to zero. Three steps.',shade:1,st:['maze','pac','inv'],heat:0,wipe:1},
  tap:{n:'Tap an opp\'s phone',t:'Read a rival crew\'s messages. Two steps.',shade:1,st:['maze','simon'],heat:8,tap:1}};
 const HACK_RUNS=8,HACK_SMARTS=6;
@@ -1031,7 +1031,7 @@ function paneLife(){
   let h=`<div class="sec">Life choices</div>`;
   h+=`<div class="row"><div class="info"><div class="t">Music ${S.rapOn?'<span class="chip mine">Doing it</span>':''}</div><div class="s">${S.rapOn?'You\'re rapping. Check the Studio tab.':'Try an open mic and see if rap is for you.'}</div></div>${S.rapOn?'':`<button class="btn" data-a="life" data-k="rap">Open mic</button>`}</div>`;
   h+=`<div class="row"><div class="info"><div class="t">Robbing ${S.robOn?'<span class="chip mine">Doing it</span>':''}</div><div class="s">${S.robOn?'You\'re hitting licks. Check the Heists tab.':S.day<3?'You don\'t know anybody in that life yet.':'Link with people who hit licks for a living.'}</div></div>${S.robOn?'':`<button class="btn" data-a="life" data-k="rob" ${S.day<3?'disabled':''}>Link up</button>`}</div>`;
-  h+=`<div class="row"><div class="info"><div class="t">Scamming ${S.scamOn?'<span class="chip mine">Doing it</span>':''}</div><div class="s">${S.scamOn?'Scams are in the Move tab.'+(hackOK()?' You can do ghost work too.':''):'Punch cards, run jobs, and work up to hacking.'}</div></div>${S.scamOn?'':`<button class="btn" data-a="scamstart">Get into it</button>`}</div>`;
+  h+=`<div class="row"><div class="info"><div class="t">Scamming ${S.scamOn?'<span class="chip mine">Doing it</span>':''}</div><div class="s">${S.scamOn?'Scams are in the Move tab.'+(hackOK()?' You can do ghost work too.':''):'Punch cards, flip the goods, run bigger jobs.'}</div></div>${S.scamOn?'':`<button class="btn" data-a="scamstart">Get into it</button>`}</div>`;
   return h;
 }
 /* rapper */
@@ -3658,7 +3658,7 @@ function mainMenu(canContinue){
   $('mh').onclick=()=>tutorial(0,()=>mainMenu(canContinue));
   $('mcode').onclick=()=>{modal(`<h2>Enter a code</h2><input id="cin" maxlength="24" autocomplete="off" autocapitalize="characters" placeholder="Code" style="width:100%;padding:10px;border-radius:6px;border:1px solid var(--line);background:var(--bg);color:var(--fg);font:inherit;text-transform:uppercase"><p id="cmsg" class="s" style="min-height:1.2em"></p><div class="btns"><button class="btn go" id="cok">Enter</button><button class="btn" id="cbk">Back</button></div>`);
     const go=()=>{const c=$('cin').value.trim().toUpperCase().replace(/\s+/g,'');const r=CODES[c];$('cmsg').textContent=r?r():'That code ain\'t it.';$('cmsg').style.color=r?'var(--money)':'var(--blood)'};
-    $('cok').onclick=go;$('cin').onkeydown=e=>{if(e.key==='Enter')go()};$('cbk').onclick=()=>mainMenu(canContinue);setTimeout(()=>$('cin').focus(),50)};
+    $('cok').onclick=go;$('cin').onkeydown=e=>{if(e.key==='Enter')go()};$('cbk').onclick=()=>mainMenu(canContinue);setTimeout(()=>$('cin')&&$('cin').focus(),50)};
   $('msnd').onclick=()=>{SND.sfx=!SND.sfx;sndSave();mainMenu(canContinue)};$('mmus').onclick=()=>{SND.music=!SND.music;sndSave();SND.music?musicStart():musicStop();mainMenu(canContinue)};
 }
 $('newgame').onclick=()=>mainMenu(!S.over);
