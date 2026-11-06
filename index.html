@@ -1491,9 +1491,14 @@ function connectPrice(g,C,gr){const sp=C&&CSPEC[C.name]&&CSPEC[C.name].includes(
   const avg=BLOCKS.reduce((a,b,i)=>a+(S.prices[i]?.[g.id]??street(g)),0)/BLOCKS.length;const hg=C.hg&&C.hg.day===S.day?1-C.hg.d:1;const up=C.up&&C.up.day===S.day&&t>ctier(C)?1.15:1;
   return Math.max(1,Math.round(avg*gmult(q)*.5*sp*(1-Math.min(.15,ctr(C)/700))*hg*up))}
 function shipRisk(C,g,n){const m=cmode(C);let r=({drop:.01,fly:.04,mail:.06,mule:.12})[m];r+=S.heat/600+(n/ccap(g,C))*.06+(hasT('sketchy')?.03:0)-(hasT('nosey')?.015:0);return Math.min(.5,r)}
-function shipRoom(g,n){return used()+n*g.sp<=S.cap}
+function cartItems(){return S.fc&&S.fc.items?S.fc.items:[]}
+function cartSp(){return cartItems().reduce((a,p)=>a+p.n*G(p.g).sp,0)}
+function flyExtra(){return cartItems().length?0:250}
+function shipRoom(g,n){return used()+cartSp()+n*g.sp<=S.cap}
+function flyNow(C){const it=cartItems();if(!it.length)return;const rk=Math.max(...it.map(p=>p.risk));it.forEach(p=>connectLand(p));S.fc=null;close();S.fly=1;$('modal').hidden=true;say(`Flew out to meet ${C.name} and came back with it.`);if(Math.random()<rk){say('Airport security pulled you aside.');nextDay();return busted()}nextDay();checkEnd();render()}
+function flyCancel(C){const it=cartItems();let back=0;it.forEach(p=>{back+=p.cost;if(C.ord&&C.ord[p.g])C.ord[p.g][1]=Math.max(0,C.ord[p.g][1]-p.n);if(C.ordN)C.ordN--});S.cash+=back+(it.length?250:0);S.fc=null;say(`Called off the trip. Refunded ${money(back+(it.length?250:0))}.`);connectOrder(conList().indexOf(C))}
 function connReopen(C){close();const i=conList().indexOf(C);if(i>=0&&C.ordD===S.day&&C.ordN<3)connectOrder(i)}
-function connectOrder(i){const C=conList()[i||0];if(!C)return;const m=cmode(C),gr=cgrade(C),t=ctier(C),mi=MODEI[m];
+function connectOrder(i){const C=conList()[i||0];if(!C)return;if(S.fc&&S.fc.day!==S.day&&cartItems().length){cartItems().forEach(p=>connectLand(p));S.fc=null}const m=cmode(C),gr=cgrade(C),t=ctier(C),mi=MODEI[m];
   const hagOk=!(C.hgTry===S.day),upOk=t<2&&!(C.upTry===S.day);
   const tn=['Low connect','Mid connect','High connect'][t];
   modal(`<h2>Text ${C.name}</h2><p class="s" style="color:var(--dim)">${tn} · trust ${ctr(C)}/100 · ${mi[0]}. ${mi[1]}</p>
@@ -1501,10 +1506,11 @@ function connectOrder(i){const C=conList()[i||0];if(!C)return;const m=cmode(C),g
    <div class="btns" style="margin-bottom:8px"><button class="btn" id="hg" ${hagOk?'':'disabled'}>🤝 Haggle the price${C.hg&&C.hg.day===S.day?(C.hg.d>0?` (−${Math.round(C.hg.d*100)}%)`:' (he got mad)'):''}</button>${t<2?`<button class="btn" id="tu" ${upOk?'':'disabled'}>💬 Talk up to ${GRADES[t+1][0]}</button>`:''}</div>
    <div class="pane">${GOODS.map(g=>{const pr=connectPrice(g,C);const spc=CSPEC[C.name]&&CSPEC[C.name].includes(g.id);const left=cleft(g,C);
      return `<div class="row" style="flex-wrap:wrap;padding:8px 12px"><div class="info" style="flex:1 1 160px"><div class="t">${g.name}${spc?' <span class="chip mine">Specialty</span>':''}</div><div class="s">${money(pr)} each · max ${left>=1e9?'-':left>=1000&&g.unit==='g'?(left/1000).toFixed(1)+' key':left} left this week</div></div>
-     <div class="btns">${connectSizes(g,C).map(z=>{const n=z[0],c=Math.round(pr*n)+(m==='fly'?250:0),room=shipRoom(g,n),rk=shipRisk(C,g,n);return `<button class="btn go" data-cg="${g.id}" data-cn="${n}" ${conCash(C)>=c&&room?'':'disabled'}>${pkg(g,n,24)} ${z[1]} · ${money(c)}${rk>=.2?' ⚠':''}</button>`}).join('')}${left>0?`<button class="btn" data-cu="${g.id}">Custom…</button>`:'<span class="s" style="color:var(--dim)">Maxed out for now</span>'}</div></div>`}).join('')}</div>
+     <div class="btns">${connectSizes(g,C).map(z=>{const n=z[0],c=Math.round(pr*n)+(m==='fly'?flyExtra():0),room=shipRoom(g,n),rk=shipRisk(C,g,n);return `<button class="btn go" data-cg="${g.id}" data-cn="${n}" ${conCash(C)>=c&&room?'':'disabled'}>${pkg(g,n,24)} ${z[1]} · ${money(c)}${rk>=.2?' ⚠':''}</button>`}).join('')}${left>0?`<button class="btn" data-cu="${g.id}">Custom…</button>`:'<span class="s" style="color:var(--dim)">Maxed out for now</span>'}</div></div>`}).join('')}</div>
+   ${m==='fly'&&cartItems().length?`<div class="row" style="flex-direction:column;align-items:stretch;gap:4px;border-color:var(--accent)"><div class="t">✈️ Your trip</div>${cartItems().map(p=>`<div class="s">${amt(p.n,G(p.g))} of ${G(p.g).name} · ${money(p.cost)}</div>`).join('')}<div class="s">Flight $250 paid. Keep ordering, or fly out when you are done. Flying takes your day.</div><div class="btns"><button class="btn go" id="fgo">✈️ Fly out now</button><button class="btn" id="fcx">Cancel trip</button></div></div>`:''}
    <div class="s" style="color:var(--dim)">⚠ = risky order (20%+ chance it gets caught). Smaller orders and lower heat are safer. You can place up to 3 orders a day with ${C.name}.</div>
    <div class="btns"><button class="btn" id="no">Not now</button></div>`);
-  $('no').onclick=close;
+  $('no').onclick=close;if($('fgo'))$('fgo').onclick=()=>flyNow(C);if($('fcx'))$('fcx').onclick=()=>flyCancel(C);
   $('mcard').querySelectorAll('[data-gr]').forEach(b=>b.onclick=()=>{C.sel=+b.dataset.gr;connectOrder(i)});
   const tk=()=>Math.max(0,(S.sk.talk-3)*5)-(stressed()?10:0);
   if($('hg'))$('hg').onclick=()=>{C.hgTry=S.day;const odds=Math.min(80,Math.round(30+tk()+ctr(C)/3+S.rep/8-t*8));
@@ -1516,12 +1522,13 @@ function connectOrder(i){const C=conList()[i||0];if(!C)return;const m=cmode(C),g
   $('mcard').querySelectorAll('[data-cg]').forEach(b=>b.onclick=()=>connectBuy(C,G(b.dataset.cg),+b.dataset.cn));
   $('mcard').querySelectorAll('[data-cu]').forEach(b=>b.onclick=()=>connectCustom(i,G(b.dataset.cu)))}
 function conCash(C){const m=cmode(C);return m==='mail'||m==='mule'?cashAvail():S.cash}
-function connectBuy(C,g,n){const m=cmode(C),pr=connectPrice(g,C),c=Math.round(pr*n)+(m==='fly'?250:0),gx=cgrade(C);
+function connectBuy(C,g,n){const m=cmode(C),pr=connectPrice(g,C),c=Math.round(pr*n)+(m==='fly'?flyExtra():0),gx=cgrade(C);
     if(n<=0||conCash(C)<c||!shipRoom(g,n)||n>cleft(g,C))return;const q=rnd(GRADES[gx][1],GRADES[gx][2]),rk=shipRisk(C,g,n);if(S.cash<c)pullSafeCash(c,'You');S.cash-=c;C.last=S.day;if(C.ordD!==S.day){C.ordD=S.day;C.ordN=0}C.ordN++;C.tr=Math.min(100,ctr(C)+3);C.ord[g.id][1]+=n;S.heat=Math.min(100,S.heat+(m==='drop'?4:2));
     const pk={c:C.name,g:g.id,n,q,cost:c,mode:m,risk:rk};
-    if(m==='drop'||m==='fly'){connectLand(pk);close();if(m==='fly'){S.fly=1;$('modal').hidden=true;say(`Flew out to meet ${C.name} and came back with it.`);if(Math.random()<rk){say('Airport security pulled you aside.');nextDay();return busted()}nextDay();checkEnd();render();return}connReopen(C);return}
+    if(m==='fly'){const first=!cartItems().length;pk.cost=c-(first?250:0);S.fc=S.fc||{items:[]};S.fc.items.push(pk);S.fc.day=S.day;say(`${C.name}: ${amt(n,g)} of ${GRADES[gx][0].toLowerCase()} ${g.name} added to the trip.`);close();if(C.ordN>=3){say('Three orders is the limit. Time to fly.');return flyNow(C)}connectOrder(conList().indexOf(C));return}
+    if(m==='drop'){connectLand(pk);close();connReopen(C);return}
     S.ship=S.ship||[];pk.day=S.day+2;S.ship.push(pk);say(`${C.name}: ${amt(n,g)} of ${GRADES[gx][0].toLowerCase()} ${g.name} on the way. ${m==='mail'?'Money sent.':'Mule is moving.'} Lands in 2 days.`);connReopen(C)}
-function connectCustom(i,g){const C=conList()[i||0];if(!C)return;const m=cmode(C),pr=connectPrice(g,C),fly=m==='fly'?250:0,left=cleft(g,C);
+function connectCustom(i,g){const C=conList()[i||0];if(!C)return;const m=cmode(C),pr=connectPrice(g,C),fly=m==='fly'?flyExtra():0,left=cleft(g,C);
   const mx=Math.max(0,Math.min(vstep(g,left),vstep(g,Math.floor((conCash(C)-fly)/pr)),vstep(g,(S.cap-used())/g.sp)));
   if(!(mx>=g.step)){say('Cannot order any: check cash, stash room and what is left this week.');return connectOrder(i)}
   modal(`<h2>${C.name}: ${g.name}</h2><p class="s" style="color:var(--dim)">${money(pr)} each. Slide it or type the amount.</p>
