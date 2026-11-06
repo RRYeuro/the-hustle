@@ -1,45 +1,31 @@
-🚨 **FULL v179 LIST (part 2 of 2)** 🚨
+🚨 **IMPORTANT, READ NOW: WHAT I'M THINKING OF BUILDING NEXT** 🚨
 
-🥊 **COMBAT**
-• Talk-it-out rhythm game before fights
-• Card-math shootout
-• Fist fights with feints and combos
+**SHORT VERSION:** I'm lining up the next build from your feedback. Nothing is final. Tell me what you want first.
 
-🧠 **SCAMS AND HACKING**
-• 4 new mini games: VPN maze, firewall invaders, pac-man files, phishing simon
-• Bigger scams have multiple stages and pay more. Doing the same scam over and over pays less
-• Your skills affect it. Hacking is open to everyone: Shade has it from the start, everyone else needs 8 scam jobs or Smarts 6, plus a laptop
-• Scam payouts rebalanced to match the economy
+🥊 **FIGHT REBUILD** (Rock Beno's pick: 1, 3 and 5 together)
+• Your swings cost stamina and the other guy telegraphs his move. You counter or you eat it
+• Fights speed up as they go, so you can't sit back
+• Every fighter has a style. Some are stronger and harder to beat, but you can always still win
 
-🔥 **HEAT**
-• Your car, house, fit, job and business change how fast heat builds and how cops treat you
-• New outfits at the mall that change how cops see you
-• Selling adds heat by volume, and it cools down on its own instead of pinning at 0 or 100
-• Drug type matters: weed is low, coke and molly are high. Carrying the hard stuff gets you stopped more
+🏫 **SCHOOL ACTIVITIES** (all of it happens AT school, you don't leave)
+• Steal phones at school for extra money (drac007's idea)
+• Serve your classmates, fight, hack to boost grades
+• Rap at the lunch table: small boost, or they laugh and you take stress but still build talent
+• You get caught, you take a strike or your people get a call
 
-⚔️ **BLOCK WARS**
-• Take a block by force and that crew is your enemy: no jump in, ally or squash buttons
-• They only make peace with a white flag when they're tired of losing or can't win without you. They pay you
-• Buy a block off a crew and they become allies
+💬 **GIRLFRIEND TEXTS**
+• When you're older: "where you been?" and "you cheating?"
+• Laid back, jealous or crazy, and she changes over time
 
-🏫 **SCHOOL**
-• Own School tab with class, football practice and a red dot reminder
-• Your people call when you skip and text when the weekend is almost over
-• First move on every school day or weekend is free
-• First day of school: wear what your people got you (if they can) or buy a fit for $150
+🔌 **PLUG REVENGE** (Rock Beno's idea)
+• A plug turns on you and starts beefing? Catch him lacking, or take him off the board. It costs you in heat and strikes
 
-🗂️ **TABS AND MENUS**
-• Beef tab is now Your Circle: trap, family, homies, girl and crews
-• Unc only shows on the Block tab at The Bottom
-• Emoji on every tab, and more popups have a close ✕
+🏃 **COPS CHASE:** is it too easy? Tell me if you want it harder.
 
-↩️ **NEW GAME**
-• Back buttons on every new game screen
-• Play as...? check before you commit to a character
-• You start the game on the block where you live
-• Lucky's card fixed (Tre is her cousin's homeboy, not her ex)
+👇 **WHAT I NEED**
+Reply in #hustle-ideas with:
+1️⃣ What you want built first
+2️⃣ Anything you'd cut
+3️⃣ Your own idea
 
-🖼️ **ART**
-• New portraits (Raj, Cole, Smoke), 10 connect scenes, package art for all 6 drugs, and event panels
-
-Test what you care about and report in #hustle-ideas 🙏
+Thanks for keeping it real 🙏
