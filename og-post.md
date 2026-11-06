@@ -1,38 +1,45 @@
-🚨 **IMPORTANT, READ NOW: FULL v179 LIST (part 1 of 2)** 🚨
+🚨 **FULL v179 LIST (part 2 of 2)** 🚨
 
-**SHORT VERSION:** the public post was short, so here's every change in detail. Skim it, then test what you care about.
+🥊 **COMBAT**
+• Talk-it-out rhythm game before fights
+• Card-math shootout
+• Fist fights with feints and combos
 
-⚡ **ENERGY AND SKILLS**
-• Muscle raises your max energy. The energy bar shows current/max
-• Energy was lowered overall
+🧠 **SCAMS AND HACKING**
+• 4 new mini games: VPN maze, firewall invaders, pac-man files, phishing simon
+• Bigger scams have multiple stages and pay more. Doing the same scam over and over pays less
+• Your skills affect it. Hacking is open to everyone: Shade has it from the start, everyone else needs 8 scam jobs or Smarts 6, plus a laptop
+• Scam payouts rebalanced to match the economy
 
-🔌 **PLUGS AND CONNECTS**
-• Up to 3 connects at once (rep 25 for #2, rep 55 for #3)
-• 10 connects total, each with its own scene art and a specialty (12% cheaper goods)
-• New intro paths: cellmate after a bust, Unc after 3 guns, studio engineer, gang shot caller
-• Connect tiers match their portraits, plus shipping and haggling
-• Backup plugs: your plug's second shows up at trust 50, and a burned or robbed plug gets replaced in about 5 days (3 with a plug who vouches for you)
-• Plugs have moods and drought checkpoints. Drought szn is a real thing now
-• Recruited plugs buy from you on the block, and your workers text you "Boss, I need some work"
+🔥 **HEAT**
+• Your car, house, fit, job and business change how fast heat builds and how cops treat you
+• New outfits at the mall that change how cops see you
+• Selling adds heat by volume, and it cools down on its own instead of pinning at 0 or 100
+• Drug type matters: weed is low, coke and molly are high. Carrying the hard stuff gets you stopped more
 
-💸 **FRONTS AND DEBT**
-• Ask plugs for product on trust and rep
-• Interest and due date depend on the plug's level
-• Run off and you're banned, they send people, and they confront you when you come back (pay, fight with a strap, or get hit)
+⚔️ **BLOCK WARS**
+• Take a block by force and that crew is your enemy: no jump in, ally or squash buttons
+• They only make peace with a white flag when they're tired of losing or can't win without you. They pay you
+• Buy a block off a crew and they become allies
 
-💰 **MONEY AND ECONOMY**
-• Real prices and grades for every drug
-• Customers (plays) are capped and sized by your rep
-• Gambling: bet any amount, but the other side's bankroll caps your winnings by rep and level. Luck re-rolls are nerfed
-• Sliders and typed amounts on buys, bets, worker pay and custom orders
-• Package icons by size: bag, brick, key, bottles
-• Trap workers and missions rebalanced, plus house missions
+🏫 **SCHOOL**
+• Own School tab with class, football practice and a red dot reminder
+• Your people call when you skip and text when the weekend is almost over
+• First move on every school day or weekend is free
+• First day of school: wear what your people got you (if they can) or buy a fit for $150
 
-🎤 **RAPPER**
-• Rapper economy rebalanced: fans, streams and shows scale properly
-• Songs can go viral, and viral songs get playlist adds
-• Bad label contracts, promoters who stiff you, songs pulled and snitches can hit you. You answer with street smarts, a lawyer or muscle
+🗂️ **TABS AND MENUS**
+• Beef tab is now Your Circle: trap, family, homies, girl and crews
+• Unc only shows on the Block tab at The Bottom
+• Emoji on every tab, and more popups have a close ✕
 
-🥷 **ROBBER**
-• New rob mini game and label haggle
-• Fence shorts you, marked bills and more events with street smarts, lawyer or muscle options
+↩️ **NEW GAME**
+• Back buttons on every new game screen
+• Play as...? check before you commit to a character
+• You start the game on the block where you live
+• Lucky's card fixed (Tre is her cousin's homeboy, not her ex)
+
+🖼️ **ART**
+• New portraits (Raj, Cole, Smoke), 10 connect scenes, package art for all 6 drugs, and event panels
+
+Test what you care about and report in #hustle-ideas 🙏
