@@ -1530,7 +1530,7 @@ function lifeCreate(){
     ${CHARS.filter(c=>c.id!=='life').map(c=>`<button class="btn" data-who="${c.id}" style="text-align:left;white-space:normal;text-transform:none;letter-spacing:0;padding:10px 12px">${PORTRAITS[c.id]?`<img src="${PORTRAITS[c.id]}" alt="" style="width:56px;height:56px;border-radius:6px;object-fit:cover;float:right;margin-left:10px">`:''}<b>${c.name}</b><span style="display:block;font-family:var(--body);font-weight:400;font-size:14px;margin-top:3px;font-style:italic;color:var(--dim)">${YOUNG[c.id]}</span></button>`).join('')}
     <div class="btns"><button class="btn" id="lbk">Back</button></div>`);
   $('lbk').onclick=()=>mainMenu(false);
-  $('mcard').querySelectorAll('[data-who]').forEach(b=>b.onclick=()=>b.dataset.who==='own'?lifeCustom():startLife(b.dataset.who));
+  $('mcard').querySelectorAll('[data-who]').forEach(b=>b.onclick=()=>b.dataset.who==='own'?lifeCustom():confirmChar(b.dataset.who,()=>startLife(b.dataset.who),lifeCreate));
 }
 function startLife(ch){pendingDiff='normal';S=fresh(ch,'life');S.diff='normal';S.v5=1;S.safe=0;S.biz={};S.kids=[];S.fate={};teenStart(ch,14);S.cash=ch==='lucky'?1500:400;
   if(ch==='country')S.crews.forEach(c=>c.respect=10);if(ch==='lucky')S.ex=-1;
@@ -3295,15 +3295,19 @@ function pickChar(mode='story',skip){
       <span style="font-family:var(--display);font-size:20px;color:var(--accent)">${c.name}</span> <span class="chip">${mode==='story'&&c.id==='tank'?'The Star Running Back':c.role}</span>
       <span style="display:block;font-family:var(--body);font-weight:400;font-size:14px;margin-top:4px;color:var(--dim);font-style:italic">${mode==='story'?YOUNG[c.id]:c.story}</span>
       <span style="display:block;font-family:var(--body);font-weight:400;font-size:14px;margin-top:4px">${mode==='story'&&c.id==='tank'?'Knows 1 plug. Star athlete: starts with 10 rep and +10 strength, and practice builds his scout buzz.':mode==='story'&&c.id==='lucky'?'Knows 1 plug: Tre, her cousin\'s homeboy. Things just fall her way: double the odds on every card drop.':c.perk}${mode==='story'?' Lives with '+GUARD[c.id].name+'.':' Starts with '+money(c.cash)+'.'}</span></button>`).join('')}`);
-  $('mcard').querySelectorAll('[data-ch]').forEach(b=>b.onclick=()=>{
-    S=fresh(b.dataset.ch,mode);S.diff=pendingDiff;S.v5=1;S.safe=0;if(mode==='sandbox')S.cash+=5000;if(mode==='story'){teenStart(S.char,14);S.cash=S.char==='lucky'?1500:400;S.rep=S.char==='tank'?10:0}roll();if(S.char==='country')S.crews.forEach(c=>c.respect=mode==='story'?10:25);tab='block';if(S.char==='lucky')S.ex=S.known[0];
+  const begin=id=>{
+    S=fresh(id,mode);S.diff=pendingDiff;S.v5=1;S.safe=0;if(mode==='sandbox')S.cash+=5000;if(mode==='story'){teenStart(S.char,14);S.cash=S.char==='lucky'?1500:400;S.rep=S.char==='tank'?10:0}roll();if(S.char==='country')S.crews.forEach(c=>c.respect=mode==='story'?10:25);tab='block';if(S.char==='lucky')S.ex=S.known[0];
     const C=CHARS.find(c=>c.id===S.char);
     say(mode==='sandbox'?`${C.name} hit the streets in sandbox mode with ${money(S.cash)}.`:`${C.name}'s story starts freshman year. ${D().name} difficulty.`);say(mode==='story'?YOUNG[S.char]:C.story);
     S.slot=pendingSlot;save();
     const go=()=>{let seen=false;try{seen=localStorage.getItem('tl-tut')==='1'}catch(e){}
     if(!seen)return tutorial(0,()=>{try{localStorage.setItem('tl-tut','1')}catch(e){}$('modal').hidden=true;render()});
-    $('modal').hidden=true;render()};if(mode==='sandbox')return go();traitPick(go)});
+    $('modal').hidden=true;render()};if(mode==='sandbox')return go();traitPick(go)};
+  $('mcard').querySelectorAll('[data-ch]').forEach(b=>b.onclick=()=>confirmChar(b.dataset.ch,begin,()=>pickChar(mode,true)));
 }
+function confirmChar(id,yes,no){const c=CHARS.find(x=>x.id===id);
+  modal(`<h2>Play as ${c.name}?</h2>${PORTRAITS[id]?`<img src="${PORTRAITS[id]}" alt="" style="width:96px;height:96px;border-radius:8px;object-fit:cover;float:right;margin:0 0 8px 10px">`:''}<p>${c.role}. You can go back and pick someone else.</p><div class="btns" style="clear:both"><button class="btn go" id="cyes">Start as ${c.name}</button><button class="btn" id="cno">Back</button></div>`);
+  $('cyes').onclick=()=>yes(id);$('cno').onclick=no}
 function toast(t,good){let o=document.getElementById('toast');if(!o){o=document.createElement('div');o.id='toast';o.style.cssText='position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:9000;max-width:min(92vw,520px);padding:10px 14px;border-radius:8px;background:var(--panel);color:var(--fg);border:1px solid var(--accent);box-shadow:0 6px 24px rgba(0,0,0,.5);font-size:14px;line-height:1.35;transition:opacity .25s;pointer-events:none';document.body.appendChild(o)}
   o.textContent=t;o.style.borderColor=good===true?'var(--money)':good===false?'var(--blood)':'var(--accent)';o.style.opacity=1;clearTimeout(o._t);o._t=setTimeout(()=>{o.style.opacity=0},2800)}
 function flash(t,good){say(t);window._qf={t,good}}
