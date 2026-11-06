@@ -406,6 +406,7 @@ function paneBlock(){
     <div class="s">Carries ${P.carries.map(id=>G(id).name).join(', ')} · ${P.lvl==='Big'?'moves keys, 15% cheaper':P.lvl==='Mid'?'moves pounds, normal prices':'small stock, 10% higher'}</div>
     ${recd?`<div class="s" style="color:var(--accent)"><b>Works for you now.</b> ${plugFem(S.at)?'She':'He'} runs your traps and doesn't sell to you anymore, but ${plugFem(S.at)?'she':'he'} still buys from you. ${plugFem(S.at)?'She':'He'} hits you up in the phone when ${plugFem(S.at)?'she':'he'} needs work.</div>`:locked?`<div class="s" style="color:var(--blood)">Won't serve you until you got ${L.rep} rep.</div>`:''}
     ${(S.enemies||{})[S.at]?`<div class="s" style="color:var(--blood)"><b>Enemy.</b> ${plugName(S.at)} wants you hurt. ${plugFem(S.at)?'Her':'His'} people will come for you until somebody new takes over.</div>`:''}
+    ${(S.enemies||{})[S.at]&&burnt?revengeHTML(S.at):''}
     ${burnt?`<div class="s" style="color:var(--blood)">You robbed ${plugName(S.at)}. Nobody on ${BLOCKS[S.at]} will serve you until a new plug takes over around ${dayTxt(S.burned[S.at])}.</div>`:plugActions(S.at)}
     <div class="s">${kn?`Trust ${S.trust[S.at]}/100 · tap Buy or Sell to talk price`:`${plugFem(S.at)?'She':'He'} don't know you. Prices are 15% worse and you can't talk price. Trade with him ${3-(S.deals[S.at]||0)} more time${3-(S.deals[S.at]||0)===1?'':'s'} to get known.`}</div></div></div>`;
   if(o!=='me'&&o!=='none')h+=`<div class="sec">${cdef(o).name} turf: buying here and selling to the plug earns respect. Serving the Js makes them mad, unless it's a drug they don't move here.</div>`;
@@ -1375,6 +1376,24 @@ function bigFate(bi){S.fate2=S.fate2||{};S.fate2[bi]=1;const nm=plugName(bi),he=
     say(`${nm} sees you as a threat now. ${nm} is beefing with you and ${BLOCKS[bi]} is closed to you.`);
     modal(`<h2 style="color:var(--blood)">${nm} wants smoke</h2><p>"You got too big too fast. I can't have that." ${nm} cut you off and put the word out. ${BLOCKS[bi]} is closed to you and ${his} people will come for you until somebody new takes over.</p><div class="btns"><button class="btn go" id="ok">Watch your back</button></div>`)}
   $('ok').onclick=close;return true}
+
+/* ---------- plug revenge ---------- */
+function rvStr(bi){return ({Big:46,Mid:30,Small:18}[PINFO[bi].lvl]||30)+Math.round(S.day/30)}
+function rvSquash(bi){return ({Big:3000,Mid:1200,Small:500}[PINFO[bi].lvl]||1200)}
+function rvScouted(bi){const r=(S.rev||{})[bi];return !!r&&S.day<=r.sc+2}
+function revengeHTML(bi){const nm=plugName(bi),sc=rvScouted(bi),sq=rvSquash(bi);
+  return `<div class="s" style="margin-top:8px;color:var(--blood)"><b>Settle it.</b> ${sc?`You scouted ${nm}. You know where ${plugFem(bi)?'she':'he'} lays low. Move before it goes cold.`:`Scout ${nm} first and you can catch ${plugFem(bi)?'her':'him'} lacking.`}</div>
+   <div class="btns" style="margin-top:6px"><button class="btn" data-a="rv_scout" data-i="${bi}" ${sc||S.cash<200?'disabled':''}>${sc?'Scouted':'Scout $200 (takes the day)'}</button><button class="btn red" data-a="rv_lack" data-i="${bi}" ${sc?'':'disabled'}>Catch ${plugFem(bi)?'her':'him'} lacking</button><button class="btn red" data-a="rv_fight" data-i="${bi}">Take ${plugFem(bi)?'her':'him'} off the board</button><button class="btn go" data-a="rv_squash" data-i="${bi}" ${S.cash<sq?'disabled':''}>Squash it ${money(sq)}</button></div>
+   <div class="s" style="color:var(--dim)">Taking someone off the board brings heat and a body on the block. Squashing costs money but nobody gets hurt.</div>`}
+function rvDone(bi,how){const nm=plugName(bi);if(S.enemies)delete S.enemies[bi];if(S.rev)delete S.rev[bi];if(S.burned[bi])S.burned[bi]=Math.min(S.burned[bi],S.day+3);
+  const t={lack:`You caught ${nm} slipping and took everything. ${BLOCKS[bi]} is open to a new plug in a few days.`,fight:`${nm} is off the board. Word travels fast on ${BLOCKS[bi]}. A new plug steps up in a few days.`,squash:`You and ${nm} squashed it. No more smoke. ${BLOCKS[bi]} gets a new plug in a few days.`}[how];say(t);return t}
+function plugRevenge(k,bi){const nm=plugName(bi);S.rev=S.rev||{};
+  if(k==='scout'){if(S.cash<200)return;S.cash-=200;S.rev[bi]={sc:S.day};say(`Spent the day watching ${nm}. You know the routine now.`);nextDay();return}
+  if(k==='squash'){const c=rvSquash(bi);if(S.cash<c)return;S.cash-=c;addStress(-8);const t=rvDone(bi,'squash');shResult('Squashed',t);return}
+  if(k==='lack'){if(!rvScouted(bi))return;sneakGame(ok=>{if(ok){const loot=rnd(300,1200)*(PINFO[bi].lvl==='Big'?3:PINFO[bi].lvl==='Mid'?1.5:1);S.cash+=Math.round(loot);S.heat=Math.min(100,S.heat+8);S.rep+=4;addXP(6);addStress(10);const t=rvDone(bi,'lack');shResult('Caught lacking',`${t} You walked off with <b>${money(Math.round(loot))}</b>.`)}
+      else{delete S.rev[bi];S.hp=Math.max(5,S.hp-rnd(10,22));S.rep=Math.max(0,S.rep-1);addStress(10);say(`${nm} spotted you first. You got hurt getting out.`);shResult('Spotted',`${nm} saw you coming. You got out hurt, and the scouting is blown.`)}});return}
+  if(k==='fight'){const sc=rvScouted(bi);fightGame(myStr(),Math.round(rvStr(bi)*(sc?.8:1)),nm,win=>{if(win){S.heat=Math.min(100,S.heat+15);S.rep+=5;addXP(8);addStress(12);S.st.fights++;const t=rvDone(bi,'fight');shResult('Off the board',t)}
+      else{S.hp=Math.max(5,S.hp-rnd(18,30));addStress(12);S.cash=Math.round(S.cash*.92);say(`${nm} beat you down and ${plugFem(bi)?'her':'his'} people took some cash.`);shResult('Beat down',`${nm} got the best of you. You lost some cash and some pride.`)}});return}}
 function plugActions(bi){const k=S.pk[bi]||{},kn=S.known.includes(bi),fem=plugFem(bi);const favCool=k.fav&&S.day-k.fav<3;
   const canHook=adult()&&(isF()?!fem:fem)&&kn&&S.trust[bi]>=50;const cool=k.hook&&S.day-k.hook<3;
   return `<div class="btns" style="margin-top:6px"><button class="btn" data-a="pkick" data-i="${bi}" ${k.kick===S.day?'disabled':''}>${k.kick===S.day?'Kicked it today':'Kick it'}</button>${frontBtn(bi)}
@@ -3224,6 +3243,7 @@ function act(a,el){
   if(a==='buybiz'){const B=BIZ[el.dataset.k];S.cash-=B.cost;S.biz=S.biz||{};S.biz[el.dataset.k]=1;say(`Bought a ${B.name.toLowerCase()}. It's a front now.`)}
   if(a==='inv')return invModal();
   if(a==='safe'){const k=el.dataset.k;if(k==='out'){S.cash+=S.safe;say(`Took ${money(S.safe)} out from the house.`);S.safe=0}else{const m=k==='all'?S.cash:Math.floor(S.cash/2);S.cash-=m;S.safe=(S.safe||0)+m;say(`Put ${money(m)} up at the house.`)}}
+  if(a&&a.indexOf('rv_')===0)return plugRevenge(a.slice(3),+el.dataset.i);
   if(a==='pkick')plugKick(+el.dataset.i);
   if(a==='phook')return plugHook(+el.dataset.i);
   if(a==='chk')return checkStash(G(el.dataset.g));
