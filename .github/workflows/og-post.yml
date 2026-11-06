@@ -19,6 +19,10 @@ jobs:
           import json, os, urllib.request
           txt = open('og-post.md').read().strip()[:3900]
           role = os.environ.get('ROLE', '').strip()
+          # no ping unless the file starts with the line: <!--ping-->
+          if not txt.startswith('<!--ping-->'):
+              role = ''
+          txt = txt.replace('<!--ping-->', '', 1).strip()
           body = {'content': f'<@&{role}>' if role else '',
                   'allowed_mentions': {'roles': [role]} if role else {'parse': []},
                   'embeds': [{'description': txt, 'color': 0xE74C3C}]}
