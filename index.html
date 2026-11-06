@@ -147,15 +147,15 @@ h1{font-family:var(--display);font-weight:400;font-size:34px;letter-spacing:.02e
   </div>
   <div class="main">
   <div class="tabs" role="tablist">
-    <button role="tab" data-t="sch" aria-selected="false" id="stab" hidden>School</button>
-    <button role="tab" data-t="rap" aria-selected="false" id="rtab" hidden>Studio</button>
-    <button role="tab" data-t="rob" aria-selected="false" id="htab" hidden>Heists</button>
-    <button role="tab" data-t="block" aria-selected="true">Block</button>
-    <button role="tab" data-t="move" aria-selected="false">Move</button>
-    <button role="tab" data-t="beef" aria-selected="false">Your Circle</button>
-    <button role="tab" data-t="crew" aria-selected="false">Me</button>
-    <button role="tab" data-t="phone" aria-selected="false" id="phtab">Phone</button>
-    <button role="tab" data-t="cards" aria-selected="false" id="cardtab">Cards</button>
+    <button role="tab" data-t="sch" aria-selected="false" id="stab" hidden>🏫 School</button>
+    <button role="tab" data-t="rap" aria-selected="false" id="rtab" hidden>🎤 Studio</button>
+    <button role="tab" data-t="rob" aria-selected="false" id="htab" hidden>🥷 Heists</button>
+    <button role="tab" data-t="block" aria-selected="true">📍 Block</button>
+    <button role="tab" data-t="move" aria-selected="false">🚗 Move</button>
+    <button role="tab" data-t="beef" aria-selected="false">👥 Your Circle</button>
+    <button role="tab" data-t="crew" aria-selected="false">🧍 Me</button>
+    <button role="tab" data-t="phone" aria-selected="false" id="phtab">📱 Phone</button>
+    <button role="tab" data-t="cards" aria-selected="false" id="cardtab">🃏 Cards</button>
   </div>
   <div class="btns" id="fx"></div>
   <div class="pane" id="pane"></div>
@@ -376,7 +376,7 @@ function render(){
   $('cash').textContent=money(S.cash);
   $('stress').textContent=S.stress+(S.stress>=70?' · stressed':'');$('stressb').style.width=S.stress+'%';
   const C=CHARS.find(c=>c.id===S.char);$('who').textContent=C.name;
-  $('me').innerHTML=`${PORTRAITS[C.id]?`<img src="${PORTRAITS[C.id]}" alt="${C.name}" style="width:56px;height:56px;border-radius:6px;object-fit:cover;flex:none">`:`<div style="width:56px;height:56px;border-radius:6px;background:#2a2430;display:flex;align-items:center;justify-content:center;font-family:var(--display);font-size:26px;color:var(--accent);flex:none">${C.name[0]}</div>`}<div class="info"><div class="t" style="font-family:var(--display);font-size:20px;font-weight:400">${C.name}</div><div class="s">${roleOf(C)}</div></div>`;$('rk').textContent=identity();{const ballOn=!!(S.age&&S.age<18&&is('tank')&&!(S.fate||{}).knee),inS=S.school==='in'||S.college==='in'||ballOn,todo=(S.school==='in'||S.college==='in')&&S.classDay!==S.day&&(S.cal?schoolWeek():true);$('stab').hidden=!inS;$('stab').innerHTML='School'+(todo?' <span style="color:var(--blood)">●</span>':'');if(!inS&&tab==='sch')tab='block'}$('rtab').hidden=!S.rapOn;$('htab').hidden=!S.robOn;if((tab==='rap'&&!S.rapOn)||(tab==='rob'&&!S.robOn))tab='block';
+  $('me').innerHTML=`${PORTRAITS[C.id]?`<img src="${PORTRAITS[C.id]}" alt="${C.name}" style="width:56px;height:56px;border-radius:6px;object-fit:cover;flex:none">`:`<div style="width:56px;height:56px;border-radius:6px;background:#2a2430;display:flex;align-items:center;justify-content:center;font-family:var(--display);font-size:26px;color:var(--accent);flex:none">${C.name[0]}</div>`}<div class="info"><div class="t" style="font-family:var(--display);font-size:20px;font-weight:400">${C.name}</div><div class="s">${roleOf(C)}</div></div>`;$('rk').textContent=identity();{const ballOn=!!(S.age&&S.age<18&&is('tank')&&!(S.fate||{}).knee),inS=S.school==='in'||S.college==='in'||ballOn,todo=(S.school==='in'||S.college==='in')&&S.classDay!==S.day&&(S.cal?schoolWeek():true);$('stab').hidden=!inS;$('stab').innerHTML='🏫 School'+(todo?' <span style="color:var(--blood)">●</span>':'');if(!inS&&tab==='sch')tab='block'}$('rtab').hidden=!S.rapOn;$('htab').hidden=!S.robOn;if((tab==='rap'&&!S.rapOn)||(tab==='rob'&&!S.robOn))tab='block';
   $('stash').textContent=Math.round(used())+'/'+S.cap;safeFix();{const sp=$('stash').parentElement;if(!sp._inv){sp._inv=1;sp.style.cursor='pointer';sp.onclick=invModal;sp.querySelector('.k').textContent='Stash ›'}}
   $('hp').textContent=S.hp<=35?S.hp+' · hospital':S.hp;$('hp').style.color=S.hp<=35?'var(--blood)':'';$('hpb').style.width=S.hp+'%';$('hpb').style.background=S.hp<=35?'var(--blood)':'var(--money)';
   $('heat').textContent=S.heat;$('heatb').style.width=S.heat+'%';
@@ -388,8 +388,8 @@ function render(){
   {const at=Math.round((S.att||[])[S.at]||0),jl=jsLeftAt(S.at),cr=o!=='me'&&o!=='none'?crew(o):null;
    $('owner').innerHTML+=`<div class="ai" style="font-size:11px;line-height:1.35;margin-top:4px;color:var(--fg);opacity:.85;text-align:right;white-space:nowrap">Attention <b style="color:${at>=60?'var(--blood)':at>=30?'var(--accent)':'var(--fg)'}">${at>=60?'High':at>=30?'Some':'Low'}</b><br>Js got ${money(jl)}${cr?`<br>${cdef(o).name}: ${cr.ally||S.gang===o?'with you':cr.beef>=50?'want smoke':cr.respect>=60?'green light':'watching you'}`:''}</div>`}
   document.querySelectorAll('.tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.t===tab));{const n=[...document.querySelectorAll('.tabs button')].filter(b=>!b.hidden).length;document.querySelector('.tabs').style.setProperty('--tc',n<=6?n:Math.ceil(n/2))}
-  {const nreq=(S.texts||[]).length;$('phtab').textContent=nreq?`Phone ${nreq}`:'Phone';}
-  $('cardtab').textContent=S.hand.length?`Cards ${S.hand.length}`:'Cards';
+  {const nreq=(S.texts||[]).length;$('phtab').textContent=nreq?`📱 Phone ${nreq}`:'📱 Phone';}
+  $('cardtab').textContent=S.hand.length?`🃏 Cards ${S.hand.length}`:'🃏 Cards';
   const FXN={discount:'Plug Love',hype:'Hype Day',ride:'Ride or Die',lawyer:'Lawyer'};
   $('fx').innerHTML=Object.keys(S.fx).filter(k=>S.fx[k]).map(k=>`<span class="chip here">Active: ${FXN[k]}</span>`).join('');
   $('pane').innerHTML={sch:paneSchool,rap:paneRap,rob:paneRob,phone:panePhone,block:()=>paneBlock()+paneGuns(),move:paneMove,beef:paneBeef,crew:paneCrew,cards:paneCards}[tab]();
