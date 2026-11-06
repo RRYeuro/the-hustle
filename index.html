@@ -920,7 +920,7 @@ function mgMaze(o,cb){mgOn=true;const C=7,R=9,T=22,GW=2*C+1,GH=2*R+1,W=GW*T,H=GH
   while(stk.length){const [cx,cy]=stk[stk.length-1];const nb=[[1,0],[-1,0],[0,1],[0,-1]].map(([dx,dy])=>[cx+dx,cy+dy,dx,dy]).filter(([x,y])=>x>=0&&y>=0&&x<C&&y<R&&!seen.has(x+','+y));
     if(!nb.length){stk.pop();continue}const [nx,ny,dx,dy]=pick(nb);seen.add(nx+','+ny);g[2*ny+1][2*nx+1]=0;g[2*cy+1+dy][2*cx+1+dx]=0;stk.push([nx,ny])}
   for(let i=0;i<Math.round(8-d*5);i++){const x=rnd(1,GW-2),y=rnd(1,GH-2);if(g[y][x]===1&&((g[y][x-1]===0&&g[y][x+1]===0)||(g[y-1][x]===0&&g[y+1][x]===0)))g[y][x]=0}
-  const maxS=mgLv(2+Math.floor(skv('smarts')/3)),LIM=(o.T||42000)+skv('smarts')*1500,ex=2*C-1,ey=2*R-1;let strikes=0,act=false,last=null,pos=null;const T0=performance.now();
+  const maxS=mgLv(2+Math.floor(skv('smarts')/3)+(is('shade')?1:0)),LIM=(o.T||42000)+skv('smarts')*1500,ex=2*C-1,ey=2*R-1;let strikes=0,act=false,last=null,pos=null;const T0=performance.now();
   modal(`<h2>${o.title||'Tunnel the VPN'}</h2>${mgHud(`Strikes 0 of ${maxS}. Put your finger on the green node and drag to the exit.`)}${mgCv(W,H)}`);
   const cv=$('mgc'),x=cv.getContext('2d');
   const wall=(px,py)=>{const tx=Math.floor(px/T),ty=Math.floor(py/T);return tx<0||ty<0||tx>=GW||ty>=GH||g[ty][tx]===1};
@@ -982,16 +982,18 @@ const SCAMDEF={
  drain:{n:'Drain a wallet',t:'Get into a rich mark\'s crypto. Four steps.',shade:1,st:['maze','simon','pac','inv'],pay:[10000,16000],heat:14},
  wipe:{n:'Wipe your record',t:'Tunnel in on a VPN, pull your file and hold the firewall. Heat goes to zero. Three steps.',shade:1,st:['maze','pac','inv'],heat:0,wipe:1},
  tap:{n:'Tap an opp\'s phone',t:'Read a rival crew\'s messages. Two steps.',shade:1,st:['maze','simon'],heat:8,tap:1}};
+const HACK_RUNS=8,HACK_LVL=7;
+const hackOK=()=>{const sc=S.scam||{};return is('shade')||(sc.runs||0)>=HACK_RUNS||(S.lvl||1)>=HACK_LVL};
 function scamRun(k){const D=SCAMDEF[k],sc=S.scam=S.scam||{noto:0,laptop:0,did:{}};if(!D)return;sc.hist=sc.hist||{};
-  if(sc.did[k]===S.day)return say('Already did that today.'),render();if(D.shade&&!(is('shade')&&sc.laptop))return say('Only Shade can do the ghost work.'),render();if(D.noto&&sc.noto<D.noto)return say('Nobody trusts you with that yet. Build your name.'),render();if(D.cost&&S.cash<D.cost)return say('Need '+money(D.cost)+' to set that up.'),render();
+  if(sc.did[k]===S.day)return say('Already did that today.'),render();if(D.shade&&!(hackOK()&&sc.laptop))return say('You are not ready for the ghost work yet.'),render();if(D.noto&&sc.noto<D.noto)return say('Nobody trusts you with that yet. Build your name.'),render();if(D.cost&&S.cash<D.cost)return say('Need '+money(D.cost)+' to set that up.'),render();
   if(D.wipe&&S.heat<15)return say('Your heat is already low. Not worth the risk.'),render();
   const N=D.st.length;if(!spendEn(8+N*3))return;S.cash-=D.cost||0;sc.did[k]=S.day;let i=0,bail=false;
   const lose=()=>{S.heat=Math.min(100,S.heat+Math.round((D.heat||10)*1.6+8));addStress(8+N*2);if(D.tap){const c=pick(S.crews.filter(c=>c.alive));if(c)c.beef=Math.min(100,c.beef+15)}say(`${D.n} fell through. Heat up.`);lickDone('It fell through',`You got burned on step ${i+1} of ${N}.${D.cost?` The ${money(D.cost)} setup is gone.`:''} Heat went up.`,false,true)};
   const win=()=>{let t,x,x0='';
-    if(D.wipe){S.heat=0;sc.noto+=6;addXP(5);t='Record wiped';x='Your file is clean. Heat is 0.'}
-    else if(D.tap){const c=pick(S.crews.filter(c=>c.alive));c.str=Math.max(4,c.str-5);c.beef=Math.max(0,c.beef-10);sc.noto+=5;addXP(5);S.heat=Math.min(100,S.heat+D.heat);t='Phones tapped';x=`You read everything the ${cdef(c.id).name} been saying. They are weaker now (−5 strength).`}
+    if(D.wipe){S.heat=0;sc.runs=(sc.runs||0)+1;sc.noto+=6;addXP(5);t='Record wiped';x='Your file is clean. Heat is 0.'}
+    else if(D.tap){const c=pick(S.crews.filter(c=>c.alive));c.str=Math.max(4,c.str-5);c.beef=Math.max(0,c.beef-10);sc.runs=(sc.runs||0)+1;sc.noto+=5;addXP(5);S.heat=Math.min(100,S.heat+D.heat);t='Phones tapped';x=`You read everything the ${cdef(c.id).name} been saying. They are weaker now (−5 strength).`}
     else{const h=sc.hist[k]=(sc.hist[k]||[]).filter(d=>S.day-d<5);const sat=Math.pow(.6,h.length);h.push(S.day);
-      let v=rnd(D.pay[0],D.pay[1])*(1+skv('hustle')*.02+skv('talk')*.015)*sat;if(Math.random()<skv('luck')*.015){v*=1.5;x0=' Luck had it paying extra.'}v=Math.round(v/10)*10;S.cash+=v;sc.noto+=Math.ceil(N*2+v/2500);addXP(N*2);S.heat=Math.min(100,S.heat+D.heat);
+      let v=rnd(D.pay[0],D.pay[1])*(1+skv('hustle')*.02+skv('talk')*.015)*sat;if(Math.random()<skv('luck')*.015){v*=1.5;x0=' Luck had it paying extra.'}v=Math.round(v/10)*10;S.cash+=v;sc.runs=(sc.runs||0)+1;sc.noto+=Math.ceil(N*2+v/2500);addXP(N*2);S.heat=Math.min(100,S.heat+D.heat);
       t=D.n+' paid off';x=`${N} steps done. You walked away with ${money(v)}.${x0}${sat<1?' The same hustle again so soon pays less.':''} Heat +${D.heat}.`}
     say(`${t}.`);lickDone(t,x,true,true)};
   const next=()=>{if(i>=N)return win();const g=D.st[i];gateGame(`${D.n}: step ${i+1} of ${N}`,MGTXT[g],()=>MG[g]({d:N>1?i/(N-1):0},ok=>{if(!ok&&!bail&&Math.random()<skv('luck')*.02){bail=true;ok=true;say('Luck bailed you out on that step.')}ok?(i++,next()):lose()}))};
@@ -1002,9 +1004,11 @@ function paneScam(){const sc=S.scam=S.scam||{noto:0,laptop:0,did:{}};
    <div class="row"><div class="info"><div class="t">Punch cards</div><div class="s">Buy a list for $400, then swipe card after card at the mall. Each one goes through or gets declined. Two declines and the store calls it in. Cash out whenever.</div></div><button class="btn go" data-a="punch" ${S.cash>=400&&sc.did.punch!==S.day?'':'disabled'}>${sc.did.punch===S.day?'Done today':'Get a list'}</button></div>`;
   const row=k=>{const D=SCAMDEF[k],lock=D.noto&&sc.noto<D.noto,pr=D.pay?` Pays ${money(D.pay[0])} to ${money(D.pay[1])}.`:'';return `<div class="row"><div class="info"><div class="t">${D.n}</div><div class="s">${D.t}${pr}${D.cost?' Setup '+money(D.cost)+'.':''}${lock?` <b style="color:var(--blood)">Need ${D.noto} notoriety.</b>`:''}</div></div><button class="btn ${D.shade?'red':'go'}" data-a="scam" data-k="${k}" ${sc.did[k]===S.day||lock||(D.cost&&S.cash<D.cost)?'disabled':''}>${sc.did[k]===S.day?'Done today':'Run it'}</button></div>`};
   h+=['fake','phish','skim'].map(row).join('');
-  if(is('shade')){
-    h+=sc.laptop?`<div class="sec">Shade's laptop · ghost work</div>`+['drain','wipe','tap'].map(row).join('')
-    :`<div class="row"><div class="info"><div class="t">Set up a laptop</div><div class="s">Only Shade knows how to do the real ghost work: wallets, records, phones.</div></div><button class="btn green" data-a="laptop" ${S.cash>=2000?'':'disabled'}>$2,000</button></div>`}
+  if(is('shade')&&!sc.laptop)sc.laptop=1;
+  if(hackOK()){
+    h+=sc.laptop?`<div class="sec">Ghost work${is('shade')?' · Shade\'s laptop':''}</div>`+['drain','wipe','tap'].map(row).join('')
+    :`<div class="row"><div class="info"><div class="t">Set up a laptop</div><div class="s">You know enough now to do the ghost work: wallets, records, phones.</div></div><button class="btn green" data-a="laptop" ${S.cash>=2000?'':'disabled'}>$2,000</button></div>`}
+  else h+=`<div class="row"><div class="info"><div class="t">Ghost work · locked</div><div class="s">Wallets, police records, rival phones. Pull off ${HACK_RUNS} scam jobs (${sc.runs||0} so far) or reach level ${HACK_LVL} to learn it.</div></div></div>`;
   return h}
 function punch(){const sc=S.scam;sc.did.punch=S.day;S.cash-=400;let cards=6,dec=0,got=0;const odds=.6+S.sk.talk*.02+(is('shade')?.1:0)-(stressed()?.08:0)+(friendWith('scam')?.08:0);
   const draw=msg=>{modal(`<h2>Punching cards</h2><p>${msg}</p><p>Cards left: <b>${cards}</b> · Declines: <b>${dec}</b> of 2 · Bag so far: <b style="color:var(--money)">${money(got)}</b></p>
@@ -1015,7 +1019,7 @@ function punch(){const sc=S.scam;sc.did.punch=S.day;S.cash-=400;let cards=6,dec=
         const fin=ok=>{if(ok){S.cash+=keep;sc.noto+=2;addXP(2);say(`Punched cards and got ${money(keep)} before a decline got loud.`)}else{busted();say('Got caught punching cards.')}close()};
         $('r').onclick=()=>chase(c=>{addStress(6);fin(c)});$('b').onclick=()=>fin(Math.random()<.3+S.sk.talk*.05);return}
         draw('Declined. The cashier looked at you funny.')}};
-    $('co').onclick=()=>{S.cash+=got;sc.noto+=Math.ceil(got/800);addXP(Math.ceil(got/700));say(`Punched cards for ${money(got)}.`);close()}};
+    $('co').onclick=()=>{S.cash+=got;if(got>0)sc.runs=(sc.runs||0)+1;sc.noto+=Math.ceil(got/800);addXP(Math.ceil(got/700));say(`Punched cards for ${money(got)}.`);close()}};
   draw('You got 6 cards on the list. Take your time.')}
 function hackOld(k){const sc=S.scam;sc.did[k]=S.day;const odds=.45+S.sk.smarts*.05-(stressed()?.1:0);const win=Math.random()<odds;
   let t,x;
@@ -1027,7 +1031,7 @@ function paneLife(){
   let h=`<div class="sec">Life choices</div>`;
   h+=`<div class="row"><div class="info"><div class="t">Music ${S.rapOn?'<span class="chip mine">Doing it</span>':''}</div><div class="s">${S.rapOn?'You\'re rapping. Check the Studio tab.':'Try an open mic and see if rap is for you.'}</div></div>${S.rapOn?'':`<button class="btn" data-a="life" data-k="rap">Open mic</button>`}</div>`;
   h+=`<div class="row"><div class="info"><div class="t">Robbing ${S.robOn?'<span class="chip mine">Doing it</span>':''}</div><div class="s">${S.robOn?'You\'re hitting licks. Check the Heists tab.':S.day<3?'You don\'t know anybody in that life yet.':'Link with people who hit licks for a living.'}</div></div>${S.robOn?'':`<button class="btn" data-a="life" data-k="rob" ${S.day<3?'disabled':''}>Link up</button>`}</div>`;
-  h+=`<div class="row"><div class="info"><div class="t">Scamming ${S.scamOn?'<span class="chip mine">Doing it</span>':''}</div><div class="s">${S.scamOn?'Punch cards in the Move tab.'+(is('shade')?' Shade can hack too.':''):'Punch cards, flip the goods. Shade gets exclusive hacking.'}</div></div>${S.scamOn?'':`<button class="btn" data-a="scamstart">Get into it</button>`}</div>`;
+  h+=`<div class="row"><div class="info"><div class="t">Scamming ${S.scamOn?'<span class="chip mine">Doing it</span>':''}</div><div class="s">${S.scamOn?'Scams are in the Move tab.'+(hackOK()?' You can do ghost work too.':''):'Punch cards, run jobs, and work up to hacking.'}</div></div>${S.scamOn?'':`<button class="btn" data-a="scamstart">Get into it</button>`}</div>`;
   return h;
 }
 /* rapper */
