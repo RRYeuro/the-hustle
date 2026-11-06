@@ -322,7 +322,7 @@ function crew(id){return S.crews.find(c=>c.id===id)}
 function cdef(id){return CREWS.find(c=>c.id===id)}
 function roll(){
   if(S.dr&&S.dr.until<S.day){delete S.dr;say('Drought szn is over. The streets are flowing again.')}
-  else if(!S.dr&&S.day>8&&Math.random()<.02){S.dr={until:S.day+rnd(4,10)};say('🏜️ Drought szn. Nobody got nothing and everybody is asking more.')}
+  else if(!S.dr&&S.day>8&&Math.random()<.02){{const db=rnd(0,5);S.dr={until:S.day+rnd(4,10),bi:db};say(`🏜️ Drought szn on ${BLOCKS[db]}. Nobody there got nothing and everybody is asking more.`)}}
   S.prev=S.prices;S.prices={};S.talked={};S.bluffed={};S.deal=null;S.jsLeft=BLOCKS.map((b,i)=>jsBudget(i));S.tested={};S.offer={};
   BLOCKS.forEach((b,bi)=>{S.offer[bi]={};GOODS.forEach(g=>{
     const r=Math.random(),big=PINFO[bi].lvl==='Big',q=big?(r<.88?rnd(78,96):r<.96?rnd(60,74):rnd(30,55)):r<.25?rnd(75,95):r<.75?rnd(45,70):rnd(15,40);
@@ -336,7 +336,7 @@ function roll(){
       const r=Math.random();
       if(r<.05)p=Math.round(p*rnd(7,8)/10);      // flood
       else if(r<.09)p=Math.round(p*rnd(12,14)/10); // local dry spell
-      if(S.dr&&S.dr.until>=S.day)p=Math.round(p*1.5);
+      if(droughtAt(bi))p=Math.round(p*1.5);
       if(S.owner[bi]==='me')p=Math.round(p*1.12);
       S.prices[bi][g.id]=p;
     });
@@ -381,7 +381,7 @@ function render(){
   $('hp').textContent=S.hp<=35?S.hp+' · hospital':S.hp;$('hp').style.color=S.hp<=35?'var(--blood)':'';$('hpb').style.width=S.hp+'%';$('hpb').style.background=S.hp<=35?'var(--blood)':'var(--money)';
   $('heat').textContent=S.heat;$('heatb').style.width=S.heat+'%';
   $('rep').textContent=S.rep;{const M=enMax(),e=S.en==null?M:S.en;$('en').textContent=e<=0?'· wiped, advance the day':e<M*.25?'· low':`${Math.round(e)}/${M}`;$('enb').style.width=Math.max(0,Math.min(100,e/M*100))+'%'}
-  $('here').textContent=BLOCKS[S.at]+(S.dr&&S.dr.until>=S.day?' · 🏜️ Drought szn':'');{const w=document.querySelector('.where'),art=BLOCKART[S.at];w.style.backgroundImage=art?`linear-gradient(90deg,rgba(20,17,24,.92) 30%,rgba(20,17,24,.45)),url(${art})`:'';w.style.backgroundSize=art?'cover':'';w.style.backgroundPosition=art?'center 60%':''}
+  $('here').textContent=BLOCKS[S.at]+(droughtAt(S.at)?' · 🏜️ Drought szn':'');{const w=document.querySelector('.where'),art=BLOCKART[S.at];w.style.backgroundImage=art?`linear-gradient(90deg,rgba(20,17,24,.92) 30%,rgba(20,17,24,.45)),url(${art})`:'';w.style.backgroundSize=art?'cover':'';w.style.backgroundPosition=art?'center 60%':''}
   const o=S.owner[S.at];
   $('owner').innerHTML=o==='me'?'<span class="chip mine">Your turf</span>':o==='none'?'<span class="chip">Nobody\'s turf</span>':
     `<span class="chip" style="color:${cdef(o).color};border-color:${cdef(o).color}">${cdef(o).name} turf</span>`;
@@ -525,7 +525,7 @@ function paneMove(){
     const chip=o==='me'?'<span class="chip mine">Yours</span>':o==='none'?'<span class="chip">Open</span>':
       `<span class="chip" style="color:${cdef(o).color};border-color:${cdef(o).color}">${cdef(o).name}</span>`;
     const hm=homeBlock()===i?' <span class="chip here">Your place</span>':'';
-    return `<div class="row" style="${BLOCKART[i]?`background:linear-gradient(90deg,rgba(28,25,31,.95) 35%,rgba(28,25,31,.55)),url(${BLOCKART[i]}) center 55%/cover`:''}">${avatar(i,40)}<div class="info"><div class="t">${b}${hm}</div><div class="s">${chip} · ${plugName(i)}, <span style="color:${LVL[PINFO[i].lvl].col}">${PINFO[i].lvl} plug</span> ${S.known.includes(i)?'<span class="chip mine">Knows you</span>':'<span class="chip">Stranger</span>'}</div></div>
+    return `<div class="row" style="${BLOCKART[i]?`background:linear-gradient(90deg,rgba(28,25,31,.95) 35%,rgba(28,25,31,.55)),url(${BLOCKART[i]}) center 55%/cover`:''}">${avatar(i,40)}<div class="info"><div class="t">${b}${hm}</div><div class="s">${chip} · ${plugName(i)}, <span style="color:${LVL[PINFO[i].lvl].col}">${PINFO[i].lvl} plug</span> ${S.known.includes(i)?'<span class="chip mine">Knows you</span>':'<span class="chip">Stranger</span>'}</div><div class="s">${droughtAt(i)?'<span class="chip" style="color:var(--blood)">🏜️ Drought</span> ':''}${moChip(i)} ${tappedOut(i)?'<span class="chip" style="color:var(--blood)">Tapped out</span>':''}</div></div>
       ${i===S.at?'<span class="chip here">Here</span><button class="btn" data-a="adv">Stay here, next day</button>':`<button class="btn go" data-a="go" data-i="${i}">Go</button>`}</div>`;
   }).join('');
   h+=`<div class="sec">Mini games on ${BLOCKS[S.at]}</div>
@@ -1411,6 +1411,7 @@ function plugActions(bi){const k=S.pk[bi]||{},kn=S.known.includes(bi),fem=plugFe
   return `<div class="btns" style="margin-top:6px"><button class="btn" data-a="pkick" data-i="${bi}" ${k.kick===S.day?'disabled':''}>${k.kick===S.day?'Kicked it today':'Kick it'}</button>${frontBtn(bi)}
     ${adult()&&(isF()?!fem:fem)?`<button class="btn" data-a="phook" data-i="${bi}" ${canHook&&!cool?'':'disabled'}>${!kn||S.trust[bi]<50?'Flirt (need 50 trust)':cool?'Give it a few days':'Shoot your shot'}</button>`:''}
     ${recruitBtn(bi)}
+    ${kn&&!(S.recr&&S.recr[bi])?`<button class="btn" data-a="pask" data-i="${bi}" ${k.ask===S.day?'disabled':''}>${k.ask===S.day?'Already asked today':'Ask for something else'}</button>`:''}
     ${PINFO[bi].lvl==='Low'?`<button class="btn" data-a="pfav" data-k="play" data-i="${bi}" ${favCool?'disabled':''}>Take ${fem?'her':'him'} to a play</button>`:''}<button class="btn" data-a="pfav" data-k="spin" data-i="${bi}" ${favCool?'disabled':''}>Slide on ${fem?'her':'his'} opps</button>
     <button class="btn red" data-a="prob" data-i="${bi}">Rob ${fem?'her':'him'}</button></div>
     ${adult()&&k.hooked&&S.trust[bi]>=80&&!(S.gf&&S.gf.plug===bi)?`<div class="btns" style="margin-top:6px"><button class="btn go" data-a="pdate" data-i="${bi}">Ask ${fem?'her':'him'} out</button></div>>`:k.hooked&&!(S.gf&&S.gf.plug===bi)?`<div class="s">Y'all been creeping. Get ${fem?'her':'him'} to 80 trust and you can make it official.</div>`:''}
@@ -1418,6 +1419,17 @@ function plugActions(bi){const k=S.pk[bi]||{},kn=S.known.includes(bi),fem=plugFe
     ${k.disc?`<div class="s" style="color:var(--money)">${plugName(bi)} is looking out: your next buy from ${fem?'her':'him'} is 30% off.</div>`:''}
     ${S.known.includes(bi)&&S.trust[bi]>=70?`<div class="s" style="color:var(--money)">${fem?'She':'He'} keeps it real with you: ${fem?'she':'he'}'ll tell you if a batch is fake.</div>`:''}
     ${favCool?`<div class="s">Did ${fem?'her':'him'} a favor recently. Give it ${3-(S.day-k.fav)} day${3-(S.day-k.fav)===1?'':'s'}.</div>`:''}`}
+function plugAsk(bi){const nm=plugName(bi),odd=GOODS.filter(x=>!PINFO[bi].carries.includes(x.id));
+  modal(`<h2>Ask ${nm} for something else</h2><p>${nm} normally moves ${PINFO[bi].carries.map(id=>G(id).name).join(', ')}. Pick what you want. Talking depends on trust and your talk skill, and keeps things friendly. Forcing is a bigger chance on a good day but costs trust, heat and maybe health, and you only get one try a day.</p>
+  <div class="btns" style="flex-direction:column;align-items:stretch">${odd.map(g=>`<div class="row" style="padding:6px 10px"><div class="info"><div class="t">${g.icon||''} ${g.name}</div></div><button class="btn go" data-a="paskgo" data-i="${bi}" data-g="${g.id}" data-m="talk">Talk ${plugFem(bi)?'her':'him'} into it</button><button class="btn red" data-a="paskgo" data-i="${bi}" data-g="${g.id}" data-m="force">Force it</button></div>`).join('')}<button class="btn" id="no">Never mind</button></div>`);$('no').onclick=close}
+function plugAskGo(bi,gid,mode){const nm=plugName(bi),he=plugFem(bi)?'she':'he',him=plugFem(bi)?'her':'him',g=G(gid),pk=S.pk[bi]=S.pk[bi]||{};if(pk.ask===S.day)return;pk.ask=S.day;close();
+  const p=mode==='talk'?Math.min(.65,.08+S.trust[bi]/250+((S.sk&&S.sk.talk)||3)*.03):Math.min(.6,.2+S.rep/300+(S.hp>60?.1:0));
+  const hit=()=>{const o=S.offer[bi][gid];o.q=o.real=rnd(68,92);o.fake=false;o.tip=mode==='talk'?.9:1;o.stock=Math.max(g.step*2,Math.round(newStock(bi,g)));S.off={day:S.day,bi,g:gid};return o};
+  if(Math.random()<p){hit();if(mode==='force'){S.trust[bi]=Math.max(0,S.trust[bi]-15);S.heat=Math.min(100,S.heat+8);addStress(8)}else{S.trust[bi]=Math.min(100,S.trust[bi]+2)}
+    say(mode==='talk'?`${nm} came through. ${he==='she'?'She':'He'} will sell you ${g.name} today.`:`You pushed ${nm} until ${he} gave in. ${g.name} is on the table today.`);}
+  else{if(mode==='talk'){S.trust[bi]=Math.max(0,S.trust[bi]-3);say(`${nm} said ${he} doesn't fool with ${g.name}. Maybe another day.`)}
+    else{const d=rnd(5,15);S.hp-=d;S.trust[bi]=Math.max(0,S.trust[bi]-20);S.heat=Math.min(100,S.heat+10);addStress(10);say(`You tried to force ${nm} and ${he} pushed back. −${d} health, trust gone.`)}}
+  render()}
 function plugFavor(bi,k){const fm=plugFem(bi),he=fm?'she':'he',He=fm?'She':'He',his=fm?'her':'his',him=fm?'her':'him',nm=plugName(bi),pk=S.pk[bi]=S.pk[bi]||{};pk.fav=S.day;pk.favs=(pk.favs||0)+1;const o=S.owner[bi],homeCrew=o!=='me'&&o!=='none'?crew(o):null;
   const brag=()=>{S.rep+=5;if(homeCrew)homeCrew.respect=Math.min(100,homeCrew.respect+10)};
   if(k==='play'){if(PINFO[bi].lvl!=='Low')return say(`${nm} don't need you serving ${his} plays.`);
@@ -1719,7 +1731,7 @@ function plugRob(bi){const P=PINFO[bi],nm=plugName(bi),her=plugFem(bi)?'her':'hi
   $('n').onclick=close;
   if($('cs'))$('cs').onclick=()=>{pk.cased=S.day;S.heat=Math.min(100,S.heat+3);say(`Spent the day watching ${nm}'s spot. You know when the shift changes now.`);$('modal').hidden=true;nextDay();checkEnd();render()};
   $('y').onclick=()=>{if(S.gf&&S.gf.plug===bi){say(`You robbed your own ${plugFem(bi)?'girl':'man'}. ${nm} is done with you.`);endGF()}{const bp=burnPlan(bi,10,'rob');S.burned[bi]=S.day+bp.d;if(bp.sec||bp.vouch)say(`${bp.sec?'Their second is waiting to step up. ':''}${bp.vouch?'A plug you trust is vouching for the new one. ':''}Back in ${bp.d} days.`)}S.known=S.known.filter(i=>i!==bi);S.trust[bi]=0;S.heat=Math.min(100,S.heat+25);
-    robMini(bi,odds,ok=>{if(ok){S.dr={until:S.day+rnd(5,9)};say('🏜️ Drought szn. Word got around that the plug got hit and nobody is selling.');const got=[];const cash=({Low:[1000,3000],Mid:[3000,8000],Big:[10000,25000]})[P.lvl];const c=rnd(cash[0],cash[1]);S.cash+=c;got.push(money(c));
+    robMini(bi,odds,ok=>{if(ok){S.dr={until:S.day+rnd(5,9),bi};say(`🏜️ Drought szn on ${BLOCKS[bi]}. Word got around that the plug got hit and nobody is selling.`);const got=[];const cash=({Low:[1000,3000],Mid:[3000,8000],Big:[10000,25000]})[P.lvl];const c=rnd(cash[0],cash[1]);S.cash+=c;got.push(money(c));
       P.carries.forEach(id=>{const g=G(id);let n=lvlMax(bi,g)*rnd(5,10)/10;n=Math.min(n,(S.cap-used())/g.sp);n=g.step<1?Math.floor(n*2)/2:Math.floor(n);if(n<=0)return;
         const have=S.inv[id],q=rnd(55,90);S.q[id]=Math.round((S.q[id]*have+q*n)/(have+n));S.paid[id]=Math.round(S.paid[id]*have/(have+n));S.inv[id]+=n;got.push(`${amt(n,g)} of ${g.name}`)});
       S.rep+=5;addXP(10);addStress(10);S.rob.noto+=15;say(`Robbed ${nm}: ${got.join(', ')}.`);hoodHate(bi,false);
@@ -1730,7 +1742,7 @@ function plugRob(bi){const P=PINFO[bi],nm=plugName(bi),her=plugFem(bi)?'her':'hi
 }
 /* ---------- plug mood and checkpoints ---------- */
 function moodPen(bi){const k=(S.pk&&S.pk[bi])||{};if(!k.mad)return 0;if(S.day-(k.madDay||0)>3){k.mad=0;return 0}return Math.min(.3,k.mad*.1)}
-function checkpointDay(){if(!(S.dr&&S.dr.until>=S.day)||S.inJail||Math.random()>.1)return;const carry=GOODS.reduce((a,g)=>a+(S.inv[g.id]||0),0);if(carry<=0)return;
+function checkpointDay(){if(!droughtAt(S.at)||S.inJail||Math.random()>.1)return;const carry=GOODS.reduce((a,g)=>a+(S.inv[g.id]||0),0);if(carry<=0)return;
   modal(`<h2 style="color:var(--blood)">Checkpoint</h2><p>Drought szn has twelve out in force. There is a checkpoint on the road and you are holding.</p><div class="btns" style="flex-direction:column;align-items:stretch"><button class="btn red" id="cr">Ride through</button><button class="btn" id="ct">Turn around (lose half a day)</button></div>`);
   $('ct').onclick=()=>{S.en=Math.max(0,(S.en||0)-Math.round(enMax()/2));say('You turned around and took the long way. Half your energy gone.');close();render()};
   $('cr').onclick=()=>{const risk=Math.min(.85,.25+S.heat/200+(hasT('sketchy')?.1:0)-(hasT('nosey')?.08:0)-(S.sk.smarts||0)*.02);close();
@@ -2357,7 +2369,11 @@ const JSBASE=[1100,1600,800,2800,2200,4000];
 const JSTAG=bi=>JSBASE[bi]>=2600?'Money block':JSBASE[bi]>=1900?'Decent money':JSBASE[bi]>=1300?'Getting by':'Broke block';
 const checkDay=()=>S.cal?calCheck():((S.day-1)%30)<2;
 const daysToCheck=()=>S.cal?calToCheck():30-((S.day-1)%30);
-function jsBudget(bi){return Math.round((S.age&&S.age<16?.4:S.age&&S.age<18?.65:1)*JSBASE[bi]*(S.college==='in'&&bi===4?1.5:1)*(S.biz&&S.biz.club&&bi===5?1.4:1)*(checkDay()?4:1)*rnd(85,115)/100)}
+function jsBudget(bi){return Math.round((S.age&&S.age<16?.4:S.age&&S.age<18?.65:1)*JSBASE[bi]*(S.college==='in'&&bi===4?1.5:1)*(S.biz&&S.biz.club&&bi===5?1.4:1)*(checkDay()?4:1)*moF(bi)*rnd(85,115)/100)}
+function droughtAt(bi){return !!(S.dr&&S.dr.until>=S.day&&(S.dr.bi===undefined||S.dr.bi===bi))}
+function moF(bi){const m=Math.floor((S.day-1)/30);if(!S.jsMo||S.jsMo.m!==m)S.jsMo={m,f:BLOCKS.map(()=>pick([.35,.6,1,1,1.2,1.5]))};return S.jsMo.f[bi]}
+function moChip(bi){const f=moF(bi);return f<=.6?'<span class="chip" style="color:var(--blood)">Dry this month</span>':f>=1.2?'<span class="chip mine">Flush this month</span>':''}
+function tappedOut(bi){return jsLeftAt(bi)<100}
 function jsLeftAt(bi){if(!S.jsLeft)S.jsLeft=BLOCKS.map((b,i)=>jsBudget(i));return S.jsLeft[bi]}
 /* ---------- demand ---------- */
 const DEMAND={0:{hot:['loud'],cold:['snow'],why:'Corner kids want weed'},1:{hot:['phones'],cold:['kicks'],why:'Southpark sips lean'},2:{hot:['percs','bars'],cold:['kicks'],why:'The Bottom wants pills'},
@@ -2369,7 +2385,7 @@ function demandDay(){S.rush=(S.rush||[]).filter(r=>r.until>=S.day);
   if(Math.random()<.25){const [g,why]=pick(RUSHES),bi=rnd(0,5);S.rush.push({bi,g,until:S.day+2});say(`${why} on ${BLOCKS[bi]}. ${G(g).name} sells 50% higher there for ${turnsTxt(3)}.`)}}
 function demandList(){const rs=(S.rush||[]).filter(r=>r.until>=S.day);
   return `<div class="row" style="flex-direction:column;align-items:stretch;gap:4px"><div class="t">What each block wants</div>
-    ${BLOCKS.map((b,i)=>{const D=DEMAND[i],r=rs.filter(x=>x.bi===i);return `<div class="s"><b style="color:var(--fg)">${b}:</b> <span class="chip ${JSBASE[i]>=2600?'mine':''}">${JSTAG(i)}</span> ${D.why}. Pays more for ${D.hot.map(x=>G(x).name).join(' and ')}, less for ${D.cold.map(x=>G(x).name).join(', ')}.${r.length?` <span style="color:var(--accent)">Hot right now: ${r.map(x=>G(x.g).name).join(', ')} until ${dayTxt(r[0].until)}.</span>`:''}</div>`}).join('')}</div>`}
+    ${BLOCKS.map((b,i)=>{const D=DEMAND[i],r=rs.filter(x=>x.bi===i);return `<div class="s"><b style="color:var(--fg)">${b}:</b> <span class="chip ${JSBASE[i]>=2600?'mine':''}">${JSTAG(i)}</span> ${moChip(i)}${droughtAt(i)?' <span class="chip" style="color:var(--blood)">🏜️ Drought</span>':''}${tappedOut(i)?' <span class="chip" style="color:var(--blood)">Tapped out</span>':''} ${D.why}. Pays more for ${D.hot.map(x=>G(x).name).join(' and ')}, less for ${D.cold.map(x=>G(x).name).join(', ')}.${r.length?` <span style="color:var(--accent)">Hot right now: ${r.map(x=>G(x.g).name).join(', ')} until ${dayTxt(r[0].until)}.</span>`:''}</div>`}).join('')}</div>`}
 /* ---------- sound ---------- */
 const SND={sfx:true,music:false};try{Object.assign(SND,JSON.parse(localStorage.getItem('tl-snd')||'{}'))}catch(e){}
 function sndSave(){try{localStorage.setItem('tl-snd',JSON.stringify(SND))}catch(e){}}
@@ -3276,6 +3292,8 @@ function act(a,el){
   if(a==='safe'){const k=el.dataset.k;if(k==='out'){S.cash+=S.safe;say(`Took ${money(S.safe)} out from the house.`);S.safe=0}else{const m=k==='all'?S.cash:Math.floor(S.cash/2);S.cash-=m;S.safe=(S.safe||0)+m;say(`Put ${money(m)} up at the house.`)}}
   if(a&&a.indexOf('rv_')===0)return plugRevenge(a.slice(3),+el.dataset.i);
   if(a==='pkick')plugKick(+el.dataset.i);
+  if(a==='pask')return plugAsk(+el.dataset.i);
+  if(a==='paskgo')return plugAskGo(+el.dataset.i,el.dataset.g,el.dataset.m);
   if(a==='phook')return plugHook(+el.dataset.i);
   if(a==='chk')return checkStash(G(el.dataset.g));
   if(a==='fk')return fakeAct(G(el.dataset.g),el.dataset.k);
