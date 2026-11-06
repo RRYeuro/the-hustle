@@ -1376,6 +1376,7 @@ function recruitPlug(bi){const L=PINFO[bi].lvl,R=RECR[L];if(!R||S.workers.length
   S.cash-=R.cost;S.recr=S.recr||{};S.recr[bi]=1;S.workers.push({id:nm+S.day,name:nm,hustle:R.hustle,loyal:8,wage:R.wage,sales:R.sales,from:bi});
   let extra='';
   if(c&&!c.ally&&S.gang!==c.id){if(c.respect<60){c.beef=Math.min(100,c.beef+30);c.respect=Math.max(0,c.respect-20);extra=` The ${cdef(o).name} did not like it. Beef went up and respect dropped.`}else{c.respect=Math.min(100,c.respect+3);extra=` The ${cdef(o).name} respect you enough to let it slide.`}}
+  if(S.myGang){S.soldiers++;extra+=` ${nm} joined ${S.myGang.name} too.`}
   say(`${nm} signed on as one of your workers and keeps ${fem?'her':'his'} spot on ${BLOCKS[bi]}. ${fem?'She':'He'} won't sell to you anymore.${extra}`);
   modal(`<h2>${nm} is on your team</h2><p>${nm} still holds ${fem?'her':'his'} spot on ${BLOCKS[bi]}, but ${fem?'she':'he'} works for you now and doesn't sell to you anymore.${extra}</p><div class="btns"><button class="btn go" id="ok">Bet</button></div>`);$('ok').onclick=close}
 const bigFateCand=()=>S.known.find(bi=>PINFO[bi].lvl==='Big'&&!S.burned[bi]&&S.trust[bi]>=60&&S.rep>=50&&!(S.fate2||{})[bi]);
@@ -1412,7 +1413,7 @@ function plugActions(bi){const k=S.pk[bi]||{},kn=S.known.includes(bi),fem=plugFe
     ${adult()&&(isF()?!fem:fem)?`<button class="btn" data-a="phook" data-i="${bi}" ${canHook&&!cool?'':'disabled'}>${!kn||S.trust[bi]<50?'Flirt (need 50 trust)':cool?'Give it a few days':'Shoot your shot'}</button>`:''}
     ${recruitBtn(bi)}
     ${kn&&!(S.recr&&S.recr[bi])?`<button class="btn" data-a="pask" data-i="${bi}" ${k.ask===S.day?'disabled':''}>${k.ask===S.day?'Already asked today':'Ask for something else'}</button>`:''}
-    ${PINFO[bi].lvl==='Low'?`<button class="btn" data-a="pfav" data-k="play" data-i="${bi}" ${favCool?'disabled':''}>Take ${fem?'her':'him'} to a play</button>`:''}<button class="btn" data-a="pfav" data-k="spin" data-i="${bi}" ${favCool?'disabled':''}>Slide on ${fem?'her':'his'} opps</button>
+    ${(S.recr&&S.recr[bi])?'':PINFO[bi].lvl==='Low'?`<button class="btn" data-a="pfav" data-k="play" data-i="${bi}" ${favCool?'disabled':''}>Take ${fem?'her':'him'} to a play</button>`:''}${(S.recr&&S.recr[bi])?'':`<button class="btn" data-a="pfav" data-k="spin" data-i="${bi}" ${favCool?'disabled':''}>Slide on ${fem?'her':'his'} opps</button>`}
     <button class="btn red" data-a="prob" data-i="${bi}">Rob ${fem?'her':'him'}</button></div>
     ${adult()&&k.hooked&&S.trust[bi]>=80&&!(S.gf&&S.gf.plug===bi)?`<div class="btns" style="margin-top:6px"><button class="btn go" data-a="pdate" data-i="${bi}">Ask ${fem?'her':'him'} out</button></div>>`:k.hooked&&!(S.gf&&S.gf.plug===bi)?`<div class="s">Y'all been creeping. Get ${fem?'her':'him'} to 80 trust and you can make it official.</div>`:''}
     ${S.gf&&S.gf.plug===bi?`<div class="s" style="color:var(--money)">${fem?'She':'He'}'s your ${fem?'girl':'man'}: 15% off every buy, and ${fem?'she':'he'} always tells you if it's fake.</div>`:''}
