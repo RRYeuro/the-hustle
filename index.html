@@ -3644,7 +3644,7 @@ function ckReport(){try{ckState()}catch(e){}const done=CKL.filter(x=>{try{return
   $('ckb').onclick=devPanel;$('ckc').onclick=()=>{const ta=$('ckt');const ok=()=>{$('ckm').textContent='Copied. Paste it to Claude.'};try{navigator.clipboard.writeText(ta.value).then(ok,()=>{ta.select();document.execCommand('copy');ok()})}catch(e){ta.select();try{document.execCommand('copy')}catch(_){}ok()}}}
 $('pane').onclick=e=>{sfx('tap');const pp=e.target.closest('.mapp');if(pp)return openPlace(pp.dataset.p);const m=e.target.closest('.mapb');if(m){if(m.dataset.a==='go')act('go',m);return}const b=e.target.closest('button[data-a]');if(b&&!b.disabled){const top=S&&S.log&&S.log[0];act(b.dataset.a,b);const nw=S&&S.log&&S.log[0];if(nw&&nw!==top&&$('modal').hidden)toast(nw.t)}};
 $('retire').onclick=()=>{S.over=true;checkEnd()};
-const BUILD='v174';
+const BUILD='v175';
 const DISCORD_INVITE='https://discord.gg/bVsvWzbGW';const OG_UNTIL=Date.UTC(2026,10,13);
 const ogBox=()=>DISCORD_INVITE&&Date.now()<OG_UNTIL?`<a href="${DISCORD_INVITE}" target="_blank" rel="noopener" style="display:block;text-decoration:none;border:2px solid var(--accent);border-radius:10px;padding:10px 12px;background:rgba(0,0,0,.55);color:#fff;text-align:left"><div style="font-family:var(--label);font-weight:700;letter-spacing:.14em;color:var(--accent);font-size:12px">OG TESTER · FIRST WEEK ONLY</div><div style="font-size:13px;margin-top:3px">Join the Discord now and get the <b>OG Tester</b> role. Pitch ideas, report bugs, help shape the game. Tap to join →</div></a>`:'';
 function mainMenu(canContinue){
