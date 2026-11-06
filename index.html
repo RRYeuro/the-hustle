@@ -2143,7 +2143,8 @@ function lick(k){if(stuckHome())return;if((S.rob.fat||0)>=7){say('Everybody on t
   if(k==='pharm')return grabGame((got,alarm)=>{
     if(alarm||got<2){S.heat=Math.min(100,S.heat+20);return alarmRun('Alarm tripped',alarm?'You grabbed right in front of the camera. Cops are on the way.':'You took too long. Somebody called it in.','You got away','Empty handed, but free.')}
     const a=got*rnd(20,35),b2=got*rnd(15,30);const room=Math.floor((S.cap-used())/.02);
-    const pa=Math.min(a,room),pb=Math.min(b2,Math.max(0,room-pa));S.inv.percs+=pa;S.inv.bars+=pb;
+    const pa=Math.min(a,room),pb=Math.min(b2,Math.max(0,room-pa));
+    [['percs',pa],['bars',pb]].forEach(([id,n])=>{if(n<=0)return;const real=Math.max(0,S.inv[id]-(S.fake[id]||0)),q=rnd(84,97);S.q[id]=Math.round((S.q[id]*real+q*n)/(real+n));S.paid[id]=Math.round((S.paid[id]||0)*S.inv[id]/(S.inv[id]+n));S.inv[id]+=n});
     S.heat=Math.min(100,S.heat+30);addXP(5);addStress(8);
     lickDone('Cleaned out the shelves',`You grabbed ${got} bags. That's ${pa} Percs and ${pb} Xans, pharm grade.${pa+pb<a+b2?' Your stash was too full for the rest.':''}`,true)});
   if(k==='store')return seqGame(ok=>{
