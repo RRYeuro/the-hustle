@@ -1441,8 +1441,13 @@ const CONNECTS=['Silk','Javi','Mr. Kim','Big Chief','OG Mook','Nadia','Marisol',
 const CSPEC={'Silk':['snow','kicks'],'Javi':['loud','bars'],'Mr. Kim':['phones','percs'],'Big Chief':['snow','loud'],'OG Mook':['loud','bars'],'Nadia':['snow','phones'],'Marisol':['kicks','phones'],'Deacon':['percs','bars'],'Uncle Sol':['loud','percs'],'Tasha K':['bars','snow']};
 const conList=()=>{if(S.connect&&!S.cons)S.cons=[S.connect];return S.cons||[]};
 const canNewConnect=()=>{const n=conList().length;return n<3&&S.rep>=[0,25,55][n]};
-const newConName=()=>{const own=conList().map(c=>c.name),L=CONNECTS.filter(c=>!own.includes(c));return pick(L.length?L:CONNECTS)};
-function addConnect(o){const L=conList();if(L.some(c=>c.name===o.name))return false;S.cons=L;S.cons.push(o);S.connect=S.cons[0];S.conSrv=(S.srvU||0)+rnd(180,300)*S.cons.length;return true}
+const newConName=()=>{const own=conList().map(c=>c.name),gone=S.conGone||[];let L=CONNECTS.filter(c=>!own.includes(c)&&!gone.includes(c));if(!L.length)L=CONNECTS.filter(c=>!own.includes(c));
+  if(S.conWant!=null){const hi=L.filter(c=>(CTIER[c]||0)>=S.conWant),lo=L.filter(c=>(CTIER[c]||0)<S.conWant);const nm=hi.length&&(Math.random()<.6||!lo.length)?pick(hi):pick(lo.length?lo:L);return nm}
+  return pick(L.length?L:CONNECTS)};
+function conDrop(i){const C=conList()[i];if(!C)return;const t=ctier(C);
+  modal(`<h2>Drop ${C.name}?</h2><p>You cut ${C.name} off. That opens a spot, and the next connect that finds you has a ${t<2?'good chance of being a higher tier than a '+['Low','Mid','High'][t]+' connect':'shot at another top-tier connect'}. No promises, though: you could end up with someone worse, and you lose ${C.name}'s trust and anything left on your weekly limit.</p><div class="btns"><button class="btn red" id="cd">Drop ${C.name}</button><button class="btn" id="cn">Keep ${C.name}</button></div>`);
+  $('cn').onclick=close;$('cd').onclick=()=>{S.cons=conList().filter(x=>x!==C);S.connect=S.cons[0]||null;S.conGone=(S.conGone||[]).concat(C.name);S.conWant=Math.min(2,t+1);S.ship=(S.ship||[]);say(`You dropped ${C.name}. A spot is open for a new connect.`);close()}}
+function addConnect(o){const L=conList();if(L.some(c=>c.name===o.name))return false;S.cons=L;S.cons.push(o);S.connect=S.cons[0];S.conWant=null;S.conSrv=(S.srvU||0)+rnd(180,300)*S.cons.length;return true}
 function connectCand(){if(!canNewConnect())return;const ok=bi=>S.known.includes(bi)&&!S.burned[bi]&&!(S.conAsk||{})[bi];
   if(S.conTh==null)S.conTh=rnd(-8,6);const th=S.conTh;
   if(S.gf&&S.gf.plug!=null&&ok(S.gf.plug)&&S.trust[S.gf.plug]>=85+th)return S.gf.plug;
@@ -1521,7 +1526,7 @@ function shipDay(){if(!S.ship||!S.ship.length)return;const keep=[];S.ship.forEac
     connectLand(pk)});S.ship=keep}
 function paneConnect(){return conList().map((C,i)=>paneConnect1(C,i)).join('')}
 function paneConnect1(C,i){const ready=S.day-C.last>=1||(C.ordD===S.day&&C.ordN<3),t=ctier(C),inc=(S.ship||[]).filter(x=>x.c===C.name);
-  return `<div class="row" style="flex-wrap:wrap;border-color:var(--money)">${cpic(C.name,52)}<div class="info" style="flex:1 1 180px;min-width:0"><div class="t">${C.name} <span class="chip mine">The connect</span></div><div class="s">${C.from<0?'Found you on the street.':'Met through '+plugName(C.from)+'.'} ${['Low','Mid','High'][t]} connect · ${MODEI[cmode(C)][0]}. Weight only, real product, way under block prices. Specialty: ${(CSPEC[C.name]||[]).map(id=>G(id).name).join(' and ')||'everything'}.${inc.length?`<br><b style="color:var(--accent)">Incoming: ${inc.map(x=>amt(x.n,G(x.g))+' '+G(x.g).name+' in '+Math.max(0,x.day-S.day)+'d').join(', ')}</b>`:''}</div></div><button class="btn go" data-a="conn" data-i="${i}" ${ready?'':'disabled'}>${ready?'Text '+C.name:'Hit back tomorrow'}</button></div>`}
+  return `<div class="row" style="flex-wrap:wrap;border-color:var(--money)">${cpic(C.name,52)}<div class="info" style="flex:1 1 180px;min-width:0"><div class="t">${C.name} <span class="chip mine">The connect</span></div><div class="s">${C.from<0?'Found you on the street.':'Met through '+plugName(C.from)+'.'} ${['Low','Mid','High'][t]} connect · ${MODEI[cmode(C)][0]}. Weight only, real product, way under block prices. Specialty: ${(CSPEC[C.name]||[]).map(id=>G(id).name).join(' and ')||'everything'}.${inc.length?`<br><b style="color:var(--accent)">Incoming: ${inc.map(x=>amt(x.n,G(x.g))+' '+G(x.g).name+' in '+Math.max(0,x.day-S.day)+'d').join(', ')}</b>`:''}</div></div><button class="btn go" data-a="conn" data-i="${i}" ${ready?'':'disabled'}>${ready?'Text '+C.name:'Hit back tomorrow'}</button><button class="btn" data-a="condrop" data-i="${i}">Drop</button></div>`}
 function plugDate(bi){if(!adult())return;const nm=plugName(bi),fem=plugFem(bi),he=fem?'she':'he',him=fem?'her':'him',
   official=()=>{if(S.gf)endGF();S.gf={name:nm,rel:70,plug:bi};addStress(-15);say(`You and ${nm} made it official.`);
     modal(`<h2>It's official</h2><p>You and ${nm} are together now. ${fem?'She':'He'} gives you 15% off every buy and always tells you if a batch is fake.</p><p style="color:var(--dim)">Mixing love and business is risky. Rob ${him}, or let it go bad, and you lose your ${fem?'girl':'man'} and your plug.</p><div class="btns"><button class="btn go" id="ok">Bet</button></div>`);$('ok').onclick=close},
@@ -2363,7 +2368,7 @@ function demandDay(){S.rush=(S.rush||[]).filter(r=>r.until>=S.day);
   if(Math.random()<.25){const [g,why]=pick(RUSHES),bi=rnd(0,5);S.rush.push({bi,g,until:S.day+2});say(`${why} on ${BLOCKS[bi]}. ${G(g).name} sells 50% higher there for ${turnsTxt(3)}.`)}}
 function demandList(){const rs=(S.rush||[]).filter(r=>r.until>=S.day);
   return `<div class="row" style="flex-direction:column;align-items:stretch;gap:4px"><div class="t">What each block wants</div>
-    ${BLOCKS.map((b,i)=>{const D=DEMAND[i],r=rs.filter(x=>x.bi===i);return `<div class="s"><b style="color:var(--fg)">${b}:</b> ${D.why}. Pays more for ${D.hot.map(x=>G(x).name).join(' and ')}, less for ${D.cold.map(x=>G(x).name).join(', ')}.${r.length?` <span style="color:var(--accent)">Hot right now: ${r.map(x=>G(x.g).name).join(', ')} until ${dayTxt(r[0].until)}.</span>`:''}</div>`}).join('')}</div>`}
+    ${BLOCKS.map((b,i)=>{const D=DEMAND[i],r=rs.filter(x=>x.bi===i);return `<div class="s"><b style="color:var(--fg)">${b}:</b> <span class="chip ${JSBASE[i]>=2600?'mine':''}">${JSTAG(i)}</span> ${D.why}. Pays more for ${D.hot.map(x=>G(x).name).join(' and ')}, less for ${D.cold.map(x=>G(x).name).join(', ')}.${r.length?` <span style="color:var(--accent)">Hot right now: ${r.map(x=>G(x.g).name).join(', ')} until ${dayTxt(r[0].until)}.</span>`:''}</div>`}).join('')}</div>`}
 /* ---------- sound ---------- */
 const SND={sfx:true,music:false};try{Object.assign(SND,JSON.parse(localStorage.getItem('tl-snd')||'{}'))}catch(e){}
 function sndSave(){try{localStorage.setItem('tl-snd',JSON.stringify(SND))}catch(e){}}
@@ -3217,6 +3222,7 @@ function act(a,el){
   if(a==='squash'){const c=crew(el.dataset.c),cost=Math.round(300+c.beef*25);S.cash-=cost;c.beef=0;say(`Squashed it with the ${cdef(c.id).name} for ${money(cost)}.`)}
   if(a==='hit'){const br=blockReq();if(br){say(br);return render()}return war(crew(el.dataset.c))}
   if(a==='conn')return connectOrder(+el.dataset.i||0);
+  if(a==='condrop')return conDrop(+el.dataset.i);
   if(a==='kidtime'){const c=S.kids[+el.dataset.i];c.t=S.day;c.bond=Math.min(100,(c.bond??60)+8);addStress(-6);say(`Spent time with ${c.name}. Stress −6.`)}
   if(a==='kidgift'){const c=S.kids[+el.dataset.i];pullSafeCash(500,c.name);S.cash-=500;c.bond=Math.min(100,(c.bond??60)+5);say(`Got ${c.name} something nice.`)}
   if(a==='bizsec'){S.cash-=2000;S.bizSec=S.bizSec||{};S.bizSec[el.dataset.k]=1;say(`Hired security for your ${BIZ[el.dataset.k].name.toLowerCase()}.`)}
