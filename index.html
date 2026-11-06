@@ -982,8 +982,8 @@ const SCAMDEF={
  drain:{n:'Drain a wallet',t:'Get into a rich mark\'s crypto. Four steps.',shade:1,st:['maze','simon','pac','inv'],pay:[10000,16000],heat:14},
  wipe:{n:'Wipe your record',t:'Tunnel in on a VPN, pull your file and hold the firewall. Heat goes to zero. Three steps.',shade:1,st:['maze','pac','inv'],heat:0,wipe:1},
  tap:{n:'Tap an opp\'s phone',t:'Read a rival crew\'s messages. Two steps.',shade:1,st:['maze','simon'],heat:8,tap:1}};
-const HACK_RUNS=8,HACK_LVL=7;
-const hackOK=()=>{const sc=S.scam||{};return is('shade')||(sc.runs||0)>=HACK_RUNS||(S.lvl||1)>=HACK_LVL};
+const HACK_RUNS=8,HACK_SMARTS=6;
+const hackOK=()=>{const sc=S.scam||{};return is('shade')||(sc.runs||0)>=HACK_RUNS||skv('smarts')>=HACK_SMARTS};
 function scamRun(k){const D=SCAMDEF[k],sc=S.scam=S.scam||{noto:0,laptop:0,did:{}};if(!D)return;sc.hist=sc.hist||{};
   if(sc.did[k]===S.day)return say('Already did that today.'),render();if(D.shade&&!(hackOK()&&sc.laptop))return say('You are not ready for the ghost work yet.'),render();if(D.noto&&sc.noto<D.noto)return say('Nobody trusts you with that yet. Build your name.'),render();if(D.cost&&S.cash<D.cost)return say('Need '+money(D.cost)+' to set that up.'),render();
   if(D.wipe&&S.heat<15)return say('Your heat is already low. Not worth the risk.'),render();
@@ -1008,7 +1008,7 @@ function paneScam(){const sc=S.scam=S.scam||{noto:0,laptop:0,did:{}};
   if(hackOK()){
     h+=sc.laptop?`<div class="sec">Ghost work${is('shade')?' · Shade\'s laptop':''}</div>`+['drain','wipe','tap'].map(row).join('')
     :`<div class="row"><div class="info"><div class="t">Set up a laptop</div><div class="s">You know enough now to do the ghost work: wallets, records, phones.</div></div><button class="btn green" data-a="laptop" ${S.cash>=2000?'':'disabled'}>$2,000</button></div>`}
-  else h+=`<div class="row"><div class="info"><div class="t">Ghost work · locked</div><div class="s">Wallets, police records, rival phones. Pull off ${HACK_RUNS} scam jobs (${sc.runs||0} so far) or reach level ${HACK_LVL} to learn it.</div></div></div>`;
+  else h+=`<div class="row"><div class="info"><div class="t">Ghost work · locked</div><div class="s">Wallets, police records, rival phones. Pull off ${HACK_RUNS} scam jobs (${sc.runs||0} so far) or get your Smarts skill to ${HACK_SMARTS} (it is ${skv('smarts')} now) to learn it.</div></div></div>`;
   return h}
 function punch(){const sc=S.scam;sc.did.punch=S.day;S.cash-=400;let cards=6,dec=0,got=0;const odds=.6+S.sk.talk*.02+(is('shade')?.1:0)-(stressed()?.08:0)+(friendWith('scam')?.08:0);
   const draw=msg=>{modal(`<h2>Punching cards</h2><p>${msg}</p><p>Cards left: <b>${cards}</b> · Declines: <b>${dec}</b> of 2 · Bag so far: <b style="color:var(--money)">${money(got)}</b></p>
