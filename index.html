@@ -1475,6 +1475,7 @@ function connectPrice(g,C,gr){const sp=C&&CSPEC[C.name]&&CSPEC[C.name].includes(
   return Math.max(1,Math.round(avg*gmult(q)*.5*sp*(1-Math.min(.15,ctr(C)/700))*hg*up))}
 function shipRisk(C,g,n){const m=cmode(C);let r=({drop:.01,fly:.04,mail:.06,mule:.12})[m];r+=S.heat/600+(n/ccap(g,C))*.06+(hasT('sketchy')?.03:0)-(hasT('nosey')?.015:0);return Math.min(.5,r)}
 function shipRoom(g,n){return used()+n*g.sp<=S.cap}
+function connReopen(C){close();const i=conList().indexOf(C);if(i>=0&&C.ordD===S.day&&C.ordN<3)connectOrder(i)}
 function connectOrder(i){const C=conList()[i||0];if(!C)return;const m=cmode(C),gr=cgrade(C),t=ctier(C),mi=MODEI[m];
   const hagOk=!(C.hgTry===S.day),upOk=t<2&&!(C.upTry===S.day);
   const tn=['Low connect','Mid connect','High connect'][t];
@@ -1484,7 +1485,7 @@ function connectOrder(i){const C=conList()[i||0];if(!C)return;const m=cmode(C),g
    <div class="pane">${GOODS.map(g=>{const pr=connectPrice(g,C);const spc=CSPEC[C.name]&&CSPEC[C.name].includes(g.id);const left=cleft(g,C);
      return `<div class="row" style="flex-wrap:wrap;padding:8px 12px"><div class="info" style="flex:1 1 160px"><div class="t">${g.name}${spc?' <span class="chip mine">Specialty</span>':''}</div><div class="s">${money(pr)} each · max ${left>=1e9?'-':left>=1000&&g.unit==='g'?(left/1000).toFixed(1)+' key':left} left this week</div></div>
      <div class="btns">${connectSizes(g,C).map(z=>{const n=z[0],c=Math.round(pr*n)+(m==='fly'?250:0),room=shipRoom(g,n),rk=shipRisk(C,g,n);return `<button class="btn go" data-cg="${g.id}" data-cn="${n}" ${S.cash>=c&&room?'':'disabled'}>${pkg(g,n,24)} ${z[1]} · ${money(c)}${rk>=.2?' ⚠':''}</button>`}).join('')}${left>0?`<button class="btn" data-cu="${g.id}">Custom…</button>`:'<span class="s" style="color:var(--dim)">Maxed out for now</span>'}</div></div>`}).join('')}</div>
-   <div class="s" style="color:var(--dim)">⚠ = risky order (20%+ chance it gets caught). Smaller orders and lower heat are safer.</div>
+   <div class="s" style="color:var(--dim)">⚠ = risky order (20%+ chance it gets caught). Smaller orders and lower heat are safer. You can place up to 3 orders a day with ${C.name}.</div>
    <div class="btns"><button class="btn" id="no">Not now</button></div>`);
   $('no').onclick=close;
   $('mcard').querySelectorAll('[data-gr]').forEach(b=>b.onclick=()=>{C.sel=+b.dataset.gr;connectOrder(i)});
@@ -1498,10 +1499,10 @@ function connectOrder(i){const C=conList()[i||0];if(!C)return;const m=cmode(C),g
   $('mcard').querySelectorAll('[data-cg]').forEach(b=>b.onclick=()=>connectBuy(C,G(b.dataset.cg),+b.dataset.cn));
   $('mcard').querySelectorAll('[data-cu]').forEach(b=>b.onclick=()=>connectCustom(i,G(b.dataset.cu)))}
 function connectBuy(C,g,n){const m=cmode(C),pr=connectPrice(g,C),c=Math.round(pr*n)+(m==='fly'?250:0),gx=cgrade(C);
-    if(n<=0||S.cash<c||!shipRoom(g,n)||n>cleft(g,C))return;const q=rnd(GRADES[gx][1],GRADES[gx][2]),rk=shipRisk(C,g,n);S.cash-=c;C.last=S.day;C.tr=Math.min(100,ctr(C)+3);C.ord[g.id][1]+=n;S.heat=Math.min(100,S.heat+(m==='drop'?4:2));
+    if(n<=0||S.cash<c||!shipRoom(g,n)||n>cleft(g,C))return;const q=rnd(GRADES[gx][1],GRADES[gx][2]),rk=shipRisk(C,g,n);S.cash-=c;C.last=S.day;if(C.ordD!==S.day){C.ordD=S.day;C.ordN=0}C.ordN++;C.tr=Math.min(100,ctr(C)+3);C.ord[g.id][1]+=n;S.heat=Math.min(100,S.heat+(m==='drop'?4:2));
     const pk={c:C.name,g:g.id,n,q,cost:c,mode:m,risk:rk};
-    if(m==='drop'||m==='fly'){connectLand(pk);close();if(m==='fly'){S.fly=1;$('modal').hidden=true;say(`Flew out to meet ${C.name} and came back with it.`);if(Math.random()<rk){say('Airport security pulled you aside.');nextDay();return busted()}nextDay();checkEnd();render()}return}
-    S.ship=S.ship||[];pk.day=S.day+2;S.ship.push(pk);say(`${C.name}: ${amt(n,g)} of ${GRADES[gx][0].toLowerCase()} ${g.name} on the way. ${m==='mail'?'Money sent.':'Mule is moving.'} Lands in 2 days.`);close()}
+    if(m==='drop'||m==='fly'){connectLand(pk);close();if(m==='fly'){S.fly=1;$('modal').hidden=true;say(`Flew out to meet ${C.name} and came back with it.`);if(Math.random()<rk){say('Airport security pulled you aside.');nextDay();return busted()}nextDay();checkEnd();render();return}connReopen(C);return}
+    S.ship=S.ship||[];pk.day=S.day+2;S.ship.push(pk);say(`${C.name}: ${amt(n,g)} of ${GRADES[gx][0].toLowerCase()} ${g.name} on the way. ${m==='mail'?'Money sent.':'Mule is moving.'} Lands in 2 days.`);connReopen(C)}
 function connectCustom(i,g){const C=conList()[i||0];if(!C)return;const m=cmode(C),pr=connectPrice(g,C),fly=m==='fly'?250:0,left=cleft(g,C);
   const mx=Math.max(0,Math.min(vstep(g,left),vstep(g,Math.floor((S.cash-fly)/pr)),vstep(g,(S.cap-used())/g.sp)));
   if(!(mx>=g.step)){say('Cannot order any: check cash, stash room and what is left this week.');return connectOrder(i)}
@@ -1519,7 +1520,7 @@ function shipDay(){if(!S.ship||!S.ship.length)return;const keep=[];S.ship.forEac
     if(Math.random()<pk.risk){S.heat=Math.min(100,S.heat+12);addStress(8);say(`Your ${g.name} shipment got caught. You lost ${amt(pk.n,g)} and ${money(pk.cost)}. Heat +12.`);return}
     connectLand(pk)});S.ship=keep}
 function paneConnect(){return conList().map((C,i)=>paneConnect1(C,i)).join('')}
-function paneConnect1(C,i){const ready=S.day-C.last>=1,t=ctier(C),inc=(S.ship||[]).filter(x=>x.c===C.name);
+function paneConnect1(C,i){const ready=S.day-C.last>=1||(C.ordD===S.day&&C.ordN<3),t=ctier(C),inc=(S.ship||[]).filter(x=>x.c===C.name);
   return `<div class="row" style="flex-wrap:wrap;border-color:var(--money)">${cpic(C.name,52)}<div class="info" style="flex:1 1 180px;min-width:0"><div class="t">${C.name} <span class="chip mine">The connect</span></div><div class="s">${C.from<0?'Found you on the street.':'Met through '+plugName(C.from)+'.'} ${['Low','Mid','High'][t]} connect · ${MODEI[cmode(C)][0]}. Weight only, real product, way under block prices. Specialty: ${(CSPEC[C.name]||[]).map(id=>G(id).name).join(' and ')||'everything'}.${inc.length?`<br><b style="color:var(--accent)">Incoming: ${inc.map(x=>amt(x.n,G(x.g))+' '+G(x.g).name+' in '+Math.max(0,x.day-S.day)+'d').join(', ')}</b>`:''}</div></div><button class="btn go" data-a="conn" data-i="${i}" ${ready?'':'disabled'}>${ready?'Text '+C.name:'Hit back tomorrow'}</button></div>`}
 function plugDate(bi){if(!adult())return;const nm=plugName(bi),fem=plugFem(bi),he=fem?'she':'he',him=fem?'her':'him',
   official=()=>{if(S.gf)endGF();S.gf={name:nm,rel:70,plug:bi};addStress(-15);say(`You and ${nm} made it official.`);
