@@ -1083,7 +1083,7 @@ function flowGame(title,done){
     $('fb').style.color=sc>.8?'var(--money)':sc>.5?'var(--accent)':'var(--blood)';if(taps>=N)fin()};
 }
 function recordSong(diss,crewId){if(rapFat()>=4){say('Your voice is shot and the ideas are not coming. Take a couple days off from the studio.');return render()}
-  flowGame(diss?'Diss track':'Studio session',q=>{
+  flowGame(diss?'Diss track':'Studio session',q=>{q=Math.min(100,q+Math.min(10,Math.floor(((S.rap||{}).tal||0)/3)));
     const nm0=diss?cdef(crewId).name:'',gen=()=>diss?pick([`${nm0} Can't Stand Me`,`${nm0} Funeral`,'Opp Season','Check Your Pockets','Who Told Y\'all','Pull Up Quiet']):`${pick(TW1)} ${pick(TW2)}`;
     const esc=t=>t.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
     modal(`<h2>Name your song</h2><p>The take came out <b>${q>=80?'crazy':q>=50?'solid':'rough'}</b>. What are you calling it?</p>
@@ -3188,6 +3188,7 @@ function act(a,el){
   if(a==='gear'){const k=el.dataset.k;const c={mask:50,car:5000}[k];S.cash-=c;S.rob[k]=1;say(k==='mask'?'Copped a ski mask.':'Got a getaway car.')}
   if(a==='heist')return heist(el.dataset.k);
   if(a==='move'){moveIn(el.dataset.k)}
+  if(a&&a.indexOf('sh_')===0)return schoolHustle(a.slice(3));
   if(a==='practice'){S.ball=Math.min(100,(S.ball||0)+8);S.sk.muscle=Math.min(10,S.sk.muscle+(Math.random()<.2?1:0));addStress(-3);say('Went to practice. The scouts are watching.');nextDay()}
   if(a==='class'){if(S.cal&&S.school==='in'&&!schoolWeek()){say(isWknd()?'No school on the weekend.':`No school: ${schoolBreak()}.`);render();return}S.classDay=S.day;if(S.par&&S.cal)S.par.trust=Math.min(100,S.par.trust+1);if(S.cal?S.school==='in':S.age<18){S.grades=Math.min(100,S.grades+(S.cal?(S.altSchool?4:6)+Math.floor(S.sk.smarts/3):8))}else{S.cprog=Math.min(100,(S.cprog||0)+6);if(S.cprog>=100){S.college='grad';S.sk.smarts=Math.min(10,S.sk.smarts+1);S.sk.talk=Math.min(10,S.sk.talk+1);say('You graduated college. Smarts and Talk +1.')}}S.heat=Math.max(0,S.heat-5);addStress(2);say(S.cal&&S.school==='in'?'Went to school all week.':'Went to class.');nextDay()}
   if(a==='dropout'){S.school='out';say('You dropped out of school.')}
@@ -3378,6 +3379,7 @@ function paneSchool(){const college=S.college==='in',wk=S.cal?schoolWeek():true,
   return `<div class="sec">${college?'College':'High school'}</div>${warn}
    ${ball}${(S.school==='in'||S.college==='in')?`   <div class="row"><div class="info"><div class="t">${college?'Degree':'Grades'} ${gr}/100</div><div class="bar"><i style="width:${gr}%;background:${gr<35?'var(--blood)':'var(--accent)'}"></i></div><div class="s">${went?'You went today.':wk?'<b style="color:var(--blood)">You have not gone today.</b> Skip too many days and your grades drop.':next}</div></div><button class="btn go" data-a="class" ${wk&&!went?'':'disabled'}>${went?'Went today':'Go to class'}</button></div>`:''}
    ${!college&&S.grades>=70?'<div class="row"><div class="info"><div class="t">Your teachers</div><div class="s">They like you. If security checks your bag they vouch for you.</div></div><span class="chip mine">On your side</span></div>':''}
+   ${shPane()}
    <div class="s" style="padding:6px 2px;opacity:.8">${S.cal?'Class happens on school days. ':''}Missing a school day costs grades. Too many misses and you get kicked out.</div>`}
 const schoolWeek=()=>!!S.cal&&!isWknd()&&!schoolBreak()&&S.school==='in'&&!(S.suspended>S.day);
 const GRADEN={9:'Freshman',10:'Sophomore',11:'Junior',12:'Senior'};
@@ -3440,6 +3442,41 @@ function schoolEvent(){const q=S.schoolQ.shift();if(!q)return false;const P=S.pa
     o(end?'End of the school year':'Report cards',t+(r?' '+r:''),[['Okay',()=>''] ]);return true}
   if(q==='prom'){o('Prom','Everybody\'s getting fits and renting a car. Your friends want you to roll with them.',[['Go with the squad $300',()=>{S.cash-=300;addStress(-20);S.rep+=2;return 'Y\'all pulled up looking like money. Stress −20, rep +2.'},S.cash>=300],['Skip it',()=>{addStress(3);return 'You stayed out of it.'}]]);return true}
   return false}
+
+/* ---------- school hustles ---------- */
+function shLeft(){S.sh=S.sh&&S.sh.d===S.day?S.sh:{d:S.day,n:0};return Math.max(0,3-S.sh.n)}
+function shOk(){return !!S.cal&&S.school==='in'&&schoolWeek()&&S.classDay===S.day}
+function shPane(){if(!S.cal||S.school!=='in'||S.college==='in')return '';
+  if(!schoolWeek())return '';
+  if(S.classDay!==S.day)return `<div class="sec">At school</div><div class="s" style="padding:4px 2px;opacity:.8">Go to class first. Everything else happens in the building.</div>`;
+  const left=shLeft(),carry=GOODS.find(g=>S.inv[g.id]>=1),off=!left?'disabled':'';
+  const row=(t,sub,a,lbl,dis)=>`<div class="row" style="flex-wrap:wrap"><div class="info" style="flex:1 1 200px;min-width:0"><div class="t">${t}</div><div class="s">${sub}</div></div><button class="btn ${a==='sh_rap'?'go':'red'}" data-a="${a}" ${off||dis||''}>${lbl}</button></div>`;
+  const risk=(S.altSchool?'Metal detectors and bag checks. ':'')+(S.grades>=70?'Teachers like you, so you get the benefit of the doubt. ':'');
+  return `<div class="sec">At school · ${left} move${left===1?'':'s'} left today</div><div class="s" style="padding:0 2px 6px;opacity:.8">Get caught and it is a strike: suspension, then alternative school, then expelled. Your people hear about it. ${risk}</div>
+   ${row('Steal phones','Lift phones out of bags and lockers while class is out, then flip them. '+(is('slick')?'Slick fingers: you are better at this.':''),'sh_steal','Steal')}
+   ${row('Serve classmates',carry?`Sell some ${carry.name||carry.id} out your bag between classes. `+(is('lucky')?'Everybody wants what you got.':''):'You got nothing on you to sell.','sh_serve','Serve',carry?'':'disabled')}
+   ${row('Fight','Somebody has been running their mouth. Win for rep, but teachers watch the hallway. '+(is('tank')?'Nobody wants it with you.':''),'sh_fight','Fight')}
+   ${row('Hack the grades','Get into the school system and bump your grade. '+(is('shade')?'Quiet and patient: you are built for this.':''),'sh_hack','Hack')}
+   ${row('Rap at the lunch table','Spit for the table. Get a cheer or get laughed at, either way your talent grows.','sh_rap','Spit')}`}
+function shResult(t,h){modal(`<h2>${t}</h2><p>${h}</p><div class="btns"><button class="btn go" id="ok">Continue</button></div>`);$('ok').onclick=close}
+function shCatch(base){return Math.max(.05,base-(S.grades>=70?.15:0)-(S.sk.smarts-3)*.02+(S.altSchool?.2:0))}
+function shBust(why){S.heat=Math.min(100,S.heat+6);S.rep=Math.max(0,S.rep-1);const st=schoolStrike(why),rr=parReact('bad');say('Got caught at school for '+why+'.');shResult('Caught',`${st} ${rr||''}`)}
+function schoolHustle(k){if(!shOk()||!shLeft())return;S.sh.n++;
+  if(k==='steal'){grabGame((got,alarm)=>{const win=!alarm&&got>=1;
+      if(win){const c=Math.round(rnd(60,170)*(is('slick')?1.35:1)*(1+Math.min(got,5)*.08));S.cash+=c;S.rep+=1;addXP(2);addStress(3);say(`Stole phones at school and flipped them for ${money(c)}.`);
+        if(Math.random()<shCatch(.3)*(is('slick')?.6:1))return shBust('stealing phones');return shResult('Clean',`Flipped the phones for <b>${money(c)}</b>. Nobody saw nothing.`)}
+      if(Math.random()<.6)return shBust('stealing phones');S.rep=Math.max(0,S.rep-1);shResult('Almost','You ran out empty-handed before anybody could tell who it was.')},{title:'Lift the phones',txt:'Tap the bags when a phone shows. Do not touch anything in front of the camera.'});return}
+  if(k==='serve'){const g=GOODS.find(x=>S.inv[x.id]>=1);if(!g){S.sh.n--;return}const n=Math.min(S.inv[g.id],rnd(1,3)),c=Math.round(n*rnd(25,60)*(is('lucky')?1.3:1));S.inv[g.id]-=n;S.cash+=c;S.heat=Math.min(100,S.heat+Math.ceil(n*(GHEAT[g.id]||1)));S.rep+=1;addXP(2);say(`Served classmates ${n} ${g.name||g.id} for ${money(c)}.`);
+    if(Math.random()<shCatch(.2+(GHEAT[g.id]||1)*.04))return shBust('selling at school');render();return shResult('Served',`Moved <b>${n}</b> between classes for <b>${money(c)}</b>.`)}
+  if(k==='fight'){fightGame(myStr(),rnd(6,16)+(is('tank')?-3:0),'a classmate',win=>{S.st.fights+=win?1:0;if(win){S.rep+=2;addXP(3);addStress(-4);say('Won a fight at school. Rep +2.')}else{S.hp=Math.max(5,S.hp-rnd(5,12));addStress(6);say('Lost a fight at school.')}
+      if(Math.random()<shCatch(win?.35:.45))return shBust('fighting');close()});return}
+  if(k==='hack'){padGame(ok=>{if(ok){const gn=rnd(6,10)+(is('shade')?3:0);S.grades=Math.min(100,S.grades+gn);addXP(3);say(`Hacked the grade system. Grades +${gn}.`);
+        if(Math.random()<shCatch(.22)*(is('shade')?.6:1))return shBust('hacking the grade system');return shResult('You are in',`Grades <b>+${gn}</b>. Nobody will ever know.`)}
+      if(Math.random()<.6)return shBust('hacking the grade system');shResult('Locked out','The system kicked you out and nobody noticed.')});return}
+  if(k==='rap'){const R=S.rap;R.tal=(R.tal||0)+(1);const p=.4+S.sk.smarts*.03+(is('val')||is('country')?.08:0)+Math.min(.2,R.fans/20000)-(stressed()?.12:0);
+    if(Math.random()<p){R.tal++;R.fans+=rnd(8,30);R.hype=Math.min(100,R.hype+3);S.rep+=1;addStress(-6);addXP(2);say('Spit at the lunch table and the whole table lost it.');return shResult('Table went crazy','They were banging on the table and recording. Fans up, hype up, talent up.')}
+    addStress(8);S.rep=Math.max(0,S.rep-1);say('Got laughed at at the lunch table, but kept working on the craft.');return shResult('Laughed at','Somebody did a fake yawn and the table cracked up. It stings. But you learned something: your talent still grew.')}
+}
 function schoolStrike(why){S.sStrikes=(S.sStrikes||0)+1;const n=S.sStrikes;
   if(n===1){S.suspended=S.day+4;S.grades=Math.max(0,S.grades-10);return `<b>Suspended</b> for two weeks for ${why}. Grades −10. Strike 1 of 3 at school.`}
   if(n===2){S.altSchool=1;S.suspended=S.day+2;S.grades=Math.max(0,S.grades-10);return `Second time. They sent you to <b>alternative school</b> for ${why}. Metal detectors, bag checks every day, and it's harder to keep your grades up. Strike 2 of 3.`}
