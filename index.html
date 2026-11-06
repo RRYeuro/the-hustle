@@ -761,12 +761,13 @@ const TRAITS=[
  {id:'brokestart',name:'Came From Nothing',story:'Mama did her best. Some nights the lights was off and dinner was noodles.',cost:-2,sub:'+2 trait points. You start with $0.'},
 ];
 const BASEPTS={tank:3,slick:4,shade:6,val:5,country:5,lucky:3};
-function traitPick(after){const base=BASEPTS[S&&S.char]||4;let pick=[];
+function traitPick(after,back){const base=BASEPTS[S&&S.char]||4;let pick=[];
   const left=()=>base-pick.reduce((a,id)=>a+TRAITS.find(t=>t.id===id).cost,0);
   const draw=()=>{const L=left();modal(`<h2>Pick your traits</h2><p>Everybody comes with something. ${CHARS.find(c=>c.id===S.char)?CHARS.find(c=>c.id===S.char).name:'You'} starts with <b>${base}</b> point${base===1?'':'s'} to work with. Spend <b>${L}</b> point${L===1?'':'s'}. Bad traits give you more points to spend. Any points you don't spend turn into skill points. Once you start, they're locked in.</p>
     <div style="display:flex;flex-direction:column;gap:6px">${TRAITS.map(t=>{const on=pick.includes(t.id),can=on||(t.cost<=L)&&!(t.id==='cold'&&pick.includes('hot'))&&!(t.id==='hot'&&pick.includes('cold'));
       return `<button class="btn ${on?'go':''}" data-tr="${t.id}" ${can?'':'disabled'} style="text-align:left;text-transform:none;letter-spacing:0;font-family:var(--body);padding:10px 12px;line-height:1.35;white-space:normal;width:100%"><b>${t.name}</b> <span style="opacity:.8">· ${t.cost>0?`costs ${t.cost}`:`gives ${-t.cost}`}</span><br><i style="font-weight:400;font-size:13px;opacity:.85">${t.story}</i><br><span style="font-weight:400;font-size:13px">${t.sub}</span></button>`}).join('')}</div>
-    <div class="btns"><button class="btn go" id="tgo">${pick.length?'Lock it in':'Skip, no traits'}</button></div>`);
+    <div class="btns"><button class="btn go" id="tgo">${pick.length?'Lock it in':'Skip, no traits'}</button>${back?'<button class="btn" id="tbk">Back</button>':''}</div>`);
+    if(back)$('tbk').onclick=back;
     $('mcard').querySelectorAll('[data-tr]').forEach(b=>b.onclick=()=>{const id=b.dataset.tr;pick=pick.includes(id)?pick.filter(x=>x!==id):[...pick,id];draw()});
     $('tgo').onclick=()=>{applyTraits(pick);const lf=left();if(lf>0){S.pts=(S.pts||0)+lf;say(`${lf} unspent trait point${lf===1?'':'s'} turned into skill point${lf===1?'':'s'}.`);save()}after()}};
   draw()}
@@ -1529,7 +1530,7 @@ function lifeCreate(){
     
     ${CHARS.filter(c=>c.id!=='life').map(c=>`<button class="btn" data-who="${c.id}" style="text-align:left;white-space:normal;text-transform:none;letter-spacing:0;padding:10px 12px">${PORTRAITS[c.id]?`<img src="${PORTRAITS[c.id]}" alt="" style="width:56px;height:56px;border-radius:6px;object-fit:cover;float:right;margin-left:10px">`:''}<b>${c.name}</b><span style="display:block;font-family:var(--body);font-weight:400;font-size:14px;margin-top:3px;font-style:italic;color:var(--dim)">${YOUNG[c.id]}</span></button>`).join('')}
     <div class="btns"><button class="btn" id="lbk">Back</button></div>`);
-  $('lbk').onclick=()=>mainMenu(false);
+  $('lbk').onclick=()=>slotsModal('new','life');
   $('mcard').querySelectorAll('[data-who]').forEach(b=>b.onclick=()=>b.dataset.who==='own'?lifeCustom():confirmChar(b.dataset.who,()=>startLife(b.dataset.who),lifeCreate));
 }
 function startLife(ch){pendingDiff='normal';S=fresh(ch,'life');S.diff='normal';S.v5=1;S.safe=0;S.biz={};S.kids=[];S.fate={};teenStart(ch,14);S.cash=ch==='lucky'?1500:400;
@@ -1537,7 +1538,7 @@ function startLife(ch){pendingDiff='normal';S=fresh(ch,'life');S.diff='normal';S
   roll();tab='block';S.slot=pendingSlot;say(YOUNG[ch]);save();
   traitPick(()=>{let seen=false;try{seen=localStorage.getItem('tl-tut')==='1'}catch(e){}
   if(!seen)return tutorial(0,()=>{try{localStorage.setItem('tl-tut','1')}catch(e){}$('modal').hidden=true;render()});
-  $('modal').hidden=true;render()})}
+  $('modal').hidden=true;render()},lifeCreate)}
 function lifeCustom(){let fem=false,age=14;
   const draw=()=>{modal(`<h2>Start your life</h2><p>Make your own character. Under 18 you're in school, and relationships unlock at 18.</p>
     <label class="s" for="lname" style="color:var(--dim)">Name</label><input id="lname" maxlength="20" value="${$('lname')?$('lname').value:''}" placeholder="Your name" style="padding:10px;border-radius:6px;border:1px solid var(--line);background:#2a252e;color:var(--fg);font-size:16px">
@@ -3284,7 +3285,8 @@ function checkEnd(){
 
 /* ---------- boot ---------- */
 function diffPick(mode){
-  modal(`<h2>Pick a difficulty</h2>${Object.entries(DIFF).map(([k,d])=>`<button class="btn ${k==='normal'?'go':''}" data-df="${k}" style="text-align:left;white-space:normal;text-transform:none;letter-spacing:0;padding:10px 12px"><b>${d.name}</b><span style="display:block;font-family:var(--body);font-weight:400;font-size:14px;margin-top:3px">${d.sub}</span></button>`).join('')}`);
+  modal(`<h2>Pick a difficulty</h2>${Object.entries(DIFF).map(([k,d])=>`<button class="btn ${k==='normal'?'go':''}" data-df="${k}" style="text-align:left;white-space:normal;text-transform:none;letter-spacing:0;padding:10px 12px"><b>${d.name}</b><span style="display:block;font-family:var(--body);font-weight:400;font-size:14px;margin-top:3px">${d.sub}</span></button>`).join('')}<div class="btns"><button class="btn" id="dbk">Back</button></div>`);
+  $('dbk').onclick=()=>slotsModal('new',mode);
   $('mcard').querySelectorAll('[data-df]').forEach(b=>b.onclick=()=>{pendingDiff=b.dataset.df;pickChar(mode,true)});
 }
 function pickChar(mode='story',skip){
@@ -3294,7 +3296,8 @@ function pickChar(mode='story',skip){
     ${CHARS.filter(c=>c.id!=='life').map(c=>`<button class="btn" data-ch="${c.id}" style="text-align:left;white-space:normal;padding:10px 12px;text-transform:none;letter-spacing:0">${PORTRAITS[c.id]?`<img src="${PORTRAITS[c.id]}" alt="" style="width:64px;height:64px;border-radius:6px;object-fit:cover;float:right;margin-left:10px">`:''}
       <span style="font-family:var(--display);font-size:20px;color:var(--accent)">${c.name}</span> <span class="chip">${mode==='story'&&c.id==='tank'?'The Star Running Back':c.role}</span>
       <span style="display:block;font-family:var(--body);font-weight:400;font-size:14px;margin-top:4px;color:var(--dim);font-style:italic">${mode==='story'?YOUNG[c.id]:c.story}</span>
-      <span style="display:block;font-family:var(--body);font-weight:400;font-size:14px;margin-top:4px">${mode==='story'&&c.id==='tank'?'Knows 1 plug. Star athlete: starts with 10 rep and +10 strength, and practice builds his scout buzz.':mode==='story'&&c.id==='lucky'?'Knows 1 plug: Tre, her cousin\'s homeboy. Things just fall her way: double the odds on every card drop.':c.perk}${mode==='story'?' Lives with '+GUARD[c.id].name+'.':' Starts with '+money(c.cash)+'.'}</span></button>`).join('')}`);
+      <span style="display:block;font-family:var(--body);font-weight:400;font-size:14px;margin-top:4px">${mode==='story'&&c.id==='tank'?'Knows 1 plug. Star athlete: starts with 10 rep and +10 strength, and practice builds his scout buzz.':mode==='story'&&c.id==='lucky'?'Knows 1 plug: Tre, her cousin\'s homeboy. Things just fall her way: double the odds on every card drop.':c.perk}${mode==='story'?' Lives with '+GUARD[c.id].name+'.':' Starts with '+money(c.cash)+'.'}</span></button>`).join('')}<div class="btns"><button class="btn" id="pbk">Back</button></div>`);
+  $('pbk').onclick=()=>diffPick(mode);
   const begin=id=>{
     S=fresh(id,mode);S.diff=pendingDiff;S.v5=1;S.safe=0;if(mode==='sandbox')S.cash+=5000;if(mode==='story'){teenStart(S.char,14);S.cash=S.char==='lucky'?1500:400;S.rep=S.char==='tank'?10:0}roll();if(S.char==='country')S.crews.forEach(c=>c.respect=mode==='story'?10:25);tab='block';if(S.char==='lucky')S.ex=S.known[0];
     const C=CHARS.find(c=>c.id===S.char);
@@ -3302,7 +3305,7 @@ function pickChar(mode='story',skip){
     S.slot=pendingSlot;save();
     const go=()=>{let seen=false;try{seen=localStorage.getItem('tl-tut')==='1'}catch(e){}
     if(!seen)return tutorial(0,()=>{try{localStorage.setItem('tl-tut','1')}catch(e){}$('modal').hidden=true;render()});
-    $('modal').hidden=true;render()};if(mode==='sandbox')return go();traitPick(go)};
+    $('modal').hidden=true;render()};if(mode==='sandbox')return go();traitPick(go,()=>pickChar(mode,true))};
   $('mcard').querySelectorAll('[data-ch]').forEach(b=>b.onclick=()=>confirmChar(b.dataset.ch,begin,()=>pickChar(mode,true)));
 }
 function confirmChar(id,yes,no){const c=CHARS.find(x=>x.id===id);
