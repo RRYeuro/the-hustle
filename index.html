@@ -1412,6 +1412,7 @@ function plugActions(bi){const k=S.pk[bi]||{},kn=S.known.includes(bi),fem=plugFe
   return `<div class="btns" style="margin-top:6px"><button class="btn" data-a="pkick" data-i="${bi}" ${k.kick===S.day?'disabled':''}>${k.kick===S.day?'Kicked it today':'Kick it'}</button>${frontBtn(bi)}
     ${adult()&&(isF()?!fem:fem)?`<button class="btn" data-a="phook" data-i="${bi}" ${canHook&&!cool?'':'disabled'}>${!kn||S.trust[bi]<50?'Flirt (need 50 trust)':cool?'Give it a few days':'Shoot your shot'}</button>`:''}
     ${recruitBtn(bi)}
+    ${kn?`<button class="btn" data-a="ppitch" data-i="${bi}" ${k.pitch===S.day?'disabled':''}>${k.pitch===S.day?'Already pitched today':`Pitch ${fem?'her':'him'} your stuff`}</button>`:''}
     ${kn&&!(S.recr&&S.recr[bi])?`<button class="btn" data-a="pask" data-i="${bi}" ${k.ask===S.day?'disabled':''}>${k.ask===S.day?'Already asked today':'Ask for something else'}</button>`:''}
     ${(S.recr&&S.recr[bi])?'':PINFO[bi].lvl==='Low'?`<button class="btn" data-a="pfav" data-k="play" data-i="${bi}" ${favCool?'disabled':''}>Take ${fem?'her':'him'} to a play</button>`:''}${(S.recr&&S.recr[bi])?'':`<button class="btn" data-a="pfav" data-k="spin" data-i="${bi}" ${favCool?'disabled':''}>Slide on ${fem?'her':'his'} opps</button>`}
     <button class="btn red" data-a="prob" data-i="${bi}">Rob ${fem?'her':'him'}</button></div>
@@ -1423,6 +1424,16 @@ function plugActions(bi){const k=S.pk[bi]||{},kn=S.known.includes(bi),fem=plugFe
 function plugAsk(bi){const nm=plugName(bi),odd=GOODS.filter(x=>!PINFO[bi].carries.includes(x.id));
   modal(`<h2>Ask ${nm} for something else</h2><p>${nm} normally moves ${PINFO[bi].carries.map(id=>G(id).name).join(', ')}. Pick what you want. Talking depends on trust and your talk skill, and keeps things friendly. Forcing is a bigger chance on a good day but costs trust, heat and maybe health, and you only get one try a day.</p>
   <div class="btns" style="flex-direction:column;align-items:stretch">${odd.map(g=>`<div class="row" style="padding:6px 10px"><div class="info"><div class="t">${g.icon||''} ${g.name}</div></div><button class="btn go" data-a="paskgo" data-i="${bi}" data-g="${g.id}" data-m="talk">Talk ${plugFem(bi)?'her':'him'} into it</button><button class="btn red" data-a="paskgo" data-i="${bi}" data-g="${g.id}" data-m="force">Force it</button></div>`).join('')}<button class="btn" id="no">Never mind</button></div>`);$('no').onclick=close}
+function plugPitch(bi){const nm=plugName(bi),him=plugFem(bi)?'her':'him',mine=GOODS.filter(x=>S.inv[x.id]>0&&!PINFO[bi].carries.includes(x.id));
+  if(!mine.length){say(`You got nothing ${nm} doesn't already move. ${PINFO[bi].carries.map(id=>G(id).name).join(', ')} you can just sell ${him}.`);return render()}
+  modal(`<h2>Pitch ${nm}</h2><p>${nm} doesn't normally buy these. Talk ${him} into taking it, or force it on ${him}. One try a day.</p>
+  <div class="btns" style="flex-direction:column;align-items:stretch">${mine.map(g=>`<div class="row" style="padding:6px 10px"><div class="info"><div class="t">${g.name}</div><div class="s">You got ${amt(S.inv[g.id],g)}</div></div><button class="btn go" data-a="ppgo" data-i="${bi}" data-g="${g.id}" data-m="talk">Talk ${him} into it</button><button class="btn red" data-a="ppgo" data-i="${bi}" data-g="${g.id}" data-m="force">Force it</button></div>`).join('')}<button class="btn" id="no">Never mind</button></div>`);$('no').onclick=close}
+function plugPitchGo(bi,gid,mode){const nm=plugName(bi),he=plugFem(bi)?'she':'he',g=G(gid),pk=S.pk[bi]=S.pk[bi]||{};if(pk.pitch===S.day)return;pk.pitch=S.day;close();
+  const p=mode==='talk'?Math.min(.7,.2+S.trust[bi]/200+((S.sk&&S.sk.talk)||3)*.03):Math.min(.6,.25+S.rep/300);
+  if(Math.random()<p){S.sellOk={day:S.day,bi,g:gid};if(mode==='force'){S.trust[bi]=Math.max(0,S.trust[bi]-10);S.heat=Math.min(100,S.heat+5)}
+    say(`${nm} agreed to take your ${g.name} today.`);render();return qtyModal('sell',g,'plug')}
+  if(mode==='talk'){S.trust[bi]=Math.max(0,S.trust[bi]-2);say(`${nm} passed on ${g.name}. Not what ${he} moves.`)}
+  else{const d=rnd(4,12);S.hp-=d;S.trust[bi]=Math.max(0,S.trust[bi]-15);S.heat=Math.min(100,S.heat+8);say(`You pushed ${nm} too hard and ${he} shoved back. −${d} health.`)}render()}
 function plugAskGo(bi,gid,mode){const nm=plugName(bi),he=plugFem(bi)?'she':'he',him=plugFem(bi)?'her':'him',g=G(gid),pk=S.pk[bi]=S.pk[bi]||{};if(pk.ask===S.day)return;pk.ask=S.day;close();
   const p=mode==='talk'?Math.min(.65,.08+S.trust[bi]/250+((S.sk&&S.sk.talk)||3)*.03):Math.min(.6,.2+S.rep/300+(S.hp>60?.1:0));
   const hit=()=>{const o=S.offer[bi][gid];o.q=o.real=rnd(68,92);o.fake=false;o.tip=mode==='talk'?.9:1;o.stock=Math.max(g.step*2,Math.round(newStock(bi,g)));S.off={day:S.day,bi,g:gid};return o};
@@ -3031,7 +3042,7 @@ function qtyModal(kind,g,to,bl){if(to==='js'&&stuckHome())return;if(kind==='buy'
   const pdisc=kind==='buy'&&S.pk[S.at]&&S.pk[S.at].disc;
   const p=Math.round((card?Math.round(base*(kind==='buy'?.7:1.4)):base)*(pdisc?.7:1));
   const fl=x=>Math.floor(x/g.step)*g.step;
-  const PI=PINFO[S.at],noCarry=kind==='sell'&&!PI.carries.includes(g.id);
+  const PI=PINFO[S.at],noCarry=kind==='sell'&&!PI.carries.includes(g.id)&&!(S.sellOk&&S.sellOk.day===S.day&&S.sellOk.bi===S.at&&S.sellOk.g===g.id);
   if(noCarry&&!js&&PI.lvl==='Low'){const ref=referral(g);
     modal(`<h2>${plugName(S.at)} don't fool with ${g.name}</h2><p>${plugFem(S.at)?'She':'He'} only moves ${PI.carries.map(x=>G(x).name).join(', ')}. ${ref||''}</p><div class="btns"><button class="btn red" id="jj">Serve the Js instead</button><button class="btn" id="no">Cancel</button></div>`);
     $('jj').onclick=()=>qtyModal(kind,g,'js');$('no').onclick=close;return}
@@ -3301,6 +3312,8 @@ function act(a,el){
   if(a&&a.indexOf('rv_')===0)return plugRevenge(a.slice(3),+el.dataset.i);
   if(a==='pkick')plugKick(+el.dataset.i);
   if(a==='pask')return plugAsk(+el.dataset.i);
+  if(a==='ppitch')return plugPitch(+el.dataset.i);
+  if(a==='ppgo')return plugPitchGo(+el.dataset.i,el.dataset.g,el.dataset.m);
   if(a==='paskgo')return plugAskGo(+el.dataset.i,el.dataset.g,el.dataset.m);
   if(a==='phook')return plugHook(+el.dataset.i);
   if(a==='chk')return checkStash(G(el.dataset.g));
