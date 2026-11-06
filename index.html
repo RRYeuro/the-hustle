@@ -3506,7 +3506,7 @@ function schoolEvent(){const q=S.schoolQ.shift();if(!q)return false;const P=S.pa
 function shLeft(){S.sh=S.sh&&S.sh.d===S.day?S.sh:{d:S.day,n:0};return Math.max(0,3-S.sh.n)}
 function shOk(){return !!S.cal&&S.school==='in'&&schoolWeek()&&S.classDay===S.day}
 function shPane(){if(!S.cal||S.school!=='in'||S.college==='in')return '';
-  if(!schoolWeek())return '';
+  if(!schoolWeek())return `<div class="sec">At school</div><div class="row"><div class="info"><div class="t">School hustles</div><div class="s">Steal phones, serve classmates, fight, hack your grades, rap at the lunch table. They only happen on school days, after you go to class. ${S.suspended>S.day?'You are suspended right now.':(S.cal&&isWknd()?"It's the weekend, so they open back up on Monday.":'No school today.')}</div></div><span class="chip">Locked</span></div>`;
   if(S.classDay!==S.day)return `<div class="sec">At school</div><div class="s" style="padding:4px 2px;opacity:.8">Go to class first. Everything else happens in the building.</div>`;
   const left=shLeft(),carry=GOODS.find(g=>S.inv[g.id]>=1),off=!left?'disabled':'';
   const row=(t,sub,a,lbl,dis)=>`<div class="row" style="flex-wrap:wrap"><div class="info" style="flex:1 1 200px;min-width:0"><div class="t">${t}</div><div class="s">${sub}</div></div><button class="btn ${a==='sh_rap'?'go':'red'}" data-a="${a}" ${off||dis||''}>${lbl}</button></div>`;
