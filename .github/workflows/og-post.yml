@@ -1,0 +1,28 @@
+name: OG tester post
+on:
+  push:
+    branches: [main]
+    paths: [og-post.md]
+  workflow_dispatch:
+jobs:
+  post:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Post og-post.md to the OG channel
+        env:
+          HOOK: ${{ secrets.OG_WEBHOOK }}
+          ROLE: ${{ secrets.OG_ROLE_ID }}
+        run: |
+          [ -z "$HOOK" ] && echo "No OG_WEBHOOK secret set, skipping" && exit 0
+          python3 - <<'PY'
+          import json, os, urllib.request
+          txt = open('og-post.md').read().strip()[:3900]
+          role = os.environ.get('ROLE', '').strip()
+          body = {'content': f'<@&{role}>' if role else '',
+                  'allowed_mentions': {'roles': [role]} if role else {'parse': []},
+                  'embeds': [{'description': txt, 'color': 0xE74C3C}]}
+          req = urllib.request.Request(os.environ['HOOK'], json.dumps(body).encode(),
+                  {'Content-Type': 'application/json', 'User-Agent': 'hustle-ci'})
+          urllib.request.urlopen(req)
+          PY
