@@ -2005,9 +2005,34 @@ function sideDay(){const L=S.sides||[];if(!L.length||window.FF||S.inJail||!adult
   else if(ev==='keys'){const m=S.car?rnd(150,400):0;S.cash=Math.max(0,S.cash-m);h=`${x.name} caught feelings`;t=m?`${x.name} keyed your car. Repair ran ${money(m)}.`:`${x.name} posted a long story about you. Everybody saw it.`}
   else{S.rep=Math.max(0,S.rep-2);h=`${x.name} posted you`;t=`${x.name} put your face on every story with "beware." Rep −2.`}
   say(t);S.favMsg={h,t}}
-function gfDay(){if(!S.gf)return;const p=PR();if(S.home!=='gfplace')S.gf.rel=Math.max(0,S.gf.rel-1);else if(Math.random()<.15)S.gf.rel=Math.max(0,S.gf.rel-rnd(3,8));
+function gfDay(){if(!S.gf)return;const p=PR();gfMood();if(S.home!=='gfplace')S.gf.rel=Math.max(0,S.gf.rel-1);else if(Math.random()<.15)S.gf.rel=Math.max(0,S.gf.rel-rnd(3,8));
   if(S.gf.rel<25&&gUsed()>0&&Math.random()<.2){GOODS.forEach(g=>{const x=S.gst[g.id];if(x)x.n=Math.floor(x.n*.6*2)/2});say(`${S.gf.name} been going through your stuff at ${p.his} place. Some of it is gone.`)}
   if(S.gf.rel<=0){say(`${S.gf.name} is done with you. Everything you kept at ${p.his} place is gone.`);endGF()}}
+
+/* ---------- girlfriend texts and personality ---------- */
+function gfCz(){const g=S.gf;if(g.cz==null)g.cz=rnd(10,85);return g.cz}
+function gfCrazy(){return gfCz()>=55}
+function gfMood(){const g=S.gf;if(!adult())return;gfCz();
+  if(g.rel<45)g.cz=Math.min(100,g.cz+1.5);else if(g.rel>75)g.cz=Math.max(0,g.cz-1);
+  const side=(S.sides||[]).length>0,cr=gfCrazy(),He=p=>p;
+  if(g.rel>=85&&!cr&&Math.random()<.08){const c=rnd(40,150);S.cash+=c;S.heat=Math.max(0,S.heat-4);say(`${g.name} texted: "Baby I got you." Slid you ${money(c)} and kept an eye out. Heat down.`);return}
+  if(g.rel>=75&&cr&&Math.random()<.04){S.heat=Math.max(0,S.heat-3);say(`${g.name} is crazy, but ${PR().he} is yours. ${PR().he==='she'?'She':'He'} told somebody on the block to mind their business.`);return}
+  if(!cr&&g.rel<45&&Math.random()<.05){g.rel=Math.max(0,g.rel-3);say(`${g.name} texted: "You been quiet lately." No answer yet.`);return}
+  const p=cr?(side?.25:.14):.07;
+  if(Math.random()<p)setTimeout(()=>gfText(cr,side),500)}
+function gfText(cr,side){if(!S.gf||!$('modal').hidden||S.over)return;const g=S.gf,p=PR();
+  const msgs=cr?(side?['you cheating??','who is she. dont lie to me','i heard something. where were you last night']:['where you been??','why you ain\'t answering me','you with somebody?']):['where you been? text me when you get a sec','you good? haven\'t heard from you','miss you, you coming through?'];
+  const tx=pick(msgs);
+  modal(`<div class="sec" style="margin:0;color:${cr?'var(--blood)':'var(--accent)'}">Text from ${g.name}</div><h2 style="font-size:22px">"${tx}"</h2><p class="s" style="color:var(--dim)">${cr?'She is the jealous type. How you answer matters.':'Laid back, but she notices when you disappear.'}</p>
+   <div class="btns"><button class="btn go" id="a">${cr?'Reassure '+p.him:'Text back sweet'}</button><button class="btn" id="b">Pull up on ${p.him}</button><button class="btn red" id="c">${cr?'Tell '+p.him+' to chill':'Leave it on read'}</button></div>`);
+  $('a').onclick=()=>{g.rel=Math.min(100,g.rel+(cr?3:4));addStress(cr?3:-3);say(`Answered ${g.name}. ${cr?'Calmed ':''}${cr?p.him+' down.':'All good.'}`);close()};
+  $('b').onclick=()=>{g.rel=Math.min(100,g.rel+7);addStress(-4);S.cash=Math.max(0,S.cash-rnd(10,40));say(`Pulled up on ${g.name}. Spent a little, ${p.he==='she'?'she':'he'} was happy.`);if(cr&&side&&Math.random()<.3){g.rel=Math.max(0,g.rel-12);say(`${g.name} saw a text from one of the side ones on your phone. Relationship −12.`)}close()};
+  $('c').onclick=()=>{g.rel=Math.max(0,g.rel-(cr?9:4));addStress(cr?5:0);if(cr&&Math.random()<.35)setTimeout(()=>gfPullUp(),600);say(cr?`Told ${g.name} to chill. That did not go over well.`:`Left ${g.name} on read.`);close()}}
+function gfPullUp(){if(!S.gf||!$('modal').hidden)return;const g=S.gf,p=PR(),side=(S.sides||[]).length>0;
+  S.heat=Math.min(100,S.heat+5);S.rep=Math.max(0,S.rep-1);addStress(8);
+  let t=`${g.name} pulled up to the block screaming. Everybody on the block saw it. Heat +5, rep −1.`;
+  if(side&&Math.random()<.5){g.rel=Math.max(0,g.rel-15);t+=` ${p.he==='she'?'She':'He'} went through your phone on the hood of the car and found something. Relationship −15.`}
+  say(t);modal(`<h2 style="color:var(--blood)">${g.name} pulled up</h2><p>${t}</p><div class="btns"><button class="btn go" id="ok">Deal with it</button></div>`);$('ok').onclick=close}
 function endGF(){if(S.home==='gfplace'){S.cap-=HOMES.gfplace.stash;S.home='couch';say("You're back on your cousin's couch.");addStress(15)}S.gf=null;S.gst={}}
 function gfDo(k){const g=S.gf,p=PR();if(!g)return;
   if(k==='chill'){S.chill=S.day;g.rel=Math.min(100,g.rel+5);addStress(-15);say(`Chilled with ${g.name}. Stress down.`)}
@@ -2027,7 +2052,7 @@ function paneGF0(){const p=PR(),g=S.gf;
   let h=`<div class="sec">Your ${p.who}</div>`;
   if(!g)return h+`<div class="row"><div class="info"><div class="t">Nobody right now</div><div class="s">People hit your line sometimes, or you can slide in some DMs. Watch out for setups.</div></div><button class="btn go" data-a="dm" ${S.dm===S.day?'disabled':''}>${S.dm===S.day?'Tried today':'Slide in DMs'}</button></div>`;
   const ok=g.rel>=60,live=S.home==='gfplace';
-  h+=`<div class="row" style="flex-wrap:wrap"><div class="info"><div class="t">${g.name} <span class="chip ${g.rel>=60?'mine':g.rel<25?'war':''}">${g.rel>=80?'Ride or die':g.rel>=60?'Solid':g.rel>=25?'Talking':'On thin ice'}</span></div>
+  h+=`<div class="row" style="flex-wrap:wrap"><div class="info"><div class="t">${g.name} <span class="chip ${g.rel>=60?'mine':g.rel<25?'war':''}">${g.rel>=80?'Ride or die':g.rel>=60?'Solid':g.rel>=25?'Talking':'On thin ice'}</span> ${gfCrazy()?'<span class="chip war">Jealous</span>':'<span class="chip">Laid back</span>'}</div>
     <div class="s">Relationship ${g.rel}/100. It slips a little every day you don't show love.</div><div class="bar"><i style="width:${g.rel}%;background:var(--money)"></i></div></div>
     <div class="btns"><button class="btn" data-a="gfdo" data-k="chill" ${S.chill===S.day?'disabled':''}>Chill</button><button class="btn green" data-a="gfdo" data-k="out" ${S.cash>=300?'':'disabled'}>Take out $300</button><button class="btn green" data-a="gfdo" data-k="gift" ${S.cash>=1000?'':'disabled'}>Gift $1,000</button><button class="btn" data-a="gfdo" data-k="leave">Break up</button></div></div>`;
   h+=live?`<div class="row" style="padding:8px 12px"><div class="info"><div class="t">Living together <span class="chip mine">Home</span></div><div class="s">$300 a week for your half. Stress drops every day. If y'all fall out, you're back on the couch.${g.plug!==undefined?` ${g.name} still runs ${BLOCKS[g.plug]}: 15% off and ${p.he} always tells you if it's fake.`:''}</div></div><button class="btn" data-a="gfdo" data-k="moveout">Move out</button></div>`
