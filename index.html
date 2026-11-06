@@ -386,7 +386,7 @@ function render(){
   $('owner').innerHTML=o==='me'?'<span class="chip mine">Your turf</span>':o==='none'?'<span class="chip">Nobody\'s turf</span>':
     `<span class="chip" style="color:${cdef(o).color};border-color:${cdef(o).color}">${cdef(o).name} turf</span>`;
   {const at=Math.round((S.att||[])[S.at]||0),jl=jsLeftAt(S.at),cr=o!=='me'&&o!=='none'?crew(o):null;
-   $('owner').innerHTML+=`<div class="ai" style="font-size:11px;line-height:1.35;margin-top:4px;color:var(--fg);opacity:.85;text-align:right;white-space:nowrap">Attention <b style="color:${at>=60?'var(--blood)':at>=30?'var(--accent)':'var(--fg)'}">${at>=60?'High':at>=30?'Some':'Low'}</b><br>Js got ${money(jl)}${cr?`<br>${cdef(o).name}: ${cr.ally||S.gang===o?'with you':cr.beef>=50?'want smoke':cr.respect>=60?'green light':'watching you'}`:''}</div>`}
+   $('owner').innerHTML+=`<div class="ai" style="font-size:11px;line-height:1.35;margin-top:4px;color:var(--fg);opacity:.85;text-align:right;white-space:nowrap">Attention <b style="color:${at>=60?'var(--blood)':at>=30?'var(--accent)':'var(--fg)'}">${at>=60?'High':at>=30?'Some':'Low'}</b><br>Js got ${money(jl)} · ${JSTAG(S.at)}${cr?`<br>${cdef(o).name}: ${cr.ally||S.gang===o?'with you':cr.beef>=50?'want smoke':cr.respect>=60?'green light':'watching you'}`:''}</div>`}
   document.querySelectorAll('.tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.t===tab));{const n=[...document.querySelectorAll('.tabs button')].filter(b=>!b.hidden).length;document.querySelector('.tabs').style.setProperty('--tc',n<=6?n:Math.ceil(n/2))}
   {const nreq=(S.texts||[]).length;$('phtab').textContent=nreq?`📱 Phone ${nreq}`:'📱 Phone';}
   $('cardtab').textContent=S.hand.length?`🃏 Cards ${S.hand.length}`:'🃏 Cards';
@@ -2347,7 +2347,8 @@ function referral(g){if(!S.known.includes(S.at)||S.trust[S.at]<60)return '';
   const opts=BLOCKS.map((b,i)=>i).filter(i=>i!==S.at&&PINFO[i].carries.includes(g.id)&&!S.burned[i]);if(!opts.length)return '';
   const i=opts.find(x=>S.known.includes(x))??opts[0];return `${plugFem(S.at)?'She':'He'} told you: "Go see ${plugName(i)} on ${BLOCKS[i]}, ${plugFem(i)?'she':'he'} moves ${g.name}."`}
 /* ---------- Js budget ---------- */
-const JSBASE=[1500,1800,1200,2500,2000,3000];
+const JSBASE=[1100,1600,800,2800,2200,4000];
+const JSTAG=bi=>JSBASE[bi]>=2600?'Money block':JSBASE[bi]>=1900?'Decent money':JSBASE[bi]>=1300?'Getting by':'Broke block';
 const checkDay=()=>S.cal?calCheck():((S.day-1)%30)<2;
 const daysToCheck=()=>S.cal?calToCheck():30-((S.day-1)%30);
 function jsBudget(bi){return Math.round((S.age&&S.age<16?.4:S.age&&S.age<18?.65:1)*JSBASE[bi]*(S.college==='in'&&bi===4?1.5:1)*(S.biz&&S.biz.club&&bi===5?1.4:1)*(checkDay()?4:1)*rnd(85,115)/100)}
