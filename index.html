@@ -2398,11 +2398,14 @@ function sndWatch(){if(!S)return;if(lastCash!==null){if(S.cash>lastCash+20)sfx('
 document.addEventListener('pointerdown',()=>{ac();if(SND.music)musicStart()},{once:true});
 /* ---------- tutorial ---------- */
 const TUT=[
- ['Welcome to the streets','You start at 14, freshman year. Each turn is a school week or a weekend. Go to school on weekdays, hustle on weekends, and follow your story missions in the yellow box up top. Chapter 1 is high school, Chapter 2 starts at 18.'],
- ['Block tab: the money','Buy from the plug, sell it back for a profit. Sell to the plug for safe money and respect, or serve the Js for 40% more but way more heat and beef. Check the grade, test for fakes, and talk price once a day.'],
- ['Move tab: the city','Tap a block on the map to go there. Each block has its own plug and prices. The Move tab also has hoops, dice and licks. Lay low when your heat or stress gets too high.'],
- ['Circle tab: crews, trap and your people','Your trap houses, family, homies and girl live here too. Four crews run the city. Build respect and they give you the green light. Step on their toes and they come for you. Take a block in a war and it pays you every day.'],
- ['Me tab: your life','Spend skill points, find a place to stay, hire soldiers and handle jobs and school. Life might also offer you a rap career or a robbing life.'],
+ ['Welcome to the streets','You start at 14, freshman year. Each turn is a school week or a weekend. Weekdays are for school, weekends are for the streets. Follow your story missions in the yellow box up top. Chapter 1 is high school, Chapter 2 starts at 18.'],
+ ['Block tab: the money','Buy from the plug, sell it back for a profit. Sell to the plug for safe money and respect, or serve the Js for 40% more but way more heat and beef. Some blocks have way more money than others, so check the tag on the block. Always check the grade, test for fakes, and talk price once a day.'],
+ ['School tab','Going to class takes the whole school week, so do your hustles first. You get 3 moves a week: steal phones, serve classmates, fight, hack your grades, or rap at the lunch table. Get caught and it is a strike: suspended, then alt school, then expelled. Keep your grades at 70 or higher and teachers give you the benefit of the doubt.'],
+ ['Move tab: the city','Tap a block on the map to go there. Each block has its own plug, prices and crew. The Move tab also has hoops, dice and licks like the pharmacy and stores. Lay low when your heat or stress gets too high.'],
+ ['Circle tab: your people','Your fight style, trap houses, family and where you stay, homies, your girl and the crews all live here. Your fight style levels up every time you win a fight. After 18 your girl texts you, and how you answer matters. If a plug turns on you, go to their block and settle it.'],
+ ['Phone tab: plays and connects','Plays text you for product. If you are out on you but it is in your safe, they go in the safe. You can see the grade of what you carry before you meet up. Once you earn a connect you can order up to 3 times a day, and you can drop one to get a shot at a better one.'],
+ ['Me tab: your life','Spend skill points, handle your stash and safe, jobs and life choices. Cash in the safe stays hidden from strict parents and can pay for things your family or remote connects ask for. Life might also offer you a rap career or a robbing life.'],
+ ['Mini games','Fights, chases, heists and games all use quick taps. Buttons fire the instant you touch them, so tap on the beat. In fights, swinging and dodging costs stamina: mash and you get gassed, and gassed means weak hits and no dodge. In chases, cops cut into your lane when you see a flashing outline.'],
  ['Watch your numbers','Heat brings cops. Stress makes everything harder. Health hits 0 and it\'s over. Cards are rare power-ups, so save them for when you need them. Now go get it.'],
 ];
 function tutorial(i,done){const t=TUT[i];
@@ -3816,11 +3819,11 @@ const CODES={
 /* ---------- start button before mini games ---------- */
 function gateGame(title,txt,go){modal(`<h2>${title}</h2><p>${txt}</p><p class="s" style="color:var(--dim)">Read it, then hit Start when you're ready.</p><div class="btns"><button class="btn go" id="gst">Start</button></div>`);$('gst').onclick=go}
 {const INFO={
-  flowGame:a=>[a[0],'Tap "Spit" (or press Space) when the circle fills up and turns green. 8 bars.'],
-  grabGame:a=>[(a[1]||{}).title||'Grab and go',(a[1]||{}).txt||"Tap the shelves when a bag of pills shows up. Don't touch anything in front of the camera."],
-  seqGame:()=>['Stick up the register','Memorize the moves, then hit them in order before the clerk reacts. On a keyboard, use the arrow keys.'],
-  sneakGame:()=>['Sneak through the house','Only step when the marker is in the quiet zone (tap Step or press Space). Two loud steps and they wake up. Beat the clock.'],
-  padGame:()=>['Program the key','Lock it in when the marker hits the green (tap Lock in or press Space). Get 2 of 3 before the clock runs out.'],
+  flowGame:a=>[a[0],'Tap "Spit" (or press Space) when the circle fills up and turns green. 8 bars. It counts the instant you touch the button, so tap on the beat.'],
+  grabGame:a=>[(a[1]||{}).title||'Grab and go',(a[1]||{}).txt||"Tap the shelves when a bag of pills shows up. Never touch a red camera. If you tap right as a bag disappears, it still counts."],
+  seqGame:()=>['Stick up the register','Watch the moves and memorize them, then hit them in the same order before the clerk reacts. On a keyboard, use the arrow keys.'],
+  sneakGame:()=>['Sneak through the house','Only step when the marker is in the quiet zone (tap Step or press Space). It forgives a little drift past the edge, but two loud steps and they wake up. Beat the clock.'],
+  padGame:()=>['Program the key','Lock it in when the marker hits the green (tap Lock in or press Space). Get 2 of 3 before the clock runs out. Higher Street Smarts makes the green wider.'],
   chase:()=>['Twelve on your tail','Survive 20 seconds. Some cops cut over into your lane (watch the flashing outline), some come in fast, and the last 5 seconds they floor it. Tap left or right, or use the arrow keys.'],
   shootoutGame:a=>['Shootout vs '+a[2],'Do the math. Each round shows their cover number and a hand of cards. Tap cards that add up to the number, then hit FIRE before the timer ends. Wrong number or too slow and they shoot you.'],
   fightGame0:a=>['Fight vs '+a[2],'THEY SWING (red): hit Dodge. OPENING (green): hit Hit. Yellow with a question mark is a fake, so do nothing. COMBO: tap Hit three times fast. Every swing and dodge costs stamina (bar under your health), so do not spam. Gassed means weak hits and no dodge. Keys: left arrow dodge, right arrow or space hit.']};
