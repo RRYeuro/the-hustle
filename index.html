@@ -404,11 +404,11 @@ function paneBlock(){
     <div class="btns" style="margin:2px 0 4px"><span class="chip" style="color:${L.col};border-color:${L.col}">${P.lvl} level plug</span>${(S.fell||{})[S.at]!==undefined?'<span class="chip mine">Works under you</span>':''}${kn?'<span class="chip mine">Knows you</span>':'<span class="chip">Stranger</span>'}${is('lucky')&&S.at===S.ex?`<span class="chip">${S.age&&S.age<18?'Your cousin\'s homeboy':'Your ex'}</span>`:''}</div>
     <div class="s" style="font-style:italic">${S.pbio[S.at]||P.bio}</div>
     <div class="s">Carries ${P.carries.map(id=>G(id).name).join(', ')} · ${P.lvl==='Big'?'moves keys, 15% cheaper':P.lvl==='Mid'?'moves pounds, normal prices':'small stock, 10% higher'}</div>
-    ${recd?`<div class="s" style="color:var(--accent)"><b>Works for you now.</b> ${plugFem(S.at)?'She':'He'} runs your traps and doesn't sell to you anymore, but ${plugFem(S.at)?'she':'he'} still buys from you. ${plugFem(S.at)?'She':'He'} hits you up in the phone when ${plugFem(S.at)?'she':'he'} needs work.</div>`:locked?`<div class="s" style="color:var(--blood)">Won't serve you until you got ${L.rep} rep.</div>`:''}
+    ${recd?`<div class="s" style="color:var(--accent)"><b>Works for you now.</b> ${plugFem(S.at)?'She':'He'} runs your traps and doesn't sell to you anymore, but ${plugFem(S.at)?'she':'he'} still buys from you. ${plugFem(S.at)?'She':'He'} hits you up in the phone when ${plugFem(S.at)?'she':'he'} needs work.</div>`:locked&&!burnt?`<div class="s" style="color:var(--blood)">Won't serve you until you got ${L.rep} rep.</div>`:''}
     ${(S.enemies||{})[S.at]?`<div class="s" style="color:var(--blood)"><b>Enemy.</b> ${plugName(S.at)} wants you hurt. ${plugFem(S.at)?'Her':'His'} people will come for you until somebody new takes over.</div>`:''}
     ${(S.enemies||{})[S.at]&&burnt?revengeHTML(S.at):''}
     ${burnt?`<div class="s" style="color:var(--blood)">You robbed ${plugName(S.at)}. Nobody on ${BLOCKS[S.at]} will serve you until a new plug takes over around ${dayTxt(S.burned[S.at])}.</div>`:plugActions(S.at)}
-    <div class="s">${kn?`Trust ${S.trust[S.at]}/100 · tap Buy or Sell to talk price`:`${plugFem(S.at)?'She':'He'} don't know you. Prices are 15% worse and you can't talk price. Trade with him ${3-(S.deals[S.at]||0)} more time${3-(S.deals[S.at]||0)===1?'':'s'} to get known.`}</div></div></div>`;
+    <div class="s">${burnt?'':kn?`Trust ${S.trust[S.at]}/100 · tap Buy or Sell to talk price`:`${plugFem(S.at)?'She':'He'} don't know you. Prices are 15% worse and you can't talk price. Trade with him ${3-(S.deals[S.at]||0)} more time${3-(S.deals[S.at]||0)===1?'':'s'} to get known.`}</div></div></div>`;
   if(o!=='me'&&o!=='none')h+=`<div class="sec">${cdef(o).name} turf: buying here and selling to the plug earns respect. Serving the Js makes them mad, unless it's a drug they don't move here.</div>`;
   h+=GOODS.map(g=>{
     const raw=S.prices[S.at][g.id], pv=S.prev[S.at]?.[g.id];
@@ -1723,10 +1723,10 @@ function plugRob(bi){const P=PINFO[bi],nm=plugName(bi),her=plugFem(bi)?'her':'hi
       P.carries.forEach(id=>{const g=G(id);let n=lvlMax(bi,g)*rnd(5,10)/10;n=Math.min(n,(S.cap-used())/g.sp);n=g.step<1?Math.floor(n*2)/2:Math.floor(n);if(n<=0)return;
         const have=S.inv[id],q=rnd(55,90);S.q[id]=Math.round((S.q[id]*have+q*n)/(have+n));S.paid[id]=Math.round(S.paid[id]*have/(have+n));S.inv[id]+=n;got.push(`${amt(n,g)} of ${g.name}`)});
       S.rep+=5;addXP(10);addStress(10);S.rob.noto+=15;say(`Robbed ${nm}: ${got.join(', ')}.`);hoodHate(bi,false);
-      modal(`<h2 style="color:var(--money)">You took everything</h2><p>Caught ${nm} slipping. Got ${got.join(', ')}.</p><p style="color:var(--dim)">${BLOCKS[bi]} won't serve you until a new plug takes over.</p><div class="btns"><button class="btn go" id="ok">Continue</button></div>`);$('ok').onclick=close;return}
+      modal(`<h2 style="color:var(--money)">You took everything</h2><p>Caught ${nm} slipping. Got ${got.join(', ')}.</p><p style="color:var(--dim)">${BLOCKS[bi]} won't sell to you until a new plug takes over, but you can still sell them what you're holding. The day ends after a job like that.</p><div class="btns"><button class="btn go" id="ok">Continue</button></div>`);$('ok').onclick=()=>{close();nextDay()};return}
     hoodHate(bi,true);const dmg=vcut(rnd(20,40));S.hp-=dmg;addStress(15);let lost='';if(S.soldiers&&Math.random()<.3){S.soldiers--;lost=' You lost a soldier.'}
     say(`Tried to rob ${nm} and it went bad. −${dmg} health.${lost}`);
-    modal(`<h2 style="color:var(--blood)">${nm} was ready</h2><p>${P.lvl==='Low'?'He':'Their people'} had heat waiting. You barely got out. −${dmg} health.${lost}</p><div class="btns"><button class="btn go" id="ok">Continue</button></div>`);$('ok').onclick=close})};
+    modal(`<h2 style="color:var(--blood)">${nm} was ready</h2><p>${P.lvl==='Low'?'He':'Their people'} had heat waiting. You barely got out. −${dmg} health.${lost}</p><div class="btns"><button class="btn go" id="ok">Continue</button></div>`);$('ok').onclick=()=>{close();if(S.hp>0)nextDay()}})};
 }
 /* ---------- plug mood and checkpoints ---------- */
 function moodPen(bi){const k=(S.pk&&S.pk[bi])||{};if(!k.mad)return 0;if(S.day-(k.madDay||0)>3){k.mad=0;return 0}return Math.min(.3,k.mad*.1)}
