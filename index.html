@@ -438,8 +438,8 @@ const PLACES=[
  {id:'mall',bi:5,x:282,y:226,ic:'🛍️',name:'The mall'},
  {id:'lawyer',bi:5,x:326,y:226,ic:'⚖️',name:'Lawyer\'s office'},
 ];
-const CARS={beater:{name:'Old Buick',cost:2500,trunk:20,sub:'Cheapest way to carry more.'},
- civic:{name:'Honda Civic',cost:6000,trunk:35,sub:'Cops barely notice it.'},
+const CARS={beater:{name:'Old Buick',cost:2500,trunk:20,sub:'Cheapest way to carry more. A beat-up car gets a second look.'},
+ civic:{name:'Honda Civic',cost:6000,trunk:35,sub:'Cheap and common. Cops know the type.'},
  charger:{name:'Dodge Charger',cost:14000,trunk:55,rep:2,sub:'Raises your rep.'},
  tahoe:{name:'Chevy Tahoe',cost:28000,trunk:90,rep:3,sub:'Big trunk. Raises your rep.'},
  rover:{name:'Range Rover',cost:60000,trunk:140,rep:6,sub:'Top of the lot.'},
@@ -485,7 +485,7 @@ function openPlace(id){const P=PLACES.find(p=>p.id===id),bi=placeAt(id);
   if(id==='hosp'){const cost=Math.max(0,Math.round((100-S.hp)*25));body=row('Get patched up',S.hp>=100?'You at full health.':`Back to 100 health. ${100-S.hp} to heal.`,b('heal',money(cost),S.hp>=100||S.cash<cost))+row('Detox',(S.habit||0)>0?'Get clean. Habit gone, stress −20. Takes the day.':'You clean.',b('detox','$1,000',!(S.habit>0)||S.cash<1000))}
   if(id==='pharm')body=row('Rob the pharmacy','Percs and Xans off the shelf. Big heat. Takes the day.',b('lpharm','Rob it',false,'red'));
   if(id==='school')body=(S.cal&&S.school==='in')?row(schoolWeek()?'Go to school this week':'No school right now',`Grades ${S.grades}/100.${schoolWeek()?'':' '+(isWknd()?'It\'s the weekend.':schoolBreak())}`,b('class','Go to school',!schoolWeek())):(S.age&&S.age<18&&S.school==='in')?row('Go to class',`Grades ${S.grades}/100. Takes the day.`,b('class','Go to class')):S.college==='in'?row('Go to class',`Degree ${S.cprog}/100. Takes the day.`,b('class','Go to class')):row('College',S.college==='grad'?'You already graduated.':'Enroll for $3,000 from the Me tab.',b('gome','Open Me tab'));
-  if(id==='mall')body=row('Bookbag','+25 stash space.',S.bag?'<span class="chip mine">Owned</span>':b('bag','$150',S.cash<150))+row('Ski mask','Less heat from licks, better heists.',S.rob.mask?'<span class="chip mine">Owned</span>':b('mask','$50',S.cash<50))+row('New drip','Look the part. Rep +2.',b('drip','$600',S.cash<600))+row('Storage unit',`+50 stash space (now ${S.cap}). The price goes up every time.`,b('stor',money(capCost()),S.cash<capCost()))+(SAFEUP[S.safeLv||0]?row(SAFEUP[S.safeLv||0].n,`${safePic(S.safeLv||0,120)}+${SAFEUP[S.safeLv||0].v} safe space. Stuff in your safe can't get jacked, raided or busted. Safe is at your place.`,b('safeup',money(SAFEUP[S.safeLv||0].c),S.cash<SAFEUP[S.safeLv||0].c)):row('Safe','You own the biggest safe they sell.','<span class="chip mine">Maxed</span>'));
+  if(id==='mall')body=row('Bookbag','+25 stash space.',S.bag?'<span class="chip mine">Owned</span>':b('bag','$150',S.cash<150))+row('Ski mask','Less heat from licks, better heists.',S.rob.mask?'<span class="chip mine">Owned</span>':b('mask','$50',S.cash<50))+(()=>{const hp=heatParts();return row('How cops see you',`Heat gain and stops are x${hp.all.toFixed(2)} right now. Car x${hp.car.toFixed(2)}, home x${hp.home.toFixed(2)}, outfit x${hp.fit.toFixed(2)}${hp.legit<1?`, legit income x${hp.legit.toFixed(2)}`:''}.`,'')})()+Object.entries(FITS).map(([fk,F])=>{const own=(S.fits||{street:1})[fk]||fk==='street',on=(S.fit||'street')===fk;return row(F.n+` <span class="s">x${F.h.toFixed(2)} heat</span>`,F.sub,on?'<span class="chip mine">Wearing</span>':own?b('fit:'+fk,'Wear',false,''):b('fit:'+fk,money(F.c),S.cash<F.c))}).join('')+row('Storage unit',`+50 stash space (now ${S.cap}). The price goes up every time.`,b('stor',money(capCost()),S.cash<capCost()))+(SAFEUP[S.safeLv||0]?row(SAFEUP[S.safeLv||0].n,`${safePic(S.safeLv||0,120)}+${SAFEUP[S.safeLv||0].v} safe space. Stuff in your safe can't get jacked, raided or busted. Safe is at your place.`,b('safeup',money(SAFEUP[S.safeLv||0].c),S.cash<SAFEUP[S.safeLv||0].c)):row('Safe','You own the biggest safe they sell.','<span class="chip mine">Maxed</span>'));
   if(id==='school'&&S.school==='in'&&S.grades>=70)body+=row('Your teachers','They like you. If security checks your bag, they vouch for you: way better odds of walking.','<span class="chip mine">On your side</span>');
   if(id==='lawyer')body=lawBody(row,b);
   modal(`<h2>${P.ic} ${P.name}</h2><p class="s" style="color:var(--dim)">${BLOCKS[bi]}</p><div class="pane">${body}</div><div class="btns"><button class="btn" id="no">Leave</button></div>`);
@@ -509,6 +509,7 @@ function placeAct(k,id){const back=()=>{render();openPlace(id)};
   if(k==='gome'){tab='crew';return close()}
   if(k==='bag'){S.cash-=150;S.bag=1;S.cap+=25;say('Bought a bookbag. +25 stash.');return back()}
   if(k==='mask'){S.cash-=50;S.rob.mask=1;say('Copped a ski mask.');return back()}
+  if(k.startsWith('fit:')){const id=k.slice(4),F=FITS[id];if(!F)return;S.fits=S.fits||{street:1};if(!S.fits[id]&&id!=='street'){if(S.cash<F.c)return;S.cash-=F.c;S.fits[id]=1;if(F.rep)S.rep+=F.rep;addStress(-3)}S.fit=id;say('Wearing the '+F.n.toLowerCase()+'.');return back()}
   if(k==='drip'){S.cash-=600;S.rep+=2;addStress(-5);say('Bought new drip. Rep +2.');return back()}
   {const r=lawStoreAct(k);if(r===2)return render();if(r)return back()}
 }
@@ -1165,6 +1166,11 @@ function jealous(c){const d=cdef(c.id);
     modal(`<h2 style="color:var(--blood)">Envy in the streets</h2><p>One of the ${d.name} young boys was mad you were eating on their block. He hit your stash while you were out.</p><p>Lost ${money(take)} and part of your product. Their crew says they ain't know nothing about it.</p><div class="btns"><button class="btn go" id="ok">Real</button></div>`)}
   $('ok').onclick=close}
 /* ---------- housing ---------- */
+const CARHEAT={beater:1.1,civic:1.15,charger:1,tahoe:.92,rover:.8,stolen:1.6};
+const HOMEHEAT={couch:1.1,sec8:1.15,low:1.08,apt:.95,condo:.85,family:1,granny:.95,gfplace:.95,house:.8};
+const FITS={street:{n:'Street fit',c:0,h:1,sub:'What you came with.'},hood:{n:'Hoodie and fitted',c:80,h:1.12,sub:'The look cops already have a file on.'},clean:{n:'Clean-cut fit',c:250,h:.9,sub:'Polo and fresh kicks. Nobody looks twice.'},biz:{n:'Business casual',c:900,h:.82,rep:1,sub:'Slacks, button-up, a good watch. Looks like money you earned.'},drip:{n:'Designer drip',c:600,h:1.08,rep:2,sub:'Rep +2, but flashy gets noticed.'}};
+function heatParts(){const car=CARHEAT[S.car||'']||1,home=HOMEHEAT[S.home]||1,fit=FITS[S.fit||'street'].h,legit=(S.job?.92:1)*(Object.keys(S.biz||{}).length?.88:1);return {car,home,fit,legit,all:Math.max(.55,Math.min(1.8,car*home*fit*legit))}}
+const heatProf=()=>heatParts().all;
 const HOMES={
  couch:{name:"Cousin's couch",rent:0,stash:0,stress:1,raid:.02,lvl:1,sub:'Free, but no privacy. Your cousin keeps asking when you moving out.'},
  sec8:{name:'Section 8 apartment',rent:250,stash:40,stress:0,raid:.10,lvl:1,sub:'Cheap rent on Eastside. Thin walls and nosy neighbors who call the cops.'},
@@ -2986,7 +2992,7 @@ function qtyModal(kind,g,to,bl){if(to==='js'&&stuckHome())return;if(kind==='buy'
         if(crewHere()){const c=crew(o),vol=Math.ceil(n*g.sp/3);
           if(!PINFO[S.at].carries.includes(g.id)){say(`The ${cdef(o).name} don't move ${g.name} on this block, so nobody minds you serving it.`)}else if(c.ally||S.gang===c.id){say(c.ally?`The ${cdef(o).name} share this block with you. Serve all you want.`:`This your set's block. Eat.`)}else if(c.respect>=60){c.envy=Math.min(100,c.envy+vol+3);say(c.envy>=70?`Some of the ${cdef(o).name} been looking at you sideways. You eating too good on their block.`:`The ${cdef(o).name} gave you the green light. No problem serving here.`)}
           else{c.beef=Math.min(100,c.beef+vol+5);c.respect=Math.max(0,c.respect-3);if(c.beef>=45)say(`The ${cdef(o).name} saw you serving the Js on their block.`)}}}
-      else{S.heat=Math.min(100,S.heat+Math.ceil(n*g.sp/40*D().heat));if(known&&firstTx)S.trust[S.at]=Math.min(100,S.trust[S.at]+2);
+      else{S.heat=Math.min(100,S.heat+Math.ceil(n*g.sp/40*D().heat*heatProf()));if(known&&firstTx)S.trust[S.at]=Math.min(100,S.trust[S.at]+2);
         if(firstTx&&crewHere()){const c=crew(o);c.beef=Math.max(0,c.beef-2);c.respect=Math.min(100,c.respect+2)}}
       if(profit>0)S.rep+=Math.min(5,Math.ceil(profit/2000));
     }
@@ -3021,7 +3027,7 @@ function nextDay(){S.en=S.restDay?enMax():Math.max(30,enMax()-(S.stress>=70?20:0
   addStress(S.heat>50?3:-2);
   if(S.stress>=100){S.hp-=15;S.stress=60;say('You hit your breaking point. Lost a day in your head and took −15 health. Lay low sometimes.');}
   if(S.soldiers){const cost=S.soldiers*(S.myGang?100:150);S.cash-=cost;if(S.cash<0){S.soldiers=Math.max(0,S.soldiers-1);say('Couldn\'t pay the crew. A soldier walked.');S.cash=Math.max(0,S.cash)}}
-  S.heat=Math.max(0,S.heat-4);
+  S.heat=Math.max(0,S.heat-4-((S.job||Object.keys(S.biz||{}).length)?1:0)-(['condo','house'].includes(S.home)?1:0));
   S.crews.forEach(c=>{if(c.alive){if(Math.random()<(S.cal?.15:.5))c.str+=1;c.str=Math.min(c.str,crewCap());if(c.beef>0&&c.beef<45)c.beef=Math.max(0,c.beef-2);c.envy=Math.max(0,c.envy-2);if(c.beef>=45)c.respect=Math.max(0,c.respect-2)}});crewWorld();lawDay();
   roll();
   if(S.day>maxDay()&&!freeMode()){S.over=true;return}
@@ -3044,7 +3050,7 @@ function event(){
   const angry=S.crews.filter(c=>c.alive&&c.beef>=45&&!c.ally&&S.gang!==c.id).sort((a,b)=>b.beef-a.beef)[0];
   if(!quiet&&angry&&!(S.ambCD>S.day)&&Math.random()<Math.min(.22,angry.beef/300)*(rankAt(5)?.5:1)*D().risk){S.ambCD=S.day+3;return ambush(angry)}
   if(!quiet&&S.cash>600&&Math.random()<.035*D().risk*(S.cash>5000?1.6:1))return jackboys();
-  if(!quiet&&!(S.copCD>S.day)&&Math.random()<S.heat/320*D().risk*((S.friends||[]).some(f=>f.close>=80)?.85:1)*(S.job?.8:1)*(S.school==='in'?.8:1))return cops();
+  if(!quiet&&!(S.copCD>S.day)&&Math.random()<S.heat/320*D().risk*heatProf()*((S.friends||[]).some(f=>f.close>=80)?.85:1)*(S.job?.8:1)*(S.school==='in'?.8:1))return cops();
   const en=Object.keys(S.enemies||{}).map(Number).find(bi=>S.burned[bi]);if(!quiet&&en!==undefined&&Math.random()<.15)return enemyHit(en);
   const jel=S.crews.find(c=>c.alive&&c.envy>=70&&!c.ally&&S.gang!==c.id);if(!quiet&&jel&&Math.random()<.3)return jealous(jel);
   if(!quiet&&S.heat>=40&&Math.random()<HOMES[S.home].raid*(1.4-(S.comm??30)/80)*S.heat/100)return raid();
