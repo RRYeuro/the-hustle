@@ -147,6 +147,7 @@ h1{font-family:var(--display);font-weight:400;font-size:34px;letter-spacing:.02e
   </div>
   <div class="main">
   <div class="tabs" role="tablist">
+    <button role="tab" data-t="sch" aria-selected="false" id="stab" hidden>School</button>
     <button role="tab" data-t="rap" aria-selected="false" id="rtab" hidden>Studio</button>
     <button role="tab" data-t="rob" aria-selected="false" id="htab" hidden>Heists</button>
     <button role="tab" data-t="block" aria-selected="true">Block</button>
@@ -372,7 +373,7 @@ function render(){
   $('cash').textContent=money(S.cash);
   $('stress').textContent=S.stress+(S.stress>=70?' · stressed':'');$('stressb').style.width=S.stress+'%';
   const C=CHARS.find(c=>c.id===S.char);$('who').textContent=C.name;
-  $('me').innerHTML=`${PORTRAITS[C.id]?`<img src="${PORTRAITS[C.id]}" alt="${C.name}" style="width:56px;height:56px;border-radius:6px;object-fit:cover;flex:none">`:`<div style="width:56px;height:56px;border-radius:6px;background:#2a2430;display:flex;align-items:center;justify-content:center;font-family:var(--display);font-size:26px;color:var(--accent);flex:none">${C.name[0]}</div>`}<div class="info"><div class="t" style="font-family:var(--display);font-size:20px;font-weight:400">${C.name}</div><div class="s">${roleOf(C)}</div></div>`;$('rk').textContent=identity();$('rtab').hidden=!S.rapOn;$('htab').hidden=!S.robOn;if((tab==='rap'&&!S.rapOn)||(tab==='rob'&&!S.robOn))tab='block';
+  $('me').innerHTML=`${PORTRAITS[C.id]?`<img src="${PORTRAITS[C.id]}" alt="${C.name}" style="width:56px;height:56px;border-radius:6px;object-fit:cover;flex:none">`:`<div style="width:56px;height:56px;border-radius:6px;background:#2a2430;display:flex;align-items:center;justify-content:center;font-family:var(--display);font-size:26px;color:var(--accent);flex:none">${C.name[0]}</div>`}<div class="info"><div class="t" style="font-family:var(--display);font-size:20px;font-weight:400">${C.name}</div><div class="s">${roleOf(C)}</div></div>`;$('rk').textContent=identity();{const inS=S.school==='in'||S.college==='in',todo=inS&&S.classDay!==S.day&&(S.cal?schoolWeek():true);$('stab').hidden=!inS;$('stab').innerHTML='School'+(todo?' <span style="color:var(--blood)">●</span>':'');if(!inS&&tab==='sch')tab='block'}$('rtab').hidden=!S.rapOn;$('htab').hidden=!S.robOn;if((tab==='rap'&&!S.rapOn)||(tab==='rob'&&!S.robOn))tab='block';
   $('stash').textContent=Math.round(used())+'/'+S.cap;safeFix();{const sp=$('stash').parentElement;if(!sp._inv){sp._inv=1;sp.style.cursor='pointer';sp.onclick=invModal;sp.querySelector('.k').textContent='Stash ›'}}
   $('hp').textContent=S.hp<=35?S.hp+' · hospital':S.hp;$('hp').style.color=S.hp<=35?'var(--blood)':'';$('hpb').style.width=S.hp+'%';$('hpb').style.background=S.hp<=35?'var(--blood)':'var(--money)';
   $('heat').textContent=S.heat;$('heatb').style.width=S.heat+'%';
@@ -388,7 +389,7 @@ function render(){
   $('cardtab').textContent=S.hand.length?`Cards ${S.hand.length}`:'Cards';
   const FXN={discount:'Plug Love',hype:'Hype Day',ride:'Ride or Die',lawyer:'Lawyer'};
   $('fx').innerHTML=Object.keys(S.fx).filter(k=>S.fx[k]).map(k=>`<span class="chip here">Active: ${FXN[k]}</span>`).join('');
-  $('pane').innerHTML={rap:paneRap,rob:paneRob,phone:panePhone,block:paneBlock,move:paneMove,beef:paneBeef,crew:paneCrew,cards:paneCards}[tab]();
+  $('pane').innerHTML={sch:paneSchool,rap:paneRap,rob:paneRob,phone:panePhone,block:paneBlock,move:paneMove,beef:paneBeef,crew:paneCrew,cards:paneCards}[tab]();
   $('log').innerHTML=S.log.map(l=>`<p><span class="d">D${l.d}</span>${l.t}</p>`).join('');
   missionUI();save();sndWatch();
 }
@@ -3356,6 +3357,13 @@ function calLabel(){const d=calDate();return `${isWknd()?'Weekend':'Week'} of ${
 function mdv(d){return (d.getUTCMonth()+1)*100+d.getUTCDate()}
 function schoolBreak(d){d=d||calDate();const v=mdv(d);if(v>=529&&v<=816)return 'Summer break';if(v>=1221||v<=103)return 'Winter break';if(v>=316&&v<=322)return 'Spring break';if(v>=1123&&v<=1127)return 'Thanksgiving break';return ''}
 const inHS=()=>S.school==='in'&&(S.cal?true:S.age<18);
+function paneSchool(){const college=S.college==='in',wk=S.cal?schoolWeek():true,went=S.classDay===S.day,gr=college?(S.cprog||0):(S.grades||0);
+  const warn=!college&&gr<35?`<div class="row" style="border:1px solid var(--blood)"><div class="info"><div class="t" style="color:var(--blood)">You are close to getting kicked out</div><div class="s">Grades are ${gr}/100. Below 15 and you are out of school. Go to class.</div></div></div>`:'';
+  const next=S.cal&&!wk?(isWknd()?"It's the weekend. No class.":schoolBreak()?schoolBreak()+'.':(S.suspended>S.day?'You are suspended.':'No school today.')):'';
+  return `<div class="sec">${college?'College':'High school'}</div>${warn}
+   <div class="row"><div class="info"><div class="t">${college?'Degree':'Grades'} ${gr}/100</div><div class="bar"><i style="width:${gr}%;background:${gr<35?'var(--blood)':'var(--accent)'}"></i></div><div class="s">${went?'You went today.':wk?'<b style="color:var(--blood)">You have not gone today.</b> Skip too many days and your grades drop.':next}</div></div><button class="btn go" data-a="class" ${wk&&!went?'':'disabled'}>${went?'Went today':'Go to class'}</button></div>
+   ${!college&&S.grades>=70?'<div class="row"><div class="info"><div class="t">Your teachers</div><div class="s">They like you. If security checks your bag they vouch for you.</div></div><span class="chip mine">On your side</span></div>':''}
+   <div class="s" style="padding:6px 2px;opacity:.8">${S.cal?'Class happens on school days. ':''}Missing a school day costs grades. Too many misses and you get kicked out.</div>`}
 const schoolWeek=()=>!!S.cal&&!isWknd()&&!schoolBreak()&&S.school==='in'&&!(S.suspended>S.day);
 const GRADEN={9:'Freshman',10:'Sophomore',11:'Junior',12:'Senior'};
 function weekTick(){return S.cal?isWknd():S.day%7===0}
