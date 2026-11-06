@@ -3386,7 +3386,7 @@ function teenStart(ch,age){age=age||14;S.cal=1;S.age=age;S.grade=Math.min(12,9+(
   S.biz=S.biz||{};S.kids=S.kids||[];S.fate=S.fate||{};S.ball=40;S.soldiers=0;
   const g=GUARD[ch]||pick(GUARDPOOL);S.par={...g,trust:60};
   const m=rnd(9,18),mo=((m-1)%12)+1,yr=2026+(m>12?1:0);S.nextBday=Date.UTC(yr+(age-14),mo-1,rnd(1,28));
-  if(age<18){S.home='family';S.cap+=20}}
+  if(age<18){S.home='family';S.cap+=20;S.at=homeBlock()}}
 function guardianLine(){const P=S.par;if(!P)return '';
   if(S.home!=='family')return `<div class="row" style="flex-wrap:wrap">${parPic(52)}<div class="info" style="flex:1 1 200px;min-width:0"><div class="t">Your people: ${P.name}</div><div class="s">You moved out, but you still look out for them.</div><div class="s">Trust ${P.trust}/100</div></div>
     <div class="btns"><button class="btn green" data-a="pargive" data-k="100" ${S.cash>=100&&S.parGive!==S.day?'':'disabled'}>Give ${P.who} $100</button><button class="btn green" data-a="pargive" data-k="500" ${S.cash>=500&&S.parGive!==S.day?'':'disabled'}>Give $500</button></div></div>`;const st=P.strict>=70?'Strict':P.strict>=45?'Keeps an eye on you':'Lets you slide';
