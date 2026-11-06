@@ -543,11 +543,11 @@ function paneBeef(){
     return `<div class="row" style="flex-wrap:wrap"><div class="info" style="flex:1 1 220px;min-width:0"><div class="t" style="color:${d.color}">${d.name} ${S.gang===c.id?'<span class="chip mine">Your set</span>':c.ally?'<span class="chip mine">Allies</span>':beefLabel(c.beef)}</div><div class="s" style="font-style:italic">${d.desc||''}</div>
       <div class="s">Strength ${c.str} · ${turf} block${turf===1?'':'s'} · Beef ${c.beef}/100 ${c.respect>=60?'<span class="chip mine">Green light</span>':''}</div>
       <div class="bar"><i style="width:${c.beef}%;background:var(--blood)"></i></div>
-      <div class="s">Respect ${c.respect}/100${c.respect<60?' · hit 60 and they let you serve the Js on their blocks':''}</div><div class="bar"><i style="width:${c.respect}%;background:var(--money)"></i></div>
+      <div class="s">${c.foe?'<b style="color:var(--blood)">They hate you. No deals unless they wave the white flag.</b>':`Respect ${c.respect}/100${c.respect<60?' · hit 60 and they let you serve the Js on their blocks':''}`}</div><div class="bar"><i style="width:${c.respect}%;background:var(--money)"></i></div>
       ${c.respect>=60||c.envy?`<div class="s">Envy ${c.envy}/100${c.envy>=70?' · <b style="color:var(--blood)">jealousy is real, watch your back</b>':''}</div><div class="bar"><i style="width:${c.envy}%;background:var(--accent)"></i></div>`:''}</div>
-      ${theirsHere?`<div class="s" style="width:100%">You on their block. Spend the day building respect: each one takes the whole day, it gets harder as respect goes up, and money stops working past 45 (run with their guys after that).</div><div class="btns" style="width:100%"><button class="btn green" data-a="resp" data-c="${c.id}" data-k="cookout" ${S.cash>=300?'':'disabled'}>Cookout $300</button><button class="btn green" data-a="resp" data-c="${c.id}" data-k="tribute" ${S.cash>=500?'':'disabled'}>Pay respects $500</button><button class="btn green" data-a="resp" data-c="${c.id}" data-k="run">Run with their guys</button></div>`:''}
+      ${theirsHere&&!c.foe?`<div class="s" style="width:100%">You on their block. Spend the day building respect: each one takes the whole day, it gets harder as respect goes up, and money stops working past 45 (run with their guys after that).</div><div class="btns" style="width:100%"><button class="btn green" data-a="resp" data-c="${c.id}" data-k="cookout" ${S.cash>=300?'':'disabled'}>Cookout $300</button><button class="btn green" data-a="resp" data-c="${c.id}" data-k="tribute" ${S.cash>=500?'':'disabled'}>Pay respects $500</button><button class="btn green" data-a="resp" data-c="${c.id}" data-k="run">Run with their guys</button></div>`:''}
       <div class="btns">
-       <button class="btn" data-a="squash" data-c="${c.id}" ${c.beef&&S.cash>=squash?'':'disabled'}>Squash ${money(squash)}</button>
+       ${c.foe?'':`<button class="btn" data-a="squash" data-c="${c.id}" ${c.beef&&S.cash>=squash?'':'disabled'}>Squash ${money(squash)}</button>`}
        ${S.gang===c.id||c.ally?'':`<button class="btn red" data-a="hit" data-c="${c.id}" ${theirsHere&&canWar()&&!blockReq()?'':'disabled'}>${blockReq()?'Take block (locked)':canWar()?'Take block':'Take block (no firepower)'}</button>`}
       </div>${gangBtns(c,theirsHere)}</div>`;
   }).join('');
@@ -559,7 +559,7 @@ function paneGang(){
   if(S.myGang)return `<div class="row" style="flex-wrap:wrap;border-color:var(--money)"><div class="info"><div class="t">Your gang: <span style="color:var(--money)">${esc(S.myGang.name)}</span></div><div class="s">${S.soldiers} member${S.soldiers===1?'':'s'}. Members cost $100 a day instead of $150 and each one brings in $50 a day. +5 strength. Make allies, buy blocks, or take them.</div></div></div>`;
   return `<div class="row" style="flex-wrap:wrap"><div class="info"><div class="t">Gang life</div><div class="s">Get jumped in to a set (need 40 respect with them), or start your own (18+, rep 30, $10,000). You can also make allies, buy a block, or go to war.</div></div><button class="btn go" data-a="gown" ${adult()&&S.rep>=30&&S.cash>=10000?'':'disabled'}>Start your own</button></div>`}
 function esc(t){return String(t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-function gangBtns(c,here){const d=cdef(c.id);if(!c.alive||S.gang===c.id)return '';let b='';
+function gangBtns(c,here){const d=cdef(c.id);if(!c.alive||S.gang===c.id||c.foe)return '';let b='';
   if(!S.gang&&!S.myGang&&c.beef<30)b+=`<button class="btn go" data-a="gjoin" data-c="${c.id}" ${c.respect>=40?'':'disabled'}>${c.respect>=40?'Get jumped in':'Jumped in (need 40 respect)'}</button>`;
   if(!S.gang&&!c.ally){const ac=3000+c.str*50;b+=`<button class="btn" data-a="gally" data-c="${c.id}" ${c.respect>=70&&c.beef<20&&S.cash>=ac?'':'disabled'}>${c.respect>=70&&c.beef<20?'Ally up '+money(ac):'Ally (need 70 respect)'}</button>`}
   if(!S.gang&&here){const bc=8000+c.str*300;b+=`<button class="btn green" data-a="gbuy" data-c="${c.id}" ${c.respect>=50&&c.beef<30&&S.cash>=bc&&!blockReq()?'':'disabled'}>Buy ${BLOCKS[S.at]} ${money(bc)}</button>${blockReq()?`<div class="s" style="width:100%;color:var(--dim)">${blockReq()}</div>`:''}`}
@@ -3154,8 +3154,8 @@ function act(a,el){
   if(a==='gleave')return gangLeave();
   if(a==='gown')return gangOwn();
   if(a==='gally'){const c=crew(el.dataset.c),ac=3000+c.str*50;S.cash-=ac;c.ally=1;c.envy=0;say(`You and the ${cdef(c.id).name} are allies now. Y'all share the block and they won't run up on you.`)}
-  if(a==='gopps'){const c=crew(el.dataset.c);c.ally=0;c.beef=100;c.respect=0;S.rep+=3;say(`You turned on the ${cdef(c.id).name}. Y'all opps now.`)}
-  if(a==='gbuy'){const br=blockReq();if(br){say(br);return render()}const c=crew(el.dataset.c),bc=8000+c.str*300;S.cash-=bc;S.owner[S.at]='me';c.respect=Math.max(0,c.respect-10);S.rep+=8;S.st.blocks++;say(`Bought ${BLOCKS[S.at]} off the ${cdef(c.id).name} for ${money(bc)}. It's yours now.`);if(!S.owner.includes(c.id)){c.alive=false;say(`The ${cdef(c.id).name} cashed out of the city.`)}}
+  if(a==='gopps'){const c=crew(el.dataset.c);c.ally=0;c.foe=1;c.beef=100;c.respect=0;S.rep+=3;say(`You turned on the ${cdef(c.id).name}. Y'all opps now.`)}
+  if(a==='gbuy'){const br=blockReq();if(br){say(br);return render()}const c=crew(el.dataset.c),bc=8000+c.str*300;S.cash-=bc;S.owner[S.at]='me';c.respect=Math.max(0,c.respect-10);S.rep+=8;S.st.blocks++;say(`Bought ${BLOCKS[S.at]} off the ${cdef(c.id).name} for ${money(bc)}. It's yours now.`);if(!S.owner.includes(c.id)){c.alive=false;say(`The ${cdef(c.id).name} cashed out of the city.`)}else{c.ally=1;c.foe=0;c.envy=0;say(`The deal made y'all allies. They still got your back.`)}}
   if(a==='use')useCard(+el.dataset.i);
   if(a==='sk'&&S.pts>0&&S.sk[el.dataset.k]<10){S.pts--;S.sk[el.dataset.k]++;say(`${SKN[el.dataset.k]} went up to ${S.sk[el.dataset.k]}.`)}
   if(a==='hoops')return hoops();
@@ -3261,7 +3261,7 @@ function war(c){if(!canWar()){modal(`<h2>No firepower</h2><p>You can't take a bl
     <div class="btns"><button class="btn red" id="y">Run it</button><button class="btn" id="n">Not yet</button></div>`);
   $('n').onclick=close;
   $('y').onclick=()=>{fightGame(mine,c.str,`the ${d.name} on ${BLOCKS[S.at]}`,win=>{S.heat=Math.min(100,S.heat+(is('shade')?12:25));S.fx.ride=0;
-    if(win){S.owner[S.at]='me';S.rep+=15;c.beef=100;c.str=Math.max(4,c.str-5);
+    if(win){S.owner[S.at]='me';S.rep+=15;c.beef=100;c.foe=1;c.ally=0;c.lost=(c.lost||0)+1;c.str=Math.max(4,c.str-5);
       S.st.blocks++;addXP(15);addStress(8);say(`You took ${BLOCKS[S.at]} from the ${d.name}.`);cut('took',`${BLOCKS[S.at].toUpperCase()} IS YOURS`);drawCard(.6,'In their trap house,');
       if(!S.owner.includes(c.id)){c.alive=false;say(`The ${d.name} are done. No blocks left.`)}}
     else{const dmg=vcut(rnd(25,45));S.hp-=dmg;if(S.soldiers&&Math.random()<.5){S.soldiers--;say('You lost a soldier.')}
@@ -3503,9 +3503,14 @@ function gangEvent(){if(S.gang&&!S.gangCon&&crew(S.gang)&&crew(S.gang).respect>=
   
   if(S.gang&&!S.gHold&&Math.random()<.12){gangCall();return true}
   if(S.myGang&&S.soldiers>0&&Math.random()<.06){memberEvent();return true}
+  {const wf=(S.crews||[]).filter(c=>c.alive&&c.foe&&!(c.wfCool>S.day)&&(c.lost>=2||S.owner.filter(o=>o===c.id).length<=1||c.str<myStr()*.5));if(wf.length&&Math.random()<.1){whiteFlag(pick(wf));return true}}
   const al=(S.crews||[]).filter(c=>c.alive&&c.ally);
   if(al.length&&Math.random()<.07){const c=pick(al),big=myTurf()>=3||myStr()>=45;if(big&&Math.random()<.55)allyNervous(c);else allyHelp(c);return true}
   return false}
+function whiteFlag(c){const d=cdef(c.id),pay=Math.round(1500+c.str*60);
+  modal(`<h2 style="color:${d.color}">The ${d.name} want peace</h2><p>They tired of taking losses and they know they can't win out here with you running things. A shot caller comes through with a bag and a white flag.</p><p>"${money(pay)} and we back off. No more smoke. We just business again."</p><p class="s" style="color:var(--dim)">Take it and the beef is squashed. You won't be allies, but they'll deal with you again. Turn it down and they stay your opps.</p><div class="btns"><button class="btn go" id="wy">Take the ${money(pay)}</button><button class="btn" id="wn">Not interested</button></div>`);
+  $('wy').onclick=()=>{S.cash+=pay;c.foe=0;c.beef=35;c.respect=Math.max(c.respect,45);c.envy=0;say(`The ${d.name} paid ${money(pay)} for peace. The beef is over.`);close()};
+  $('wn').onclick=()=>{c.wfCool=S.day+12;say(`You turned down the ${d.name}. They're still your opps.`);close()}}
 function oppOf(id){return (S.crews||[]).filter(o=>o.alive&&o.id!==id&&!o.ally&&o.id!==S.gang)}
 function gangCall(){const c=crew(S.gang),d=cdef(c.id),opps=oppOf(c.id),type=opps.length&&Math.random()<.45?'ride':pick(['post','hold']);
   const no=(pen,why)=>{c.respect=Math.max(0,c.respect-pen);say(`Told the ${d.name} no. ${why}`);if(c.respect<25){S.gang=null;c.beef=50;say(`The ${d.name} say you ain't really with it. You out.`)}close()};
