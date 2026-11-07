@@ -1808,6 +1808,22 @@ function plugThreat(bi,owe){const care=PCARE[bi],l=PINFO[bi].lvl,sc={Low:1500,Mi
 function debtHit(bi,onBlock){const nm=plugName(bi),d=debtOf(bi),dmg=vcut(rnd(14,30)*({Low:1,Mid:1.2,Big:1.5}[PINFO[bi].lvl])*(hasT('dayone')?.8:1)|0),take=Math.min(S.cash,Math.round(Math.min((d?d.owe:300)*.25,S.cash*.2)));S.hp-=dmg;S.cash-=take;addStress(12);S.heat=Math.min(100,S.heat+4);
   say(`${nm}'s people caught you${onBlock?' on '+BLOCKS[bi]:''} over what you owe. −${dmg} health${take?', took '+money(take):''}.`);
   modal(`${artImg('nostrapp',420)}<h2 style="color:var(--blood)">${nm} sent people</h2><p>${PCARE[bi]==='principle'?`"It ain't about the money, it's about respect."`:`"You owe me. Simple as that."`} They found you ${onBlock?'on their block':'slipping'}. −${dmg} health${take?' and they took '+money(take):''}. Pay ${nm} and it stops.</p><div class="btns"><button class="btn go" id="ok">Watch your back</button></div>`);$('ok').onclick=()=>{close();checkEnd()}}
+const LS_OFF=[500,1500,4000,10000],LS_DAYS=7;
+function loanOk(){return S.age>=16&&S.lvl>=2}
+function loanHTML(){if(!loanOk())return '';const L=S.ls=S.ls||{owe:0,paid:0};
+  if(!L.owe)return `<div class="sec">Loan shark</div><div class="row" style="flex-direction:column;align-items:stretch;gap:6px"><div class="info"><div class="t">💼 Mr. Vince</div><div class="s">Cash now, no questions. He wants 25% back in ${LS_DAYS} days. Miss it and the interest eats you, and his people come to collect.${L.paid?` You paid him back ${L.paid} time${L.paid>1?'s':''}.`:''}</div></div><div class="btns">${LS_OFF.map(n=>`<button class="btn go" data-a="lsget" data-n="${n}">Borrow ${money(n)}</button>`).join('')}</div></div>`;
+  const left=L.due-S.day,late=left<0;
+  return `<div class="sec">Loan shark</div><div class="row" style="flex-direction:column;align-items:stretch;gap:6px;border-color:${late?'var(--blood)':'var(--accent)'}"><div class="info"><div class="t">💼 Mr. Vince · you owe ${money(L.owe)}</div><div class="s" style="color:${late?'var(--blood)':'var(--dim)'}">${late?`${-left} day${-left===1?'':'s'} late. The interest is growing and his people are looking for you.`:left===0?'Due today.':`Due in ${left} day${left===1?'':'s'}.`}</div></div><div class="btns"><button class="btn go" data-a="lspay" data-n="${L.owe}" ${S.cash>=L.owe?'':'disabled'}>Pay it all</button><button class="btn" data-a="lspay" data-n="${Math.min(500,L.owe)}" ${S.cash>=Math.min(500,L.owe)?'':'disabled'}>Pay ${money(Math.min(500,L.owe))}</button></div></div>`}
+function loanGet(n){const L=S.ls=S.ls||{owe:0,paid:0};if(L.owe||!loanOk())return;L.owe=Math.round(n*1.25);L.princ=n;L.due=S.day+LS_DAYS;L.late=0;L.warned=0;S.cash+=n;say(`Mr. Vince gave you ${money(n)}. He wants ${money(L.owe)} back by day ${L.due}.`);render()}
+function loanPay(n){const L=S.ls;if(!L||!L.owe)return;n=Math.min(n,L.owe,S.cash);if(n<=0)return;S.cash-=n;L.owe-=n;if(L.owe<=0){L.owe=0;L.paid=(L.paid||0)+1;S.rep+=S.day<=L.due?1:0;say(`Paid Mr. Vince off${S.day<=L.due?' on time. He respects it.':'. Square, but he will remember.'}`)}else say(`Paid Mr. Vince ${money(n)}. You still owe ${money(L.owe)}.`);render()}
+function loanDay(){const L=S.ls;if(!L||!L.owe)return;if(S.day===L.due-1&&!L.warned){L.warned=1;say('📱 Mr. Vince: "Tomorrow. Do not make me come find you."')}
+  if(S.day>L.due){L.late++;L.owe=Math.min(Math.round(L.princ*3),Math.round(L.owe*1.07));S.heat=Math.min(100,S.heat+1);
+    if(L.late===1)say('Mr. Vince is waiting on his money. The interest is growing.');
+    if(L.late%2===0&&!S.inJail)loanHit()}}
+function loanHit(){const L=S.ls,st=18+L.late*3,pay=Math.min(S.cash,L.owe);
+  modal(`<h2 style="color:var(--blood)">Mr. Vince's collector</h2><p>A guy steps out from a car. "${money(L.owe)}. Today." He ain't asking.</p><div class="btns" style="flex-direction:column;align-items:stretch"><button class="btn green" id="lp" ${pay>0?'':'disabled'}>Hand over ${money(pay)}</button><button class="btn red" id="lf">Fight him</button></div>`);
+  $('lp').onclick=()=>{S.cash-=pay;L.owe-=pay;if(L.owe<=0){L.owe=0;L.paid=(L.paid||0)+1;say('Paid Mr. Vince in full on the street.')}else{say(`You gave the collector ${money(pay)}. You still owe ${money(L.owe)}.`)}close();render()};
+  $('lf').onclick=()=>{close();fightGame(myStr(),st,"Vince's collector",win=>{if(win){L.due=S.day+3;S.rep+=2;addXP(6);S.heat=Math.min(100,S.heat+8);say("You put the collector down. Vince gave you 3 more days, but he's not happy.")}else{const dm=vcut(rnd(20,45)),tk=Math.round(S.cash*.2);S.hp-=dm;S.cash-=tk;L.owe=Math.round(L.owe*1.1);addStress(15);say(`The collector beat you down. −${dm} health, took ${money(tk)}, and the debt went up.`);if(L.late>=6){const c=pick(S.crews.filter(c=>c.alive));if(c)c.beef=Math.min(100,c.beef+20);say('Vince put a price on you. A crew got word.')}}checkEnd();render()})}}
 function debtDay(){if(!S.debt||!S.debt.length)return;S.debt.slice().forEach(d=>{const bi=d.bi,nm=plugName(bi),l=PINFO[bi].lvl;
     if(S.day===d.due-1&&!d.warned){d.warned=1;say(`📱 ${nm}: "Tomorrow, you know what it is."`)}
     if(S.day>d.due){d.late++;d.owe=Math.min(Math.round(d.princ*2.2),Math.round(d.owe*1.05));S.trust[bi]=Math.max(0,(S.trust[bi]||0)-4);
@@ -2718,7 +2734,7 @@ function wFront(i){const w=(S.workers||[])[i];if(!w||!w.req)return;const r=w.req
   const each=Math.round(street(g)*gmult(S.q[r.gid])*1.12),owe=Math.round(each*r.n);S.inv[r.gid]-=r.n;if(S.inv[r.gid]<=0){S.inv[r.gid]=0;S.paid[r.gid]=0;S.fake[r.gid]=0}
   w.fr={due:S.day+3,owe,txt:amt(r.n,g)+' of '+g.name};w.req=null;w.loyal=Math.min(10,w.loyal+1);say(`Fronted ${w.name} ${w.fr.txt}. Owes ${money(owe)} in 3 days. Loyalty +1.`)}
 function panePhone(){const C=S.custos||[],T=S.texts||[];
-  let h=paneConnect()+phonePlugs()+workersPhoneHTML()+`<div class="row" style="flex-wrap:wrap;border-color:var(--accent)"><div class="info"><div class="t" style="font-family:var(--display);font-size:20px;font-weight:400">Trap phone</div><div class="s">${C.length} plays saved · plays pay more than the Js, and more the longer they've been buying from you. They come to you, wherever you at.</div></div>
+  let h=loanHTML()+paneConnect()+phonePlugs()+workersPhoneHTML()+`<div class="row" style="flex-wrap:wrap;border-color:var(--accent)"><div class="info"><div class="t" style="font-family:var(--display);font-size:20px;font-weight:400">Trap phone</div><div class="s">${C.length} plays saved · plays pay more than the Js, and more the longer they've been buying from you. They come to you, wherever you at.</div></div>
     <div class="btns" style="width:100%"><button class="btn go" style="white-space:normal" data-a="ptext" ${S.texted===S.day||!C.length?'disabled':''}>${S.texted===S.day?'Already texted today':"Text everybody \"I'm open\""}</button><button class="btn" style="white-space:normal" data-a="pcard" ${S.passed===S.day?'disabled':''}>${S.passed===S.day?'Passed it out today':`Pass out your number on ${BLOCKS[S.at]}`}</button></div></div>`;
   h+=`<div class="sec">Texts (${T.length})</div>`;
   h+=T.length?T.map((t,i)=>{const c=C[t.ci];if(!c)return '';const gid=t.g||c.gid,g=G(gid),have=stkG(gid)>=g.step,sz=t.g?altSize(c,gid):c.size;
@@ -3132,7 +3148,7 @@ function nextDay(){S.en=S.restDay?enMax():Math.max(30,enMax()-(S.stress>=70?20:0
   if(S.myGang&&S.soldiers)S.cash+=S.soldiers*50;
   runTraps();
   gfDay();sideDay();if(S.car==='stolen'){S.heat=Math.min(100,S.heat+2);addXP(1)}favorRoll();
-  shipDay();debtDay();checkpointDay();rapDay();
+  shipDay();debtDay();loanDay();checkpointDay();rapDay();
   if(S.cal?calCheck():(S.day-1)%30===0)say("It's the first of the month. Checks hit and the Js got money to spend.");
   demandDay();
   homeDay();
@@ -3311,6 +3327,8 @@ function act(a,el){
   if(a==='safe'){const k=el.dataset.k;if(k==='out'){S.cash+=S.safe;say(`Took ${money(S.safe)} out from the house.`);S.safe=0}else{const m=k==='all'?S.cash:Math.floor(S.cash/2);S.cash-=m;S.safe=(S.safe||0)+m;say(`Put ${money(m)} up at the house.`)}}
   if(a&&a.indexOf('rv_')===0)return plugRevenge(a.slice(3),+el.dataset.i);
   if(a==='pkick')plugKick(+el.dataset.i);
+  if(a==='lsget')return loanGet(+el.dataset.n);
+  if(a==='lspay')return loanPay(+el.dataset.n);
   if(a==='pasks')return plugAsk(+el.dataset.i);
   if(a==='ppitch')return plugPitch(+el.dataset.i);
   if(a==='ppgo')return plugPitchGo(+el.dataset.i,el.dataset.g,el.dataset.m);
