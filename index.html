@@ -937,10 +937,10 @@ function mgMaze(o,cb){mgOn=true;const C=7,R=9,T=22,GW=2*C+1,GH=2*R+1,W=GW*T,H=GH
   while(stk.length){const [cx,cy]=stk[stk.length-1];const nb=[[1,0],[-1,0],[0,1],[0,-1]].map(([dx,dy])=>[cx+dx,cy+dy,dx,dy]).filter(([x,y])=>x>=0&&y>=0&&x<C&&y<R&&!seen.has(x+','+y));
     if(!nb.length){stk.pop();continue}const [nx,ny,dx,dy]=pick(nb);seen.add(nx+','+ny);g[2*ny+1][2*nx+1]=0;g[2*cy+1+dy][2*cx+1+dx]=0;stk.push([nx,ny])}
   for(let i=0;i<Math.round(8-d*5);i++){const x=rnd(1,GW-2),y=rnd(1,GH-2);if(g[y][x]===1&&((g[y][x-1]===0&&g[y][x+1]===0)||(g[y-1][x]===0&&g[y+1][x]===0)))g[y][x]=0}
-  const maxS=mgLv(2+Math.floor(skv('smarts')/3)+(is('shade')?1:0)),LIM=(o.T||42000)+skv('smarts')*1500,ex=2*C-1,ey=2*R-1;let strikes=0,act=false,last=null,pos=null;const T0=performance.now();
-  modal(`<h2>${o.title||'Tunnel the VPN'}</h2>${mgHud(`Strikes 0 of ${maxS}. Put your finger on the green node and drag to the exit.`)}${mgCv(W,H)}`);
+  const maxS=mgLv(3+Math.floor(skv('smarts')/3)+(is('shade')?1:0)),LIM=(o.T||42000)+skv('smarts')*1500,ex=2*C-1,ey=2*R-1;let strikes=0,act=false,last=null,pos=null;const T0=performance.now();
+  modal(`<h2>${o.title||'Tunnel the VPN'}</h2>${mgHud(`Strikes 0 of ${maxS}. Put your finger on the green node and drag to the exit. Walls forgive a graze.`)}${mgCv(W,H)}`);
   const cv=$('mgc'),x=cv.getContext('2d');
-  const wall=(px,py)=>{const tx=Math.floor(px/T),ty=Math.floor(py/T);return tx<0||ty<0||tx>=GW||ty>=GH||g[ty][tx]===1};
+  const IN=6;const wall=(px,py)=>{const tx=Math.floor(px/T),ty=Math.floor(py/T);if(tx<0||ty<0||tx>=GW||ty>=GH)return true;if(g[ty][tx]!==1)return false;const fx=px-tx*T,fy=py-ty*T;return fx>=IN&&fx<=T-IN&&fy>=IN&&fy<=T-IN};
   const draw=()=>{x.fillStyle='#07090d';x.fillRect(0,0,W,H);for(let j=0;j<GH;j++)for(let i=0;i<GW;i++)if(g[j][i]){x.fillStyle='#1b2a46';x.fillRect(i*T,j*T,T,T);x.fillStyle='#27406b';x.fillRect(i*T,j*T,T,2)}
     x.fillStyle='#3ddc84';x.beginPath();x.arc(1.5*T,1.5*T,T*.42,0,7);x.fill();x.fillStyle='#ffd23f';x.beginPath();x.arc((ex+.5)*T,(ey+.5)*T,T*.42,0,7);x.fill();
     if(pos){x.fillStyle='#fff';x.beginPath();x.arc(pos[0],pos[1],4,0,7);x.fill()}};
@@ -1413,7 +1413,7 @@ function plugActions(bi){const k=S.pk[bi]||{},kn=S.known.includes(bi),fem=plugFe
     ${adult()&&(isF()?!fem:fem)?`<button class="btn" data-a="phook" data-i="${bi}" ${canHook&&!cool?'':'disabled'}>${!kn||S.trust[bi]<50?'Flirt (need 50 trust)':cool?'Give it a few days':'Shoot your shot'}</button>`:''}
     ${recruitBtn(bi)}
     ${kn?`<button class="btn" data-a="ppitch" data-i="${bi}" ${k.pitch===S.day?'disabled':''}>${k.pitch===S.day?'Already pitched today':`Pitch ${fem?'her':'him'} your stuff`}</button>`:''}
-    ${kn&&!(S.recr&&S.recr[bi])?`<button class="btn" data-a="pask" data-i="${bi}" ${k.ask===S.day?'disabled':''}>${k.ask===S.day?'Already asked today':'Ask for something else'}</button>`:''}
+    ${kn&&!(S.recr&&S.recr[bi])?`<button class="btn" data-a="pasks" data-i="${bi}" ${k.ask===S.day?'disabled':''}>${k.ask===S.day?'Already asked today':'Ask for something else'}</button>`:''}
     ${(S.recr&&S.recr[bi])?'':PINFO[bi].lvl==='Low'?`<button class="btn" data-a="pfav" data-k="play" data-i="${bi}" ${favCool?'disabled':''}>Take ${fem?'her':'him'} to a play</button>`:''}${(S.recr&&S.recr[bi])?'':`<button class="btn" data-a="pfav" data-k="spin" data-i="${bi}" ${favCool?'disabled':''}>Slide on ${fem?'her':'his'} opps</button>`}
     <button class="btn red" data-a="prob" data-i="${bi}">Rob ${fem?'her':'him'}</button></div>
     ${adult()&&k.hooked&&S.trust[bi]>=80&&!(S.gf&&S.gf.plug===bi)?`<div class="btns" style="margin-top:6px"><button class="btn go" data-a="pdate" data-i="${bi}">Ask ${fem?'her':'him'} out</button></div>>`:k.hooked&&!(S.gf&&S.gf.plug===bi)?`<div class="s">Y'all been creeping. Get ${fem?'her':'him'} to 80 trust and you can make it official.</div>`:''}
@@ -1425,7 +1425,7 @@ function plugAsk(bi){const nm=plugName(bi),odd=GOODS.filter(x=>!PINFO[bi].carrie
   modal(`<h2>Ask ${nm} for something else</h2><p>${nm} normally moves ${PINFO[bi].carries.map(id=>G(id).name).join(', ')}. Pick what you want. Talking depends on trust and your talk skill, and keeps things friendly. Forcing is a bigger chance on a good day but costs trust, heat and maybe health, and you only get one try a day.</p>
   <div class="btns" style="flex-direction:column;align-items:stretch">${odd.map(g=>`<div class="row" style="padding:6px 10px"><div class="info"><div class="t">${g.icon||''} ${g.name}</div></div><button class="btn go" data-a="paskgo" data-i="${bi}" data-g="${g.id}" data-m="talk">Talk ${plugFem(bi)?'her':'him'} into it</button><button class="btn red" data-a="paskgo" data-i="${bi}" data-g="${g.id}" data-m="force">Force it</button></div>`).join('')}<button class="btn" id="no">Never mind</button></div>`);$('no').onclick=close}
 function plugPitch(bi){const nm=plugName(bi),him=plugFem(bi)?'her':'him',mine=GOODS.filter(x=>S.inv[x.id]>0&&!PINFO[bi].carries.includes(x.id));
-  if(!mine.length){say(`You got nothing ${nm} doesn't already move. ${PINFO[bi].carries.map(id=>G(id).name).join(', ')} you can just sell ${him}.`);return render()}
+  if(!mine.length){modal(`<h2>Nothing to pitch</h2><p>You are not holding anything ${nm} doesn't already buy. Pitching is for stuff ${nm} normally passes on, like ${GOODS.filter(x=>!PINFO[bi].carries.includes(x.id)).map(x=>x.name).join(', ')}. Pick some up first, or just hit Sell.</p><div class="btns"><button class="btn go" id="no">Got it</button></div>`);$('no').onclick=close;return}
   modal(`<h2>Pitch ${nm}</h2><p>${nm} doesn't normally buy these. Talk ${him} into taking it, or force it on ${him}. One try a day.</p>
   <div class="btns" style="flex-direction:column;align-items:stretch">${mine.map(g=>`<div class="row" style="padding:6px 10px"><div class="info"><div class="t">${g.name}</div><div class="s">You got ${amt(S.inv[g.id],g)}</div></div><button class="btn go" data-a="ppgo" data-i="${bi}" data-g="${g.id}" data-m="talk">Talk ${him} into it</button><button class="btn red" data-a="ppgo" data-i="${bi}" data-g="${g.id}" data-m="force">Force it</button></div>`).join('')}<button class="btn" id="no">Never mind</button></div>`);$('no').onclick=close}
 function plugPitchGo(bi,gid,mode){const nm=plugName(bi),he=plugFem(bi)?'she':'he',g=G(gid),pk=S.pk[bi]=S.pk[bi]||{};if(pk.pitch===S.day)return;pk.pitch=S.day;close();
@@ -2436,7 +2436,7 @@ const TUT=[
  ['Welcome to the streets','You start at 14, freshman year. Each turn is a school week or a weekend. Weekdays are for school, weekends are for the streets. Follow your story missions in the yellow box up top. Chapter 1 is high school, Chapter 2 starts at 18.'],
  ['Block tab: the money','Buy from the plug, sell it back for a profit. Sell to the plug for safe money and respect, or serve the Js for 40% more but way more heat and beef. Some blocks have way more money than others, so check the tag on the block. Always check the grade, test for fakes, and talk price once a day.'],
  ['School tab','Going to class takes the whole school week, so do your hustles first. You get 3 moves a week: steal phones, serve classmates, fight, hack your grades, or rap at the lunch table. Get caught and it is a strike: suspended, then alt school, then expelled. Keep your grades at 70 or higher and teachers give you the benefit of the doubt.'],
- ['Move tab: the city','Tap a block on the map to go there. Each block has its own plug, prices and crew. The Move tab also has hoops, dice and licks like the pharmacy and stores. Lay low when your heat or stress gets too high.'],
+ ['Move tab: the city','Tap a block on the map to go there. Each block has its own plug, prices and crew. The map has places to tap too: the mall (bookbag, safes, storage, ski mask) and the lawyer\'s office are in Downtown, and the car lot is in Westgate. Go to that block, then tap the building. The Move tab also has hoops, dice and licks like the pharmacy and stores. Lay low when your heat or stress gets too high.'],
  ['Circle tab: your people','Your fight style, trap houses, family and where you stay, homies, your girl and the crews all live here. Your fight style levels up every time you win a fight. After 18 your girl texts you, and how you answer matters. If a plug turns on you, go to their block and settle it.'],
  ['Phone tab: plays and connects','Plays text you for product. If you are out on you but it is in your safe, they go in the safe. You can see the grade of what you carry before you meet up. Once you earn a connect you can order up to 3 times a day, and you can drop one to get a shot at a better one.'],
  ['Me tab: your life','Spend skill points, handle your stash and safe, jobs and life choices. Cash in the safe stays hidden from strict parents and can pay for things your family or remote connects ask for. Life might also offer you a rap career or a robbing life.'],
@@ -3311,7 +3311,7 @@ function act(a,el){
   if(a==='safe'){const k=el.dataset.k;if(k==='out'){S.cash+=S.safe;say(`Took ${money(S.safe)} out from the house.`);S.safe=0}else{const m=k==='all'?S.cash:Math.floor(S.cash/2);S.cash-=m;S.safe=(S.safe||0)+m;say(`Put ${money(m)} up at the house.`)}}
   if(a&&a.indexOf('rv_')===0)return plugRevenge(a.slice(3),+el.dataset.i);
   if(a==='pkick')plugKick(+el.dataset.i);
-  if(a==='pask')return plugAsk(+el.dataset.i);
+  if(a==='pasks')return plugAsk(+el.dataset.i);
   if(a==='ppitch')return plugPitch(+el.dataset.i);
   if(a==='ppgo')return plugPitchGo(+el.dataset.i,el.dataset.g,el.dataset.m);
   if(a==='paskgo')return plugAskGo(+el.dataset.i,el.dataset.g,el.dataset.m);
