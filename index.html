@@ -803,6 +803,16 @@ function freshCands(){if(S.candDay>S.day-7&&S.cands.length)return;S.candDay=S.da
   while(S.cands.length<3){const name=pick(WNAMES.filter(n=>!taken.includes(n)&&!S.cands.some(c=>c.name===n)));
     const hustle=rnd(2,9),loyal=rnd(2,9);S.cands.push({id:name+S.day,name,hustle,loyal,wage:40+hustle*25+loyal*10})}}
 const myBlock=bi=>S.owner[bi]==='me'||S.owner[bi]==='none';
+const wCap=w=>[0,40,90,160][wLv(w)];
+const wStashUsed=w=>GOODS.reduce((a,g)=>a+((w.stash&&w.stash[g.id])||0)*g.sp,0);
+function wStashTxt(w){const e=GOODS.filter(g=>w.stash&&w.stash[g.id]>0).map(g=>`${amt(w.stash[g.id],g)} ${g.name}`);return e.length?e.join(', '):'nothing'}
+function wStashModal(i){const w=S.workers[i];if(!w)return;w.stash=w.stash||{};const free=Math.max(0,wCap(w)-wStashUsed(w));
+  modal(`<h2>${w.name}'s stash</h2><p>Level ${wLv(w)} workers can hold ${wCap(w)} space. He has ${Math.round(wStashUsed(w))} used. Product you front him leaves your pockets, so it frees your carry space, but a low loyalty worker can skim it.</p>
+  <div class="btns" style="flex-direction:column;align-items:stretch">${GOODS.filter(g=>S.inv[g.id]>0||(w.stash[g.id]||0)>0).map(g=>{const can=Math.min(S.inv[g.id],Math.floor(free/g.sp*(g.step<1?2:1))/(g.step<1?2:1));return `<div class="row" style="padding:6px 10px"><div class="info"><div class="t">${g.name}</div><div class="s">You ${amt(S.inv[g.id],g)} · him ${amt(w.stash[g.id]||0,g)}</div></div><button class="btn go" data-a="wgive" data-i="${i}" data-g="${g.id}" data-m="half" ${can>0?'':'disabled'}>Give half</button><button class="btn go" data-a="wgive" data-i="${i}" data-g="${g.id}" data-m="all" ${can>0?'':'disabled'}>Give all</button><button class="btn" data-a="wtake" data-i="${i}" data-g="${g.id}" ${(w.stash[g.id]||0)>0?'':'disabled'}>Take back</button></div>`}).join('')||'<p class="s">You have nothing to front.</p>'}<button class="btn" id="no">Done</button></div>`);$('no').onclick=()=>{close();render()}}
+function wGive(i,gid,m){const w=S.workers[i];if(!w)return;const g=G(gid);w.stash=w.stash||{};w.sq=w.sq||{};const free=Math.max(0,wCap(w)-wStashUsed(w));let n=m==='half'?S.inv[gid]/2:S.inv[gid];n=Math.min(n,free/g.sp);n=g.step<1?Math.floor(n*2)/2:Math.floor(n);if(n<=0){say(`${w.name} can't hold any more.`);return wStashModal(i)}
+  const old=w.stash[gid]||0;w.sq[gid]=old?Math.round((w.sq[gid]*old+S.q[gid]*n)/(old+n)):S.q[gid];w.stash[gid]=old+n;S.inv[gid]-=n;if(S.inv[gid]<=0){S.inv[gid]=0;S.paid[gid]=0;S.fake[gid]=0}wStashModal(i)}
+function wTake(i,gid){const w=S.workers[i];if(!w||!w.stash||!w.stash[gid])return;const g=G(gid),n=w.stash[gid];if(used()+n*g.sp>S.cap+.01){say("You don't have room to carry that back.");return wStashModal(i)}
+  S.inv[gid]+=n;w.stash[gid]=0;wStashModal(i)}
 const wLv=w=>1+((w.sales||0)>=6?1:0)+((w.sales||0)>=18?1:0);
 function trapGoods(t){return [t.g,t.g2,t.g3].filter((x,i,a)=>x&&a.indexOf(x)===i)}
 function runTraps(){
@@ -810,16 +820,17 @@ function runTraps(){
     if(!myBlock(bi)){say(`${w.name} couldn't work ${BLOCKS[bi]}. That's not your block no more.`);return}
     let worked=0;
     trapGoods(t).slice(0,wLv(w)).forEach(gid=>{const g=G(gid);
-      const have=S.inv[g.id];if(have<=0){say(`${w.name} ran out of ${g.name} at the ${BLOCKS[bi]} trap.`);return}
+      w.stash=w.stash||{};w.sq=w.sq||{};const ws=(w.stash[gid]||0)>0,have=ws?w.stash[gid]:S.inv[g.id];if(have<=0){say(`${w.name} ran out of ${g.name} at the ${BLOCKS[bi]} trap.`);return}
       let n=Math.min(have,Math.floor(w.hustle*(g.unit==='g'?5:g.unit==='pills'?8:1)*(.6+.4*(typeof demand==='function'?Math.min(1.2,Math.max(.4,demand(bi,g.id))):1))));if(g.step<1)n=Math.floor(n*2)/2;if(n<=0)return;
-      const fk=Math.min(S.fake[g.id],Math.round(n*S.fake[g.id]/have));S.fake[g.id]-=fk;
-      const p=S.prices[bi]?.[g.id]??street(g);const each=p*gmult(S.q[g.id])*.8*(rankAt(3)?1.15:1);
-      let take=Math.round((n-fk)*each+fk*each*.15);S.inv[g.id]-=n;if(S.inv[g.id]<=0){S.inv[g.id]=0;S.paid[g.id]=0;S.fake[g.id]=0}
+      const fk=ws?0:Math.min(S.fake[g.id],Math.round(n*S.fake[g.id]/have));S.fake[g.id]-=fk;
+      const p=S.prices[bi]?.[g.id]??street(g);const each=p*gmult(ws?(w.sq[gid]||S.q[g.id]):S.q[g.id])*.8*(rankAt(3)?1.15:1);
+      let take=Math.round((n-fk)*each+fk*each*.15);if(ws){w.stash[gid]-=n;if(w.stash[gid]<=0)w.stash[gid]=0}else{S.inv[g.id]-=n;if(S.inv[g.id]<=0){S.inv[g.id]=0;S.paid[g.id]=0;S.fake[g.id]=0}}
       if(!is('val')&&Math.random()<(10-w.loyal)*.02){const stole=Math.round(take*.3);take-=stole;say(`${w.name} came up short ${money(stole)} at the ${BLOCKS[bi]} trap. Watch him.`)}
       w.held=(w.held||0)+take;S.st.sold+=n*g.sp*5;worked++;
       say(`${w.name} moved ${amt(n,g)} of ${g.name} out the ${BLOCKS[bi]} trap: ${money(take)} waiting for you to collect.`)});
     if(worked){S.heat=Math.min(100,S.heat+Math.ceil(w.hustle/3));const l0=wLv(w);w.sales=(w.sales||0)+1;
       if(wLv(w)>l0){w.hustle=Math.min(10,w.hustle+1);say(`${w.name} leveled up to level ${wLv(w)}. ${w.name} can sell ${wLv(w)} products now. Pick them in the trap's Product button.`)}}
+    if(w.stash&&wStashUsed(w)>0&&w.loyal<=3&&Math.random()<.05){let lost=0;Object.keys(w.stash).forEach(k=>{const l=Math.floor(w.stash[k]*.3);w.stash[k]-=l;lost+=l});if(lost)say(`${w.name} came up short on the stash you fronted. Watch him.`)}
     if(w.loyal<=3&&Math.random()<.04){S.heat=Math.min(100,S.heat+20);say(`Word is ${w.name} been talking to twelve. Heat +20.`)}
   });
   S.workers.slice().forEach(w=>{const pay=wPay(w),pc=w.pct||100,gone=()=>{if(w.from!==undefined&&S.recr)delete S.recr[w.from];S.workers=S.workers.filter(x=>x!==w);Object.values(S.traps).forEach(t=>{if(t.w===w.id)t.w=null})};
@@ -849,7 +860,7 @@ function paneTraps(){
   if(!spots.length)h+=`<div class="row"><div class="info"><div class="s">You need a block to open a trap. Take one from a crew.</div></div></div>`;
   const busy=id=>Object.values(S.traps).some(t=>t.w===id);
   {const tot=S.workers.reduce((a,w)=>a+(w.held||0),0);h+=`<div class="sec">Your workers (${S.workers.length})</div>`+(tot?`<div class="row" style="padding:8px 12px"><div class="info"><div class="t">${money(tot)} waiting</div><div class="s">Workers hold the money until you collect it. Low loyalty workers can skim or run.</div></div><button class="btn green" data-a="wcollectall">Collect all</button></div>`:'');}
-  h+=S.workers.length?S.workers.map((w,i)=>`<div class="row" style="padding:8px 12px"><div class="info"><div class="t">${w.name} ${busy(w.id)?'<span class="chip mine">Working</span>':'<span class="chip">Free</span>'}</div><div class="s">Level ${wLv(w)} · Hustle ${w.hustle} · Loyalty ${w.loyal} · ${money(wPay(w))}/day · ${bossTag(w.pct||100)}<br>Holding ${money(w.held||0)}${(w.held||0)>1500&&w.loyal<=3?' <span style="color:var(--blood)">(might run with it)</span>':''}</div></div><div class="btns"><button class="btn green" data-a="wcollect" data-i="${i}" ${w.held?'':'disabled'}>Collect</button><button class="btn" data-a="wpay" data-i="${i}">Pay</button><button class="btn" data-a="firew" data-i="${i}">Fire</button></div></div>`).join('')
+  h+=S.workers.length?S.workers.map((w,i)=>`<div class="row" style="padding:8px 12px"><div class="info"><div class="t">${w.name} ${busy(w.id)?'<span class="chip mine">Working</span>':'<span class="chip">Free</span>'}</div><div class="s">Level ${wLv(w)} · Hustle ${w.hustle} · Loyalty ${w.loyal} · ${money(wPay(w))}/day · ${bossTag(w.pct||100)}<br>Holding ${money(w.held||0)} · stash: ${wStashTxt(w)}${(w.held||0)>1500&&w.loyal<=3?' <span style="color:var(--blood)">(might run with it)</span>':''}</div></div><div class="btns"><button class="btn green" data-a="wcollect" data-i="${i}" ${w.held?'':'disabled'}>Collect</button><button class="btn" data-a="wstash" data-i="${i}">Stash</button><button class="btn" data-a="wpay" data-i="${i}">Pay</button><button class="btn" data-a="firew" data-i="${i}">Fire</button></div></div>`).join('')
     :`<div class="row"><div class="info"><div class="s">No workers yet. Hire one below.</div></div></div>`;
   h+=`<div class="sec">Looking for work (max 3 workers, you have ${S.workers.length})</div>`;
   h+=S.cands.map((c,i)=>`<div class="row" style="padding:8px 12px"><div class="info"><div class="t">${c.name}</div><div class="s">Hustle ${c.hustle} (sells more) · Loyalty ${c.loyal} (steals less) · ${money(c.wage)}/day</div></div><button class="btn green" data-a="hirew" data-i="${i}" ${S.cash>=500&&S.workers.length<3?'':'disabled'}>${S.workers.length>=3?'Max 3 workers':'Hire $500'}</button></div>`).join('');
@@ -1062,7 +1073,7 @@ function paneRap(){const R=S.rap,top=R.songs.slice().sort((a,b)=>b.q-a.q)[0];
     <div class="s">${R.fans.toLocaleString()} fans · Hype ${R.hype}/100 · ${R.songs.length} song${R.songs.length===1?'':'s'} out${R.signed?' · <b style="color:var(--accent)">Signed</b>':''}</div>
     <div class="bar"><i style="width:${R.hype}%;background:var(--accent)"></i></div><div class="s">Songs pay a little each day in streams. Your <b>active listeners</b> (~${listeners().toLocaleString()}) boost streams and keep fans from drifting. Keep hype up so they stay.</div>
     <div class="s">Every song has a shot at going viral. Better songs, more hype and a good ear raise the odds. When one blows up, fans and streams jump for about a week.</div><div class="s">Street cred: ${S.st.profit>5000||(S.st.licks||0)>=3?'<b style="color:var(--money)">Real.</b> You rap what you live, so your songs come out better.':'Make real money in the streets or hit some licks and your songs come out better.'}${S.rap.fans>=1000?' Fans buy from you too: you sell 5% higher.':''}</div></div></div>`;
-  h+=rapReqHTML()+`<div class="sec">Make music</div>
+  h+=rapReqHTML()+`<div class="sec">Tour and merch</div><div class="row"><div class="info"><div class="t">Go on tour</div><div class="s">${R.fans<1500?'Need 1,500 fans.':`4 cities in 4 days for $2,000. Pays about ${money(Math.round(showPay()*1.3*4))}, +12% fans. Tires your voice. No extra heat.`}</div></div><button class="btn go" data-a="rtour" ${R.fans>=1500&&S.cash>=2000&&(R.fat||0)<3?'':'disabled'}>Tour</button></div><div class="row"><div class="info"><div class="t">Drop merch</div><div class="s">${R.merch&&R.merch.until>=S.day?`Selling about ${money(merchPay())} a day until day ${R.merch.until}.`:`Shirts and hats. ${money(Math.round(1200+R.fans*.15))} up front, about ${money(merchPay())} a day for 10 days.`}</div></div><button class="btn" data-a="rmerch" ${(R.merch&&R.merch.until>=S.day)||S.cash<Math.round(1200+R.fans*.15)?'disabled':''}>Drop</button></div><div class="sec">Make music</div>
    <div class="row"><div class="info"><div class="t">Studio session</div><div class="s">Ride the beat to record a song, then drop it. $300, takes the day.</div></div><button class="btn go" data-a="rec" ${S.cash>=300?'':'disabled'}>Record</button></div>
    <div class="row"><div class="info"><div class="t">Diss track</div><div class="s">Go at a rival crew on wax. Big hype, but their beef goes way up.</div></div><button class="btn red" data-a="diss" ${S.cash>=300?'':'disabled'}>Record</button></div>
    <div class="row"><div class="info"><div class="t">Shoot a video</div><div class="s">Hype +${vidGain()}. Costs more the bigger you are, and each one in a row works less.</div></div><button class="btn green" data-a="video" ${S.cash>=vidCost()&&R.songs.length?'':'disabled'}>${money(vidCost())}</button></div>
@@ -1084,20 +1095,26 @@ const showPay=()=>Math.round(1.6*(110+S.rap.fans*.1+S.rap.hype*1.5)/(1+rapFat()*
 const RQN=['Lil Drip','Big Marcus','DJ Smoke','Young Vee','Tay Money','Dre Savage'],RQO=['Hot 97.5 Street Radio','The Block Podcast','Mixtape Monthly','Trap Report TV'];
 function rapReqDay(){const R=S.rap;if(S.rapReq&&S.day>S.rapReq.ex){say(`The ${S.rapReq.k==='interview'?'interview':'feature'} request expired.`);S.rapReq=null}
   if(S.rapReq||!S.rapOn||R.fans<300||Math.random()>.07)return;
-  S.rapReq=Math.random()<.5?{k:'interview',who:pick(RQO),ex:S.day+3}:{k:'feature',who:pick(RQN),ex:S.day+3};
-  say(S.rapReq.k==='interview'?`📞 ${S.rapReq.who} wants to interview you. Check the Studio tab.`:`📞 ${S.rapReq.who} wants you on a feature. Check the Studio tab.`)}
+  const ks=['interview','feature'];if(R.fans>=600)ks.push('beef');if(R.fans>=4000&&!R.awd)ks.push('award');const k=pick(ks);
+  S.rapReq={k,who:k==='interview'?pick(RQO):k==='award'?'The Hood Music Awards':pick(RQN),ex:S.day+3};
+  say(k==='interview'?`📞 ${S.rapReq.who} wants to interview you. Check the Studio tab.`:k==='feature'?`📞 ${S.rapReq.who} wants you on a feature. Check the Studio tab.`:k==='beef'?`🔥 ${S.rapReq.who} dissed you on a track. Check the Studio tab.`:`🏆 You got invited to ${S.rapReq.who}. Check the Studio tab.`)}
 function rapReqHTML(){const q=S.rapReq;if(!q)return '';const R=S.rap,days=q.ex-S.day;
-  return `<div class="row" style="flex-direction:column;align-items:stretch;gap:6px;border-color:var(--accent)"><div class="info"><div class="t">${q.k==='interview'?'🎙️ Interview request':'🎤 Feature request'} · ${q.who}</div><div class="s">${q.k==='interview'?`They want to sit down with you. Talk skill decides if you come off real or flop. Good ones pay and bring fans. Takes the day.`:`${q.who} wants a verse from you. You get paid up front and a chunk of their fans, but it takes the day and a bad verse costs hype.`} Expires in ${days} day${days===1?'':'s'}.</div></div><div class="btns"><button class="btn go" data-a="rreq" data-k="yes">Accept</button><button class="btn" data-a="rreq" data-k="no">Pass</button></div></div>`}
+  return `<div class="row" style="flex-direction:column;align-items:stretch;gap:6px;border-color:var(--accent)"><div class="info"><div class="t">${q.k==='interview'?'🎙️ Interview request':q.k==='feature'?'🎤 Feature request':q.k==='beef'?'🔥 Rapper beef':'🏆 Award show'} · ${q.who}</div><div class="s">${q.k==='beef'?`${q.who} put out a track about you. Answer on wax and win the crowd, or ignore it and look soft. Takes the day.`:q.k==='award'?`Show up, perform and shake hands. Pays $${Math.round(500+S.rap.fans*.1)} and gets you seen. Takes the day.`:q.k==='interview'?`They want to sit down with you. Talk skill decides if you come off real or flop. Good ones pay and bring fans. Takes the day.`:`${q.who} wants a verse from you. You get paid up front and a chunk of their fans, but it takes the day and a bad verse costs hype.`} Expires in ${days} day${days===1?'':'s'}.</div></div><div class="btns"><button class="btn go" data-a="rreq" data-k="yes">Accept</button><button class="btn" data-a="rreq" data-k="no">Pass</button></div></div>`}
 function rapReqGo(yes){const q=S.rapReq,R=S.rap;if(!q)return;S.rapReq=null;if(!yes){say('Passed on it.');return render()}
   if(q.k==='interview'){const p=Math.min(.85,.35+(S.sk.talk-3)*.08+R.hype/300);const pay=Math.round(150+R.fans*.06);
     if(Math.random()<p){S.cash+=pay;R.fans+=Math.round(rnd(60,160)+R.fans*.03);R.hype=Math.min(100,R.hype+14);addXP(4);say(`The ${q.who} interview went great. You came off real. +${money(pay)}, new fans and hype.`)}
     else{R.hype=Math.max(0,R.hype-12);addStress(8);say(`You flopped the ${q.who} interview. Dead air and a bad quote. Hype −12.`)}}
+  else if(q.k==='beef'){const p=Math.min(.8,.3+(S.sk.talk-3)*.07+R.hype/250);if(Math.random()<p){R.fans+=Math.round(R.fans*.06+rnd(100,250));R.hype=Math.min(100,R.hype+16);S.rep+=1;say(`You answered ${q.who} and the crowd sided with you. Fans and hype up.`)}else{R.hype=Math.max(0,R.hype-14);addStress(10);say(`Your answer to ${q.who} fell flat. They won that round. Hype −14.`)}R.fat=(R.fat||0)+.5}
+  else if(q.k==='award'){const pay=Math.round(500+R.fans*.1);S.cash+=pay;R.awd=1;R.fans+=Math.round(R.fans*.1);R.hype=Math.min(100,R.hype+20);addXP(8);say(`You performed at ${q.who}. +${money(pay)}, fans and hype way up.`)}
   else{const pay=Math.round(300+R.fans*.15);S.cash+=pay;const q2=Math.max(5,Math.min(100,Math.round(40+S.sk.talk*4+R.hype*.2+rnd(-10,15))));
     if(q2>=55){R.fans+=Math.round(R.fans*.08+rnd(80,200));R.hype=Math.min(100,R.hype+10);say(`Your verse on ${q.who}'s track hit. +${money(pay)} up front and his fans found you.`)}
     else{R.hype=Math.max(0,R.hype-8);say(`Your verse for ${q.who} was weak. You got paid ${money(pay)} but hype −8.`)}rapFatUp&&rapFatUp()}
   nextDay();render()}
 const rapFatUp=()=>{S.rap.fat=(S.rap.fat||0)+.5};
-function rapDay(){rapReqDay();const R=S.rap;if(S.rapOn&&R.fans>=800&&!S.engCon&&canNewConnect()&&Math.random()<.1){S.engCon=1;S.pconn='eng'}if(!R.songs.length)return;let t=0;R.songs.forEach(x=>t+=songPay(x));t=Math.round(t);
+const merchPay=()=>Math.round(12+S.rap.fans*.012);
+function rapTour(){const R=S.rap;const cost=2000;if(R.fans<1500||S.cash<cost||(R.fat||0)>=3)return;S.cash-=cost;const days=4;let tot=0;window.FF=true;for(let i=0;i<days&&!S.over;i++){tot+=Math.round(showPay()*1.3);nextDay()}window.FF=false;S.cash+=tot;R.fans+=Math.round(R.fans*.12);R.hype=Math.min(100,R.hype+12);R.fat=(R.fat||0)+2;addStress(10);say(`Tour done. ${days} cities, ${money(tot)} from the shows, new fans in every one. Voice is tired.`);render()}
+function rapMerch(){const R=S.rap,cost=Math.round(1200+R.fans*.15);if(R.merch&&R.merch.until>=S.day||S.cash<cost)return;S.cash-=cost;R.merch={until:S.day+10};say(`Merch dropped. It sells about ${money(merchPay())} a day for 10 days.`);render()}
+function rapDay(){rapReqDay();const R=S.rap;if(R.merch&&R.merch.until>=S.day){const m=merchPay();S.cash+=m;if(S.day===R.merch.until)say('The merch run is over.')}if(S.rapOn&&R.fans>=800&&!S.engCon&&canNewConnect()&&Math.random()<.1){S.engCon=1;S.pconn='eng'}if(!R.songs.length)return;let t=0;R.songs.forEach(x=>t+=songPay(x));t=Math.round(t);
   R.fat=Math.max(0,rapFat()-.5);t=Math.min(t,Math.round(Math.min(600,40+R.fans*.09)*dealMul()*(R.songs.some(x=>x.viral&&x.viral.until>=S.day)?2.2:1)));if(Math.random()<.03&&R.songs.length){const x=pick(R.songs);if(!(x.viral&&x.viral.until>=S.day)){x.viral={until:S.day+5,mult:1.8};R.fans+=Math.round(R.hype*2+30);say(`A big playlist added "${x.title}". It is climbing again.`)}}t=Math.round(t*rapCut());if(R.frz>S.day)t=0;R.fans+=Math.round(R.hype*.05+listeners()*.02);if(R.hype<15&&R.fans>200)R.fans-=Math.max(1,Math.round(R.fans*.004));if(S.day%7===0&&R.vid)R.vid--;R.hype=Math.max(0,R.hype-4);if(t>0){S.cash+=t;say(`Your music made ${money(t)} in streams today.`)}}
 function flowGame(title,done){
   mgOn=true;const BEAT=900,N=8;let taps=0,score=0,t0=performance.now()+900;
@@ -1757,8 +1774,9 @@ function robMini(bi,odds,cb){const kn=S.known.includes(bi),big=PINFO[bi].lvl==='
   tapGame({title:'Hit the spot',txt:`Tap when the marker is in the green. ${tr>=50?'They trust you, so the window is wider.':'They do not know you well, so the window is tight and fast.'} Need 2 of 3.`,rounds:3,need:big?3:2,zone,ms,btn:'GO'},cb)}
 function plugRob(bi){const P=PINFO[bi],nm=plugName(bi),her=plugFem(bi)?'her':'him';
   const pk=S.pk[bi]=S.pk[bi]||{},big=P.lvl==='Big',kn=S.known.includes(bi),cased=pk.cased&&S.day-pk.cased<=3;
-  const trustB=kn?S.trust[bi]/100*(big?.1:.45):0;
-  const odds=Math.max(.05,Math.min(.95,.3+S.sk.muscle*.03+S.soldiers*.06-({Low:0,Mid:.1,Big:.35})[P.lvl]-(stressed()?.1:0)+(S.rob.mask?.05:0)+(big&&S.rob.car?.05:0)+trustB+(cased?.2:0)+girlB()+(hasT('nosey')?.05:0)));
+  const trustB=kn?S.trust[bi]/100*(big?.08:.25):0;
+  const odds=Math.max(.05,Math.min(.85,.2+S.sk.muscle*.025+S.soldiers*.05-({Low:.05,Mid:.18,Big:.4})[P.lvl]-(stressed()?.1:0)+(S.rob.mask?.05:0)+(big&&S.rob.car?.05:0)+trustB+(cased?.2:0)+girlB()+(hasT('nosey')?.05:0)));
+  if(S.lastRob&&S.day-S.lastRob<5){modal(`<h2>Word is out</h2><p>You hit a plug ${S.day-S.lastRob} day${S.day-S.lastRob===1?'':'s'} ago and every plug is watching their back. Wait ${5-(S.day-S.lastRob)} more day${5-(S.day-S.lastRob)===1?'':'s'}.</p><div class="btns"><button class="btn go" id="n">Got it</button></div>`);$('n').onclick=close;return}
   if(big&&S.soldiers<2){modal(`<h2>${nm} is too heavy</h2><p>Big plugs been through it all. ${nm} got shooters on the roof and cameras on every corner. You need at least 2 soldiers before you even think about it.</p><div class="btns"><button class="btn go" id="n">Got it</button></div>`);$('n').onclick=close;return}
   modal(`<h2>Rob ${nm}?</h2><p>${P.lvl} level plug${big?' with real security':''}. About <b>${Math.round(odds*100)}%</b> chance.</p>
     <p class="s" style="color:var(--dim)">${kn&&!big&&S.trust[bi]>=50?`${nm} trusts you, so ${plugFem(bi)?'she':'he'} won't see it coming. `:''}${big?`Big plugs don't slip, even for people they trust. ${cased?'You cased the spot, so you know the routine.':'Case the spot first to learn the routine (+20%).'}`:''}</p>
@@ -1766,7 +1784,7 @@ function plugRob(bi){const P=PINFO[bi],nm=plugName(bi),her=plugFem(bi)?'her':'hi
     <div class="btns"><button class="btn red" id="y">Run it</button>${big&&!cased?'<button class="btn go" id="cs">Case the spot (takes the day)</button>':''}<button class="btn" id="n">Nah</button></div>`);
   $('n').onclick=close;
   if($('cs'))$('cs').onclick=()=>{pk.cased=S.day;S.heat=Math.min(100,S.heat+3);say(`Spent the day watching ${nm}'s spot. You know when the shift changes now.`);$('modal').hidden=true;nextDay();checkEnd();render()};
-  $('y').onclick=()=>{if(S.gf&&S.gf.plug===bi){say(`You robbed your own ${plugFem(bi)?'girl':'man'}. ${nm} is done with you.`);endGF()}{const bp=burnPlan(bi,10,'rob');S.burned[bi]=S.day+bp.d;if(bp.sec||bp.vouch)say(`${bp.sec?'Their second is waiting to step up. ':''}${bp.vouch?'A plug you trust is vouching for the new one. ':''}Back in ${bp.d} days.`)}S.known=S.known.filter(i=>i!==bi);S.trust[bi]=0;S.heat=Math.min(100,S.heat+25);
+  $('y').onclick=()=>{S.lastRob=S.day;if(S.gf&&S.gf.plug===bi){say(`You robbed your own ${plugFem(bi)?'girl':'man'}. ${nm} is done with you.`);endGF()}{const bp=burnPlan(bi,10,'rob');S.burned[bi]=S.day+bp.d;if(bp.sec||bp.vouch)say(`${bp.sec?'Their second is waiting to step up. ':''}${bp.vouch?'A plug you trust is vouching for the new one. ':''}Back in ${bp.d} days.`)}S.known=S.known.filter(i=>i!==bi);S.trust[bi]=0;S.heat=Math.min(100,S.heat+25);
     robMini(bi,odds,ok=>{if(ok){S.dr={until:S.day+rnd(5,9),bi};say(`🏜️ Drought szn on ${BLOCKS[bi]}. Word got around that the plug got hit and nobody is selling.`);const got=[];const cash=({Low:[1000,3000],Mid:[3000,8000],Big:[10000,25000]})[P.lvl];const c=rnd(cash[0],cash[1]);S.cash+=c;got.push(money(c));
       P.carries.forEach(id=>{const g=G(id);let n=lvlMax(bi,g)*rnd(5,10)/10;n=Math.min(n,(S.cap-used())/g.sp);n=g.step<1?Math.floor(n*2)/2:Math.floor(n);if(n<=0)return;
         const have=S.inv[id],q=rnd(55,90);S.q[id]=Math.round((S.q[id]*have+q*n)/(have+n));S.paid[id]=Math.round(S.paid[id]*have/(have+n));S.inv[id]+=n;got.push(`${amt(n,g)} of ${g.name}`)});
@@ -1833,7 +1851,11 @@ function loanHTML(){if(!loanOk())return '';const L=S.ls=S.ls||{owe:0,paid:0};
   return `<div class="sec">Loan shark</div><div class="row" style="flex-direction:column;align-items:stretch;gap:6px;border-color:${late?'var(--blood)':'var(--accent)'}"><div class="info"><div class="t">💼 Mr. Vince · you owe ${money(L.owe)}</div><div class="s" style="color:${late?'var(--blood)':'var(--dim)'}">${late?`${-left} day${-left===1?'':'s'} late. The interest is growing and his people are looking for you.`:left===0?'Due today.':`Due in ${left} day${left===1?'':'s'}.`}</div></div><div class="btns"><button class="btn go" data-a="lspay" data-n="${L.owe}" ${S.cash>=L.owe?'':'disabled'}>Pay it all</button><button class="btn" data-a="lspay" data-n="${Math.min(500,L.owe)}" ${S.cash>=Math.min(500,L.owe)?'':'disabled'}>Pay ${money(Math.min(500,L.owe))}</button></div></div>`}
 function loanGet(n){const L=S.ls=S.ls||{owe:0,paid:0};if(L.owe||!loanOk())return;L.owe=Math.round(n*1.25);L.princ=n;L.due=S.day+LS_DAYS;L.late=0;L.warned=0;S.cash+=n;say(`Mr. Vince gave you ${money(n)}. He wants ${money(L.owe)} back by day ${L.due}.`);render()}
 function loanPay(n){const L=S.ls;if(!L||!L.owe)return;n=Math.min(n,L.owe,S.cash);if(n<=0)return;S.cash-=n;L.owe-=n;if(L.owe<=0){L.owe=0;L.paid=(L.paid||0)+1;S.rep+=S.day<=L.due?1:0;say(`Paid Mr. Vince off${S.day<=L.due?' on time. He respects it.':'. Square, but he will remember.'}`)}else say(`Paid Mr. Vince ${money(n)}. You still owe ${money(L.owe)}.`);render()}
-function loanDay(){const L=S.ls;if(!L||!L.owe)return;if(S.day===L.due-1&&!L.warned){L.warned=1;say('📱 Mr. Vince: "Tomorrow. Do not make me come find you."')}
+function soreReturn(){const g=S.soreBack.gw;S.soreBack=null;const st=26+Math.min(20,Math.round(g/500)),pay=Math.min(S.cash,Math.round(S.cash*.2));
+  modal(`<h2 style="color:var(--blood)">He's back</h2><p>The guy you beat at the game is back and he brought his cousin. They want it settled.</p><div class="btns" style="flex-direction:column;align-items:stretch"><button class="btn green" id="sg" ${pay>0?'':'disabled'}>Pay ${money(pay)} to squash it</button><button class="btn red" id="sf">Fight them</button></div>`);
+  $('sg').onclick=()=>{S.cash-=pay;say(`You paid ${money(pay)} and it was squashed.`);close();render()};
+  $('sf').onclick=()=>{close();fightGame(myStr(),st,'the sore loser and his cousin',win=>{if(win){S.rep+=3;addXP(8);say('You put both of them down. Nobody bothers you about that game again.')}else{const dm=vcut(rnd(20,45));S.hp-=dm;addStress(12);say(`They jumped you. −${dm} health.`)}checkEnd();render()})}}
+function loanDay(){if(S.soreBack&&S.day>=S.soreBack.day&&!S.inJail)soreReturn();const L=S.ls;if(!L||!L.owe)return;if(S.day===L.due-1&&!L.warned){L.warned=1;say('📱 Mr. Vince: "Tomorrow. Do not make me come find you."')}
   if(S.day>L.due){L.late++;L.owe=Math.min(Math.round(L.princ*3),Math.round(L.owe*1.07));S.heat=Math.min(100,S.heat+1);
     if(L.late===1)say('Mr. Vince is waiting on his money. The interest is growing.');
     if(L.late%2===0&&!S.inJail)loanHit()}}
@@ -2940,7 +2962,7 @@ function winRisk(bet,gw,kind){if(!gw||bet<500||S.inJail)return;const p=Math.min(
   const sore=pick(['somebody who lost his rent money','a dude who wants his cheese back','a hooper who could not take the L','a gambler who lost it all']),st=14+Math.min(24,Math.round(gw/400)),give=Math.min(S.cash,Math.round(gw*.8));
   modal(`<h2 style="color:var(--blood)">They followed you</h2><p>${sore} caught up to you after you left the ${kind==='dice'?'dice game':'court'}. He wants his ${money(gw)} back, by any means.</p><div class="btns" style="flex-direction:column;align-items:stretch"><button class="btn green" id="wg" ${give>0?'':'disabled'}>Give back ${money(give)}</button><button class="btn red" id="wf">Fight him</button></div>`);
   $('wg').onclick=()=>{S.cash-=give;say(`You gave back ${money(give)} to keep the peace.`);close();render()};
-  $('wf').onclick=()=>{close();fightGame(myStr(),st,'the sore loser',win=>{if(win){S.rep+=2;addXP(5);S.heat=Math.min(100,S.heat+6);say('You beat him down and kept your money. Word gets around.')}else{const dm=vcut(rnd(15,40)),tk=Math.min(S.cash,Math.round(gw*1.0));S.hp-=dm;S.cash-=tk;addStress(12);say(`He jumped you and took ${money(tk)}. −${dm} health.`)}checkEnd();render()})}}
+  $('wf').onclick=()=>{close();fightGame(myStr(),st,'the sore loser',win=>{if(win){S.rep+=2;addXP(5);S.heat=Math.min(100,S.heat+6);if(Math.random()<.35)S.soreBack={day:S.day+rnd(3,7),gw};say('You beat him down and kept your money. Word gets around.')}else{const dm=vcut(rnd(15,40)),tk=Math.min(S.cash,Math.round(gw*1.0));S.hp-=dm;S.cash-=tk;addStress(12);say(`He jumped you and took ${money(tk)}. −${dm} health.`)}checkEnd();render()})}}
 function hoops(){if(!spendEn('game'))return;if(stuckHome())return;
   betPicker('Hoop at the park','Hit the shot when the marker is in the green (tap Shoot or press Space). Best of 5 against a hooper from the block.',bet=>{
     S.park=S.day;S.cash-=bet;
@@ -3319,10 +3341,13 @@ function act(a,el){
   if(a==='trap'){const bi=+el.dataset.i;S.cash-=trapCost();S.traps[bi]={w:null,g:null};say(`Opened a trap house on ${BLOCKS[bi]}.`)}
   if(a==='hirew'){if(S.workers.length>=3)return say('You can only run 3 workers.');const c=S.cands.splice(+el.dataset.i,1)[0];S.cash-=500;S.workers.push(c);say(`Put ${c.name} on the team for $500 up front and ${money(c.wage)} a day.`)}
   if(a==='precruit'){recruitAsk(+el.dataset.i);return}
+  if(a==='wstash')return wStashModal(+el.dataset.i);
+  if(a==='wgive')return wGive(+el.dataset.i,el.dataset.g,el.dataset.m);
+  if(a==='wtake')return wTake(+el.dataset.i,el.dataset.g);
   if(a==='wcollect'){const w=S.workers[+el.dataset.i];if(w&&w.held){S.cash+=w.held;say(`Collected ${money(w.held)} from ${w.name}.`);w.held=0}}
   if(a==='wcollectall'){let t=0;S.workers.forEach(w=>{t+=w.held||0;w.held=0});if(t){S.cash+=t;say(`Collected ${money(t)} from your workers.`)}}
   if(a==='wpay')return wPayModal(+el.dataset.i);
-  if(a==='firew'){const w=S.workers.splice(+el.dataset.i,1)[0];if(w.from!==undefined&&S.recr)delete S.recr[w.from];S.cash+=(w.held||0);Object.values(S.traps).forEach(t=>{if(t.w===w.id)t.w=null});say(`Cut ${w.name} off.`)}
+  if(a==='firew'){const w=S.workers.splice(+el.dataset.i,1)[0];if(w&&w.stash)Object.keys(w.stash).forEach(k=>{S.inv[k]+=w.stash[k]});if(w.from!==undefined&&S.recr)delete S.recr[w.from];S.cash+=(w.held||0);Object.values(S.traps).forEach(t=>{if(t.w===w.id)t.w=null});say(`Cut ${w.name} off.`)}
   if(a==='assign')return assignModal(+el.dataset.i);
   if(a==='tgood')return trapGoodModal(+el.dataset.i);
   if(a==='cut'){cutProduct(G(el.dataset.g),+el.dataset.p)}
@@ -3354,6 +3379,8 @@ function act(a,el){
   if(a&&a.indexOf('rv_')===0)return plugRevenge(a.slice(3),+el.dataset.i);
   if(a==='pkick')plugKick(+el.dataset.i);
   if(a==='rreq')return rapReqGo(el.dataset.k==='yes');
+  if(a==='rtour')return rapTour();
+  if(a==='rmerch')return rapMerch();
   if(a==='lsget')return loanGet(+el.dataset.n);
   if(a==='lspay')return loanPay(+el.dataset.n);
   if(a==='pasks')return plugAsk(+el.dataset.i);
