@@ -150,6 +150,7 @@ h1{font-family:var(--display);font-weight:400;font-size:34px;letter-spacing:.02e
     <button role="tab" data-t="sch" aria-selected="false" id="stab" hidden>🏫 School</button>
     <button role="tab" data-t="rap" aria-selected="false" id="rtab" hidden>🎤 Studio</button>
     <button role="tab" data-t="rob" aria-selected="false" id="htab" hidden>🥷 Heists</button>
+    <button role="tab" data-t="sp" aria-selected="false" id="sptab" hidden>🏆 Sports</button>
     <button role="tab" data-t="block" aria-selected="true">📍 Block</button>
     <button role="tab" data-t="move" aria-selected="false">🚗 Move</button>
     <button role="tab" data-t="beef" aria-selected="false">👥 Your Circle</button>
@@ -377,7 +378,7 @@ function render(){if(S&&S.pr)tab='prison';else if(S&&tab==='prison')tab='block';
   $('cash').textContent=money(S.cash);
   $('stress').textContent=S.stress+(S.stress>=70?' · stressed':'');$('stressb').style.width=S.stress+'%';
   const C=CHARS.find(c=>c.id===S.char);$('who').textContent=C.name;
-  $('me').innerHTML=`${PORTRAITS[C.id]?`<img src="${PORTRAITS[C.id]}" alt="${C.name}" style="width:56px;height:56px;border-radius:6px;object-fit:cover;flex:none">`:`<div style="width:56px;height:56px;border-radius:6px;background:#2a2430;display:flex;align-items:center;justify-content:center;font-family:var(--display);font-size:26px;color:var(--accent);flex:none">${C.name[0]}</div>`}<div class="info"><div class="t" style="font-family:var(--display);font-size:20px;font-weight:400">${C.name}</div><div class="s">${roleOf(C)}</div></div>`;$('rk').textContent=identity();{const ballOn=!!(S.age&&S.age<18&&is('tank')&&!(S.fate||{}).knee),inS=S.school==='in'||S.college==='in'||ballOn,todo=(S.school==='in'||S.college==='in')&&S.classDay!==S.day&&(S.cal?schoolWeek():true);$('stab').hidden=!inS;$('stab').innerHTML='🏫 School'+(todo?' <span style="color:var(--blood)">●</span>':'');if(!inS&&tab==='sch')tab='block'}$('rtab').hidden=!S.rapOn;$('htab').hidden=!S.robOn;if((tab==='rap'&&!S.rapOn)||(tab==='rob'&&!S.robOn))tab='block';
+  $('me').innerHTML=`${PORTRAITS[C.id]?`<img src="${PORTRAITS[C.id]}" alt="${C.name}" style="width:56px;height:56px;border-radius:6px;object-fit:cover;flex:none">`:`<div style="width:56px;height:56px;border-radius:6px;background:#2a2430;display:flex;align-items:center;justify-content:center;font-family:var(--display);font-size:26px;color:var(--accent);flex:none">${C.name[0]}</div>`}<div class="info"><div class="t" style="font-family:var(--display);font-size:20px;font-weight:400">${C.name}</div><div class="s">${roleOf(C)}</div></div>`;$('rk').textContent=identity();{const ballOn=!!(S.age&&S.age<18&&is('tank')&&!(S.fate||{}).knee),inS=S.school==='in'||S.college==='in'||ballOn,todo=(S.school==='in'||S.college==='in')&&S.classDay!==S.day&&(S.cal?schoolWeek():true);$('stab').hidden=!inS;$('stab').innerHTML='🏫 School'+(todo?' <span style="color:var(--blood)">●</span>':'');if(!inS&&tab==='sch')tab='block'}$('rtab').hidden=!S.rapOn;$('htab').hidden=!S.robOn;$('sptab').hidden=!(S.sp&&S.sp.kind);if((tab==='rap'&&!S.rapOn)||(tab==='rob'&&!S.robOn))tab='block';
   $('stash').textContent=Math.round(used())+'/'+S.cap;safeFix();{const sp=$('stash').parentElement;if(!sp._inv){sp._inv=1;sp.style.cursor='pointer';sp.onclick=invModal;sp.querySelector('.k').textContent='Stash ›'}}
   $('hp').textContent=S.hp<=35?S.hp+' · hospital':S.hp;$('hp').style.color=S.hp<=35?'var(--blood)':'';$('hpb').style.width=S.hp+'%';$('hpb').style.background=S.hp<=35?'var(--blood)':'var(--money)';
   $('heat').textContent=S.heat;$('heatb').style.width=S.heat+'%';
@@ -394,7 +395,7 @@ function render(){if(S&&S.pr)tab='prison';else if(S&&tab==='prison')tab='block';
   $('cardtab').textContent=S.hand.length?`🃏 Cards ${S.hand.length}`:'🃏 Cards';
   const FXN={discount:'Plug Love',hype:'Hype Day',ride:'Ride or Die',lawyer:'Lawyer'};
   $('fx').innerHTML=Object.keys(S.fx).filter(k=>S.fx[k]).map(k=>`<span class="chip here">Active: ${FXN[k]}</span>`).join('');
-  $('pane').innerHTML={sch:paneSchool,rap:paneRap,rob:paneRob,phone:panePhone,block:()=>paneBlock()+paneGuns(),move:paneMove,beef:paneBeef,crew:paneCrew,cards:paneCards,prison:panePrison}[tab]();
+  $('pane').innerHTML={sch:paneSchool,rap:paneRap,rob:paneRob,sp:paneSports,phone:panePhone,block:()=>paneBlock()+paneGuns(),move:paneMove,beef:paneBeef,crew:paneCrew,cards:paneCards,prison:panePrison}[tab]();
   $('log').innerHTML=S.log.map(l=>`<p><span class="d">D${l.d}</span>${l.t}</p>`).join('');
   if(S.pr){$('here').textContent='Locked up · '+S.pr.place}
   missionUI();save();sndWatch();
@@ -484,7 +485,7 @@ function openPlace(id){const P=PLACES.find(p=>p.id===id),bi=placeAt(id);
   const b=(k,l,dis,c='go')=>`<button class="btn ${c}" data-pl="${k}" ${dis?'disabled':''}>${l}</button>`;
   let body='';
   if(id==='studio'){tab='rap';close();render();return}
-  if(id==='park')body=row('Hoop at the park','Bet on a 5-shot shootout. Once a day.',b('hoops',S.park===S.day?'Played today':'Play',S.park===S.day||S.cash<100))+row('Shoot dice','Street craps with whoever is out here.',b('dice','Play',S.cash<50))+row('Meet people','Friends hang out here.',b('fmeet',S.fmeet===S.day?'Went out today':'Kick it',S.fmeet===S.day||(S.friends||[]).length>=5));
+  if(id==='park')body=row('Hoop at the park','Bet on a 5-shot shootout. Once a day.',b('hoops',S.park===S.day?'Played today':'Play',S.park===S.day||S.cash<100))+spParkRows(row,b)+row('Shoot dice','Street craps with whoever is out here.',b('dice','Play',S.cash<50))+row('Meet people','Friends hang out here.',b('fmeet',S.fmeet===S.day?'Went out today':'Kick it',S.fmeet===S.day||(S.friends||[]).length>=5));
   if(id==='store')body=storeBody(row,b)+row('Rob the register','Quick cash. Clerk might have a bat. Takes the day.',b('lstore','Rob it',false,'red'))+row('Grab snacks','Stress −5.',b('snack','$10',S.cash<10));
   if(id==='tire'){close();setTimeout(()=>{const el=[...document.querySelectorAll('.sec')].find(x=>x.textContent.includes('Gun dealer'));if(el)el.scrollIntoView({behavior:'smooth'})},50);return}
   if(id==='carlot')body=(S.car?row(`Your ride: ${CARS[S.car].name}`,S.car==='stolen'?'+30 stash space. It runs hot: more heat every day. Trade up to ditch it.':`+${CARS[S.car].trunk} stash space. Trade it in for 60% back.`,'<span class="chip mine">Yours</span>'):S.rob.car?row('Your getaway car','Cops drive slower in every chase. Buy a real car below for stash space.','<span class="chip mine">Owned</span>'):'')+Object.entries(CARS).filter(([ck,C])=>!C.hidden).map(([ck,C])=>{const old=S.car?CARS[S.car]:null,price=Math.max(0,C.cost-(old?Math.round(old.cost*.6):0)),young=S.age&&S.age<16;
@@ -504,6 +505,7 @@ function placeAct(k,id){const back=()=>{render();openPlace(id)};
   if(k.startsWith('buycar:')){const ck=k.slice(7),C=CARS[ck],old=S.car?CARS[S.car]:null,price=Math.max(0,C.cost-(old?Math.round(old.cost*.6):0));if(S.cash<price)return;if(needClean(price,'The '+C.name))return;S.cash-=price;S.cap+=C.trunk-(old?old.trunk:0);S.car=ck;S.rob.car=1;S.rep+=C.rep||0;say(`Bought a ${C.name}. +${C.trunk} stash space.${old?` Traded in the ${old.name}.`:''}`);return back()}
   if(k==='stor'){const c=capCost();if(S.cash<c)return;S.cash-=c;S.cap+=50;S.capBuys=(S.capBuys||0)+1;say(`Rented a storage unit for ${money(c)}. +50 stash space. The next one costs more.`);return back()}
   if(k==='safeup'){const U=SAFEUP[S.safeLv||0];if(!U||S.cash<U.c)return;S.cash-=U.c;S.safeLv=(S.safeLv||0)+1;say(`Bought a ${U.n.toLowerCase()}. +${U.v} safe space.`);return back()}
+  if(k==='zsjoin')return spJoin();if(k==='zsbook')return spBook();
   if(k==='hoops')return hoops();if(k==='dice')return dice();
   if(k==='fmeet'){S.fmeet=S.day;return meetFriend(true)}
   if(k==='lstore')return lick('store');if(k==='lcar')return lick('car');if(k==='lhouse')return lick('house');if(k==='lpharm')return lick('pharm');
@@ -1076,6 +1078,61 @@ function x8Act(a,el){const X=X8(),C=X.case;
   if(a==='x8flip'){if(S.cash<1500||!spendEn(8))return;S.cash-=1500;C.act=S.day;if(Math.random()<.6){say('The witness changed his story.');return win(22)}C.p+=8;say('The witness talked anyway.');return render()}
   if(a==='x8destroy'){if(!spendEn(15))return;C.act=S.day;if(Math.random()<.65){say('You got rid of the evidence.');return win(30)}C.p+=15;S.heat=Math.min(100,S.heat+15);addStress(10);say('Somebody saw you. That made it worse.');return render()}
   if(a==='x8law'){if(!S.lawPay){if(S.cash<2000)return;S.cash-=2000}C.law=S.day;C.act=S.day;say('Your lawyer filed motions on the case.');return win(S.lawPay?15:12)}}
+/* ---------- sports ---------- */
+const SPORTS={basketball:{n:'Basketball',ic:'🏀',st:['Pickup ball','Varsity','AAU circuit','College hoops','G League','The League'],sub:'Hoop your way out. Pickup to the pros.'},
+ football:{n:'Football',ic:'🏈',st:['Rec league','JV','Varsity','College offer','College ball','The League'],sub:'Friday night lights, scholarships, the draft.'},
+ boxing:{n:'Boxing',ic:'🥊',st:['Gym rat','Amateur bouts','Underground fights','Pro debut','Contender','Champion'],sub:'Real fights for real money. You play every bout.'}};
+const SP_NEED=[0,22,38,54,70,86],SP_PAY=[0,0,120,350,900,3500],SP_SAL=[0,0,0,0,1200,6000];
+const spSt=()=>S.sp=S.sp||{kind:null,ovr:0,stage:0,w:0,l:0,fame:0,inj:0,td:-9,gd:-9,fail:-9,cl:[],bet:-9,ban:0,agent:0};
+const spOn=()=>!!(S.sp&&S.sp.kind);
+function spModal(img,title,body,btns){modal(`${img?a2(img,340):''}<h2>${title}</h2><p>${body}</p><div class="btns" style="flex-direction:column;align-items:stretch">${btns.map((b,i)=>`<button class="btn ${b.c||''}" id="zb${i}">${b.l}</button>`).join('')}</div>`);btns.forEach((b,i)=>$('zb'+i).onclick=()=>{$('modal').hidden=true;try{b.f&&b.f()}catch(e){console.warn('sp',e)}render()})}
+function spParkRows(row,b){let h='';if(S.age&&S.age<14)return h;
+  h+=row(spOn()?`${SPORTS[S.sp.kind].ic} Your team`:'🏆 Try out for a team',spOn()?`${SPORTS[S.sp.kind].st[S.sp.stage]} · Overall ${S.sp.ovr}. Open the Sports tab.`:'Basketball, football or boxing. Train, play, move up and get paid.',b('zsjoin',spOn()?'Open':'Try out',false));
+  if(adult())h+=row('📋 The bookie','Bet on games, or fix one. Once a day.',b('zsbook',spSt().bet===S.day?'Done today':'Bet',spSt().bet===S.day||(spSt().ban||0)>S.day));return h}
+function spJoin(){const P=spSt();if(P.kind){tab='sp';return render()}
+  modal(`${a2('rally',340)}<h2>Pick your sport</h2><p>You can only stick with one at a time. You can quit later and start over, but your progress resets.</p><div class="btns" style="flex-direction:column;align-items:stretch">${Object.entries(SPORTS).map(([k,s])=>`<button class="btn go" data-sp="${k}" style="text-align:left;white-space:normal;padding:10px 12px"><b>${s.ic} ${s.n}</b><span style="display:block;font-family:var(--body);font-weight:400;font-size:14px;margin-top:3px;text-transform:none">${s.sub}</span></button>`).join('')}<button class="btn" id="spx">Not now</button></div>`);
+  $('spx').onclick=close;$('mcard').querySelectorAll('[data-sp]').forEach(b=>b.onclick=()=>{const k=b.dataset.sp;S.sp={kind:k,ovr:rnd(8,16)+Math.floor(S.sk.muscle/2),stage:0,w:0,l:0,fame:0,inj:0,td:-9,gd:-9,fail:-9,cl:(S.sp&&S.sp.cl)||[],bet:(S.sp&&S.sp.bet)||-9,ban:(S.sp&&S.sp.ban)||0,agent:0};tab='sp';say(`You joined ${SPORTS[k].n.toLowerCase()}. Check the Sports tab.`);$('modal').hidden=true;render()})}
+function paneSports(){const P=spSt();if(!P.kind)return `<div class="row"><div class="info"><div class="t">No sport yet</div><div class="s">Tap the park on the Move tab and try out for a team.</div></div></div>`;
+  const D=SPORTS[P.kind],nx=D.st[P.stage+1],need=SP_NEED[P.stage+1],hurt=P.inj>S.day,wNeed=(P.stage+1)*3;
+  let h=`<div class="sec">${D.ic} ${D.n} · ${D.st[P.stage]}</div>${a2(hurt?'hospital':'rally',300)}<div class="row" style="flex-wrap:wrap"><div class="info" style="flex:1 1 100%"><div class="t">Overall ${P.ovr}/100 · Fame ${P.fame}</div><div class="bar" style="margin:6px 0"><i style="width:${P.ovr}%;background:var(--accent)"></i></div><div class="s">Record ${P.w}-${P.l}${hurt?` · <b style="color:var(--blood)">Injured until day ${P.inj}</b>`:''}${SP_SAL[P.stage]?` · Salary ${money(SP_SAL[P.stage]*(P.agent?1.25:1))} a week`:''}${P.agent?' · Agent signed':''}</div></div>
+   <div class="btns" style="width:100%"><button class="btn go" data-a="zsplay" ${hurt||P.gd>S.day-2?'disabled':''}>${P.gd>S.day-2?'Next game in '+(P.gd+2-S.day)+' day':'Play a game'}</button><button class="btn" data-a="zstrain" data-k="gym" ${hurt||P.td===S.day?'disabled':''}>Gym</button><button class="btn" data-a="zstrain" data-k="run" ${hurt||P.td===S.day?'disabled':''}>Run</button><button class="btn" data-a="zstrain" data-k="drill" ${hurt||P.td===S.day?'disabled':''}>Drills</button></div></div>`;
+  if(nx)h+=`<div class="row" style="flex-wrap:wrap"><div class="info"><div class="t">Next: ${nx}</div><div class="s">Needs overall ${need} and ${wNeed} wins. You have ${P.ovr} and ${P.w}.${P.fail>S.day-3?' Try again in a few days.':''}</div></div><button class="btn go" data-a="zsup" ${P.ovr>=need&&P.w>=wNeed&&!hurt&&P.fail<=S.day-3?'':'disabled'}>Try out</button></div>`;
+  if(P.stage>=3)h+=`<div class="row" style="flex-wrap:wrap"><div class="info"><div class="t">Agent</div><div class="s">${P.agent?'Your agent gets you 25% more on every payday and contract.':'An agent gets you 25% more on payday and better deals. $1,500.'}</div></div>${P.agent?'':`<button class="btn go" data-a="zsagent" ${S.cash<1500?'disabled':''}>Hire $1,500</button>`}</div>`;
+  if(adult()&&P.stage>=1){const cl=P.cl||[];h+=`<div class="sec">Scout and sign</div><div class="row" style="flex-wrap:wrap"><div class="info"><div class="t">Scout a prospect</div><div class="s">Find a young player, sign him and take 10% of what he makes. Up to 3. ${cl.length}/3 signed. $500.</div></div><button class="btn" data-a="zsscout" ${cl.length>=3||S.cash<500?'disabled':''}>Scout</button></div>`+cl.map(c=>`<div class="row"><div class="info"><div class="t">${esc(c.n)} · ${SPORTS[c.k].ic} overall ${c.o}</div><div class="s">${c.o>=60?'Making money. Your cut comes every week.':'Still coming up.'}</div></div></div>`).join('')}
+  if(P.stage>=5&&P.fame>=120)h+=`<div class="row" style="flex-wrap:wrap"><div class="info"><div class="t">Retire a legend</div><div class="s">You made it. Hang it up on top and take the Hall of Fame ending.</div></div><button class="btn red" data-a="zsretire">Retire</button></div>`;
+  h+=`<div class="row"><div class="info"><div class="s" style="color:var(--dim)">Quitting resets your progress.</div></div><button class="btn" data-a="zsquit">Quit sport</button></div>`;return h}
+function spAct(a,el){const P=spSt();if(!P.kind&&a!=='zsx')return;const D=SPORTS[P.kind]||{};
+  if(a==='zsquit'){modal(`<h2>Quit ${D.n}?</h2><p>You lose your progress. Your signed prospects stay.</p><div class="btns"><button class="btn red" id="y">Quit</button><button class="btn" id="n">Keep going</button></div>`);$('y').onclick=()=>{P.kind=null;$('modal').hidden=true;tab='block';say('You walked away from the sport.');render()};$('n').onclick=close;return}
+  if(a==='zstrain'){if(P.td===S.day||P.inj>S.day||!spendEn(15))return;P.td=S.day;const k=el.dataset.k,g=rnd(1,3)+(S.sk.muscle>=7?1:0);P.ovr=Math.min(100,P.ovr+g);
+    if(k==='gym'&&Math.random()<.12&&S.sk.muscle<10)S.sk.muscle++;if(k==='run')addStress(-4);if(k==='drill'&&Math.random()<.1&&S.sk.smarts<10)S.sk.smarts++;
+    if(Math.random()<.025+(P.kind==='football'?.015:0)){P.inj=S.day+rnd(3,7);say(`You tweaked something training. Out until day ${P.inj}.`)}else say(`${k==='gym'?'Lifted':k==='run'?'Ran':'Ran drills'}. Overall +${g}.`);return render()}
+  if(a==='zsagent'){if(S.cash<1500)return;S.cash-=1500;P.agent=1;say('You signed with an agent.');return render()}
+  if(a==='zsup'){const need=SP_NEED[P.stage+1];if(P.ovr<need||P.w<(P.stage+1)*3||P.inj>S.day)return;
+    if(Math.random()<.72+(S.sk.talk-3)*.02+(P.fame>=P.stage*8?.08:0)){P.stage++;P.fame+=4;S.rep+=2;addXP(8);spModal('rally',`You made it: ${D.st[P.stage]}`,P.stage>=4?`You are getting paid now. Salary ${money(SP_SAL[P.stage]*(P.agent?1.25:1))} a week.`:'You moved up a level.',[{l:'Let\'s go',c:'go'}]);say(`Moved up to ${D.st[P.stage]}.`)}
+    else{P.fail=S.day;say('You did not make the cut. Keep training and try again in a few days.')}return render()}
+  if(a==='zsscout'){if(!adult()||S.cash<500||(P.cl||[]).length>=3||!spendEn(10))return;S.cash-=500;const k=pick(Object.keys(SPORTS)),n=pick(['Jaylen','Marcus','Dre','Terrell','Cam','Dev','Isaiah','Kobe','Tay','Rico']);P.cl=P.cl||[];P.cl.push({n,k,o:rnd(25,45),d:S.day});say(`You scouted and signed ${n}. He plays ${SPORTS[k].n.toLowerCase()}.`);return render()}
+  if(a==='zsretire'){if(!(P.stage>=5&&P.fame>=120))return;spModal('lawyer','Retire a legend?','You hang it up on top. The run ends with the Hall of Fame ending.',[{l:'Retire',c:'red',f:()=>{S.legit=1;S.endT='Hall of Fame';S.endP=`You retired a ${D.n.toLowerCase()} legend at ${S.age||''}. Fame ${P.fame}, a ${P.w}-${P.l} record and a place in the Hall.`;S.over=true;checkEnd()}},{l:'Keep playing'}]);return}
+  if(a==='zsplay')return spPlay()}
+function spPlay(){const P=spSt(),D=SPORTS[P.kind];if(P.inj>S.day||P.gd>S.day-2||!spendEn(20))return;P.gd=S.day;
+  const opp=8+P.stage*10+rnd(0,8),pay=Math.round(SP_PAY[P.stage]*(P.agent?1.25:1));
+  const fin=win=>{if(win){P.w++;P.fame+=2+P.stage;if(Math.random()<.35)P.ovr=Math.min(100,P.ovr+1);if(P.stage>=2)S.rep+=1;S.cash+=pay;addXP(3);say(`${D.n}: you won.${pay?` Paid ${money(pay)}.`:''}`)}else{P.l++;addStress(4);say(`${D.n}: you lost.`)}
+    if(Math.random()<(win?.03:.07)+(P.kind==='boxing'?.04:P.kind==='football'?.03:0)){P.inj=S.day+rnd(4,12);setTimeout(()=>{if($('modal').hidden)spModal('hospital','You got hurt',`You are out until day ${P.inj}. Rest up.`,[{l:'Damn'}])},700)}render()};
+  if(P.kind==='boxing'){const nt=window.noTalk;window.noTalk=1;return fightGame(myStr()+Math.floor(P.ovr/4),opp+6,'a fighter',win=>{window.noTalk=nt;fin(win)})}
+  const plays=[{q:P.kind==='basketball'?'Down one with the ball. What is the play?':'Third and long. What is the call?',o:[['Play it safe',.12,1],['Run the set',0,1],['Take the big shot',-.15,2]]},{q:P.kind==='basketball'?'They are pressing. How do you break it?':'Their blitz is coming. What do you do?',o:[['Hit the open man',.12,1],['Read the defense',0,1],['Go one on one',-.15,2]]},{q:'Last possession of the half.',o:[['Run the clock',.12,1],['Call the play',0,1],['Go for the win',-.15,2]]}];
+  let i=0,score=0;const need=P.stage>=3?3:2,base=.3+P.ovr/160-opp/300+(S.sk.muscle-3)*.015;
+  const step=()=>{if(i>=plays.length){const win=score>=need;spModal(win?'rally':'cookout',win?'You won the game':'You lost the game',`Final: you scored ${score} big moments. You needed ${need}.`,[{l:'Continue',c:win?'go':'',f:()=>fin(win)}]);return}
+    const pl=plays[i],opts=pl.o.slice().sort(()=>Math.random()-.5);modal(`${a2('rally',300)}<div class="sec" style="margin:0">Moment ${i+1} of ${plays.length}</div><h2>${D.n}</h2><p>${pl.q}</p><div class="btns" style="flex-direction:column;align-items:stretch">${opts.map((o,j)=>`<button class="btn" data-j="${j}" style="text-align:left;white-space:normal;text-transform:none">${o[0]}</button>`).join('')}</div>`);
+    $('mcard').querySelectorAll('[data-j]').forEach(b=>b.onclick=()=>{const o=opts[+b.dataset.j];if(Math.random()<Math.max(.1,Math.min(.9,base+o[1])))score+=o[2];i++;step()})};step()}
+function spBook(){const P=spSt();if(!adult()||P.bet===S.day||(P.ban||0)>S.day)return;const A=pick(['Eastside','Southpark','The Bottom','Northline']),B=pick(['Riverside','Hilltop','Westend','Midtown']),fav=Math.random()<.5;
+  const row=(side,l)=>[100,500,1000].map(n=>`<button class="btn ${side==='a'?'go':''}" data-b="${side}${n}" ${S.cash<n?'disabled':''}>${l} $${n}</button>`).join('');
+  modal(`${a2('cards',320)}<h2>The bookie</h2><p>${A} vs ${B}. ${fav?A+' is the favorite.':B+' is the favorite.'} He pays 1.9 to 1 on a win.</p><div class="btns" style="flex-direction:column;align-items:stretch"><div class="btns">${row('a',A)}</div><div class="btns">${row('b',B)}</div><button class="btn red" id="bkfix" ${S.cash<3000?'disabled':''}>Fix the game ($3,000)</button><button class="btn" id="bkn">Walk away</button></div>`);$('bkn').onclick=close;
+  const settle=(side,n,fixed)=>{P.bet=S.day;S.cash-=n;const favSide=fav?'a':'b',pw=fixed?.85:(side===favSide?.55:.43);if(Math.random()<pw){S.cash+=Math.round(n*1.9);say(`The bet hit. Won ${money(Math.round(n*.9))}.`)}else say(`The bet lost. Down ${money(n)}.`);
+    if(fixed&&Math.random()<.15){S.heat=Math.min(100,S.heat+25);P.ban=S.day+10;say('The fix got out. Heat up and the bookie banned you for 10 days.')}close()};
+  $('mcard').querySelectorAll('[data-b]').forEach(b=>b.onclick=()=>settle(b.dataset.b[0],+b.dataset.b.slice(1),0));$('bkfix').onclick=()=>{S.cash-=3000;settle(fav?'a':'b',1000,1)}}
+function spDay(){const P=S.sp;if(!P||S.over||S.pr||S.inJail)return;
+  if(P.kind&&weekTick()&&SP_SAL[P.stage]&&!(P.inj>S.day)){const s=Math.round(SP_SAL[P.stage]*(P.agent?1.25:1));S.cash+=s;legit(s);say(`Paycheck from the team: ${money(s)}.`)}
+  (P.cl||[]).forEach(c=>{c.o=Math.min(95,c.o+(Math.random()<.5?rnd(0,2):0));if(weekTick()&&c.o>=60){const cut=Math.round(rnd(300,900)*c.o/60*.1*(1+P.stage*.2));S.cash+=cut;legit(cut);say(`${c.n} is making money. Your cut: ${money(cut)}.`)}});
+  const before=(P.cl||[]).length;P.cl=(P.cl||[]).filter(c=>!(c.o<60&&Math.random()<.006));if(P.cl.length<before)say('A prospect you signed quit and went home.')}
 function paneCrew(){
   const turf=S.owner.filter(o=>o==='me').length, need=S.lvl*20;
   return `<div class="jump" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:4px">${['Skills','Plugs','Stash','Life','School','Jobs','Crew'].map(k=>`<button class="btn" style="padding:6px 10px;font-size:12px" data-jump="${k}">${k}</button>`).join('')}</div>${(S.traits||[]).length?`<div class="row" style="flex-wrap:wrap"><div class="info"><div class="t">Traits</div><div class="s">${S.traits.map(id=>{const t=TRAITS.find(x=>x.id===id);return t?`<b>${t.name}</b> · <i>${t.story}</i><br>${t.sub.replace(' Can\'t be undone.','')}`:''}).join('<br>')}</div></div></div>`:''}<div class="row" style="flex-wrap:wrap"><div class="info"><div class="t">Level ${S.lvl} · ${S.pts} skill point${S.pts===1?'':'s'} to spend</div>
@@ -3712,7 +3769,7 @@ function nextDay(){S.en=S.restDay?enMax():Math.max(30,enMax()-(S.stress>=70?20:0
   if(turf){S.cash+=turf*300;}
   {const sh=S.owner.filter(o=>o!=='me'&&o!=='none'&&crew(o)&&crew(o).ally).length;if(sh)S.cash+=sh*100}
   if(S.myGang&&S.soldiers)S.cash+=S.soldiers*50;
-  runTraps();crewDay();ctDay();shDay();poDay();launDay();prisonDay();plugsHear();lickTipDay();x8Tick();
+  runTraps();crewDay();ctDay();shDay();poDay();launDay();prisonDay();plugsHear();lickTipDay();x8Tick();try{spDay()}catch(e){}
   gfDay();sideDay();if(S.car==='stolen'){S.heat=Math.min(100,S.heat+2);addXP(1)}favorRoll();
   shipDay();debtDay();loanDay();checkpointDay();rapDay();
   if(S.cal?calCheck():(S.day-1)%30===0)say("It's the first of the month. Checks hit and the Js got money to spend.");
@@ -3830,6 +3887,7 @@ function act(a,el){
   if(S.over)return;
   if(a.slice(0,2)==='cm')return crewAct(a,el);
   if(a.slice(0,2)==='x8')return x8Act(a,el);
+  if(a.slice(0,2)==='zs')return spAct(a,el);
   if(a.slice(0,2)==='ct')return ctAct(a,el);
   if(a.slice(0,2)==='sz')return szAct(a,el);
   if(a==='pocheck')return poAct(a);
@@ -4003,7 +4061,7 @@ function checkEnd(){
     <p>${S.prison?(S.prison===2?`Third time locked up at ${S.age}. The judge sent you to a youth facility until you're 21. By the time you get out, the streets moved on without you.`:`Third time locked up. The judge gave you life${S.cal?' at '+S.age:''}. The streets keep going without you.`):S.cal?(S.hp<=0?`The streets got you at ${S.age}. ${calLabel()}.`:`You retired at ${S.age}. ${calLabel()}.`):S.hp<=0?'The streets got you on day '+S.day+'.':(freeMode()?'You retired on day '+S.day+'.':`${maxDay()} days are up and your story was not finished.`)}</p>
     <p><b style="font-size:20px">Ended with ${money(net)}</b><br>Turf: ${turf} · Rep: ${S.rep}</p>
     <div class="btns"><button class="btn go" id="again">Run it back</button></div>`);
-    if(S.legit){const t=$('mcard').querySelector('h2'),p=$('mcard').querySelector('p');if(t)t.textContent='You went legit';if(p)p.textContent=`You walked away at ${S.age||''}. Real businesses, clean money, and nobody chasing you.`}
+    if(S.legit){const t=$('mcard').querySelector('h2'),p=$('mcard').querySelector('p');if(t)t.textContent=S.endT||'You went legit';if(p)p.textContent=S.endP||`You walked away at ${S.age||''}. Real businesses, clean money, and nobody chasing you.`}
     $('again').onclick=()=>mainMenu(false)},0);
 }
 
