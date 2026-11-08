@@ -373,7 +373,7 @@ function groundSend(){if(S&&S.par&&S.home==='family'&&S.grounded>S.day&&S.sneakO
 function render(){if(S&&S.pr)tab='prison';else if(S&&tab==='prison')tab='block';if(S&&S.home&&S.home!=='family'&&S.grounded)S.grounded=0;
   groundSend();
   if(S&&S.char==='life')setLifeChar();
-  const free=freeMode();$('dlab').hidden=!!S.cal;$('day').textContent=S.cal?'':free?S.day:Math.min(S.day,maxDay());$('dmax').textContent=S.cal?`${calLabel()} · Age ${S.age}${inHS()&&GRADEN[S.grade]?' · '+GRADEN[S.grade]:''}`:S.mode==='life'?` · Age ${S.age}`:free?' · Kingpin mode':` / ${maxDay()}`;$('dmax').textContent+=checkDay()?' · Checks hit':` · Checks in ${daysToCheck()}d`;if(S.strikes)$('dmax').textContent+=` · Strikes ${S.strikes}/3`;$('retire').hidden=!free||S.over;
+  const free=freeMode();$('dlab').hidden=!!S.cal;$('day').textContent=S.cal?'':free?S.day:Math.min(S.day,maxDay());$('dmax').textContent=S.cal?`${calLabel()} · Age ${S.age}${inHS()&&GRADEN[S.grade]?' · '+GRADEN[S.grade]:''}`:S.mode==='life'?` · Age ${S.age}`:free?' · Kingpin mode':` / ${maxDay()}`;$('dmax').textContent+=checkDay()?' · Checks hit':` · Checks in ${daysToCheck()}d`;if(S.strikes)$('dmax').textContent+=` · Strikes ${S.strikes}/3`;$('retire').hidden=!!S.over;
   $('cash').textContent=money(S.cash);
   $('stress').textContent=S.stress+(S.stress>=70?' · stressed':'');$('stressb').style.width=S.stress+'%';
   const C=CHARS.find(c=>c.id===S.char);$('who').textContent=C.name;
@@ -1333,7 +1333,7 @@ function mgMaze(o,cb){mgOn=true;const C=7,R=9,T=22,GW=2*C+1,GH=2*R+1,W=GW*T,H=GH
     if(!nb.length){stk.pop();continue}const [nx,ny,dx,dy]=pick(nb);seen.add(nx+','+ny);g[2*ny+1][2*nx+1]=0;g[2*cy+1+dy][2*cx+1+dx]=0;stk.push([nx,ny])}
   for(let i=0;i<Math.round(8-d*5);i++){const x=rnd(1,GW-2),y=rnd(1,GH-2);if(g[y][x]===1&&((g[y][x-1]===0&&g[y][x+1]===0)||(g[y-1][x]===0&&g[y+1][x]===0)))g[y][x]=0}
   const maxS=mgLv(3+Math.floor(skv('smarts')/3)+(is('shade')?1:0)),LIM=(o.T||42000)+skv('smarts')*1500,ex=2*C-1,ey=2*R-1;let strikes=0,act=false,last=null,pos=null;const T0=performance.now();
-  modal(`<h2>${o.title||'Tunnel the VPN'}</h2>${mgHud(`Strikes 0 of ${maxS}. Put your finger on the green node and drag to the exit. Walls forgive a graze.`)}${mgCv(W,H)}`);
+  modal(`<h2>${o.title||'Tunnel the VPN'}</h2>${mgHud(`Strikes 0 of ${maxS}. Drag from the green node to the exit, or tap an arrow key to start and steer with the arrows. Walls forgive a graze.`)}${mgCv(W,H)}`);
   const cv=$('mgc'),x=cv.getContext('2d');
   const IN=6;const wall=(px,py)=>{const tx=Math.floor(px/T),ty=Math.floor(py/T);if(tx<0||ty<0||tx>=GW||ty>=GH)return true;if(g[ty][tx]!==1)return false;const fx=px-tx*T,fy=py-ty*T;return fx>=IN&&fx<=T-IN&&fy>=IN&&fy<=T-IN};
   const draw=()=>{x.fillStyle='#07090d';x.fillRect(0,0,W,H);for(let j=0;j<GH;j++)for(let i=0;i<GW;i++)if(g[j][i]){x.fillStyle='#1b2a46';x.fillRect(i*T,j*T,T,T);x.fillStyle='#27406b';x.fillRect(i*T,j*T,T,2)}
@@ -1344,7 +1344,10 @@ function mgMaze(o,cb){mgOn=true;const C=7,R=9,T=22,GW=2*C+1,GH=2*R+1,W=GW*T,H=GH
   cv.onpointermove=e=>{if(!act||!mgOn)return;const p=mgPt(cv,e),n=Math.max(1,Math.ceil(Math.hypot(p[0]-last[0],p[1]-last[1])/3));for(let i=1;i<=n;i++){const qx=last[0]+(p[0]-last[0])*i/n,qy=last[1]+(p[1]-last[1])*i/n;if(wall(qx,qy))return hit()}
     last=p;pos=p;if(Math.floor(p[0]/T)===ex&&Math.floor(p[1]/T)===ey){act=false;mgFin(cb,true,'Connected. You are in.')}};
   cv.onpointerup=cv.onpointercancel=()=>{act=false;pos=null};
-  const loop=()=>{if(!mgOn||!cv.isConnected)return;const left=1-(performance.now()-T0)/LIM;if($('mgt'))$('mgt').style.width=Math.max(0,left*100)+'%';if(left<=0)return mgFin(cb,false,'Out of time. The session expired.');draw();requestAnimationFrame(loop)};loop()}
+  const kk={},KM={ArrowUp:'u',ArrowDown:'d',ArrowLeft:'l',ArrowRight:'r'};let kt=performance.now();
+  const kd=e=>{const m=KM[e.key];if(!m||!mgOn)return;e.preventDefault();kk[m]=1;if(!act){act=true;last=[1.5*T,1.5*T];pos=last.slice()}};const ku=e=>{const m=KM[e.key];if(m)delete kk[m]};document.addEventListener('keydown',kd);document.addEventListener('keyup',ku);
+  const kmove=()=>{const n=performance.now(),dt=Math.min(.05,(n-kt)/1000);kt=n;if(!act)return;const dx=(kk.r?1:0)-(kk.l?1:0),dy=(kk.d?1:0)-(kk.u?1:0);if(!dx&&!dy)return;const p=[last[0]+dx*105*dt,last[1]+dy*105*dt],k=Math.max(1,Math.ceil(Math.hypot(p[0]-last[0],p[1]-last[1])/2));for(let i=1;i<=k;i++){const qx=last[0]+(p[0]-last[0])*i/k,qy=last[1]+(p[1]-last[1])*i/k;if(wall(qx,qy))return hit()}last=p;pos=p;if(Math.floor(p[0]/T)===ex&&Math.floor(p[1]/T)===ey){act=false;mgFin(cb,true,'Connected. You are in.')}};
+  const loop=()=>{if(!mgOn||!cv.isConnected){document.removeEventListener('keydown',kd);document.removeEventListener('keyup',ku);return}kmove();const left=1-(performance.now()-T0)/LIM;if($('mgt'))$('mgt').style.width=Math.max(0,left*100)+'%';if(left<=0)return mgFin(cb,false,'Out of time. The session expired.');draw();requestAnimationFrame(loop)};loop()}
 function mgInv(o,cb){mgOn=true;const W=320,H=400,d=o.d||0,rows=3+(d>.5?1:0),cols=6;let px=W/2,lives=mgLv(3+(skv('muscle')>=7?1:0)),bul=[],eb=[],gx=0,gy=0,dir=1,inv=0,lastF=0,lastE=0,lt=performance.now();const T0=lt,LIM=48000;
   const en=[];for(let r=0;r<rows;r++)for(let c=0;c<cols;c++)en.push({x:34+c*44,y:30+r*28,a:1});
   const sp=(34+d*24)*(1-Math.min(.35,skv('smarts')*.03)),fireMs=Math.max(200,430-skv('hustle')*24),eMs=Math.max(450,1000-d*350);
@@ -1364,7 +1367,7 @@ function mgInv(o,cb){mgOn=true;const W=320,H=400,d=o.d||0,rows=3+(d>.5?1:0),cols
 const PACM=['###########','#.........#','#.##.#.##.#','#.........#','#.##.#.##.#','#....#....#','#.##.#.##.#','#.........#','#.##.#.##.#','#.........#','###########'];
 function mgPac(o,cb){mgOn=true;const R=PACM.length,C=PACM[0].length,T=28,W=C*T,H=R*T,d=o.d||0,dots=new Set();PACM.forEach((row,y)=>[...row].forEach((ch,xx)=>{if(ch==='.')dots.add(xx+','+y)}));
   const free=(a,b)=>PACM[b]&&PACM[b][a]&&PACM[b][a]!=='#';let me={x:5,y:9,dx:0,dy:0,nx:0,ny:0},gh=[{x:1,y:1,c:'#ff5a5a'},{x:9,y:1,c:'#5ab8ff'}];if(d>.4)gh.push({x:9,y:9,c:'#ffb347'});let lives=mgLv(2+(skv('luck')>=6?1:0));const T0=performance.now(),LIM=55000;
-  const reset=()=>{me={x:5,y:9,dx:0,dy:0,nx:0,ny:0};gh[0].x=1;gh[0].y=1;gh[1].x=9;gh[1].y=1;if(gh[2]){gh[2].x=9;gh[2].y=9}};
+  const reset=()=>{me={x:5,y:9,dx:0,dy:0,nx:0,ny:0};gh[0].x=1;gh[0].y=1;gh[1].x=9;gh[1].y=1;if(gh[2]){gh[2].x=9;gh[2].y=9}gh.forEach(g=>{g.ox=null})};
   modal(`<h2>${o.title||'Pull the files'}</h2>${mgHud(`Swipe or use the arrows. Eat every file. Lives ${lives}.`)}${mgCv(W,H,`<div class="btns" style="justify-content:center"><button class="btn" id="pu">▲</button><button class="btn" id="pl">◀</button><button class="btn" id="pd">▼</button><button class="btn" id="pr">▶</button></div>`)}`);
   const cv=$('mgc'),x=cv.getContext('2d'),dirb=(a,b)=>{me.nx=a;me.ny=b};$('pu').onclick=()=>dirb(0,-1);$('pd').onclick=()=>dirb(0,1);$('pl').onclick=()=>dirb(-1,0);$('pr').onclick=()=>dirb(1,0);
   let sx=0,sy=0;cv.onpointerdown=e=>{sx=e.clientX;sy=e.clientY};cv.onpointerup=e=>{const a=e.clientX-sx,b=e.clientY-sy;if(Math.max(Math.abs(a),Math.abs(b))<12)return;Math.abs(a)>Math.abs(b)?dirb(a>0?1:-1,0):dirb(0,b>0?1:-1)};
@@ -1373,13 +1376,13 @@ function mgPac(o,cb){mgOn=true;const R=PACM.length,C=PACM[0].length,T=28,W=C*T,H
   const caught=()=>{if(!gh.some(g=>g.x===me.x&&g.y===me.y))return false;lives--;if(lives<=0){stop();mgFin(cb,false,'Traced. They found you.');return true}$('mgmsg').textContent=`Caught. Lives ${lives}.`;$('mgmsg').style.color='var(--blood)';reset();return true};
   const draw=()=>{x.fillStyle='#07090d';x.fillRect(0,0,W,H);for(let b=0;b<R;b++)for(let a=0;a<C;a++){if(PACM[b][a]==='#'){x.fillStyle='#1b2a46';x.fillRect(a*T+1,b*T+1,T-2,T-2)}}
     x.fillStyle='#ffd23f';dots.forEach(k=>{const [a,b]=k.split(',').map(Number);x.beginPath();x.arc(a*T+T/2,b*T+T/2,3,0,7);x.fill()});
-    x.fillStyle='#fff';x.beginPath();x.arc(me.x*T+T/2,me.y*T+T/2,T*.38,0,7);x.fill();gh.forEach(g=>{x.fillStyle=g.c;x.beginPath();x.arc(g.x*T+T/2,g.y*T+T/2,T*.38,0,7);x.fill()})};
-  const i1=setInterval(()=>{if(!mgOn){stop();return}if(free(me.x+me.nx,me.y+me.ny)&&(me.nx||me.ny)){me.dx=me.nx;me.dy=me.ny}if(free(me.x+me.dx,me.y+me.dy)){me.x+=me.dx;me.y+=me.dy}dots.delete(me.x+','+me.y);
-    if(!caught()&&!dots.size){stop();mgFin(cb,true,'Every file pulled.')}draw()},200);
+    const ip=(o,iv)=>{const f=o.ox==null?1:Math.min(1,(performance.now()-o.tm)/iv);return [o.ox==null?o.x:o.ox+(o.x-o.ox)*f,o.oy==null?o.y:o.oy+(o.y-o.oy)*f]};const mp=ip(me,150);x.fillStyle='#fff';x.beginPath();x.arc(mp[0]*T+T/2,mp[1]*T+T/2,T*.38,0,7);x.fill();gh.forEach(g=>{const q=ip(g,gms);x.fillStyle=g.c;x.beginPath();x.arc(q[0]*T+T/2,q[1]*T+T/2,T*.38,0,7);x.fill()})};
+  const i1=setInterval(()=>{if(!mgOn){stop();return}if(free(me.x+me.nx,me.y+me.ny)&&(me.nx||me.ny)){me.dx=me.nx;me.dy=me.ny}if(free(me.x+me.dx,me.y+me.dy)){me.ox=me.x;me.oy=me.y;me.tm=performance.now();me.x+=me.dx;me.y+=me.dy}dots.delete(me.x+','+me.y);
+    if(!caught()&&!dots.size){stop();mgFin(cb,true,'Every file pulled.')}},150);
   const gms=Math.max(210,340-d*60+skv('smarts')*7);
   const i2=setInterval(()=>{if(!mgOn)return;gh.forEach(g=>{const opts=[[1,0],[-1,0],[0,1],[0,-1]].filter(([a,b])=>free(g.x+a,g.y+b)&&!(g.px===-a&&g.py===-b));const op=opts.length?opts:[[1,0],[-1,0],[0,1],[0,-1]].filter(([a,b])=>free(g.x+a,g.y+b));
-      let ch;if(Math.random()<.55+d*.15){ch=op.slice().sort((A,B)=>Math.hypot(g.x+A[0]-me.x,g.y+A[1]-me.y)-Math.hypot(g.x+B[0]-me.x,g.y+B[1]-me.y))[0]}else ch=pick(op);g.x+=ch[0];g.y+=ch[1];g.px=ch[0];g.py=ch[1]});caught();draw()},gms);
-  const i3=setInterval(()=>{if(!mgOn||!cv.isConnected){stop();return}const left=1-(performance.now()-T0)/LIM;if($('mgt'))$('mgt').style.width=Math.max(0,left*100)+'%';if(left<=0){stop();mgFin(cb,false,'Out of time. The session closed.')}},200);draw()}
+      let ch;if(Math.random()<.55+d*.15){ch=op.slice().sort((A,B)=>Math.hypot(g.x+A[0]-me.x,g.y+A[1]-me.y)-Math.hypot(g.x+B[0]-me.x,g.y+B[1]-me.y))[0]}else ch=pick(op);g.ox=g.x;g.oy=g.y;g.tm=performance.now();g.x+=ch[0];g.y+=ch[1];g.px=ch[0];g.py=ch[1]});caught();draw()},gms);
+  const i3=setInterval(()=>{if(!mgOn||!cv.isConnected){stop();return}const left=1-(performance.now()-T0)/LIM;if($('mgt'))$('mgt').style.width=Math.max(0,left*100)+'%';if(left<=0){stop();mgFin(cb,false,'Out of time. The session closed.')}},200);const raf=()=>{if(!mgOn||!cv.isConnected)return;draw();requestAnimationFrame(raf)};raf()}
 function mgSimon(o,cb){mgOn=true;const d=o.d||0,len=5+Math.round(d*3),seq=Array.from({length:len},()=>rnd(0,3)),CL=['#e5484d','#3ddc84','#4aa3ff','#ffd23f'],allow=(skv('talk')>=6?1:0)+(skv('talk')>=9?1:0),fl=Math.max(260,520-skv('talk')*18);let i=0,miss=0,show=true;
   modal(`<h2>${o.title||'Phish the login'}</h2><div class="s" id="mgmsg" style="text-align:center;min-height:18px">Watch the pattern.</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px auto;max-width:260px">${CL.map((c,k)=>`<button id="sm${k}" style="height:84px;border-radius:12px;border:0;background:${c};opacity:.35"></button>`).join('')}</div>`);
   const lit=(k,on)=>{const b=$('sm'+k);if(b)b.style.opacity=on?'1':'.35'};
@@ -2588,9 +2591,12 @@ const LICKS={
  strap:{name:'Take somebody\'s strap',sub:'High risk, high reward. Take his gun and his cash. He might pull first.'},
  scam:{name:'Fake gun sale',sub:'Post a gun for sale online, meet the buyer, take his money. Some buyers are undercover.'},
 };
+const LTIPS={house:'A house on the block is empty',strap:'Somebody on the block is carrying'};
+function lickTipDay(){S.lt=S.lt||{};if(S.age&&S.age<14)return;const p=.06+Math.min(.22,(S.rep||0)/450)+Math.min(.14,((S.custos||[]).length)*.012);if(Math.random()>p)return;const k=Math.random()<.6?'house':'strap';if(S.lt[k]>=S.day)return;S.lt[k]=S.day+3;const c=(S.custos||[]);const who=c.length?pick(c).name:'Somebody from the block';phoneMsg(who,k==='house'?'"Yo, the house on the corner is empty till Friday. Nobody home."':'"A dude been flashing a strap around here. Might be worth a look."')}
 function paneLicks(){
-  let h=`<div class="sec">Licks · each one takes the day</div>`;
-  h+=Object.entries(LICKS).map(([k,L])=>{const ok=!L.need||L.need();
+  S.lt=S.lt||{};
+  let h=`<div class="sec">Licks · each one takes the day</div><div class="row"><div class="info"><div class="s" style="color:var(--dim)">Houses and straps come through tips on your phone. The more rep and customers you have, the more people tell you. The corner store and pharmacy only show when you are on that block.</div></div></div>`;
+  h+=Object.entries(LICKS).filter(([k])=>{if(k==='scam')return false;if(k==='house'||k==='strap')return S.lt[k]>=S.day;if(k==='store')return S.at===1;if(k==='pharm')return S.at===4;return true}).map(([k,L])=>{const ok=!L.need||L.need();
     return `<div class="row"><div class="info"><div class="t">${L.name}</div><div class="s">${L.sub}</div></div>
       ${ok?`<button class="btn red" data-a="lick" data-k="${k}">Go</button>`:`<button class="btn green" data-a="pad" ${S.cash>=1500?'':'disabled'}>Pro Pad $1,500</button>`}</div>`}).join('');
   return h;
@@ -2605,7 +2611,7 @@ function caughtOrNot(ok,goodTitle,goodText,then){
   if(ok){then&&then();return lickDone(goodTitle,goodText,true)}
   busted();lickDone('Twelve got you','The chase ended in cuffs.',false);
 }
-function lick(k){if(stuckHome())return;if((S.rob.fat||0)>=7){say('Everybody on the block is watching for you. Lay off the licks for a few days.');return render()}S.rob.c0=S.cash;
+function lick(k){if(stuckHome())return;if((k==='house'||k==='strap')&&!window.noTips&&!(S.lt&&S.lt[k]>=S.day)){say('You need a tip first. Check your phone.');return render()}if(S.lt)delete S.lt[k];if((S.rob.fat||0)>=7){say('Everybody on the block is watching for you. Lay off the licks for a few days.');return render()}S.rob.c0=S.cash;
   const sm=S.sk.smarts+(friendWith('rob')?2:0),mu=S.sk.muscle,st=stressed()?.1:0;
   if(k==='car')return padGame(ok=>{
     if(ok){const pay=rnd(2500,7000);S.heat=Math.min(100,S.heat+15);addXP(4);addStress(5);
@@ -3181,7 +3187,7 @@ function wFront(i){const w=(S.workers||[])[i];if(!w||!w.req)return;const r=w.req
   w.fr={due:S.day+3,owe,txt:amt(r.n,g)+' of '+g.name};w.req=null;w.loyal=Math.min(10,w.loyal+1);say(`Fronted ${w.name} ${w.fr.txt}. Owes ${money(owe)} in 3 days. Loyalty +1.`)}
 const tBan=t=>`<div style="width:100%;background:rgba(245,183,42,.12);border-left:3px solid var(--accent);padding:3px 8px;border-radius:4px;font-size:12px;letter-spacing:.04em;text-transform:uppercase">${t}</div>`;
 function panePhone(){const C=S.custos||[],T=S.texts||[];
-  let h=loanHTML()+paneConnect()+phonePlugs()+workersPhoneHTML()+`<div class="row" style="flex-wrap:wrap;border-color:var(--accent)"><div class="info"><div class="t" style="font-family:var(--display);font-size:20px;font-weight:400">Trap phone</div><div class="s">${C.length} plays saved · plays pay more than the Js, and more the longer they've been buying from you. They come to you, wherever you at.</div></div>
+  let h=loanHTML()+paneConnect()+phonePlugs()+workersPhoneHTML()+`<div class="sec">Social media</div><div class="row" style="flex-wrap:wrap"><div class="info"><div class="t">Fake gun sale</div><div class="s">${LICKS.scam.sub}</div></div><button class="btn red" data-a="lick" data-k="scam">Post it</button></div>`+`<div class="row" style="flex-wrap:wrap;border-color:var(--accent)"><div class="info"><div class="t" style="font-family:var(--display);font-size:20px;font-weight:400">Trap phone</div><div class="s">${C.length} plays saved · plays pay more than the Js, and more the longer they've been buying from you. They come to you, wherever you at.</div></div>
     <div class="btns" style="width:100%"><button class="btn go" style="white-space:normal" data-a="ptext" ${S.texted===S.day||!C.length?'disabled':''}>${S.texted===S.day?'Already texted today':"Text everybody \"I'm open\""}</button><button class="btn" style="white-space:normal" data-a="pcard" ${S.passed===S.day?'disabled':''}>${S.passed===S.day?'Passed it out today':`Pass out your number on ${BLOCKS[S.at]}`}</button></div></div>`;
   {const ib=(S.inbox||[]).filter(m=>S.day-m.d<=3).slice(0,4);if(ib.length)h+=`<div class="sec">Messages</div>${a2(ib.some(m=>/package|dropped/i.test(m.t))?'package':'texts',260)}`+ib.map(m=>`<div class="row" style="padding:8px 12px;flex-wrap:wrap">${tBan(`Received ${m.d===S.day?'today':dayTxt(m.d)}`)}<div class="info"><div class="t">📱 ${esc(m.f)}</div><div class="s">${esc(m.t)}</div></div></div>`).join('')}
   h+=`<div class="sec">Texts (${T.length})</div>`;
@@ -3457,12 +3463,13 @@ function street(g){return Math.round((g.lo+g.hi)/2)}
 function jTryOdds(){return Math.min(90,Math.round(25+S.rep*.8+(S.rapOn&&S.rap.fans>=1000?15:0)))}
 function bulk(n,g){const t=g.unit==='g'?[[1000,.78],[448,.84],[112,.9],[28,.95],[14,.98]]:g.unit==='pills'?[[2000,.8],[500,.86],[100,.93],[50,.97]]:[[32,.82],[16,.88],[4,.95]];const f=t.find(x=>n>=x[0]);return f?f[1]:1}
 function plugPrice(kind,g,raw){let p=plugPrice0(kind,g,raw);if(kind==='sell'&&!raw){const lb=(S.lb||{})[S.at+':'+g.id];if(lb&&S.day-lb.d<=4)p=Math.min(p,Math.max(1,Math.round(lb.u*.85)))}return p}
+function plugsHear(){if(!S.known||!S.trust||S.age&&S.age<14)return;BLOCKS.forEach((b,i)=>{if(S.known.includes(i)||S.burned&&S.burned[i]>S.day)return;const L=PINFO[i].lvl,need=L==='Low'?4:L==='Mid'?15:40;if((S.rep||0)>=need){S.known.push(i);S.trust[i]=Math.max(S.trust[i]||0,12);say(`${plugName(i)} on ${b} heard about you. They know your name now.`)}})}
 function plugPrice0(kind,g,raw){
   if(!raw&&S.deal&&S.deal.bi===S.at&&S.deal.g===g.id&&S.deal.kind===kind)return S.deal.p;
   const o=S.offer[S.at][g.id];
   const p=S.prices[S.at][g.id]*(kind==='buy'&&S.gf&&S.gf.plug===S.at?.85:1)*(kind==='buy'&&S.whole&&S.whole[S.at]?.8:1)*gmult(kind==='buy'?o.q:S.q[g.id])*(kind==='buy'?LVL[PINFO[S.at].lvl].mult*(o.tip||1)*D().buy:(1+(S.sk.hustle-3)*.02)*(S.rapOn&&S.rap.fans>=2000?1.05:1)*demand(S.at,g.id));
   const off=kind==='sell'&&!raw&&!PINFO[S.at].carries.includes(g.id)?.7:1;
-  let out=Math.round((S.known.includes(S.at)?p:p*(kind==='buy'?1.15:.85))*off);
+  let out=Math.round((S.known.includes(S.at)?p:p*(kind==='buy'?1.15:.85))*off);if(kind==='buy')out=Math.round(out*(1-Math.min(.12,(S.rep||0)/1200)));
   if(kind==='sell'&&!raw){const resale=S.prices[S.at][g.id]*gmult(S.q[g.id])*LVL[PINFO[S.at].lvl].mult*D().buy;out=Math.min(out,Math.round(resale*.82))}
   return Math.max(1,out);
 }
@@ -3605,7 +3612,7 @@ function nextDay(){S.en=S.restDay?enMax():Math.max(30,enMax()-(S.stress>=70?20:0
   if(turf){S.cash+=turf*300;}
   {const sh=S.owner.filter(o=>o!=='me'&&o!=='none'&&crew(o)&&crew(o).ally).length;if(sh)S.cash+=sh*100}
   if(S.myGang&&S.soldiers)S.cash+=S.soldiers*50;
-  runTraps();crewDay();ctDay();shDay();poDay();launDay();prisonDay();
+  runTraps();crewDay();ctDay();shDay();poDay();launDay();prisonDay();plugsHear();lickTipDay();
   gfDay();sideDay();if(S.car==='stolen'){S.heat=Math.min(100,S.heat+2);addXP(1)}favorRoll();
   shipDay();debtDay();loanDay();checkpointDay();rapDay();
   if(S.cal?calCheck():(S.day-1)%30===0)say("It's the first of the month. Checks hit and the Js got money to spend.");
@@ -4095,7 +4102,8 @@ function schoolRandom(){if(!S.cal||S.school!=='in'||S.classDay!==S.day-1||Math.r
   if(carrying&&r<.4){modal(`<h2 style="color:var(--blood)">Bookbag search</h2><p>Security is going down the hall checking bags. You got product on you.</p><div class="btns"><button class="btn go" id="a">Ditch it in the bathroom</button><button class="btn red" id="b">Act normal</button></div>`);
     $('a').onclick=()=>{stealStash(.5);say('Ditched half your stash in the school bathroom.');close()};
     $('b').onclick=()=>{if(Math.random()<.45+(S.sk.smarts-3)*.04+(S.grades>=70?.25:0)){say(S.grades>=70?'Security started to check you, but your teacher vouched for you.':'Security walked right past you.');close();return}GOODS.forEach(g=>{S.inv[g.id]=0;S.fake[g.id]=0});S.heat=Math.min(100,S.heat+15);const st=schoolStrike('having product on you'),rr=parReact('bad');say('Got caught with product at school.');modal(`<h2 style="color:var(--blood)">Caught at school</h2><p>They took everything and called ${P.name}. Heat +15.</p><p>${st}</p><p>${rr}</p><div class="btns"><button class="btn go" id="ok">Damn</button></div>`);$('ok').onclick=close};return true}
-  if(r<.7){modal(`<h2>Fight at school</h2><p>Some boy from another block been talking crazy all week. Now he's in your face by the lockers.</p><div class="btns"><button class="btn red" id="a">Square up</button><button class="btn" id="b">Walk away</button></div>`);
+  if(r<.7){const opp=Math.random()<.3;modal(`<h2>Fight at school</h2><p>${opp?'One of the opps from another block is in your face by the lockers. This one cannot wait.':'Some boy from another block been talking crazy all week. Now he\'s in your face by the lockers.'}</p><div class="btns"><button class="btn red" id="a">Square up here</button>${opp?'':'<button class="btn go" id="o">Handle it outside after school</button>'}<button class="btn" id="b">Walk away</button></div>`);
+    if($('o'))$('o').onclick=()=>fightGame(myStr(),rnd(6,14),'Him after school',win=>{S.st.fights+=win?1:0;if(win){S.rep+=3;say('Handled it outside after school. Rep +3. Nobody got suspended.')}else{S.hp-=rnd(5,12);say('Took an L outside after school.')}close()});
     $('a').onclick=()=>fightGame(myStr(),rnd(6,14),'Him',win=>{S.st.fights+=win?1:0;if(win){S.rep+=3;say('Won a fight at school. Rep +3.')}else{S.hp-=rnd(5,12);say('Lost a fight at school.')}
       if(Math.random()<.5){const st=schoolStrike('fighting'),rr=parReact('bad');say('Got caught fighting at school.');modal(`<h2 style="color:var(--blood)">Caught fighting</h2><p>The principal called ${P.name}.</p><p>${st}</p><p>${rr}</p><div class="btns"><button class="btn go" id="ok">Okay</button></div>`);$('ok').onclick=close}else close()});
     $('b').onclick=()=>{S.rep=Math.max(0,S.rep-2);addStress(4);say('Walked away from a fight at school. Rep −2.');close()};return true}
@@ -4309,7 +4317,7 @@ function ckReport(){try{ckState()}catch(e){}const done=CKL.filter(x=>{try{return
   modal(`<h2>Playtest report</h2><p class="s" style="color:var(--dim)">The game keeps track of what you tried, across all saves. Copy this and send it to Claude.</p><div class="pane" style="max-height:46vh;overflow:auto">${CKL.map(x=>`<div class="row" style="padding:6px 10px"><div class="info"><div class="s">${ids.includes(x[0])?'✅':'⬜'} <b>${x[0]}</b> ${x[1]}</div></div></div>`).join('')}</div><textarea id="ckt" readonly style="width:100%;height:70px;margin-top:8px;background:var(--bg);color:var(--fg);border:1px solid var(--line);border-radius:6px;font:12px monospace">${txt}</textarea><div class="btns"><button class="btn go" id="ckc">Copy</button><button class="btn" id="ckb">Back</button></div><p id="ckm" class="s"></p>`);
   $('ckb').onclick=devPanel;$('ckc').onclick=()=>{const ta=$('ckt');const ok=()=>{$('ckm').textContent='Copied. Paste it to Claude.'};try{navigator.clipboard.writeText(ta.value).then(ok,()=>{ta.select();document.execCommand('copy');ok()})}catch(e){ta.select();try{document.execCommand('copy')}catch(_){}ok()}}}
 $('pane').onclick=e=>{sfx('tap');const pp=e.target.closest('.mapp');if(pp)return openPlace(pp.dataset.p);const m=e.target.closest('.mapb');if(m){if(m.dataset.a==='go')act('go',m);return}const b=e.target.closest('button[data-a]');if(b&&!b.disabled){const top=S&&S.log&&S.log[0];act(b.dataset.a,b);const nw=S&&S.log&&S.log[0];if(nw&&nw!==top&&$('modal').hidden)toast(nw.t)}};
-$('retire').onclick=()=>{S.over=true;checkEnd()};
+$('retire').onclick=()=>{modal(`<h2>Retire your career?</h2><p>This ends the run and shows your final score. You cannot undo it.</p><div class="btns"><button class="btn red" id="rok">Retire</button><button class="btn" id="rno">Keep playing</button></div>`);$('rok').onclick=()=>{$('modal').hidden=true;S.over=true;checkEnd()};$('rno').onclick=close};
 const BUILD='v187';
 const DISCORD_INVITE='https://discord.gg/bVsvWzbGW';const OG_UNTIL=Infinity;
 const ogBox=()=>DISCORD_INVITE&&Date.now()<OG_UNTIL?`<a href="${DISCORD_INVITE}" target="_blank" rel="noopener" style="display:block;text-decoration:none;border:2px solid var(--accent);border-radius:10px;padding:10px 12px;background:rgba(0,0,0,.55);color:#fff;text-align:left"><div style="font-family:var(--label);font-weight:700;letter-spacing:.14em;color:var(--accent);font-size:12px">THE HUSTLE COMMUNITY</div><div style="font-size:13px;margin-top:3px">Join the Discord to pitch ideas, report bugs and back the game when it launches. Tap to join →</div></a>`:'';
