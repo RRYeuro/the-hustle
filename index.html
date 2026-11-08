@@ -3680,7 +3680,7 @@ function qtyModal(kind,g,to,bl){if(to==='js'&&stuckHome())return;if(kind==='buy'
   to=kind==='sell'?(to||'plug'):null;const js=to==='js';
   if(!js&&(ptxo().n[S.at]||0)>=PTX_MAX){modal(`<h2>${plugName(S.at)} is done for today</h2><p>You already did ${PTX_MAX} deals with ${plugFem(S.at)?'her':'him'} today. ${plugFem(S.at)?'She':'He'} ain't doing no more till tomorrow. Splitting it up into little buys won't work.</p><div class="btns"><button class="btn go" id="ok">Bet</button></div>`);$('ok').onclick=close;return}
   const bluffX=js&&bl==='win'?gmult(92)/gmult(S.q[g.id]):js&&bl==='lose'?.8:1;
-  const base=js?Math.round(plugPrice('sell',g,true)*1.4*(is('val')?1.1:1)*(checkDay()?1.15:1)*bluffX):plugPrice(kind,g);
+  const base=js?Math.round(plugPrice('sell',g,true)*1.55*(is('val')?1.1:1)*(checkDay()?1.15:1)*bluffX):plugPrice(kind,g);
   const card=kind==='buy'?S.fx.discount:S.fx.hype;
   const pdisc=kind==='buy'&&S.pk[S.at]&&S.pk[S.at].disc;
   const sat=kind==='sell'&&!js?1-.3*Math.min(1,plugUsed(S.at)/plugBud(S.at)):1;
