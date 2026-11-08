@@ -252,7 +252,7 @@ const CARDS=[
  {id:'medic',name:'Patch Up',r:'Common',w:18,txt:'+40 health right now.'},
  {id:'ghost',name:'Ghost',r:'Rare',w:10,txt:'Heat drops 35 right now.'},
  {id:'ride',name:'Ride or Die',r:'Rare',w:10,txt:'+12 strength for your next fight.'},
- {id:'lawyer',name:'Lawyer on Call',r:'Rare',w:8,txt:'Next time you get jammed up, you lose nothing.'},
+ {id:'lawyer',name:'Lawyer on Call',r:'Rare',w:8,txt:'Next time you get jammed up there is a 50% chance he gets it thrown out: no strike, half your fine back. On payroll it is 70%. The stash is still gone.'},
  {id:'peace',name:'Peace Talk',r:'Rare',w:6,txt:'Every crew cools off by 40 beef.'},
  {id:'stash',name:'Secret Spot',r:'Legendary',w:2,txt:'+40 stash space for good.'},
  {id:'bag',name:'Big Bag',r:'Legendary',w:2,txt:'+$4,000 cash right now.'},
@@ -370,7 +370,7 @@ function load(n){const raw=readSlot(n||curSlot());if(!raw)return null;const s=mi
 
 /* ---------- render ---------- */
 function groundSend(){if(S&&S.par&&S.home==='family'&&S.grounded>S.day&&S.at!==homeBlock()){S.at=homeBlock();say(`${S.par.name} came and got you. You're grounded, so you're back at the house on ${BLOCKS[S.at]}.`)}}
-function render(){
+function render(){if(S&&S.home&&S.home!=='family'&&S.grounded)S.grounded=0;
   groundSend();
   if(S&&S.char==='life')setLifeChar();
   const free=freeMode();$('dlab').hidden=!!S.cal;$('day').textContent=S.cal?'':free?S.day:Math.min(S.day,maxDay());$('dmax').textContent=S.cal?`${calLabel()} · Age ${S.age}${inHS()&&GRADEN[S.grade]?' · '+GRADEN[S.grade]:''}`:S.mode==='life'?` · Age ${S.age}`:free?' · Kingpin mode':` / ${maxDay()}`;$('dmax').textContent+=checkDay()?' · Checks hit':` · Checks in ${daysToCheck()}d`;if(S.strikes)$('dmax').textContent+=` · Strikes ${S.strikes}/3`;$('retire').hidden=!free||S.over;
@@ -1062,7 +1062,7 @@ function paneRap(){const R=S.rap,top=R.songs.slice().sort((a,b)=>b.q-a.q)[0];
     <div class="s">${R.fans.toLocaleString()} fans · Hype ${R.hype}/100 · ${R.songs.length} song${R.songs.length===1?'':'s'} out${R.signed?' · <b style="color:var(--accent)">Signed</b>':''}</div>
     <div class="bar"><i style="width:${R.hype}%;background:var(--accent)"></i></div><div class="s">Songs pay a little each day in streams. Your <b>active listeners</b> (~${listeners().toLocaleString()}) boost streams and keep fans from drifting. Keep hype up so they stay.</div>
     <div class="s">Every song has a shot at going viral. Better songs, more hype and a good ear raise the odds. When one blows up, fans and streams jump for about a week.</div><div class="s">Street cred: ${S.st.profit>5000||(S.st.licks||0)>=3?'<b style="color:var(--money)">Real.</b> You rap what you live, so your songs come out better.':'Make real money in the streets or hit some licks and your songs come out better.'}${S.rap.fans>=1000?' Fans buy from you too: you sell 5% higher.':''}</div></div></div>`;
-  h+=`<div class="sec">Make music</div>
+  h+=rapReqHTML()+`<div class="sec">Make music</div>
    <div class="row"><div class="info"><div class="t">Studio session</div><div class="s">Ride the beat to record a song, then drop it. $300, takes the day.</div></div><button class="btn go" data-a="rec" ${S.cash>=300?'':'disabled'}>Record</button></div>
    <div class="row"><div class="info"><div class="t">Diss track</div><div class="s">Go at a rival crew on wax. Big hype, but their beef goes way up.</div></div><button class="btn red" data-a="diss" ${S.cash>=300?'':'disabled'}>Record</button></div>
    <div class="row"><div class="info"><div class="t">Shoot a video</div><div class="s">Hype +${vidGain()}. Costs more the bigger you are, and each one in a row works less.</div></div><button class="btn green" data-a="video" ${S.cash>=vidCost()&&R.songs.length?'':'disabled'}>${money(vidCost())}</button></div>
@@ -1076,13 +1076,29 @@ function paneRap(){const R=S.rap,top=R.songs.slice().sort((a,b)=>b.q-a.q)[0];
 }
 const rapFat=()=>S.rap.fat||0;
 const listeners=()=>Math.round(S.rap.fans*.12*(.35+S.rap.hype/100));
-const songPay=x=>+(x.q*.07*(1+listeners()/600)*Math.pow(.93,S.day-x.day)*dealMul()*(x.viral&&x.viral.until>=S.day?x.viral.mult:1)).toFixed(1);
+const songPay=x=>+(4*x.q*.07*(1+listeners()/600)*Math.pow(.93,S.day-x.day)*dealMul()*(x.viral&&x.viral.until>=S.day?x.viral.mult:1)).toFixed(1);
 const vidCost=()=>Math.round(1000+S.rap.fans*.5+(S.rap.vid||0)*750);
 const vidGain=()=>Math.max(6,Math.round(25/(1+(S.rap.vid||0)*.3)));
 const rapCut=()=>S.rap.bad&&S.rap.bad.until>S.day?1-S.rap.bad.cut:1;
-const showPay=()=>Math.round((110+S.rap.fans*.1+S.rap.hype*1.5)/(1+rapFat()*.45)*rapCut());
-function rapDay(){const R=S.rap;if(S.rapOn&&R.fans>=800&&!S.engCon&&canNewConnect()&&Math.random()<.1){S.engCon=1;S.pconn='eng'}if(!R.songs.length)return;let t=0;R.songs.forEach(x=>t+=songPay(x));t=Math.round(t);
-  R.fat=Math.max(0,rapFat()-.5);t=Math.min(t,Math.round(Math.min(150,25+R.fans*.04)*dealMul()*(R.songs.some(x=>x.viral&&x.viral.until>=S.day)?2.2:1)));if(Math.random()<.03&&R.songs.length){const x=pick(R.songs);if(!(x.viral&&x.viral.until>=S.day)){x.viral={until:S.day+5,mult:1.8};R.fans+=Math.round(R.hype*2+30);say(`A big playlist added "${x.title}". It is climbing again.`)}}t=Math.round(t*rapCut());if(R.frz>S.day)t=0;R.fans+=Math.round(R.hype*.05+listeners()*.02);if(R.hype<15&&R.fans>200)R.fans-=Math.max(1,Math.round(R.fans*.004));if(S.day%7===0&&R.vid)R.vid--;R.hype=Math.max(0,R.hype-4);if(t>0){S.cash+=t;say(`Your music made ${money(t)} in streams today.`)}}
+const showPay=()=>Math.round(1.6*(110+S.rap.fans*.1+S.rap.hype*1.5)/(1+rapFat()*.45)*rapCut());
+const RQN=['Lil Drip','Big Marcus','DJ Smoke','Young Vee','Tay Money','Dre Savage'],RQO=['Hot 97.5 Street Radio','The Block Podcast','Mixtape Monthly','Trap Report TV'];
+function rapReqDay(){const R=S.rap;if(S.rapReq&&S.day>S.rapReq.ex){say(`The ${S.rapReq.k==='interview'?'interview':'feature'} request expired.`);S.rapReq=null}
+  if(S.rapReq||!S.rapOn||R.fans<300||Math.random()>.07)return;
+  S.rapReq=Math.random()<.5?{k:'interview',who:pick(RQO),ex:S.day+3}:{k:'feature',who:pick(RQN),ex:S.day+3};
+  say(S.rapReq.k==='interview'?`📞 ${S.rapReq.who} wants to interview you. Check the Studio tab.`:`📞 ${S.rapReq.who} wants you on a feature. Check the Studio tab.`)}
+function rapReqHTML(){const q=S.rapReq;if(!q)return '';const R=S.rap,days=q.ex-S.day;
+  return `<div class="row" style="flex-direction:column;align-items:stretch;gap:6px;border-color:var(--accent)"><div class="info"><div class="t">${q.k==='interview'?'🎙️ Interview request':'🎤 Feature request'} · ${q.who}</div><div class="s">${q.k==='interview'?`They want to sit down with you. Talk skill decides if you come off real or flop. Good ones pay and bring fans. Takes the day.`:`${q.who} wants a verse from you. You get paid up front and a chunk of their fans, but it takes the day and a bad verse costs hype.`} Expires in ${days} day${days===1?'':'s'}.</div></div><div class="btns"><button class="btn go" data-a="rreq" data-k="yes">Accept</button><button class="btn" data-a="rreq" data-k="no">Pass</button></div></div>`}
+function rapReqGo(yes){const q=S.rapReq,R=S.rap;if(!q)return;S.rapReq=null;if(!yes){say('Passed on it.');return render()}
+  if(q.k==='interview'){const p=Math.min(.85,.35+(S.sk.talk-3)*.08+R.hype/300);const pay=Math.round(150+R.fans*.06);
+    if(Math.random()<p){S.cash+=pay;R.fans+=Math.round(rnd(60,160)+R.fans*.03);R.hype=Math.min(100,R.hype+14);addXP(4);say(`The ${q.who} interview went great. You came off real. +${money(pay)}, new fans and hype.`)}
+    else{R.hype=Math.max(0,R.hype-12);addStress(8);say(`You flopped the ${q.who} interview. Dead air and a bad quote. Hype −12.`)}}
+  else{const pay=Math.round(300+R.fans*.15);S.cash+=pay;const q2=Math.max(5,Math.min(100,Math.round(40+S.sk.talk*4+R.hype*.2+rnd(-10,15))));
+    if(q2>=55){R.fans+=Math.round(R.fans*.08+rnd(80,200));R.hype=Math.min(100,R.hype+10);say(`Your verse on ${q.who}'s track hit. +${money(pay)} up front and his fans found you.`)}
+    else{R.hype=Math.max(0,R.hype-8);say(`Your verse for ${q.who} was weak. You got paid ${money(pay)} but hype −8.`)}rapFatUp&&rapFatUp()}
+  nextDay();render()}
+const rapFatUp=()=>{S.rap.fat=(S.rap.fat||0)+.5};
+function rapDay(){rapReqDay();const R=S.rap;if(S.rapOn&&R.fans>=800&&!S.engCon&&canNewConnect()&&Math.random()<.1){S.engCon=1;S.pconn='eng'}if(!R.songs.length)return;let t=0;R.songs.forEach(x=>t+=songPay(x));t=Math.round(t);
+  R.fat=Math.max(0,rapFat()-.5);t=Math.min(t,Math.round(Math.min(600,40+R.fans*.09)*dealMul()*(R.songs.some(x=>x.viral&&x.viral.until>=S.day)?2.2:1)));if(Math.random()<.03&&R.songs.length){const x=pick(R.songs);if(!(x.viral&&x.viral.until>=S.day)){x.viral={until:S.day+5,mult:1.8};R.fans+=Math.round(R.hype*2+30);say(`A big playlist added "${x.title}". It is climbing again.`)}}t=Math.round(t*rapCut());if(R.frz>S.day)t=0;R.fans+=Math.round(R.hype*.05+listeners()*.02);if(R.hype<15&&R.fans>200)R.fans-=Math.max(1,Math.round(R.fans*.004));if(S.day%7===0&&R.vid)R.vid--;R.hype=Math.max(0,R.hype-4);if(t>0){S.cash+=t;say(`Your music made ${money(t)} in streams today.`)}}
 function flowGame(title,done){
   mgOn=true;const BEAT=900,N=8;let taps=0,score=0,t0=performance.now()+900;
   modal(`<h2>${title}</h2><p>Tap "Spit" (or press Space) when the circle fills up and turns <b style="color:var(--money)">green</b>. 8 bars.</p>
@@ -1905,7 +1921,7 @@ function connectIntro(h,txt,pk){const cn=newConName();addConnect({name:cn,from:-
 function lawBody(row,b){const R=RL(),v=R.law||0,d=R.d||{},disc=v>=40?.75:1,pr=n=>Math.round(n*disc),nw=netWorth(),pay=S.lawPay;
   let h=relRow('Attorney Cole',v,'cole');
   h+=row('Consult','Pay for his time and talk. Builds your relationship.',b('lconsult',d.law===S.day?'Talked today':'$200',d.law===S.day||S.cash<200));
-  h+=row('Keep a lawyer on call',`Next time you get jammed up, you lose nothing.${disc<1?' (25% off, he likes you)':''}`,pay?'<span class="chip mine">On payroll</span>':S.fx.lawyer?'<span class="chip mine">On call</span>':b('law',money(pr(3000)),S.cash<pr(3000)));
+  h+=row('Keep a lawyer on call',`Next time you get jammed up there is a 50% chance he gets it thrown out: no strike, half your fine back. On payroll it is 70%. The stash is still gone.${disc<1?' (25% off, he likes you)':''}`,pay?'<span class="chip mine">On payroll</span>':S.fx.lawyer?'<span class="chip mine">On call</span>':b('law',money(pr(3000)),S.cash<pr(3000)));
   h+=row('Clean up your name',pay?'Free while he is on payroll. Heat −30.':'Heat −30.',b('clean',pay?'Free':money(pr(2000)),!pay&&S.cash<pr(2000)||S.heat<1));
   if(v>=25)h+=row('Cole as a customer','He asks for a little something for the weekends.',(S.custos||[]).some(c=>c.name==='Cole')?'<span class="chip mine">Customer</span>':b('lcust','Offer',(S.custos||[]).length>=15));
   if(v>=60&&canNewConnect()&&!R.lawCon)h+=row('Ask about his people','"I know a guy in your line of work." Could be big.',b('lguy','Ask',false));
@@ -3253,11 +3269,12 @@ function busted(){addStress(20);if(canNewConnect()&&!S.cellCon&&Math.random()<.3
   if(S.car==='stolen'){S.cap-=CARS.stolen.trunk;S.car=null;say('The cops impounded your stolen car.')}
   const fine=Math.round(S.cash*.35);S.cash-=fine;GOODS.forEach(g=>S.inv[g.id]=0);S.heat=Math.max(0,S.heat-30);S.hp-=5;
   say(`Got jammed up. Lost your whole stash and ${money(fine)}.`);
+  if(lawFree()&&Math.random()<(S.lawPay?.7:.5)){S.cash+=Math.round(fine*.5);say(S.lawPay?'Attorney Cole got the case thrown out. No strike, and he got half your fine back.':'Your lawyer got the case thrown out. No strike, and half your fine back.');if(!S.lawPay)S.fx.lawyer=0;return}
   S.strikes=(S.strikes||0)+1;const teen=S.age&&S.age<18,place=teen?'juvie':'county';if(teen)S.juv=(S.juv||0)+1;cut('bust','LOCKED UP');
   if(S.strikes>=maxStrikes()&&!teen){S.over=true;S.prison=1;say('Final strike. They gave you life.');return}
   const life=S.strikes>=maxStrikes()&&teen,turns=life?0:S.cal?(S.strikes===1?4:26):(S.strikes===1?2:5),label=life?'until you turned 18':S.cal?(S.strikes===1?'2 weeks':'3 months'):(S.strikes===1?'2 days':'5 days');
   window.FF=true;S.inJail=1;for(let i=0;i<turns;i++){nextDay();if(S.over)break}if(life){let g=0;while(S.age&&S.age<18&&!S.over&&g<900){nextDay();g++}if(S.age>=18)S.strikes=0}S.inJail=0;window.FF=false;
-  S.lockPop={n:life?maxStrikes():S.strikes,place,label,life};say(life?'Juvenile life. You did time until you turned 18. Your strikes are sealed, but the cops know your face.':`Did ${label} in ${place}. Strike ${S.strikes} of 3.`)
+  S.lockPop={n:life?maxStrikes():S.strikes,place,label,life};say(life?'Juvenile life. You did time until you turned 18. Your strikes are sealed, but the cops know your face.':`Did ${label} in ${place}. Strike ${S.strikes} of ${maxStrikes()}.`)
   if(S.par){const P=S.par,strict=(P.strict||0)>=60;P.trust=Math.max(0,P.trust-(teen?20:12));
     say(teen?(strict?`${P.name} was furious picking you up from juvie. "You're done running these streets."`:`${P.name} cried picking you up from juvie. "I can't keep doing this."`):`${P.name} heard you got locked up. "I raised you better than this."`);
     if(teen&&strict)S.grounded=S.day+(S.cal?14:4)}}
@@ -3336,6 +3353,7 @@ function act(a,el){
   if(a==='safe'){const k=el.dataset.k;if(k==='out'){S.cash+=S.safe;say(`Took ${money(S.safe)} out from the house.`);S.safe=0}else{const m=k==='all'?S.cash:Math.floor(S.cash/2);S.cash-=m;S.safe=(S.safe||0)+m;say(`Put ${money(m)} up at the house.`)}}
   if(a&&a.indexOf('rv_')===0)return plugRevenge(a.slice(3),+el.dataset.i);
   if(a==='pkick')plugKick(+el.dataset.i);
+  if(a==='rreq')return rapReqGo(el.dataset.k==='yes');
   if(a==='lsget')return loanGet(+el.dataset.n);
   if(a==='lspay')return loanPay(+el.dataset.n);
   if(a==='pasks')return plugAsk(+el.dataset.i);
