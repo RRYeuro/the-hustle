@@ -1183,22 +1183,34 @@ function paneCrew(){
 
 
 /* ---------- cost of living and the expenses tab ---------- */
-function livCost(){const items=[];if(!S||S.home==='family'||S.inJail||S.pr||!HOMES[S.home])return{items,tot:0};const H=HOMES[S.home];
-  items.push(['Food',S.home==='couch'?60:90]);
-  if(S.home!=='couch')items.push(['Phone and internet',40]);
-  if(H.rent>=250)items.push(['Utilities',Math.round(H.rent*.12)]);
-  if(S.car&&S.car!=='stolen'&&CARS[S.car])items.push(['Car insurance and gas',Math.round(80+CARS[S.car].cost/150)]);
-  return{items,tot:items.reduce((a,x)=>a+x[1],0)}}
+const COLI=[1,1.1,.8,1.2,1.3,1.6];
+const colBlock=()=>{try{const b=homeBlock();return b>=0&&b<COLI.length?b:0}catch(e){return 0}};
+const colTier=()=>Math.min(3.5,Math.round((1+((S.lvl||1)-1)*.1+(S.rep||0)/200+Math.min(.8,cashAvail()/150000))*100)/100);
+function livCost(){const items=[];if(!S||S.inJail||S.pr)return{items,tot:0,bi:1,m:1};
+  const bi=COLI[colBlock()],m=colTier(),k=bi*m,r5=n=>Math.max(5,Math.round(n/5)*5),add=(n,v)=>{if(v>0)items.push([n,r5(v)])};
+  const H=HOMES[S.home]||{rent:0},home=S.home!=='family'&&HOMES[S.home];
+  if(home){add('Food',(S.home==='couch'?60:90)*k);if(S.home!=='couch')add('Phone and internet',40*k);if(H.rent>=250)add('Utilities',H.rent*.12*bi)}
+  if(S.car&&S.car!=='stolen'&&CARS[S.car])add('Car insurance and gas',(80+CARS[S.car].cost/150)*bi);
+  if((S.rep||0)>=10)add('Clothes and looking right',25+S.rep*1.0);
+  if(home&&(!S.age||S.age>=18))add('Health and insurance',45*m);
+  if((S.lvl||1)>=3)add('Going out and the lifestyle',Math.min(300,60*((S.lvl||1)-2))*bi);
+  const turf=(S.owner||[]).filter(o=>o==='me').length;if(turf)add(`Street tax on ${turf} block${turf===1?'':'s'}`,60*turf*m);
+  const nb=Object.keys(S.biz||{}).length;if(nb)add(`Permits, payroll and taxes on ${nb} front${nb===1?'':'s'}`,140*nb*m);
+  if(S.stashH&&S.stashH.own)add('Stash house upkeep',250*bi);
+  if((S.kids||[]).length)add(`Your kid${S.kids.length===1?'':'s'}`,120*S.kids.length*m);
+  if(S.college==='in')add('College tuition and books',300*bi);
+  return{items,tot:items.reduce((a,x)=>a+x[1],0),bi,m}}
 function livingDay(){if(!S.livDay){S.livDay=S.day+7;return}if(S.day<S.livDay)return;S.livDay=S.day+7;const c=livCost();if(!c.tot)return;
   if(S.cash>=c.tot){S.cash-=c.tot;say(`Paid ${money(c.tot)} for living costs this week (${c.items.map(x=>x[0].toLowerCase()).join(', ')}).`)}
-  else{addStress(8);S.rep=Math.max(0,S.rep-1);say(`Couldn't cover ${money(c.tot)} in living costs this week. Stress up, rep −1. Get your bread right.`)}}
+  else{addStress(8);S.rep=Math.max(0,S.rep-1);say(`Couldn't cover ${money(c.tot)} in living costs this week. Stress up, rep −1. Get your bread right.`);if(ARTX('overdue')&&$('modal').hidden){modal(`${a2('overdue',340)}<h2 style="color:var(--blood)">Bills past due</h2><p>You couldn't cover ${money(c.tot)} this week. The notices are stacking up. Stress is up and your rep took a hit.</p><div class="btns"><button class="btn go" id="ok">Handle it</button></div>`);$('ok').onclick=close}}}
 function paneExp(){
   const H=HOMES[S.home]||{rent:0},L=livCost(),per=S.myGang?100:150,sold=S.soldiers||0,cn=sold*per;
   const wk=(S.workers||[]).reduce((a,w)=>a+wPay(w),0),law=S.lawPay?1500:0,cousin=S.home==='couch'&&S.cousinDeal?250:0,loan=S.ls&&S.ls.owe?S.ls:null;
   const row=(t,sub,amt)=>`<div class="row" style="flex-wrap:wrap"><div class="info" style="flex:1 1 200px;min-width:0"><div class="t">${t}</div><div class="s">${sub}</div></div><span class="chip">${amt}</span></div>`;
   const weekly=(H.rent||0)+L.tot+law+cousin+cn*7;
-  let h=`<div class="sec">What it costs to live</div>`;
+  let h=`${a2('bills',380)}<div class="sec">What it costs to live</div>`;
   h+=row('Rent',S.home==='family'?'Your people cover the house.':`${H.name||'Your place'}. Next due in ${Math.max(0,(S.rentDay||S.day)-S.day)} day${(S.rentDay||S.day)-S.day===1?'':'s'}.`,H.rent?money(H.rent)+' / week':'$0');
+  h+=row(`Cost of living in ${BLOCKS[colBlock()]}`,`${Math.round(L.bi*100)}% of the city average. Your lifestyle runs ${Math.round(L.m*100)}%: it climbs with your level, rep and bank. The bigger you get, the more everything costs.`,'×'+(Math.round(L.bi*L.m*100)/100));
   h+=L.tot?L.items.map(x=>row(x[0],'Comes out once a week.',money(x[1])+' / week')).join(''):row('Living costs',S.home==='family'?'Food, phone and bills are on your people while you live at home.':'None right now.','$0');
   if(cousin)h+=row('Cousin',`You pay your cousin for the couch.`,money(cousin)+' / week');
   h+=`<div class="sec">Your crew and team</div>`;
@@ -4022,7 +4034,7 @@ function act(a,el){
   if(a==='practice'){S.ball=Math.min(100,(S.ball||0)+8);S.sk.muscle=Math.min(10,S.sk.muscle+(Math.random()<.2?1:0));addStress(-3);say('Went to practice. The scouts are watching.');nextDay()}
   if(a==='class'&&S.cal&&S.school==='in'&&schoolWeek()&&S.at!==4&&S.at!==homeBlock()){say(`You're across town on ${BLOCKS[S.at]}. Get home (${BLOCKS[homeBlock()]}) or to the school on ${BLOCKS[4]} to go to class.`);render();return}
   if(a==='class'){if(S.cal&&S.school==='in'&&!schoolWeek()){say(isWknd()?'No school on the weekend.':`No school: ${schoolBreak()}.`);render();return}S.classDay=S.day;if(S.par&&S.cal)S.par.trust=Math.min(100,S.par.trust+1);if(S.cal?S.school==='in':S.age<18){S.grades=Math.min(100,S.grades+(S.cal?(S.altSchool?4:6)+Math.floor(S.sk.smarts/3):8))}else{S.cprog=Math.min(100,(S.cprog||0)+6);if(S.cprog>=100){S.college='grad';S.sk.smarts=Math.min(10,S.sk.smarts+1);S.sk.talk=Math.min(10,S.sk.talk+1);say('You graduated college. Smarts and Talk +1.')}}S.heat=Math.max(0,S.heat-5);addStress(2);say(S.cal&&S.school==='in'?'Went to school all week.':'Went to class.');nextDay()}
-  if(a==='dropout'){S.school='out';say('You dropped out of school.')}
+  if(a==='dropout'){S.school='out';say('You dropped out of school.');if(ARTX('dropout')&&$('modal').hidden){modal(`${a2('dropout',340)}<h2>You dropped out</h2><p>No more class. The street side is open now.</p><div class="btns"><button class="btn go" id="ok">Bet</button></div>`);$('ok').onclick=close}}
   if(a==='enroll'){S.cash-=3000;S.college='in';S.cprog=0;say('Enrolled in college.')}
   if(a==='cdrop'){S.college=null;say('Dropped out of college.')}
   if(a==='job'){S.job=el.dataset.k;say(`Got hired at the ${JOBS[S.job].name.toLowerCase()}.`);setTimeout(()=>{if(!$('modal').hidden)return;modal(`${a2('jobint',340)}<h2>You got the job</h2><p>Interview went fine. You start at the ${JOBS[S.job]?JOBS[S.job].name.toLowerCase():'new job'}.</p><div class="btns"><button class="btn go" id="ok">Let's work</button></div>`);$('ok').onclick=close},50)}
@@ -4075,7 +4087,7 @@ function act(a,el){
   if(a==='pargive')return parGive(+el.dataset.k);
   if(a==='parcustom')return parCustom();
   if(a==='parmove'){if(!S.par||S.parOut||cashAvail()<15000)return;pullSafeCash(15000,S.par.who);S.cash-=15000;S.parOut=1;S.par.trust=Math.min(100,S.par.trust+20);S.rep=Math.min(100,S.rep+2);say(`You moved ${S.par.name} out the hood into a nice place. Trust +20, rep +2. When you move back in, the neighbors are better.`);return render()}
-  if(a==='runaway'){if(!S.par||S.home!=='family'||!(S.age>=16))return;const P=S.par;P.trust=Math.max(0,P.trust-25);S.kicked=S.day;S.gHist=[];moveIn('couch');say(`You ran away from ${P.name}'s house. You're on your cousin's couch now. Trust −25.`);return render()}
+  if(a==='runaway'){if(!S.par||S.home!=='family'||!(S.age>=16))return;const P=S.par;P.trust=Math.max(0,P.trust-25);S.kicked=S.day;S.gHist=[];moveIn('couch');say(`You ran away from ${P.name}'s house. You're on your cousin's couch now. Trust −25.`);if(ARTX('runaway')&&$('modal').hidden){render();modal(`${a2('runaway',340)}<h2>You ran away</h2><p>Out the window with one bag. Your cousin's couch is the next stop.</p><div class="btns"><button class="btn go" id="ok">Keep moving</button></div>`);$('ok').onclick=close;return}return render()}
   if(a==='chore'){const c=CHORES[el.dataset.k];if(!c||!S.par||S.choreDay===S.day)return;if(!atParents()){say(`You gotta be at the house on ${BLOCKS[S.home==='family'?homeBlock():famBlk()]} to do chores.`);return render()}S.choreDay=S.day;S.par.trust=Math.min(100,S.par.trust+c.t);addStress(c.s);if(c.c){S.cash+=c.c}if(S.grounded>S.day)S.grounded=Math.max(S.day,S.grounded-1);say(`${c.n}. ${S.par.name} noticed. Trust +${c.t}${c.c?`, and slid you ${money(c.c)} for gas`:''}${S.grounded>S.day?'. One less day grounded':''}.`);save();return render()}
   if(a==='pdrop')return plugDrop(+el.dataset.i);
   if(a==='moveback'){moveIn('family');S.par.trust=Math.max(0,S.par.trust-5);say(`Moved back in with ${S.par.name}. "My house, my rules."`)}
