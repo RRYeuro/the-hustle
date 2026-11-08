@@ -504,7 +504,7 @@ function openPlace(id){const P=PLACES.find(p=>p.id===id),bi=placeAt(id);
   $('mcard').querySelectorAll('[data-pl]').forEach(x=>x.onclick=()=>placeAct(x.dataset.pl,id));
 }
 function placeAct(k,id){const back=()=>{render();openPlace(id)};
-  if(k.startsWith('buycar:')){const ck=k.slice(7),C=CARS[ck],old=S.car?CARS[S.car]:null,price=Math.max(0,C.cost-(old?Math.round(old.cost*.6):0));if(S.cash<price)return;if(needClean(price,'The '+C.name))return;S.cash-=price;S.cap+=C.trunk-(old?old.trunk:0);S.car=ck;S.rob.car=1;S.rep+=C.rep||0;say(`Bought a ${C.name}. +${C.trunk} stash space.${old?` Traded in the ${old.name}.`:''}`);return back()}
+  if(k.startsWith('buycar:')){const ck=k.slice(7),C=CARS[ck],old=S.car?CARS[S.car]:null,price=Math.max(0,C.cost-(old?Math.round(old.cost*.6):0));if(S.cash<price)return;if(needClean(price,'The '+C.name))return;{const c0=cleanCash();S.cash-=price;if(price>=5000)S.clean=Math.max(0,c0-price)}S.cap+=C.trunk-(old?old.trunk:0);S.car=ck;S.rob.car=1;S.rep+=C.rep||0;say(`Bought a ${C.name}. +${C.trunk} stash space.${old?` Traded in the ${old.name}.`:''}`);return back()}
   if(k==='stor'){return;const c=capCost();if(S.cash<c)return;S.cash-=c;S.cap+=50;S.capBuys=(S.capBuys||0)+1;say(`Rented a storage unit for ${money(c)}. +50 stash space. The next one costs more.`);return back()}
   if(k==='safeup'){const U=SAFEUP[S.safeLv||0];if(!U||S.cash<U.c)return;S.cash-=U.c;S.safeLv=(S.safeLv||0)+1;say(`Bought a ${U.n.toLowerCase()}. +${U.v} safe space.`);return back()}
   if(k==='zsjoin')return spJoin();if(k==='zsbook')return spBook();
@@ -3999,7 +3999,7 @@ function act(a,el){
   if(a==='cdrop'){S.college=null;say('Dropped out of college.')}
   if(a==='job'){S.job=el.dataset.k;say(`Got hired at the ${JOBS[S.job].name.toLowerCase()}.`);setTimeout(()=>{if(!$('modal').hidden)return;modal(`${a2('jobint',340)}<h2>You got the job</h2><p>Interview went fine. You start at the ${JOBS[S.job]?JOBS[S.job].name.toLowerCase():'new job'}.</p><div class="btns"><button class="btn go" id="ok">Let's work</button></div>`);$('ok').onclick=close},50)}
   if(a==='quitjob'){say(`Quit the ${JOBS[S.job].name.toLowerCase()} job.`);S.job=null}
-  if(a==='buybiz'){const B=BIZ[el.dataset.k];if(needClean(B.cost,'The '+B.name.toLowerCase()))return;S.cash-=B.cost;S.biz=S.biz||{};S.biz[el.dataset.k]=1;say(`Bought a ${B.name.toLowerCase()}. It's a front now.`)}
+  if(a==='buybiz'){const B=BIZ[el.dataset.k];if(needClean(B.cost,'The '+B.name.toLowerCase()))return;{const c0=cleanCash();S.cash-=B.cost;if(B.cost>=5000)S.clean=Math.max(0,c0-B.cost)}S.biz=S.biz||{};S.biz[el.dataset.k]=1;say(`Bought a ${B.name.toLowerCase()}. It's a front now.`)}
   if(a==='inv')return invModal();
   if(a==='safe'){const k=el.dataset.k;if(k==='out'){S.cash+=S.safe;say(`Took ${money(S.safe)} out from the house.`);S.safe=0}else{const m=k==='all'?S.cash:Math.floor(S.cash/2);S.cash-=m;S.safe=(S.safe||0)+m;say(`Put ${money(m)} up at the house.`)}}
   if(a&&a.indexOf('rv_')===0)return plugRevenge(a.slice(3),+el.dataset.i);
@@ -4417,7 +4417,7 @@ function allyHelp(c){const d=cdef(c.id),opps=oppOf(c.id);if(!opps.length)return 
     const dmg=vcut(rnd(12,25));S.hp-=dmg;c.respect=Math.min(100,c.respect+3);lickDone('It went bad',`The ${od.name} held. You took ${dmg} damage, but the ${d.name} saw you ride.`,false,true)})}
 /* ---------- business events ---------- */
 function bizOpen(){return Object.keys(S.biz||{}).filter(k=>!((S.bizShut||{})[k]>S.day))}
-function bizDay(){if(S.audit&&S.day>=S.audit){S.audit=0;const t=Math.round(dirtyCash()*.25+(S.cash-dirtyCash())*.05);S.cash-=t;addStress(15);say(`The IRS audited your books. Lost ${money(t)}.`);modal(`${a2('irs',340)}<h2 style="color:var(--blood)">IRS audit</h2><p>Two agents showed up with folders. They went through your books and took ${money(t)}.</p><div class="btns"><button class="btn go" id="ok">Ugh</button></div>`);$('ok').onclick=close}}
+function bizDay(){if(S.audit&&S.day>=S.audit){S.audit=0;const t=Math.round(dirtyCash()*.25+(S.cash-dirtyCash())*.05);{const c0=cleanCash();S.cash-=t;S.clean=Math.max(0,c0-Math.round(c0*.05))}addStress(15);say(`The IRS audited your books. Lost ${money(t)}.`);modal(`${a2('irs',340)}<h2 style="color:var(--blood)">IRS audit</h2><p>Two agents showed up with folders. They went through your books and took ${money(t)}.</p><div class="btns"><button class="btn go" id="ok">Ugh</button></div>`);$('ok').onclick=close}}
 function bizEvent(){const own=bizOpen();if(!own.length||Math.random()>.07)return false;ck('f:bizEvent');const k=pick(own),B=BIZ[k],nm=B.name.toLowerCase(),r=Math.random();
   const ok2=(h,t,f)=>{modal(`<h2>${h}</h2><p>${t}</p><div class="btns"><button class="btn go" id="ok">Okay</button></div>`);$('ok').onclick=()=>{f&&f();close()}};
   if(r<.25&&!(S.bizSec||{})[k]){const str=Math.round(Math.min(12+(S.cal?S.lvl*4:S.day/3),crewCap()));
