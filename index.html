@@ -1026,8 +1026,8 @@ function caseHTML(){const C=X8().case;if(!C)return '';const used=C.act===S.day;
   const b=(a,l,dis)=>`<button class="btn ${a==='x8law'?'go':''}" data-a="${a}" ${dis||used?'disabled':''}>${l}</button>`;
   return `<div class="sec" style="color:var(--blood)">Detective case</div><div class="row" style="flex-wrap:wrap"><div class="info" style="flex:1 1 100%"><div class="t">Case strength ${Math.round(C.p)}%</div><div class="bar" style="margin:6px 0"><i style="width:${Math.min(100,Math.max(2,C.p))}%;background:var(--blood)"></i></div><div class="s">Heat, dirty cash and snitches feed it. At 100% you are indicted. One move a day.</div></div><div class="btns" style="width:100%">${b('x8bribe','Bribe $2,500',S.cash<2500)}${b('x8flip','Flip a witness $1,500',S.cash<1500)}${b('x8destroy','Destroy evidence (15 energy)')}${b('x8law',S.lawPay?'Lawyer (free)':'Lawyer $2,000',!S.lawPay&&S.cash<2000||C.law>S.day-3)}</div></div>`}
 /* 3. plug wars */
-function plugWarDay(){if(window.noPlugWar||!S.known)return;const X=X8();
-  S.known.slice().forEach(bi=>{if((S.burned&&S.burned[bi]>S.day)||Math.random()>.007)return;const nm=plugName(bi);
+function plugWarDay(){if(window.noPlugWar||!S.known||(gAge()!=null&&gAge()<16))return;const X=X8();
+  S.known.slice().forEach(bi=>{if((S.burned&&S.burned[bi]>S.day)||Math.random()>.002+S.heat*.00012)return;const nm=plugName(bi);
     if(Math.random()<.6){S.burned[bi]=S.day+rnd(6,10);S.swing={until:S.day+7,m:1.2};x8Pop('plugraid',`${nm} on ${BLOCKS[bi]} got raided`,'Twelve hit your plug. Supply is tight everywhere and prices are up for a week. Find another supplier or wait it out.',[{l:'Damn',f:()=>{}}])}
     else{S.trust[bi]=0;S.known=S.known.filter(i=>i!==bi);S.burned[bi]=S.day+25;S.heat=Math.min(100,S.heat+8);x8Pop('snitchcop',`${nm} flipped`,`Your plug on ${BLOCKS[bi]} is talking to twelve. They are done with you and your heat is up. You will need a new supplier.`,[{l:'Find a new plug',f:()=>{}}])}})}
 /* 4. hit on you */
