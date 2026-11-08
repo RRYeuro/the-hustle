@@ -632,7 +632,7 @@ function prEnd(early){const R=S.pr;if(!R)return;const served=S.day-R.start,place
   S.lockPop={n:S.strikes,place,label:prLabel(Math.max(1,served)),life:false};
   say(`Released from ${place} after ${prLabel(Math.max(1,served))}. Strike ${S.strikes} of ${maxStrikes()}.${R.bal?` Your commissary balance (${money(R.bal)}) came back to you.`:''}`);
   if(S.par){const P=S.par;P.trust=Math.max(0,P.trust-12);say(`${P.name} heard you got locked up. "I raised you better than this."`)}
-  S.heat=Math.max(0,S.heat-10);tab='block'}
+  S.heat=Math.max(0,S.heat-10);tab='block';if(!window.noParole&&S.age>=18){const sp=S.cal?4:3;S.po={until:S.day+(S.cal?16:12),sp,due:S.day+sp,did:0,vio:0};say(`You are on parole. Check in with your officer before day ${S.po.due}. Miss it or catch a violation and you go back.`)}}
 function prisonDay(){const R=S.pr;if(!R)return;R.acts={};R.sold={};GOODS.forEach(g=>R.px[g.id]=4+Math.random()*4);
   const lock0=prNow();
   if(R.job&&!prHole()){R.bal+=PJOBS[R.job].pay}
@@ -794,7 +794,15 @@ function cmResolve(m){const r=m.busy.r,R=CROUTE[r],s=m.sk[R.sk],lv=1+Math.min(10
   const base={trap:[220,520],rob:[300,800],scam:[250,700]}[r];let pay=Math.round(rnd(base[0],base[1])*(.55+s*.1)*lv*rh*loyF);
   if(m.loy<30&&Math.random()<.35){pay=Math.round(pay*.5);say(`${m.name} came up short. You think he skimmed.`)}
   S.cash+=pay;S.heat=Math.min(100,S.heat+({trap:3,rob:8,scam:5})[r]);m.trust=Math.min(100,m.trust+2);crewGain(m,R.sk);say(`${m.name} ${R.t} and came back with ${money(pay)}.`)}
-function crewDay(){if(!S.soldiers&&!(S.crewM||[]).length)return;const M=crewList(),enf=crewRank('enf'),rh=crewRank('rh');
+function cmDrama(M){if(window.FF||window.noDrama||M.length<3||S.pr||Math.random()>.025)return;const ok=M.filter(m=>!m.busy&&m.hurt<S.day);if(ok.length<2)return;const a=pick(ok),b=pick(ok.filter(x=>x!==a));if(!b)return;
+  const why=pick(['over who got the bigger cut','because one said something about the other\'s girl','over a debt that never got paid','about who the boss trusts more']);const enf=crewRank('enf');
+  setTimeout(()=>{if(!$('modal').hidden||S.over)return;modal(`${faceImg(a.name,'c',72)}${faceImg(b.name,'c',72)}<div class="sec" style="margin:0;color:var(--blood)">Crew drama</div><h2>${esc(a.name)} and ${esc(b.name)} are about to go at it</h2><p class="s" style="color:var(--dim)">They are beefing ${why}. This ends one way or another.</p><div class="btns" style="flex-direction:column;align-items:stretch"><button class="btn go" id="d1">Side with ${esc(a.name)}</button><button class="btn go" id="d2">Side with ${esc(b.name)}</button><button class="btn" id="d3">Sit them down and squash it${enf?' (your Enforcer helps)':''}</button><button class="btn red" id="d4">Let them fight it out</button></div>`);
+    const end=m=>{say(m);$('modal').hidden=true;render()};
+    $('d1').onclick=()=>{a.loy=Math.min(100,a.loy+8);b.loy=Math.max(0,b.loy-10);end(`You sided with ${a.name}. ${b.name} did not like it.`)};
+    $('d2').onclick=()=>{b.loy=Math.min(100,b.loy+8);a.loy=Math.max(0,a.loy-10);end(`You sided with ${b.name}. ${a.name} did not like it.`)};
+    $('d3').onclick=()=>{if(Math.random()<.5+(S.sk.talk||3)*.03+(enf?.15:0)){a.trust=Math.min(100,a.trust+3);b.trust=Math.min(100,b.trust+3);a.loy=Math.min(100,a.loy+3);b.loy=Math.min(100,b.loy+3);end('You sat them down and it ended there. Both of them respect that.')}else{a.loy=Math.max(0,a.loy-6);b.loy=Math.max(0,b.loy-6);end('You tried to squash it and it did not take. Both are still mad.')}};
+    $('d4').onclick=()=>{const l=Math.random()<.5?a:b;l.hurt=S.day+rnd(2,4);a.loy=Math.max(0,a.loy-4);b.loy=Math.max(0,b.loy-4);end(`They fought it out. ${l.name} got hurt and both lost some respect for you.`)}},400)}
+function crewDay(){if(!S.soldiers&&!(S.crewM||[]).length)return;const M=crewList(),enf=crewRank('enf'),rh=crewRank('rh');cmDrama(M);
   const sh=crewRank('stash'),cp=crewRank('cap');
   if(sh&&sh.loy>=30)S.heat=Math.max(0,S.heat-2);
   M.forEach(m=>{if(!m.snitch&&m.loy<35&&m.trust<40&&m!==enf&&Math.random()<.03){m.snitch=1;m.sn0=S.day}});
@@ -917,6 +925,30 @@ function szAct(a,el){const H=shSt(),g=el.dataset.g?G(el.dataset.g):null,k=el.dat
 function shDay(){const H=S.sh;if(!H||!H.own||S.pr)return;const has=H.cash>0||GOODS.some(g=>(H.inv[g.id]||0)>0);if(!has)return;
   const lead=crewRank('stash'),r=(.01+S.heat/100*.03)*(lead?.5:1)*(S.lawPay?.7:1);
   if(Math.random()<r){const cash=H.cash,list=GOODS.filter(g=>(H.inv[g.id]||0)>0).map(g=>g.name);H.cash=0;GOODS.forEach(g=>{H.inv[g.id]=0;H.fake[g.id]=0});H.own=0;S.heat=Math.min(100,S.heat+12);say(`Twelve raided the stash house. You lost ${money(cash)}${list.length?' and the '+list.join(', '):''}. The house is gone.`)}}
+/* ---------- parole ---------- */
+function poHTML(){const P=S.po;if(!P||S.pr)return '';return `<div class="sec">Parole officer</div><div class="row" style="flex-wrap:wrap"><div class="info"><div class="t">On parole until ${dayTxt(P.until)}</div><div class="s">Check in by ${dayTxt(P.due)}. ${P.vio?`<b style="color:var(--blood)">${P.vio} violation${P.vio>1?'s':''}.</b> One more and you go back. `:''}Keep your heat down and stay clean.</div></div><button class="btn go" data-a="pocheck" ${P.did===P.due?'disabled':''}>${P.did===P.due?'Checked in':'Check in'}</button></div>`}
+function poAct(a){const P=S.po;if(!P||a!=='pocheck'||P.did===P.due)return;if(!spendEn(5))return;P.did=P.due;addStress(4);
+  if(S.heat>=70&&Math.random()<.35){return poViol('Your officer did not like how things looked at the check-in.')}
+  say('Checked in with your parole officer. All good.');render()}
+function poViol(t){const P=S.po;if(!P)return;P.vio++;S.heat=Math.min(100,S.heat+8);say(`Parole violation. ${t}`);
+  if(P.vio>=2){S.po=null;S.strikes=Math.min(maxStrikes()-1,S.strikes);window.FF=false;prStart();S.pr.len=Math.max(3,Math.round(S.pr.len*.5));S.pr.until=S.day+S.pr.len;S.pr.charge='Parole violation';say(`Parole revoked. Back in for ${prLabel(S.pr.len)}.`);return}
+  render()}
+function poDay(){const P=S.po;if(!P||S.pr)return;
+  if(S.day>P.until){S.po=null;say('Parole is over. Your officer signed you off.');return}
+  if(S.habit>0&&Math.random()<.05)return poViol('You failed a drug test.');
+  if(S.day>P.due){if(P.did!==P.due)poViol('You missed your check-in.');P.due=S.day+P.sp}
+  else if(P.did===P.due&&S.day===P.due){P.due=S.day+P.sp}}
+/* ---------- territory war ---------- */
+function twHTML(){if(S.rep<40&&S.soldiers<5)return '';const rows=(S.crews||[]).filter(c=>c.alive&&c.id!==S.gang&&S.owner.some(o=>o===c.id));
+  if(!rows.length)return '';return `<div class="sec">Territory war</div>`+rows.map(c=>{const n=S.owner.filter(o=>o===c.id).length,cd=(c.warD||-99)+7>S.day;return `<div class="row" style="flex-wrap:wrap"><div class="info"><div class="t">War on the ${cdef(c.id).name}</div><div class="s">They hold ${n} block${n>1?'s':''}. Three rounds of shootouts. Win two and you take blocks. Win all and you wipe them out. Loses cost health, heat and respect. They are hit back at you if you lose.</div></div><button class="btn red" data-a="twgo" data-k="${c.id}" ${cd?'disabled':''}>${cd?'Recovering':'Go to war'}</button></div>`}).join('')}
+function twAct(el){const c=crew(el.dataset.k);if(!c||!c.alive||(c.warD||-99)+7>S.day)return;if(!spendEn(25))return;c.warD=S.day;let w=0,l=0,r=0;
+  const round=()=>{r++;shootoutGame(myStr(),c.str+6+rnd(0,4),`The ${cdef(c.id).name}`,win=>{win?w++:l++;if(r<3&&w<2&&l<2||r<3&&w===1&&l===1){setTimeout(round,300);return}end()})};
+  const end=()=>{const blocks=S.owner.map((o,i)=>o===c.id?i:-1).filter(i=>i>=0);let t='';
+    if(w>=2){const take=blocks.slice(0,Math.min(blocks.length,w));take.forEach(i=>S.owner[i]='me');c.str=Math.max(4,c.str-6*w);c.beef=Math.min(100,c.beef+30);S.rep+=8+4*w;addXP(10);S.heat=Math.min(100,S.heat+15);t=`You took ${take.map(i=>BLOCKS[i]).join(' and ')} from the ${cdef(c.id).name}.`;
+      if(!S.owner.some(o=>o===c.id)){c.alive=false;t+=` They are done. The ${cdef(c.id).name} got wiped out.`}
+      say(t);lickDone('War won',t,true,true)}
+    else{c.beef=Math.min(100,c.beef+20);S.rep=Math.max(0,S.rep-5);S.heat=Math.min(100,S.heat+10);addStress(12);t=`The ${cdef(c.id).name} held. You lost respect and they are coming at you harder now.`;say(t);lickDone('War lost',t,false,true)}};
+  round()}
 function paneCrew(){
   const turf=S.owner.filter(o=>o==='me').length, need=S.lvl*20;
   return `<div class="jump" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:4px">${['Skills','Plugs','Stash','Life','School','Jobs','Crew'].map(k=>`<button class="btn" style="padding:6px 10px;font-size:12px" data-jump="${k}">${k}</button>`).join('')}</div>${(S.traits||[]).length?`<div class="row" style="flex-wrap:wrap"><div class="info"><div class="t">Traits</div><div class="s">${S.traits.map(id=>{const t=TRAITS.find(x=>x.id===id);return t?`<b>${t.name}</b> · <i>${t.story}</i><br>${t.sub.replace(' Can\'t be undone.','')}`:''}).join('<br>')}</div></div></div>`:''}<div class="row" style="flex-wrap:wrap"><div class="info"><div class="t">Level ${S.lvl} · ${S.pts} skill point${S.pts===1?'':'s'} to spend</div>
@@ -937,6 +969,8 @@ function paneCrew(){
    ${crewHTML()}
    ${ctHTML()}
    ${shHTML()}
+   ${poHTML()}
+   ${twHTML()}
    ${paneArm()}
    <div class="row"><div class="info"><div class="t">More stash space</div><div class="s">Storage units, safes and cars are at the mall and the car lot now.</div></div></div>
    <div class="row"><div class="info"><div class="t">Your turf: ${turf} block${turf===1?'':'s'}</div><div class="s">Each block pays $${300} a day and sells 12% higher</div></div></div>`;
@@ -1702,9 +1736,10 @@ function checkKick(){if(!S.par||S.home!=='family')return;
   if((S.gHist||[]).length>=3&&S.par.trust<25&&S.sk.talk>=8&&Math.random()<[.6,.75,.9][Math.min(2,S.sk.talk-8)]){const P=S.par;S.gHist=[];S.par.trust=Math.min(100,S.par.trust+6);say(`${P.name} had your bags by the door, but you talked ${P.him||'them'} down. "You still my baby. One more mess and I mean it." You can stay.`);return}
   if((S.gHist||[]).length>=3&&S.par.trust<25){const P=S.par;S.gHist=[];S.kicked=S.day;S.grounded=0;S.gSeen=0;P.trust=Math.max(0,P.trust-5);moveIn('couch');
     say(`${P.name} put your bags on the porch. "Grounding you ain't working. Figure it out." You're staying with your cousin now.`);}}
-function moveIn(k){if(S.home==='couch')S.cousinDeal=0;S.comm=30;const X=HOMES[k],old=HOMES[S.home];S.cash-=X.rent;S.cap+=X.stash-old.stash;S.home=k;S.rentDay=S.day+7;
+function moveIn(k){const wasFam=S.home==='family';if(S.home==='couch')S.cousinDeal=0;S.comm=30;const X=HOMES[k],old=HOMES[S.home];S.cash-=X.rent;S.cap+=X.stash-old.stash;S.home=k;S.rentDay=S.day+7;
   say(`Moved into the ${X.name.toLowerCase()}.${X.rent?` Paid the first week, ${money(X.rent)}.`:''}`);
-  if(used()>S.cap)say('Your stash is over the limit. Sell some before you can buy more.')}
+  if(used()>S.cap)say('Your stash is over the limit. Sell some before you can buy more.');
+  if(wasFam&&k!=='family'&&$('modal').hidden&&!window.FF){modal(`${a2('moveout',360)}<h2>On your own</h2><p>You packed up and left. Rules are your own now.</p><div class="btns"><button class="btn go" id="ok">Keep moving</button></div>`);$('ok').onclick=close}}
 function homeDay(){const H=HOMES[S.home];addStress(H.stress);
   if(S.home==='couch'&&S.cousinDeal){if(weekTick()){if(S.cash>=250){S.cash-=250;say('Paid your cousin $250 for the week.')}else{S.cousinDeal=0;say("Couldn't pay your cousin this week. The deal is off, and the plays stopped coming to you.")}}
     if(S.cousinDeal){auntiePlay();if(Math.random()<.4)auntiePlay()}}
@@ -3542,7 +3577,7 @@ function nextDay(){S.en=S.restDay?enMax():Math.max(30,enMax()-(S.stress>=70?20:0
   if(turf){S.cash+=turf*300;}
   {const sh=S.owner.filter(o=>o!=='me'&&o!=='none'&&crew(o)&&crew(o).ally).length;if(sh)S.cash+=sh*100}
   if(S.myGang&&S.soldiers)S.cash+=S.soldiers*50;
-  runTraps();crewDay();ctDay();shDay();prisonDay();
+  runTraps();crewDay();ctDay();shDay();poDay();prisonDay();
   gfDay();sideDay();if(S.car==='stolen'){S.heat=Math.min(100,S.heat+2);addXP(1)}favorRoll();
   shipDay();debtDay();loanDay();checkpointDay();rapDay();
   if(S.cal?calCheck():(S.day-1)%30===0)say("It's the first of the month. Checks hit and the Js got money to spend.");
@@ -3661,6 +3696,8 @@ function act(a,el){
   if(a.slice(0,2)==='cm')return crewAct(a,el);
   if(a.slice(0,2)==='ct')return ctAct(a,el);
   if(a.slice(0,2)==='sz')return szAct(a,el);
+  if(a==='pocheck')return poAct(a);
+  if(a==='twgo')return twAct(el);
   if(a.slice(0,2)==='pz')return prAct(a,el);
   if(a==='buy'||a==='sell')return qtyModal(a,GOODS.find(g=>g.id===el.dataset.g));
   if(S.grounded>S.day&&S.sneakOK!==S.day&&['go','lick','heist','hoops','dice','fmeet','pkick','pfav','phit','hit','gjoin'].includes(a)){
@@ -3974,7 +4011,7 @@ function parReact(kind){const P=S.par;if(!P||S.home!=='family')return '';const s
   if(kind==='good'){P.trust=Math.min(100,P.trust+8);const r=strict?rnd(100,250):rnd(20,80);S.cash+=r;return `${P.name} was proud and slid you ${money(r)}.`}
   return ''}
 function schoolEvent(){const q=S.schoolQ.shift();if(!q)return false;const P=S.par||{name:'your people'},gn=GRADEN[S.grade]||'';
-  const o=(h,t,opts)=>{modal(`<div class="sec" style="margin:0;color:var(--accent)">${gn} year · ${calLabel()}</div><h2>${h}</h2><p>${t}</p><div class="btns">${opts.map((x,j)=>`<button class="btn ${j?'':'go'}" data-so="${j}" ${x[2]===false?'disabled':''}>${x[0]}</button>`).join('')}</div>`);$('mcard').querySelectorAll('[data-so]').forEach(b=>b.onclick=()=>{const r=opts[+b.dataset.so][1]();if(r){modal(`<h2>${h}</h2><p>${r}</p><div class="btns"><button class="btn go" id="ok">Okay</button></div>`);$('ok').onclick=close}else close()})};
+  const o=(h,t,opts)=>{modal(`${/graduated/i.test(t)?a2('grad',360):''}<div class="sec" style="margin:0;color:var(--accent)">${gn} year · ${calLabel()}</div><h2>${h}</h2><p>${t}</p><div class="btns">${opts.map((x,j)=>`<button class="btn ${j?'':'go'}" data-so="${j}" ${x[2]===false?'disabled':''}>${x[0]}</button>`).join('')}</div>`);$('mcard').querySelectorAll('[data-so]').forEach(b=>b.onclick=()=>{const r=opts[+b.dataset.so][1]();if(r){modal(`<h2>${h}</h2><p>${r}</p><div class="btns"><button class="btn go" id="ok">Okay</button></div>`);$('ok').onclick=close}else close()})};
   if(q==='first'){o(`First day of ${gn.toLowerCase()} year`,S.grade===9?'New school, new halls, older kids everywhere. Everybody\'s sizing everybody up.':'Back in the building. Same faces, new drama.',[...(PARFIT[S.char]?[['Wear what your people got you (free)',()=>{const id=PARFIT[S.char],F=FITS[id];S.fits=S.fits||{};if(!S.fits[id]){S.fits[id]=1;if(F.rep)S.rep+=F.rep}S.fit=id;return `${S.par?S.par.name:'Your people'} had the ${F.n.toLowerCase()} waiting on your bed. You walked in looking right.`}]]:[]),['Buy a fresh fit $150',()=>{S.cash-=150;S.fits=S.fits||{};S.fits.clean=1;S.fit='clean';S.rep+=2;return 'New fit, new shoes. People noticed. Rep +2.'},S.cash>=150],['Keep your head down',()=>{addStress(-5);return 'Quiet first day. Stress −5.'}]]);return true}
   if(q==='homecoming'){o('Homecoming weekend','The whole school is going to the game and the dance after.',[['Go with your people $100',()=>{S.cash-=100;addStress(-15);S.rep+=1;return 'Best night of the year so far. Stress −15, rep +1.'},S.cash>=100],['Work instead',()=>{return 'Everybody at the dance means nobody watching the block.'}]]);return true}
   if(q==='finals'){o('Finals week','Big tests all week. These count for real.',[['Study hard',()=>{S.grades=Math.min(100,S.grades+12);addStress(12);return 'You locked in. Grades +12, stress +12.'}],['Wing it',()=>{const d=rnd(-12,6);S.grades=Math.max(0,Math.min(100,S.grades+d));return d>=0?`Got lucky. Grades +${d}.`:`It showed. Grades ${d}.`}]]);return true}
@@ -4244,7 +4281,7 @@ function ckReport(){try{ckState()}catch(e){}const done=CKL.filter(x=>{try{return
   $('ckb').onclick=devPanel;$('ckc').onclick=()=>{const ta=$('ckt');const ok=()=>{$('ckm').textContent='Copied. Paste it to Claude.'};try{navigator.clipboard.writeText(ta.value).then(ok,()=>{ta.select();document.execCommand('copy');ok()})}catch(e){ta.select();try{document.execCommand('copy')}catch(_){}ok()}}}
 $('pane').onclick=e=>{sfx('tap');const pp=e.target.closest('.mapp');if(pp)return openPlace(pp.dataset.p);const m=e.target.closest('.mapb');if(m){if(m.dataset.a==='go')act('go',m);return}const b=e.target.closest('button[data-a]');if(b&&!b.disabled){const top=S&&S.log&&S.log[0];act(b.dataset.a,b);const nw=S&&S.log&&S.log[0];if(nw&&nw!==top&&$('modal').hidden)toast(nw.t)}};
 $('retire').onclick=()=>{S.over=true;checkEnd()};
-const BUILD='v184';
+const BUILD='v185';
 const DISCORD_INVITE='https://discord.gg/bVsvWzbGW';const OG_UNTIL=Infinity;
 const ogBox=()=>DISCORD_INVITE&&Date.now()<OG_UNTIL?`<a href="${DISCORD_INVITE}" target="_blank" rel="noopener" style="display:block;text-decoration:none;border:2px solid var(--accent);border-radius:10px;padding:10px 12px;background:rgba(0,0,0,.55);color:#fff;text-align:left"><div style="font-family:var(--label);font-weight:700;letter-spacing:.14em;color:var(--accent);font-size:12px">THE HUSTLE COMMUNITY</div><div style="font-size:13px;margin-top:3px">Join the Discord to pitch ideas, report bugs and back the game when it launches. Tap to join →</div></a>`:'';
 function mainMenu(canContinue){
