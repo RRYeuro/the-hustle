@@ -501,7 +501,7 @@ function openPlace(id){const P=PLACES.find(p=>p.id===id),bi=placeAt(id);
   $('mcard').querySelectorAll('[data-pl]').forEach(x=>x.onclick=()=>placeAct(x.dataset.pl,id));
 }
 function placeAct(k,id){const back=()=>{render();openPlace(id)};
-  if(k.startsWith('buycar:')){const ck=k.slice(7),C=CARS[ck],old=S.car?CARS[S.car]:null,price=Math.max(0,C.cost-(old?Math.round(old.cost*.6):0));if(S.cash<price)return;S.cash-=price;S.cap+=C.trunk-(old?old.trunk:0);S.car=ck;S.rob.car=1;S.rep+=C.rep||0;say(`Bought a ${C.name}. +${C.trunk} stash space.${old?` Traded in the ${old.name}.`:''}`);return back()}
+  if(k.startsWith('buycar:')){const ck=k.slice(7),C=CARS[ck],old=S.car?CARS[S.car]:null,price=Math.max(0,C.cost-(old?Math.round(old.cost*.6):0));if(S.cash<price)return;if(needClean(price,'The '+C.name))return;S.cash-=price;S.cap+=C.trunk-(old?old.trunk:0);S.car=ck;S.rob.car=1;S.rep+=C.rep||0;say(`Bought a ${C.name}. +${C.trunk} stash space.${old?` Traded in the ${old.name}.`:''}`);return back()}
   if(k==='stor'){const c=capCost();if(S.cash<c)return;S.cash-=c;S.cap+=50;S.capBuys=(S.capBuys||0)+1;say(`Rented a storage unit for ${money(c)}. +50 stash space. The next one costs more.`);return back()}
   if(k==='safeup'){const U=SAFEUP[S.safeLv||0];if(!U||S.cash<U.c)return;S.cash-=U.c;S.safeLv=(S.safeLv||0)+1;say(`Bought a ${U.n.toLowerCase()}. +${U.v} safe space.`);return back()}
   if(k==='hoops')return hoops();if(k==='dice')return dice();
@@ -949,6 +949,28 @@ function twAct(el){const c=crew(el.dataset.k);if(!c||!c.alive||(c.warD||-99)+7>S
       say(t);lickDone('War won',t,true,true)}
     else{c.beef=Math.min(100,c.beef+20);S.rep=Math.max(0,S.rep-5);S.heat=Math.min(100,S.heat+10);addStress(12);t=`The ${cdef(c.id).name} held. You lost respect and they are coming at you harder now.`;say(t);lickDone('War lost',t,false,true)}};
   round()}
+/* ---------- dirty money and laundering ---------- */
+function cleanCash(){if(S.clean==null)S.clean=Math.max(0,S.cash);if(S.clean>S.cash)S.clean=Math.max(0,S.cash);return S.clean}
+const dirtyCash=()=>Math.max(0,S.cash-cleanCash());
+const legit=n=>{cleanCash();S.clean+=Math.max(0,n)};
+const LAUNDER_BIZ={barber:{cap:1500,fee:.12},wash:{cap:2200,fee:.15},laundry:{cap:3500,fee:.18},club:{cap:9000,fee:.22},taq:{cap:600,fee:.1}};
+function needClean(price,what){if(price<5000)return false;if(cleanCash()>=price)return false;
+  modal(`<h2>That money is too dirty</h2><p>${what} costs ${money(price)}. Sellers and banks look at where it came from. You only have ${money(cleanCash())} that looks clean. The street money has to be laundered first.</p><div class="btns"><button class="btn go" id="ok">Got it</button></div>`);$('ok').onclick=close;return true}
+function launHTML(){cleanCash();const d=dirtyCash(),W=(S.washD&&S.washD.d===S.day)?S.washD:(S.washD={d:S.day,u:{}});
+  let h=`<div class="sec">Laundering</div><div class="row" style="flex-wrap:wrap"><div class="info"><div class="t">Dirty ${money(d)} · Clean ${money(Math.min(S.clean,S.cash))}</div><div class="s">Street money only gets you so far. Big buys (cars, businesses, a nicer home, anything $5,000 and up) need clean money. Run it through a front, take the fee, and it comes out clean. Holding a lot of dirty cash draws investigators.</div></div></div>`;
+  const row=(k,name,cap,fee,extra)=>{const used=W.u[k]||0,left=Math.max(0,cap-used),amt=Math.min(left,Math.floor(d));return `<div class="row" style="flex-wrap:wrap"><div class="info"><div class="t">${name}</div><div class="s">Up to ${money(cap)} a day · fee ${Math.round(fee*100)}%${extra||''} · ${money(left)} left today</div></div><div class="btns"><button class="btn go" data-a="lwash" data-k="${k}" data-v="1000" ${amt<1000?'disabled':''}>Wash $1,000</button><button class="btn go" data-a="lwash" data-k="${k}" data-v="max" ${amt<1?'disabled':''}>Wash max</button></div></div>`};
+  bizOpen().forEach(k=>{const L=LAUNDER_BIZ[k];if(L)h+=row(k,`Through your ${BIZ[k].name.toLowerCase()}`,L.cap,L.fee)});
+  h+=row('smurf','Through your people',800,.3,'. Small deposits through friends');
+  if(S.scam&&S.scam.laptop)h+=row('ghost','Ghost wash (laptop)',8000,.28,'. 12% a day it gets flagged and you lose half');
+  return h}
+function launAct(el){cleanCash();const k=el.dataset.k,d=Math.floor(dirtyCash()),W=(S.washD&&S.washD.d===S.day)?S.washD:(S.washD={d:S.day,u:{}});
+  const cap=k==='smurf'?800:k==='ghost'?8000:(LAUNDER_BIZ[k]||{}).cap,fee=k==='smurf'?.3:k==='ghost'?.28:(LAUNDER_BIZ[k]||{}).fee;if(!cap)return;
+  const left=Math.max(0,cap-(W.u[k]||0));let amt=el.dataset.v==='max'?Math.min(left,d):Math.min(1000,left,d);if(amt<=0)return;
+  if(k==='ghost'&&Math.random()<.12){const lost=Math.round(amt*.5);S.cash-=lost;cleanCash();S.heat=Math.min(100,S.heat+10);W.u[k]=(W.u[k]||0)+amt;say(`The ghost wash got flagged. You lost ${money(lost)} and heat went up.`);return render()}
+  const f=Math.round(amt*fee);S.cash-=f;S.clean+=amt-f;W.u[k]=(W.u[k]||0)+amt;say(`Washed ${money(amt)}. The fee was ${money(f)} and ${money(amt-f)} came out clean.`);render()}
+function launDay(){cleanCash();const d=dirtyCash();
+  if(d>=3000&&!S.dirtyHint){S.dirtyHint=1;say('💸 Your street money is dirty. Cars, businesses and nicer homes need clean money. Check Laundering in the Crew tab.')}
+  if(d>=20000&&Math.random()<(.02+Math.min(.04,(d-20000)/500000))*(S.lawPay?.5:1)){const lost=Math.round(d*.2);S.cash-=lost;cleanCash();S.heat=Math.min(100,S.heat+8);say(`Investigators froze part of your stash of street money. You lost ${money(lost)}.`)}}
 function paneCrew(){
   const turf=S.owner.filter(o=>o==='me').length, need=S.lvl*20;
   return `<div class="jump" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:4px">${['Skills','Plugs','Stash','Life','School','Jobs','Crew'].map(k=>`<button class="btn" style="padding:6px 10px;font-size:12px" data-jump="${k}">${k}</button>`).join('')}</div>${(S.traits||[]).length?`<div class="row" style="flex-wrap:wrap"><div class="info"><div class="t">Traits</div><div class="s">${S.traits.map(id=>{const t=TRAITS.find(x=>x.id===id);return t?`<b>${t.name}</b> · <i>${t.story}</i><br>${t.sub.replace(' Can\'t be undone.','')}`:''}).join('<br>')}</div></div></div>`:''}<div class="row" style="flex-wrap:wrap"><div class="info"><div class="t">Level ${S.lvl} · ${S.pts} skill point${S.pts===1?'':'s'} to spend</div>
@@ -971,6 +993,7 @@ function paneCrew(){
    ${shHTML()}
    ${poHTML()}
    ${twHTML()}
+   ${launHTML()}
    ${paneArm()}
    <div class="row"><div class="info"><div class="t">More stash space</div><div class="s">Storage units, safes and cars are at the mall and the car lot now.</div></div></div>
    <div class="row"><div class="info"><div class="t">Your turf: ${turf} block${turf===1?'':'s'}</div><div class="s">Each block pays $${300} a day and sells 12% higher</div></div></div>`;
@@ -2031,9 +2054,9 @@ function lifeDay(){
   if(S.cal&&S.school==='in'&&S.par&&isWknd()&&!schoolBreak(calDate(S.day+1))&&!(S.suspended>S.day+1))say(`💬 ${S.par.name} texts: "Weekend almost over. School tomorrow, be ready."`);
   if(S.cal){const prevSchool=!((S.day-2)%2)&&S.school==='in'&&!schoolBreak(calDate(S.day-1));if(prevSchool&&!S.inJail&&!window.DEVFF&&S.classDay!==S.day-1&&S.day>1&&!(S.suspended>=S.day-1)){S.grades=Math.max(0,(S.grades||0)-7);if(S.grades<15){S.school='out';say('You missed too much school and got kicked out.')}else say(`📞 ${S.par?S.par.name:'Your people'} called: the school said you skipped. Grades −7.`)}}
   else if(S.age&&S.age<18&&S.school==='in'&&!window.DEVFF&&S.classDay!==S.day-1){S.grades=Math.max(0,(S.grades||0)-1);if(S.grades<15){S.school='out';say('You missed too much school and got kicked out.')}}
-  if(S.job&&weekTick()){const pay=Math.round(JOBS[S.job].pay*(S.cal&&S.school==='in'&&!schoolBreak()?.5:1));S.cash+=pay;say(`Got paid ${money(pay)} from the ${JOBS[S.job].name.toLowerCase()} job.`)}
+  if(S.job&&weekTick()){const pay=Math.round(JOBS[S.job].pay*(S.cal&&S.school==='in'&&!schoolBreak()?.5:1));S.cash+=pay;legit(pay);say(`Got paid ${money(pay)} from the ${JOBS[S.job].name.toLowerCase()} job.`)}
   if(S.job)addStress(1);
-  const b=bizOpen();if(b.length){let t=0;b.forEach(k=>t+=BIZ[k].pay*(S.college==='grad'?1.2:1));t=Math.round(t);S.cash+=t;S.heat=Math.max(0,S.heat-b.length);say(`Your business${b.length>1?'es':''} brought in ${money(t)} today.`)}
+  const b=bizOpen();if(b.length){let t=0;b.forEach(k=>t+=BIZ[k].pay*(S.college==='grad'?1.2:1));t=Math.round(t);S.cash+=t;legit(t);S.heat=Math.max(0,S.heat-b.length);say(`Your business${b.length>1?'es':''} brought in ${money(t)} today.`)}
 }
 /* fate: things that happen to each character, the player doesn't know ahead of time */
 function fate(){if(!(S.mode==='life'||S.cal)||!S.fate)return false;const F=S.fate,a=S.age;
@@ -3577,7 +3600,7 @@ function nextDay(){S.en=S.restDay?enMax():Math.max(30,enMax()-(S.stress>=70?20:0
   if(turf){S.cash+=turf*300;}
   {const sh=S.owner.filter(o=>o!=='me'&&o!=='none'&&crew(o)&&crew(o).ally).length;if(sh)S.cash+=sh*100}
   if(S.myGang&&S.soldiers)S.cash+=S.soldiers*50;
-  runTraps();crewDay();ctDay();shDay();poDay();prisonDay();
+  runTraps();crewDay();ctDay();shDay();poDay();launDay();prisonDay();
   gfDay();sideDay();if(S.car==='stolen'){S.heat=Math.min(100,S.heat+2);addXP(1)}favorRoll();
   shipDay();debtDay();loanDay();checkpointDay();rapDay();
   if(S.cal?calCheck():(S.day-1)%30===0)say("It's the first of the month. Checks hit and the Js got money to spend.");
@@ -3698,6 +3721,7 @@ function act(a,el){
   if(a.slice(0,2)==='sz')return szAct(a,el);
   if(a==='pocheck')return poAct(a);
   if(a==='twgo')return twAct(el);
+  if(a==='lwash')return launAct(el);
   if(a.slice(0,2)==='pz')return prAct(a,el);
   if(a==='buy'||a==='sell')return qtyModal(a,GOODS.find(g=>g.id===el.dataset.g));
   if(S.grounded>S.day&&S.sneakOK!==S.day&&['go','lick','heist','hoops','dice','fmeet','pkick','pfav','phit','hit','gjoin'].includes(a)){
@@ -3754,7 +3778,7 @@ function act(a,el){
   if(a==='sign')return signDeal();
   if(a==='gear'){const k=el.dataset.k;const c={mask:50,car:5000}[k];S.cash-=c;S.rob[k]=1;say(k==='mask'?'Copped a ski mask.':'Got a getaway car.')}
   if(a==='heist')return heist(el.dataset.k);
-  if(a==='move'){moveIn(el.dataset.k)}
+  if(a==='move'){const X=HOMES[el.dataset.k];if(X&&needClean(X.rent*4,'A place like that'))return;moveIn(el.dataset.k)}
   if(a&&a.indexOf('sh_')===0)return schoolHustle(a.slice(3));
   if(a==='fstyle'){fsState().style=el.dataset.k;say(`You are fighting like a ${FSN[el.dataset.k]} now.`)}
   if(a==='practice'){S.ball=Math.min(100,(S.ball||0)+8);S.sk.muscle=Math.min(10,S.sk.muscle+(Math.random()<.2?1:0));addStress(-3);say('Went to practice. The scouts are watching.');nextDay()}
@@ -3765,7 +3789,7 @@ function act(a,el){
   if(a==='cdrop'){S.college=null;say('Dropped out of college.')}
   if(a==='job'){S.job=el.dataset.k;say(`Got hired at the ${JOBS[S.job].name.toLowerCase()}.`)}
   if(a==='quitjob'){say(`Quit the ${JOBS[S.job].name.toLowerCase()} job.`);S.job=null}
-  if(a==='buybiz'){const B=BIZ[el.dataset.k];S.cash-=B.cost;S.biz=S.biz||{};S.biz[el.dataset.k]=1;say(`Bought a ${B.name.toLowerCase()}. It's a front now.`)}
+  if(a==='buybiz'){const B=BIZ[el.dataset.k];if(needClean(B.cost,'The '+B.name.toLowerCase()))return;S.cash-=B.cost;S.biz=S.biz||{};S.biz[el.dataset.k]=1;say(`Bought a ${B.name.toLowerCase()}. It's a front now.`)}
   if(a==='inv')return invModal();
   if(a==='safe'){const k=el.dataset.k;if(k==='out'){S.cash+=S.safe;say(`Took ${money(S.safe)} out from the house.`);S.safe=0}else{const m=k==='all'?S.cash:Math.floor(S.cash/2);S.cash-=m;S.safe=(S.safe||0)+m;say(`Put ${money(m)} up at the house.`)}}
   if(a&&a.indexOf('rv_')===0)return plugRevenge(a.slice(3),+el.dataset.i);
@@ -4172,7 +4196,7 @@ function allyHelp(c){const d=cdef(c.id),opps=oppOf(c.id);if(!opps.length)return 
     const dmg=vcut(rnd(12,25));S.hp-=dmg;c.respect=Math.min(100,c.respect+3);lickDone('It went bad',`The ${od.name} held. You took ${dmg} damage, but the ${d.name} saw you ride.`,false,true)})}
 /* ---------- business events ---------- */
 function bizOpen(){return Object.keys(S.biz||{}).filter(k=>!((S.bizShut||{})[k]>S.day))}
-function bizDay(){if(S.audit&&S.day>=S.audit){S.audit=0;const t=Math.round(S.cash*.15);S.cash-=t;addStress(15);say(`The IRS audited your books. Lost ${money(t)}.`)}}
+function bizDay(){if(S.audit&&S.day>=S.audit){S.audit=0;const t=Math.round(dirtyCash()*.25+(S.cash-dirtyCash())*.05);S.cash-=t;addStress(15);say(`The IRS audited your books. Lost ${money(t)}.`)}}
 function bizEvent(){const own=bizOpen();if(!own.length||Math.random()>.07)return false;ck('f:bizEvent');const k=pick(own),B=BIZ[k],nm=B.name.toLowerCase(),r=Math.random();
   const ok2=(h,t,f)=>{modal(`<h2>${h}</h2><p>${t}</p><div class="btns"><button class="btn go" id="ok">Okay</button></div>`);$('ok').onclick=()=>{f&&f();close()}};
   if(r<.25&&!(S.bizSec||{})[k]){const str=Math.round(Math.min(12+(S.cal?S.lvl*4:S.day/3),crewCap()));
