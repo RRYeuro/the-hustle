@@ -395,7 +395,7 @@ function render(){if(S&&S.pr)tab='prison';else if(S&&tab==='prison')tab='block';
   $('cardtab').textContent=S.hand.length?`🃏 Cards ${S.hand.length}`:'🃏 Cards';
   const FXN={discount:'Plug Love',hype:'Hype Day',ride:'Ride or Die',lawyer:'Lawyer'};
   $('fx').innerHTML=Object.keys(S.fx).filter(k=>S.fx[k]).map(k=>`<span class="chip here">Active: ${FXN[k]}</span>`).join('');
-  $('pane').innerHTML={sch:paneSchool,rap:paneRap,rob:paneRob,sp:paneSports,phone:panePhone,block:()=>paneBlock()+paneGuns(),move:paneMove,beef:paneBeef,crew:paneCrew,cards:paneCards,prison:panePrison}[tab]();
+  $('pane').innerHTML={sch:paneSchool,rap:paneRap,rob:paneRob,sp:paneSports,phone:panePhone,block:()=>paneBlock()+paneGuns()+(()=>{try{return x8On()?goalHTML():''}catch(e){return ''}})(),move:paneMove,beef:paneBeef,crew:paneCrew,cards:paneCards,prison:panePrison}[tab]();
   $('log').innerHTML=S.log.map(l=>`<p><span class="d">D${l.d}</span>${l.t}</p>`).join('');
   if(S.pr){$('here').textContent='Locked up · '+S.pr.place}
   missionUI();save();sndWatch();
@@ -1005,14 +1005,14 @@ function rivalDay(){if(window.noRival||(S.age&&S.age<16))return;const mine=x8Tur
       {l:'Give it up',f:()=>{S.cash-=lose;say(`You gave the ${nm} ${money(lose)}.`)}}])}})}
 /* 2. detective case */
 function caseDay(){const X=X8();
-  if(!X.case){if(S.heat>=55&&Math.random()<(S.heat-45)/900&&(X.caseD||-99)+25<S.day){X.case={p:14,open:S.day,act:-1,law:-9};x8Pop('irs','A detective opened a file on you','Your heat got too high. A detective is building a case. Check your phone to bribe, flip a witness, destroy evidence or call your lawyer before it is airtight.',[{l:'Understood',c:'go',f:()=>{}}])}return}
+  if(!X.case){if(S.heat>=55&&Math.random()<(S.heat-45)/900&&(X.caseD||-99)+25<S.day){X.case={p:14,open:S.day,act:-1,law:-9};x8Pop('board','A detective opened a file on you','Your heat got too high. A detective is building a case. Check your phone to bribe, flip a witness, destroy evidence or call your lawyer before it is airtight.',[{l:'Understood',c:'go',f:()=>{}}])}return}
   const C=X.case,sn=crewList().filter(m=>m.snitch).length;
   C.p+=S.heat/40+(dirtyCash()>30000?1.5:0)+sn*1.5-(S.lawPay?1.5:0)-(S.fx&&S.fx.lawyer?.5:0)-(S.heat<25?1.2:0);
   if(C.p<=0){X.case=null;X.caseD=S.day;X.beat=1;say('The detective closed your case. Nothing stuck.');return}
   if(C.p>=100){X.case=null;X.caseD=S.day;say('You were indicted. The detective finished the case.');x8Pop('release','Indicted','The detective brought it all to the DA. Twelve is at your door.',[{l:'Here we go',c:'red',f:()=>busted()}])}}
 function caseHTML(){const C=X8().case;if(!C)return '';const used=C.act===S.day;
   const b=(a,l,dis)=>`<button class="btn ${a==='x8law'?'go':''}" data-a="${a}" ${dis||used?'disabled':''}>${l}</button>`;
-  return `<div class="sec" style="color:var(--blood)">Detective case</div>${a2('board',300)}<div class="row" style="flex-wrap:wrap"><div class="info" style="flex:1 1 100%"><div class="t">Case strength ${Math.round(C.p)}%</div><div class="bar" style="margin:6px 0"><i style="width:${Math.min(100,Math.max(2,C.p))}%;background:var(--blood)"></i></div><div class="s">Heat, dirty cash and snitches feed it. At 100% you are indicted. One move a day.</div></div><div class="btns" style="width:100%">${b('x8bribe','Bribe $2,500',S.cash<2500)}${b('x8flip','Flip a witness $1,500',S.cash<1500)}${b('x8destroy','Destroy evidence (15 energy)')}${b('x8law',S.lawPay?'Lawyer (free)':'Lawyer $2,000',!S.lawPay&&S.cash<2000||C.law>S.day-3)}</div></div>`}
+  return `<div class="sec" style="color:var(--blood)">Detective case</div><div class="row" style="flex-wrap:wrap"><div class="info" style="flex:1 1 100%"><div class="t">Case strength ${Math.round(C.p)}%</div><div class="bar" style="margin:6px 0"><i style="width:${Math.min(100,Math.max(2,C.p))}%;background:var(--blood)"></i></div><div class="s">Heat, dirty cash and snitches feed it. At 100% you are indicted. One move a day.</div></div><div class="btns" style="width:100%">${b('x8bribe','Bribe $2,500',S.cash<2500)}${b('x8flip','Flip a witness $1,500',S.cash<1500)}${b('x8destroy','Destroy evidence (15 energy)')}${b('x8law',S.lawPay?'Lawyer (free)':'Lawyer $2,000',!S.lawPay&&S.cash<2000||C.law>S.day-3)}</div></div>`}
 /* 3. plug wars */
 function plugWarDay(){if(window.noPlugWar||!S.known)return;const X=X8();
   S.known.slice().forEach(bi=>{if((S.burned&&S.burned[bi]>S.day)||Math.random()>.007)return;const nm=plugName(bi);
@@ -1057,23 +1057,23 @@ function healthDay(){if(window.noHealth)return;crewList().forEach(m=>{if(m.rd&&!
     {l:'Drop him at the ER and bounce',f:()=>{m.loy=Math.max(0,m.loy-15);addStress(5);say(`${m.name} saw you leave. Loyalty down.`)}}])}})}
 /* 8. go legit */
 function legitOk(){const X=X8();return cleanCash()>=100000&&Object.keys(S.biz||{}).length>=1&&S.heat<=20&&!(S.ls&&S.ls.owe)&&!X.case}
-function legitHTML(){const ok=legitOk();return `<div class="sec">Go legit</div>${a2('legit',300)}<div class="row" style="flex-wrap:wrap"><div class="info"><div class="t">Walk away clean</div><div class="s">Put it all into real businesses and leave the game. Needs $100,000 in clean money, a business you own, heat 20 or lower, no loan shark debt and no open case. ${ok?'You qualify.':`Clean ${money(cleanCash())} of $100,000.`}</div></div><button class="btn ${ok?'go':''}" data-a="x8legit" ${ok?'':'disabled'}>Go legit</button></div>`}
+function legitHTML(){const ok=legitOk();return `<div class="sec">Go legit</div><div class="row" style="flex-wrap:wrap"><div class="info"><div class="t">Walk away clean</div><div class="s">Put it all into real businesses and leave the game. Needs $100,000 in clean money, a business you own, heat 20 or lower, no loan shark debt and no open case. ${ok?'You qualify.':`Clean ${money(cleanCash())} of $100,000.`}</div></div><button class="btn ${ok?'go':''}" data-a="x8legit" ${ok?'':'disabled'}>Go legit</button></div>`}
 /* 9. street rankings */
 function x8Board(){const B=[{n:S.custom&&S.custom.name||'You',me:1,s:S.rep+x8Turf().length*25+(S.soldiers||0)*4+Math.floor(cleanCash()/5000)}];
   (S.crews||[]).forEach(c=>{if(c.alive)B.push({n:'The '+cdef(c.id).name,s:Math.round(c.str*4+S.owner.filter(o=>o===c.id).length*20+c.beef/5)})});return B.sort((a,b)=>b.s-a.s)}
-function rankDay(){if(!weekTick())return;const X=X8(),B=x8Board(),r=B.findIndex(x=>x.me)+1;if(X.rank&&r<X.rank)say(`You moved up to #${r} on the street board.`);else if(X.rank&&r>X.rank)say(`You dropped to #${r} on the street board.`);X.rankPrev=X.rank||r;X.rank=r}
+function rankDay(){if(!weekTick())return;const X=X8(),B=x8Board(),r=B.findIndex(x=>x.me)+1;if(X.rank&&r<X.rank){say(`You moved up to #${r} on the street board.`);x8Pop('rank',`You moved up to #${r}`,'Your name is climbing the street board.',[{l:'Keep going',c:'go',f:()=>{}}],6)}else if(X.rank&&r>X.rank){say(`You dropped to #${r} on the street board.`);x8Pop('rank',`You dropped to #${r}`,'Somebody passed you on the street board.',[{l:'Damn',f:()=>{}}],6)}X.rankPrev=X.rank||r;X.rank=r}
 function rankHTML(){const B=x8Board(),X=X8(),r=B.findIndex(x=>x.me)+1,d=X.rankPrev?X.rankPrev-r:0;
-  return `<div class="sec">Street rankings</div>${a2('rank',300)}<div class="row" style="flex-direction:column;align-items:stretch;gap:3px"><div class="s" style="color:var(--dim)">You are #${r} of ${B.length}${d?` · ${d>0?'up':'down'} ${Math.abs(d)} since last week`:''}. Updates weekly.</div>${B.slice(0,6).map((x,i)=>`<div style="display:flex;justify-content:space-between;font-family:var(--label);${x.me?'color:var(--accent)':''}"><span>${i+1}. ${esc(x.n)}</span><span>${x.s}</span></div>`).join('')}</div>`}
+  return `<div class="sec">Street rankings</div><div class="row" style="flex-direction:column;align-items:stretch;gap:3px"><div class="s" style="color:var(--dim)">You are #${r} of ${B.length}${d?` · ${d>0?'up':'down'} ${Math.abs(d)} since last week`:''}. Updates weekly.</div>${B.slice(0,6).map((x,i)=>`<div style="display:flex;justify-content:space-between;font-family:var(--label);${x.me?'color:var(--accent)':''}"><span>${i+1}. ${esc(x.n)}</span><span>${x.s}</span></div>`).join('')}</div>`}
 /* 10. daily goals and badges */
 const GOALS=[{k:'lick',t:'Pull a lick',get:()=>S.st.licks||0,n:1,r:350},{k:'fight',t:'Win a fight',get:()=>S.st.fights||0,n:1,r:300},{k:'sell',t:'Sell 15 units',get:()=>S.st.sold||0,n:15,r:400},{k:'wash',t:'Wash $1,000',get:()=>(S.washD&&S.washD.d===S.day?Object.values(S.washD.u||{}).reduce((a,b)=>a+b,0):0),n:1000,r:450,wash:1}];
 function goalDay(){const X=X8();if(X.goal&&X.goal.day===S.day)return;if(S.age&&S.age<14)return;const pool=GOALS.filter(g=>!g.wash||dirtyCash()>=1000||cleanCash()>1000);const g=pick(pool);X.goal={day:S.day,k:g.k,base:g.wash?0:g.get(),done:0}}
-function goalCheck(){const X=X8(),G=X.goal;if(!G||G.done)return;const g=GOALS.find(x=>x.k===G.k);if(!g)return;if(G.day!==S.day){return}const prog=g.get()-(G.base||0);if(prog>=g.n){G.done=1;S.cash+=g.r;legit&&g.k==='wash'?0:0;S.rep+=1;say(`🏆 Daily goal done: ${g.t}. +${money(g.r)} and +1 rep.`)}}
+function goalCheck(){const X=X8(),G=X.goal;if(!G||G.done)return;const g=GOALS.find(x=>x.k===G.k);if(!g)return;if(G.day!==S.day){return}const prog=g.get()-(G.base||0);if(prog>=g.n){G.done=1;S.cash+=g.r;S.rep+=1;say(`🏆 Daily goal done: ${g.t}. +${money(g.r)} and +1 rep.`);x8Pop('goal','Daily goal done',`${g.t}. +${money(g.r)} and +1 rep.`,[{l:'Nice',c:'go',f:()=>{}}],6)}}
 function goalHTML(){const X=X8(),G=X.goal;if(!G)return '';const g=GOALS.find(x=>x.k===G.k);if(!g)return '';const prog=Math.min(g.n,Math.max(0,g.get()-(G.base||0)));
-  return `<div class="sec">Daily goal</div>${a2('goal',300)}<div class="row"><div class="info"><div class="t">${g.t}${G.done?' · <span class="chip mine">Done</span>':''}</div><div class="s">${G.day!==S.day?'Today: new goal after you end the day.':`${prog}/${g.n} · reward ${money(g.r)} and 1 rep`}</div></div></div>`}
+  return `<div class="sec">Daily goal</div><div class="row"><div class="info"><div class="t">${g.t}${G.done?' · <span class="chip mine">Done</span>':''}</div><div class="s">${G.day!==S.day?'Today: new goal after you end the day.':`${prog}/${g.n} · reward ${money(g.r)} and 1 rep`}</div></div></div>`}
 const ACH=[['First lick',()=>(S.st.licks||0)>=1],['Ten licks',()=>(S.st.licks||0)>=10],['Block owner',()=>x8Turf().length>=1],['Six blocks',()=>x8Turf().length>=6],['Clean $100k',()=>cleanCash()>=100000],['Crew of 5',()=>crewList().length>=5],['Held a block',()=>!!X8().hold],['Survived a hit',()=>!!X8().survive],['Beat a case',()=>!!X8().beat],['Stash house',()=>!!(S.sh&&S.sh.own)||(typeof shSt==='function'&&shSt().own)],['Rep 100',()=>S.rep>=100],['Rep 500',()=>S.rep>=500]];
-function achDay(){const X=X8();X.ach=X.ach||{};ACH.forEach(([n,f])=>{if(!X.ach[n]&&f()){X.ach[n]=S.day;say(`🏅 Badge unlocked: ${n}.`)}})}
-function badgesHTML(){const X=X8(),A=X.ach||{};return `<div class="sec">Badges ${Object.keys(A).length}/${ACH.length}</div>${a2('badge',300)}<div class="row" style="flex-wrap:wrap;gap:6px">${ACH.map(([n])=>A[n]?`<span class="chip mine">🏅 ${n}</span>`:`<span class="chip" style="opacity:.45">${n}</span>`).join('')}</div>`}
-function x8Phone(){if(!x8On())return '';let h='';try{h+=goalHTML()+caseHTML()+hitHTML()+rankHTML()+legitHTML()+badgesHTML()}catch(e){}return h}
+function achDay(){const X=X8();X.ach=X.ach||{};ACH.forEach(([n,f])=>{if(!X.ach[n]&&f()){X.ach[n]=S.day;say(`🏅 Badge unlocked: ${n}.`);x8Pop('badge','Badge unlocked',n+'. Check your Me tab for the rest.',[{l:'Nice',c:'go',f:()=>{}}],6)}})}
+function badgesHTML(){const X=X8(),A=X.ach||{};return `<div class="sec">Badges ${Object.keys(A).length}/${ACH.length}</div><div class="row" style="flex-wrap:wrap;gap:6px">${ACH.map(([n])=>A[n]?`<span class="chip mine">🏅 ${n}</span>`:`<span class="chip" style="opacity:.45">${n}</span>`).join('')}</div>`}
+function x8Phone(){if(!x8On())return '';let h='';try{h+=caseHTML()+hitHTML()}catch(e){}return h}
 function x8Tick(){if(!x8On())return;[goalCheck,rivalDay,caseDay,plugWarDay,hitDay,x8gf,familyDay,healthDay,rankDay,goalDay,achDay].forEach(f=>{try{f()}catch(e){console.warn('x8',f.name,e)}})}
 function x8Act(a,el){const X=X8(),C=X.case;
   if(a==='x8bg'){if(S.cash<2500)return;S.cash-=2500;X.bg=S.day+7;say('Bodyguard hired for a week.');return render()}
@@ -1148,6 +1148,7 @@ function paneCrew(){
     <div class="s">XP ${S.xp} / ${need}. Earn XP from profit, fights, taking blocks, missions and mini games.</div><div class="bar"><i style="width:${S.xp/need*100}%;background:var(--accent)"></i></div></div></div>
    ${Object.keys(SKN).map(k=>`<div class="row" style="padding:8px 12px"><div class="info"><div class="t">${SKN[k]} <span style="font-family:var(--label);font-weight:700;color:var(--accent)">${S.sk[k]}</span>/10</div><div class="s">${SKD[k]}</div>
     <div class="bar"><i style="width:${S.sk[k]*10}%;background:var(--accent)"></i></div></div><button class="btn green" data-a="sk" data-k="${k}" ${S.pts>0&&S.sk[k]<10?'':'disabled'}>+1</button></div>`).join('')}
+   ${(()=>{try{return x8On()?legitHTML()+badgesHTML():''}catch(e){return ''}})()}
    <div class="sec">Your plugs (${S.known.length} of 6 know you)</div>
    ${BLOCKS.map((bl,i)=>`<div class="row" style="padding:8px 12px">${avatar(i,36)}<div class="info"><div class="t">${plugName(i)} ${S.known.includes(i)?'<span class="chip mine">Knows you</span>':'<span class="chip">Stranger</span>'}</div>
     <div class="s">${bl} · <span style="color:${LVL[PINFO[i].lvl].col}">${PINFO[i].lvl} plug</span> · ${S.known.includes(i)?`Trust ${S.trust[i]}/100`:`${3-(S.deals[i]||0)} more deals to get known`}</div></div></div>`).join('')}
@@ -1160,6 +1161,7 @@ function paneCrew(){
    <div class="row"><div class="info"><div class="t">Soldiers: ${S.soldiers}</div><div class="s">+6 strength each · cost $150/day each</div></div>
     <button class="btn green" data-a="hire" ${S.cash>=hireCost()?'':'disabled'}>Hire ${money(hireCost())}</button></div>
    ${crewHTML()}
+   ${(()=>{try{return x8On()?rankHTML():''}catch(e){return ''}})()}
    ${ctHTML()}
    ${shHTML()}
    ${poHTML()}
@@ -2372,8 +2374,17 @@ function frontLimit(bi){const lvl=PINFO[bi].lvl,base={Low:400,Mid:1500,Big:6000}
 const frontOk=bi=>S.known.includes(bi)&&!S.burned[bi]&&!(S.recr&&S.recr[bi])&&!debtOf(bi)&&(S.trust[bi]||0)>=30&&frontLimit(bi)>=100&&!(((S.pk[bi]||{}).ban||0)>S.day);
 function frontBtn(bi){const d=debtOf(bi),k=S.pk[bi]||{};if(d)return `<div class="s" style="flex-basis:100%;color:${S.day>d.due?'var(--blood)':'var(--accent)'}">You owe ${plugName(bi)} <b>${money(Math.round(d.owe))}</b> · due ${dayTxt(d.due)}${S.day>d.due?' · LATE':''}</div><button class="btn go" data-a="ppay" data-i="${bi}">Pay ${plugName(bi)}</button>`;
   if(!S.known.includes(bi))return '';if((k.ban||0)>S.day)return `<button class="btn" disabled>Not fronting you</button>`;
-  return `<button class="btn" data-a="pfront" data-i="${bi}" ${frontOk(bi)?'':'disabled'}>${frontOk(bi)?'Ask for a front (up to '+money(frontLimit(bi))+')':(S.trust[bi]||0)<30?'Front (need 30 trust)':'No front for you'}</button>`}
-function frontAsk(bi){if(S.at!==bi)return say('Be on their block to ask for a front.'),render();if(!frontOk(bi))return;const nm=plugName(bi),lim=frontLimit(bi);
+  return `<button class="btn" data-a="pfront" data-i="${bi}" >${frontOk(bi)?'Ask for a front (up to '+money(frontLimit(bi))+')':(S.trust[bi]||0)<30?'Front (need 30 trust)':'Ask for a front'}</button>`}
+function frontWhy(bi){const nm=plugName(bi),t=S.trust[bi]||0;let w;
+  if(!S.known.includes(bi))w=`${nm} does not know you yet. Do ${Math.max(1,3-(S.deals[bi]||0))} more deals with ${plugFem(bi)?'her':'him'} first.`;
+  else if(S.burned[bi]&&S.burned[bi]>S.day)w=`${nm} is laying low for ${S.burned[bi]-S.day} more days.`;
+  else if(S.recr&&S.recr[bi])w=`${nm} is not talking to you right now.`;
+  else if(debtOf(bi))w=`You still owe ${nm}. Pay it off before asking for another front.`;
+  else if(((S.pk[bi]||{}).ban||0)>S.day)w=`${nm} cut you off from fronts for ${(S.pk[bi].ban-S.day)} more days after you ran.`;
+  else if(t<30)w=`${nm} needs 30 trust before ${plugFem(bi)?'she':'he'} fronts you anything. You have ${t}. Keep buying and selling with ${plugFem(bi)?'her':'him'}.`;
+  else w=`${nm} trusts you but not enough with your rep. Trust ${t} and rep ${S.rep||0}. Build rep, trust or both to get a bigger front.`;
+  modal(`<h2>No front yet</h2><p>${w}</p><div class="btns"><button class="btn go" id="fwk">Got it</button></div>`);$('fwk').onclick=close}
+function frontAsk(bi){if(S.at!==bi)return say('Be on their block to ask for a front.'),render();if(!frontOk(bi))return frontWhy(bi);const nm=plugName(bi),lim=frontLimit(bi);
   const opts=PINFO[bi].carries.map(id=>G(id)).map(g=>({g,u:plugPrice('buy',g),st:stockOf(bi,g),fm:frontMul(bi,g)})).map(o=>({...o,lg:Math.round(lim*o.fm.lim/50)*50,mx:Math.max(0,Math.min(vstep(o.g,Math.floor(Math.round(lim*o.fm.lim/50)*50/o.u)),vstep(o.g,o.st),vstep(o.g,(S.cap-used())/o.g.sp)))}));
   modal(`${artImg('frontp',420)}<h2>Ask ${nm} for a front</h2><p>${nm} might spot you up to <b>${money(lim)}</b> of product on trust. ${FPLUG[bi]?FPLUG[bi].n+'. ':''}The rate and the deadline change with the drug: weed gets you the most time and the cheapest rate, coke the least and the highest. Run off and ${PCARE[bi]==='principle'?'it is personal to '+nm+', no matter how small':'it is the money '+nm+' cares about, so the bigger it is the worse it gets'}.</p>
    <div class="pane">${opts.map(o=>`<div class="row" style="padding:8px 12px;flex-wrap:wrap">${pkg(o.g,Math.max(o.mx,1),34)}<div class="info"><div class="t">${o.g.name}</div><div class="s">${money(o.u)} each · up to ${o.mx?amt(o.mx,o.g):'none'} · ${Math.round(o.fm.rate*100)}% back in ${o.fm.days} days${o.fm.fav?' · <b style="color:var(--money)">'+nm+' loves moving this</b>':''}</div></div><button class="btn go" data-fg="${o.g.id}" ${o.mx?'':'disabled'}>Pick</button></div>`).join('')}</div>
@@ -3724,7 +3735,7 @@ function qtyModal(kind,g,to,bl){if(to==='js'&&stuckHome())return;if(kind==='buy'
     ${kind==='buy'&&g.sizes.some(z=>z[0]>max)?`<p class="s" style="color:var(--dim);font-size:13px">Can't go bigger right now: ${[[teenCap,S.age<16?'too young, a zip max till 16':'too young, a QP max till 18'],[fl(S.cash/p),'not enough cash'],[fl((S.cap-used())/g.sp),'stash is full (get a bigger stash in the Me tab)'],[stk,`${plugName(S.at)} only got ${amt(stk,g)} on hand`]].filter(x=>x[0]<=max+g.step/2).map(x=>x[1])[0]||'limit reached'}.</p>`:''}
     <p>Total: <b id="qt">${money(kind==='buy'?Math.round(p*max*bulk(max,g)):p*max)}</b> <span id="qb" class="chip mine" ${kind==='buy'&&bulk(max,g)<1?'':'hidden'}>Bulk −${Math.round((1-bulk(max,g))*100)}%</span></p>${kind==='buy'?`<p class="s" style="color:var(--dim);font-size:13px">The more you cop, the cheaper it gets. Zip and up gets a bulk discount.</p>`:''}
     <div class="btns"><button class="btn go" id="ok">${kind==='buy'?'Buy':'Sell'}</button>
-    <button class="btn" id="tk" ${talked||!known||js||S.sk.talk<4?'disabled':''}>${!known?`${plugFem(S.at)?'She':'He'} don't know you yet`:S.sk.talk<4?'Talk price (needs Talk 4)':talked?'Already talked today':'Talk price'}</button>
+    <button class="btn" id="tk" ${talked||!known||js||S.sk.talk<4?'disabled':''}>${!known?`${plugFem(S.at)?'She':'He'} don't know you yet`:js?'Talk price (plugs only)':S.sk.talk<4?'Talk price (needs Talk 4)':talked?'Already talked today':'Talk price'}</button>
     ${kind==='buy'&&!seen?`<button class="btn" id="ts" ${S.cash>=75?'':'disabled'}>Test kit $75</button>`:''}
     <button class="btn" id="no">Cancel</button></div>
     ${kind==='buy'&&!seen?`<div class="sec" style="margin-top:4px">Or get somebody to try it</div><div class="btns">${adult()?`<button class="btn" id="ty">Try it yourself</button>`:''}<button class="btn" id="tp" ${(S.custos||[]).length?'':'disabled'}>Text a play to try it${(S.custos||[]).length?'':' (no plays yet)'}</button><button class="btn" id="tj" ${(S.jtry||{})[tkey]===S.day?'disabled':''}>Find a J to try it · ${jTryOdds()}%</button></div><p class="s" style="color:var(--dim);font-size:13px">Plays you text always pull up. Random Js only trust you if your face card is good (rep).</p>`:''}
