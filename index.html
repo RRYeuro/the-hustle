@@ -866,7 +866,7 @@ function crewAct(a,el){const M=crewList(),i=+el.dataset.i,m=M[i];
     if(m.trust<need.t||m.loy<need.l)return done('Not ready yet',`${m.name} needs ${need.t} trust and ${need.l} loyalty before you put him in that role. Right now it is trust ${m.trust}, loyalty ${m.loy}. Chill with him, back him up and pay him.`);
     const old=M.find(x=>x.rank===k&&x!==m);if(old){old.rank='sol';old.loy=Math.max(0,old.loy-10);old.trust=Math.max(0,old.trust-5)}
     M.forEach(x=>{if(x!==m&&x!==old&&x.trust>m.trust+5&&x.rank==='sol')x.loy=Math.max(0,x.loy-4)});
-    m.rank=k;m.loy=Math.min(100,m.loy+10);say(`${m.name} is your ${CRANK[k].n} now.${old?` ${old.name} went back to soldier.`:''}`);return render()}
+    m.rank=k;m.loy=Math.min(100,m.loy+10);say(`${m.name} is your ${CRANK[k].n} now.${old?` ${old.name} went back to soldier.`:''}`);setTimeout(()=>{if(!$('modal').hidden||window.FF)return;modal(`${a2('loyal',340)}<h2>${esc(m.name)} steps up</h2><p>The crew stood around and watched you give ${esc(m.name)} the ${CRANK[k].n} spot. Loyalty counts.</p><div class="btns"><button class="btn go" id="ok">Respect</button></div>`);$('ok').onclick=close},100);return render()}
   if(a==='cmfire'){modal(`<h2>Cut ${esc(m.name)} loose?</h2><p>He is gone for good. The rest of the crew will not like how you treat people.</p><div class="btns"><button class="btn red" id="y">Cut him</button><button class="btn" id="n">Never mind</button></div>`);
     $('n').onclick=close;$('y').onclick=()=>{const j=M.indexOf(m);if(j>=0)M.splice(j,1);S.soldiers=Math.max(0,S.soldiers-1);M.forEach(x=>x.loy=Math.max(0,x.loy-4));say(`Cut ${m.name} loose.`);close();render()};return}
 }
@@ -946,21 +946,21 @@ function poDay(){const P=S.po;if(!P||S.pr)return;
 /* ---------- territory war ---------- */
 function twHTML(){if(S.rep<40&&S.soldiers<5)return '';const rows=(S.crews||[]).filter(c=>c.alive&&c.id!==S.gang&&S.owner.some(o=>o===c.id));
   if(!rows.length)return '';return `<div class="sec">Territory war</div>${a2('warmap',320)}`+rows.map(c=>{const n=S.owner.filter(o=>o===c.id).length,cd=(c.warD||-99)+7>S.day;return `<div class="row" style="flex-wrap:wrap"><div class="info"><div class="t">War on the ${cdef(c.id).name}</div><div class="s">They hold ${n} block${n>1?'s':''}. Three rounds of shootouts. Win two and you take blocks. Win all and you wipe them out. Loses cost health, heat and respect. They are hit back at you if you lose.</div></div><button class="btn red" data-a="twgo" data-k="${c.id}" ${cd?'disabled':''}>${cd?'Recovering':'Go to war'}</button></div>`}).join('')}
-function twAct(el){const c=crew(el.dataset.k);if(!c||!c.alive||(c.warD||-99)+7>S.day)return;if(!spendEn(25))return;c.warD=S.day;let w=0,l=0,r=0;
+function twAct(el){const c=crew(el.dataset.k);if(!c||!c.alive||(c.warD||-99)+7>S.day)return;let w=0,l=0,r=0;
   const round=()=>{r++;shootoutGame(myStr(),c.str+6+rnd(0,4),`The ${cdef(c.id).name}`,win=>{win?w++:l++;if(r<3&&w<2&&l<2||r<3&&w===1&&l===1){setTimeout(round,300);return}end()})};
   const end=()=>{const blocks=S.owner.map((o,i)=>o===c.id?i:-1).filter(i=>i>=0);let t='';
     if(w>=2){const take=blocks.slice(0,Math.min(blocks.length,w));take.forEach(i=>S.owner[i]='me');c.str=Math.max(4,c.str-6*w);c.beef=Math.min(100,c.beef+30);S.rep+=8+4*w;addXP(10);S.heat=Math.min(100,S.heat+15);t=`You took ${take.map(i=>BLOCKS[i]).join(' and ')} from the ${cdef(c.id).name}.`;
       if(!S.owner.some(o=>o===c.id)){c.alive=false;t+=` They are done. The ${cdef(c.id).name} got wiped out.`}
       say(t);lickDone('War won',t,true,true,(!S.owner.some(o=>o===c.id))?'wiped':'takeblock')}
     else{c.beef=Math.min(100,c.beef+20);S.rep=Math.max(0,S.rep-5);S.heat=Math.min(100,S.heat+10);addStress(12);t=`The ${cdef(c.id).name} held. You lost respect and they are coming at you harder now.`;say(t);lickDone('War lost',t,false,true,'aftermath')}};
-  round()}
+  modal(`${a2(Math.random()<.5?'standoff':'rally',340)}<h2>War on the ${cdef(c.id).name}</h2><p>Your crew rolls out. Three rounds. Win two and you take blocks.</p><div class="btns"><button class="btn red" id="wgo">Go</button></div>`);$('wgo').onclick=()=>{if(!spendEn(25))return;c.warD=S.day;$('modal').hidden=true;round()}}
 /* ---------- dirty money and laundering ---------- */
 function cleanCash(){if(S.clean==null)S.clean=Math.max(0,S.cash);if(S.clean>S.cash)S.clean=Math.max(0,S.cash);return S.clean}
 const dirtyCash=()=>Math.max(0,S.cash-cleanCash());
 const legit=n=>{cleanCash();S.clean+=Math.max(0,n)};
 const LAUNDER_BIZ={barber:{cap:1500,fee:.12},wash:{cap:2200,fee:.15},laundry:{cap:3500,fee:.18},club:{cap:9000,fee:.22},taq:{cap:600,fee:.1}};
 function needClean(price,what){if(price<5000)return false;if(cleanCash()>=price)return false;
-  modal(`${a2('deposit',320)}<h2>That money is too dirty</h2><p>${what} costs ${money(price)}. Sellers and banks look at where it came from. You only have ${money(cleanCash())} that looks clean. The street money has to be laundered first.</p><div class="btns"><button class="btn go" id="ok">Got it</button></div>`);$('ok').onclick=close;return true}
+  modal(`${a2('acct',320)}<h2>That money is too dirty</h2><p>${what} costs ${money(price)}. Sellers and banks look at where it came from. You only have ${money(cleanCash())} that looks clean. The street money has to be laundered first.</p><div class="btns"><button class="btn go" id="ok">Got it</button></div>`);$('ok').onclick=close;return true}
 function launHTML(){cleanCash();const d=dirtyCash(),W=(S.washD&&S.washD.d===S.day)?S.washD:(S.washD={d:S.day,u:{}});
   let h=`<div class="sec">Laundering</div>${a2('count',300)}<div class="row" style="flex-wrap:wrap"><div class="info"><div class="t">Dirty ${money(d)} · Clean ${money(Math.min(S.clean,S.cash))}</div><div class="s">Street money only gets you so far. Big buys (cars, businesses, a nicer home, anything $5,000 and up) need clean money. Run it through a front, take the fee, and it comes out clean. Holding a lot of dirty cash draws investigators.</div></div></div>`;
   const row=(k,name,cap,fee,extra)=>{const used=W.u[k]||0,left=Math.max(0,cap-used),amt=Math.min(left,Math.floor(d));const pk=({barber:'lw_barber',wash:'lw_wash',laundry:'lw_laundry',club:'lw_club',taq:'lw_taq',ghost:'lw_ghost',smurf:'lw_smurf'})[k];return `<div class="row" style="flex-wrap:wrap">${a3(pk)}<div class="info"><div class="t">${name}</div><div class="s">Up to ${money(cap)} a day · fee ${Math.round(fee*100)}%${extra||''} · ${money(left)} left today</div></div><div class="btns"><button class="btn go" data-a="lwash" data-k="${k}" data-v="1000" ${amt<1000?'disabled':''}>Wash $1,000</button><button class="btn go" data-a="lwash" data-k="${k}" data-v="max" ${amt<1?'disabled':''}>Wash max</button></div></div>`};
