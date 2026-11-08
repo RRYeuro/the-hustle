@@ -1,29 +1,27 @@
 🚨 IMPORTANT, READ NOW 🚨
 
-**SHORT VERSION:** v187 is out and the art is done. Now I want YOU to pick what I build next. Vote below.
+**SHORT VERSION:** v189 is live. You asked for it, I built all 10 ideas. The streets fight back now, plus fixes from the tester bugs.
 
-**STREET SIDE 🔫**
-1️⃣ Rival crew AI: rivals take your blocks and hit your stash and crew on their own. Can you hold what you built?
-2️⃣ Cops and detectives: high heat opens a case. Bribe, flip a witness, destroy evidence, or get indicted.
-3️⃣ Plug wars: your connect gets raided or flips. Find a new supplier while prices swing.
-4️⃣ Hit list and revenge: somebody puts a hit on you. Hire a bodyguard, move, or hit first.
+**NEW: THE STREETS FIGHT BACK ⚔️**
+- ⚔️ Rival crews come for your blocks. Hold them, pay them off, or lose the turf.
+- 🕵️ Detectives open a case when your heat runs high. Bribe, flip a witness, destroy evidence, or call your lawyer before you get indicted.
+- 🔌 Plugs get raided or flip on you. Prices spike and you have to find a new supplier.
+- 🎯 Rivals can put a hit on you. Hire a bodyguard, leave town, or hit first.
+- 💔 Your girl can find out about the streets or ask you to slow down.
+- 👨‍👩‍👦 Family drama: rent, a little brother who wants in, an uncle running his mouth.
+- 💊 Your crew can get hooked. Pay the hospital, send him to rehab, or leave him.
+- 🚪 Go legit: $100k clean, a business you own, low heat, no debt. Walk away with a real ending.
+- 🏆 Street rankings, daily goals and badges. All in your Phone tab.
 
-**LIFE SIDE 🏠**
-5️⃣ Real relationships: your girl has her own life. She finds out about the street, she leaves, or kids change everything.
-6️⃣ Family drama: mom's rent, a little brother who wants in, an uncle who talks.
-7️⃣ Health and addiction: rehab, relapse, and overdose scares for your crew.
+**FIXES (thanks to the testers)**
+- 🤝 Plugs hear your name once your rep grows. Talk price works now, and more rep means cheaper buys.
+- 📱 Houses and guns only show up when you get a tip on your phone. More rep and customers means more tips.
+- 🛒 The corner store and pharmacy only show when you are on that block. The fake gun sale is in your phone's social media.
+- ⌨️ The tunnel game takes arrow keys. Pac-Man runs smooth.
+- 🏫 Fight at school? Handle it outside after school and skip the suspension, unless he is an opp.
+- 🚪 Retire is always in the menu.
+- 🖼️ New art for tips, the social media gun sale, school fights and retiring.
 
-**SYSTEMS ⚙️**
-8️⃣ Legit exit: go clean, put it all into one real business, and walk away. A win that is not dying or prison.
-9️⃣ Street rankings: a weekly board with your name, your crew and your rivals.
-🔟 Achievements and daily goals.
+**NOT YET:** sports. Holding that for later. Vote on the sports ideas above if you haven't.
 
-**SPORTS IDEAS ⛹️ (still on hold, vote so I know what to build first)**
-🏀 Basketball: pickup games to AAU to college to the draft. Hoop your way out.
-🏈 Football: recruiting, Friday night games, scholarship offers.
-🥊 Boxing and MMA: underground fights for money, then a pro career.
-🎲 Sportsbook: bet on games, a bookie who fronts you, or fix a game and risk it.
-📋 Agent and scout: sign players and take a cut of their deals.
-🏃 Track and training: grind stats through the week to unlock the better paths.
-
-Reply with your top 3 from the street, life and systems lists, plus your top sports pick. Tell me which one you want first and why. The most votes gets built.
+Test the case system first. Let your heat climb above 55 and see what the detective does, then try to beat it. Tell me what's broken and what you want next.
