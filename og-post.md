@@ -1,8 +1,14 @@
 🚨 IMPORTANT, READ NOW 🚨
 
-**SHORT VERSION:** v185 is live. Faces for everybody, a stash house, snitches, crew drama, parole, territory wars, and the game grows up 25% faster.
+**SHORT VERSION:** v186 is live. Faces for everybody, a stash house, snitches, crew drama, parole, territory wars, and now dirty money and laundering. You also grow up 25% faster.
 
-**WHAT'S NEW**
+**NEW: DIRTY MONEY AND LAUNDERING 💸**
+- Street money is dirty. It only gets you so far.
+- Big buys ($5,000 and up: cars, businesses, nicer homes) need clean money.
+- Wash it in the Crew tab: through a business you own, through your people (small but safe), or a ghost wash on your laptop (big but risky).
+- Every wash costs a fee. Sit on a pile of dirty cash and investigators can freeze part of it. The IRS audit hits dirty money harder too.
+
+**WHAT ELSE IS NEW**
 - 🧑 Every crew member, friend, girlfriend and boyfriend has a face that matches their name. Rank shows as a colored frame.
 - 🏠 Stash house: rent one, store product and cash, and it survives a bust. It can get raided if your heat is high.
 - 👥 New crew roles: Stash House Leader (heat drops faster) and Block Captain (brings in turf money).
@@ -17,8 +23,9 @@
 **FIXES**
 - Sneaking out when you're grounded actually lets you leave now.
 - The pitch buttons work now (Beno's PC bug).
+- You can give product to your workers from their stash.
 - New scenes for prison, contracts, identity fraud, graduation and moving out.
 
 **NOT YET:** sports. Holding that for later.
 
-Test the new crew stuff, the stash house and parole first. Tell me what's broken and what you want next.
+Test the laundering first. Try to buy a car with street money and see what happens, then wash it. Tell me what's broken and what you want next.
