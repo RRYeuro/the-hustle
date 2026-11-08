@@ -369,7 +369,7 @@ function readSlot(n){try{const s=JSON.parse(localStorage.getItem(slotKey(n)));if
 function load(n){const raw=readSlot(n||curSlot());if(!raw)return null;const s=migrate(raw);if(s&&!s.slot)s.slot=n||curSlot();return s}
 
 /* ---------- render ---------- */
-function groundSend(){if(S&&S.par&&S.home==='family'&&S.grounded>S.day&&S.at!==homeBlock()){S.at=homeBlock();say(`${S.par.name} came and got you. You're grounded, so you're back at the house on ${BLOCKS[S.at]}.`)}}
+function groundSend(){if(S&&S.par&&S.home==='family'&&S.grounded>S.day&&S.sneakOK!==S.day&&S.at!==homeBlock()){S.at=homeBlock();say(`${S.par.name} came and got you. You're grounded, so you're back at the house on ${BLOCKS[S.at]}.`)}}
 function render(){if(S&&S.pr)tab='prison';else if(S&&tab==='prison')tab='block';if(S&&S.home&&S.home!=='family'&&S.grounded)S.grounded=0;
   groundSend();
   if(S&&S.char==='life')setLifeChar();
@@ -479,7 +479,7 @@ function cityMap(){
 function placeAt(id){return PLACES.find(p=>p.id===id).bi}
 function openPlace(id){const P=PLACES.find(p=>p.id===id),bi=placeAt(id);
   if(bi!==S.at){modal(`<h2>${P.ic} ${P.name}</h2><p>That's on <b>${BLOCKS[bi]}</b>. You're on ${BLOCKS[S.at]}.</p><div class="btns"><button class="btn go" id="gt">Go to ${BLOCKS[bi]} (takes a day)</button><button class="btn" id="no">Not now</button></div>`);
-    $('no').onclick=close;$('gt').onclick=()=>{if(S.grounded>S.day){$('modal').hidden=true;say(`You're grounded. ${S.par?S.par.name:'They'} ain't letting you leave the house.`);render();return}$('modal').hidden=true;S.at=bi;say(`Pulled up to ${BLOCKS[bi]}.`);nextDay();checkEnd();render();if($('modal').hidden)openPlace(id)};return}
+    $('no').onclick=close;$('gt').onclick=()=>{if(S.grounded>S.day&&S.sneakOK!==S.day){$('modal').hidden=true;say(`You're grounded. ${S.par?S.par.name:'They'} ain't letting you leave the house.`);render();return}$('modal').hidden=true;S.at=bi;say(`Pulled up to ${BLOCKS[bi]}.`);nextDay();checkEnd();render();if($('modal').hidden)openPlace(id)};return}
   const row=(t,sub,btn)=>`<div class="row" style="padding:8px 12px;flex-wrap:wrap"><div class="info" style="flex:1 1 180px"><div class="t">${t}</div><div class="s">${sub}</div></div>${btn}</div>`;
   const b=(k,l,dis,c='go')=>`<button class="btn ${c}" data-pl="${k}" ${dis?'disabled':''}>${l}</button>`;
   let body='';
@@ -1746,7 +1746,7 @@ function plugAsk(bi){const nm=plugName(bi),odd=GOODS.filter(x=>!PINFO[bi].carrie
 function plugPitch(bi){const nm=plugName(bi),him=plugFem(bi)?'her':'him',mine=GOODS.filter(x=>S.inv[x.id]>0&&!PINFO[bi].carries.includes(x.id));
   if(!mine.length){modal(`<h2>Nothing to pitch</h2><p>You are not holding anything ${nm} doesn't already buy. Pitching is for stuff ${nm} normally passes on, like ${GOODS.filter(x=>!PINFO[bi].carries.includes(x.id)).map(x=>x.name).join(', ')}. Pick some up first, or just hit Sell.</p><div class="btns"><button class="btn go" id="no">Got it</button></div>`);$('no').onclick=close;return}
   modal(`<h2>Pitch ${nm}</h2><p>${nm} doesn't normally buy these. Talk ${him} into taking it, or force it on ${him}. One try a day.</p>
-  <div class="btns" style="flex-direction:column;align-items:stretch">${mine.map(g=>`<div class="row" style="padding:6px 10px"><div class="info"><div class="t">${g.name}</div><div class="s">You got ${amt(S.inv[g.id],g)}</div></div><button class="btn go" data-a="ppgo" data-i="${bi}" data-g="${g.id}" data-m="talk">Talk ${him} into it</button><button class="btn red" data-a="ppgo" data-i="${bi}" data-g="${g.id}" data-m="force">Force it</button></div>`).join('')}<button class="btn" id="no">Never mind</button></div>`);$('no').onclick=close}
+  <div class="btns" style="flex-direction:column;align-items:stretch">${mine.map(g=>`<div class="row" style="padding:6px 10px"><div class="info"><div class="t">${g.name}</div><div class="s">You got ${amt(S.inv[g.id],g)}</div></div><button class="btn go" data-a="ppgo" data-i="${bi}" data-g="${g.id}" data-m="talk">Talk ${him} into it</button><button class="btn red" data-a="ppgo" data-i="${bi}" data-g="${g.id}" data-m="force">Force it</button></div>`).join('')}<button class="btn" id="no">Never mind</button></div>`);$('no').onclick=close;document.querySelectorAll('#mcard [data-a="ppgo"]').forEach(b=>b.onclick=()=>plugPitchGo(+b.dataset.i,b.dataset.g,b.dataset.m))}
 function plugPitchGo(bi,gid,mode){const nm=plugName(bi),he=plugFem(bi)?'she':'he',g=G(gid),pk=S.pk[bi]=S.pk[bi]||{};if(pk.pitch===S.day)return;pk.pitch=S.day;close();
   const p=mode==='talk'?Math.min(.7,.2+S.trust[bi]/200+((S.sk&&S.sk.talk)||3)*.03):Math.min(.6,.25+S.rep/300);
   if(Math.random()<p){S.sellOk={day:S.day,bi,g:gid};if(mode==='force'){S.trust[bi]=Math.max(0,S.trust[bi]-10);S.heat=Math.min(100,S.heat+5)}
@@ -3400,7 +3400,7 @@ function buyMore(){if((ptxo().n[S.at]||0)>=PTX_MAX)return false;if(S.over||!PINF
   $('bmno').onclick=close;$('mcard').querySelectorAll('[data-bm]').forEach(b=>b.onclick=()=>qtyModal('buy',G(b.dataset.bm)));return true}
 function close(){$('modal').hidden=true;checkEnd();render();const nw=S&&S.log&&S.log[0];if(nw&&nw!==window._lt&&$('modal').hidden&&!S.over)toast(nw.t);window._lt=nw}
 const crewHere=()=>{const o=S.owner[S.at];return o!=='me'&&o!=='none'};
-function stuckHome(){if(S&&S.grounded>S.day){$('modal').hidden=true;say(`You're grounded. ${S.par?S.par.name:'They'} ain't letting you leave the house. Lay low, go to school, or text your plays to come to you.`);render();return true}return false}
+function stuckHome(){if(S&&S.grounded>S.day&&S.sneakOK!==S.day){$('modal').hidden=true;say(`You're grounded. ${S.par?S.par.name:'They'} ain't letting you leave the house. Lay low, go to school, or text your plays to come to you.`);render();return true}return false}
 const plugBud=bi=>({Low:2500,Mid:9000,Big:24000})[PINFO[bi].lvl]||5000;
 function plugUsed(bi){if(!S.pbud||S.pbud.d!==S.day)S.pbud={d:S.day,u:{}};return S.pbud.u[bi]||0}
 function qtyModal(kind,g,to,bl){if(to==='js'&&stuckHome())return;if(kind==='buy'&&frontBlock(S.at))return;
