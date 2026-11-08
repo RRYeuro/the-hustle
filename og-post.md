@@ -1,8 +1,6 @@
 🚨 IMPORTANT, READ NOW 🚨
 
-**SHORT VERSION:** v185 is live. Faces for everybody, a stash house, snitches, crew drama, parole, territory wars, and the game grows up 25% faster. Most of the crime stuff came from @ScotiaBank Teller. Thank him again.
-
-First, another real thank you to ScotiaBank Teller. Bro, you keep sending ideas at 2 AM and every one of them is making this game deeper. Prison, contracts, identity fraud, the economy fix, and now the parole and snitch stuff all came from your push. You are a big reason this game feels real. Thank you.
+**SHORT VERSION:** v185 is live. Faces for everybody, a stash house, snitches, crew drama, parole, territory wars, and the game grows up 25% faster.
 
 **WHAT'S NEW**
 - 🧑 Every crew member, friend, girlfriend and boyfriend has a face that matches their name. Rank shows as a colored frame.
@@ -23,4 +21,4 @@ First, another real thank you to ScotiaBank Teller. Bro, you keep sending ideas 
 
 **NOT YET:** sports. Holding that for later.
 
-Tell me what's broken and what you want next. Thank you @ScotiaBank Teller.
+Test the new crew stuff, the stash house and parole first. Tell me what's broken and what you want next.
