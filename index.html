@@ -1787,7 +1787,7 @@ function connectSizes(g,C){const all=g.unit==='g'?[[112,'QP'],[448,'Pound'],[100
 function cgrade(C){const t=ctier(C);let sel=C.sel==null?t:C.sel;const up=C.up&&C.up.day===S.day?C.up.tier:-1;if(sel>Math.max(t,up))sel=t;return sel}
 function connectPrice(g,C,gr){const sp=C&&CSPEC[C.name]&&CSPEC[C.name].includes(g.id)?.88:1;const t=gr==null?cgrade(C):gr;const q=(GRADES[t][1]+GRADES[t][2])/2;
   const avg=BLOCKS.reduce((a,b,i)=>a+(S.prices[i]?.[g.id]??street(g)),0)/BLOCKS.length;const hg=C.hg&&C.hg.day===S.day?1-C.hg.d:1;const up=C.up&&C.up.day===S.day&&t>ctier(C)?1.15:1;
-  return Math.max(1,Math.round(avg*gmult(q)*.5*sp*(1-Math.min(.15,ctr(C)/700))*hg*up))}
+  return Math.max(1,Math.round(avg*gmult(q)*.6*sp*(1-Math.min(.15,ctr(C)/700))*hg*up))}
 function shipRisk(C,g,n){const m=cmode(C);let r=({drop:.01,fly:.04,mail:.06,mule:.12})[m];r+=S.heat/600+(n/ccap(g,C))*.06+(hasT('sketchy')?.03:0)-(hasT('nosey')?.015:0);return Math.min(.5,r)}
 function cartItems(){return S.fc&&S.fc.items?S.fc.items:[]}
 function cartSp(){return cartItems().reduce((a,p)=>a+p.n*G(p.g).sp,0)}
@@ -3329,7 +3329,7 @@ function plugPrice0(kind,g,raw){
   const p=S.prices[S.at][g.id]*(kind==='buy'&&S.gf&&S.gf.plug===S.at?.85:1)*(kind==='buy'&&S.whole&&S.whole[S.at]?.8:1)*gmult(kind==='buy'?o.q:S.q[g.id])*(kind==='buy'?LVL[PINFO[S.at].lvl].mult*(o.tip||1)*D().buy:(1+(S.sk.hustle-3)*.02)*(S.rapOn&&S.rap.fans>=2000?1.05:1)*demand(S.at,g.id));
   const off=kind==='sell'&&!raw&&!PINFO[S.at].carries.includes(g.id)?.7:1;
   let out=Math.round((S.known.includes(S.at)?p:p*(kind==='buy'?1.15:.85))*off);
-  if(kind==='sell'&&!raw){const resale=S.prices[S.at][g.id]*gmult(S.q[g.id])*LVL[PINFO[S.at].lvl].mult*D().buy;out=Math.min(out,Math.round(resale*.88))}
+  if(kind==='sell'&&!raw){const resale=S.prices[S.at][g.id]*gmult(S.q[g.id])*LVL[PINFO[S.at].lvl].mult*D().buy;out=Math.min(out,Math.round(resale*.82))}
   return Math.max(1,out);
 }
 function talk(kind,g){
@@ -3368,6 +3368,8 @@ function buyMore(){if((ptxo().n[S.at]||0)>=PTX_MAX)return false;if(S.over||!PINF
 function close(){$('modal').hidden=true;checkEnd();render();const nw=S&&S.log&&S.log[0];if(nw&&nw!==window._lt&&$('modal').hidden&&!S.over)toast(nw.t);window._lt=nw}
 const crewHere=()=>{const o=S.owner[S.at];return o!=='me'&&o!=='none'};
 function stuckHome(){if(S&&S.grounded>S.day){$('modal').hidden=true;say(`You're grounded. ${S.par?S.par.name:'They'} ain't letting you leave the house. Lay low, go to school, or text your plays to come to you.`);render();return true}return false}
+const plugBud=bi=>({Low:2500,Mid:9000,Big:24000})[PINFO[bi].lvl]||5000;
+function plugUsed(bi){if(!S.pbud||S.pbud.d!==S.day)S.pbud={d:S.day,u:{}};return S.pbud.u[bi]||0}
 function qtyModal(kind,g,to,bl){if(to==='js'&&stuckHome())return;if(kind==='buy'&&frontBlock(S.at))return;
   if(kind==='buy'&&S.recr&&S.recr[S.at]){modal(`<h2>${plugName(S.at)} works for you</h2><p>${plugName(S.at)} signed on to run your traps and doesn't sell to you anymore. ${plugFem(S.at)?'She':'He'} will still buy from you though. Get product from another plug, or serve the Js.</p><div class="btns"><button class="btn go" id="ok">Bet</button></div>`);$('ok').onclick=close;return}
   to=kind==='sell'?(to||'plug'):null;const js=to==='js';
@@ -3376,7 +3378,8 @@ function qtyModal(kind,g,to,bl){if(to==='js'&&stuckHome())return;if(kind==='buy'
   const base=js?Math.round(plugPrice('sell',g,true)*1.4*(is('val')?1.1:1)*(checkDay()?1.15:1)*bluffX):plugPrice(kind,g);
   const card=kind==='buy'?S.fx.discount:S.fx.hype;
   const pdisc=kind==='buy'&&S.pk[S.at]&&S.pk[S.at].disc;
-  const p=Math.round((card?Math.round(base*(kind==='buy'?.7:1.4)):base)*(pdisc?.7:1));
+  const sat=kind==='sell'&&!js?1-.3*Math.min(1,plugUsed(S.at)/plugBud(S.at)):1;
+  const p=Math.max(1,Math.round((card?Math.round(base*(kind==='buy'?.7:1.4)):base)*(pdisc?.7:1)*sat));
   const fl=x=>Math.floor(x/g.step)*g.step;
   const PI=PINFO[S.at],noCarry=kind==='sell'&&!PI.carries.includes(g.id)&&!(S.sellOk&&S.sellOk.day===S.day&&S.sellOk.bi===S.at&&S.sellOk.g===g.id);
   if(noCarry&&!js&&PI.lvl==='Low'){const ref=referral(g);
@@ -3386,7 +3389,9 @@ function qtyModal(kind,g,to,bl){if(to==='js'&&stuckHome())return;if(kind==='buy'
   const stk=stockOf(S.at,g);
   if(kind==='buy'&&stk<g.step){modal(`<h2>${plugName(S.at)} is sold out</h2><p>${plugFem(S.at)?'She':'He'} ain't got no more ${g.name} today. New batch tomorrow.</p><div class="btns"><button class="btn go" id="no">Okay</button></div>`);$('no').onclick=close;return}
   const teenCap=S.age&&S.age<16?(g.unit==='g'?28:g.unit==='pills'?100:4):S.age&&S.age<18?(g.unit==='g'?112:g.unit==='pills'?300:16):1e9;
-  const max=kind==='buy'?fl(Math.min(S.cash/p,(S.cap-used())/g.sp,stk,teenCap)):js?Math.min(S.inv[g.id],fl(jl/p)):S.inv[g.id];
+  const pcl=Math.max(0,plugBud(S.at)-plugUsed(S.at));
+  if(kind==='sell'&&!js&&S.inv[g.id]>0&&pcl<p*g.step*4){modal(`<h2>${plugName(S.at)} is tapped out</h2><p>${plugFem(S.at)?'She':'He'} already spent ${plugFem(S.at)?'her':'his'} money on product today and cannot take any more. Come back tomorrow, or serve the Js.</p><div class="btns"><button class="btn red" id="jj">Serve the Js</button><button class="btn" id="no">Okay</button></div>`);$('jj').onclick=()=>qtyModal(kind,g,'js');$('no').onclick=close;return}
+  const max=kind==='buy'?fl(Math.min(S.cash/p,(S.cap-used())/g.sp,stk,teenCap)):js?Math.min(S.inv[g.id],fl(jl/p)):Math.min(S.inv[g.id],fl(pcl/p));
   if(js&&max<g.step&&S.inv[g.id]>0){modal(`<h2>The Js are tapped out</h2><p>Nobody on ${BLOCKS[S.at]} got money left today. ${checkDay()?'They already spent their checks.':`Checks hit on the first of the month, ${daysToCheck()} day${daysToCheck()===1?'':'s'} from now.`}</p><div class="btns"><button class="btn go" id="pl">Sell to the plug instead</button><button class="btn" id="no">Cancel</button></div>`);$('pl').onclick=()=>qtyModal(kind,g,'plug');$('no').onclick=close;return}
   if(max<g.step){say(kind==='buy'?`Can't afford ${g.name} or your stash is full.`:'Nothing to sell.');$('modal').hidden=true;return render()}
   const talked=S.talked[S.at], known=S.known.includes(S.at), of=S.offer[S.at][g.id], tkey=S.at+g.id;
@@ -3400,7 +3405,7 @@ function qtyModal(kind,g,to,bl){if(to==='js'&&stuckHome())return;if(kind==='buy'
       ${bl==='win'?`<p class="s" style="color:var(--money);font-size:13px">They bought it. The Js are paying top-line prices for your ${grade(S.q[g.id],g)}.</p>`:''}
       ${bl==='lose'?`<p class="s" style="color:var(--blood);font-size:13px">They ain't going for it. "That's ${grade(S.q[g.id],g)} at best." Now they want 20% off.</p>`:''}
       ${noCarry&&!js?`<p class="s" style="color:var(--accent);font-size:13px">${plugName(S.at)} don't carry ${g.name}, so ${plugFem(S.at)?'she':'he'} only pays 30% less to flip it. ${referral(g)||''}</p>`:''}
-      <p class="s" style="color:var(--dim);font-size:13px">${js?`The Js on ${BLOCKS[S.at]} got about ${money(jl)} left to spend today${checkDay()?'. It\'s the first of the month, so they paying 15% more':''}. `:''}${js&&((S.att||[])[S.at]||0)>=30?`<b style="color:var(--blood)">Attention on ${BLOCKS[S.at]} is ${((S.att||[])[S.at]||0)>=60?'high':'up'}, so serving here brings extra heat. Spread it out or let it cool off.</b> `:''}${js?`The Js pay about 40% more, but it's loud: way more heat${crewHere()?(crew(S.owner[S.at]).respect>=60?`. The ${cdef(S.owner[S.at]).name} gave you the green light, but eat too good and they get jealous`:` and the ${cdef(S.owner[S.at]).name} get heated`):''}.`:`Wholesale to the plug. Less money, barely any heat, and it builds trust${crewHere()?` and respect with the ${cdef(S.owner[S.at]).name}`:''}.`}</p>`;
+      <p class="s" style="color:var(--dim);font-size:13px">${js?`The Js on ${BLOCKS[S.at]} got about ${money(jl)} left to spend today${checkDay()?'. It\'s the first of the month, so they paying 15% more':''}. `:''}${js&&((S.att||[])[S.at]||0)>=30?`<b style="color:var(--blood)">Attention on ${BLOCKS[S.at]} is ${((S.att||[])[S.at]||0)>=60?'high':'up'}, so serving here brings extra heat. Spread it out or let it cool off.</b> `:''}${js?`The Js pay about 40% more, but it's loud: way more heat${crewHere()?(crew(S.owner[S.at]).respect>=60?`. The ${cdef(S.owner[S.at]).name} gave you the green light, but eat too good and they get jealous`:` and the ${cdef(S.owner[S.at]).name} get heated`):''}.`:`Wholesale to the plug. ${plugName(S.at)} can only spend about ${money(Math.max(0,plugBud(S.at)-plugUsed(S.at)))} more today and pays less the more you sell. Less money, barely any heat, and it builds trust${crewHere()?` and respect with the ${cdef(S.owner[S.at]).name}`:''}.`}</p>`;
   const qf=window._qf;window._qf=null;modal(`${qf?`<div style="padding:10px 12px;border-radius:6px;font-weight:700;background:${qf.good?'rgba(80,200,120,.15)':'rgba(220,70,70,.15)'};color:${qf.good?'var(--money)':'var(--blood)'}">${qf.t}</div>`:''}${drugPic(g.id,72).replace('flex:none','align-self:center')}<h2>${kind==='buy'?'Buy':'Sell'} ${g.name}${kind==='buy'&&of.v?`: ${of.v}`:kind==='sell'&&S.vn&&S.vn[g.id]?`: ${S.vn[g.id]}`:''}</h2><p>${js?'The Js pay':`${plugName(S.at)}'s price:`} <b>${money(p)}</b> each${card?` <span class="chip here">${kind==='buy'?'Plug Love −30%':'Hype Day +40%'}</span>`:''}</p>${S.deal&&S.deal.bi===S.at&&S.deal.g===g.id&&S.deal.kind===kind&&!js?`<p style="margin:0;font-weight:700;color:${S.deal.ok?'var(--money)':'var(--blood)'}">${plugName(S.at)}: ${S.deal.line||''} <span style="font-weight:400">${S.deal.ok?'Deal locked in at':'Mad price:'} ${money(S.deal.p)} each for the rest of today.</span></p>`:''}${card?`<p class="s" style="margin:0;color:var(--dim)">${kind==='buy'?'Plug Love':'Hype Day'} only works on this one ${kind}. After that the price goes back to normal.</p>`:''}${gl}
     <div class="qty"><span id="qi">${pkg(g,max,46)}</span><input type="range" id="q" min="${g.step}" max="${max}" step="${g.step}" value="${max}"><output id="qo">${amt(max,g)}</output></div><div class="qty"><span class="s" style="color:var(--dim)">Or type it:</span><input type="number" id="qn" min="${g.step}" max="${max}" step="${g.step}" value="${max}" inputmode="decimal" style="width:130px;padding:8px;border-radius:6px;border:1px solid var(--line);background:var(--bg);color:var(--fg);font:inherit"></div>
     <div class="btns">${g.sizes.filter(z=>z[0]<=max||kind==='buy').map(z=>`<button class="btn" data-z="${z[0]}" ${z[0]>max?'disabled':''}>${pkg(g,z[0],24)} ${z[1]}</button>`).join('')}<button class="btn" data-z="${max}">Max</button></div>
@@ -3439,7 +3444,7 @@ function qtyModal(kind,g,to,bl){if(to==='js'&&stuckHome())return;if(kind==='buy'
       if(bl==='win'&&Math.random()<.35){S.rep=Math.max(0,S.rep-1);say('A couple of the Js figured out it wasn\'t really top line. Rep −1.')}
       if(js&&((S.att||[])[S.at]||0)>=30&&Math.random()<Math.min(.06,(((S.att||[])[S.at]||0)-20)/1000)){if(S.rep>=60){S.heat=Math.min(100,S.heat+5);$('modal').hidden=true;modal(`<h2 style="color:var(--money)">Somebody looked out</h2><p>Right before you served, one of the homies pulled you to the side: "That new J by the store? That's twelve. Don't touch him." Your rep got you that heads up.</p><div class="btns"><button class="btn go" id="ok">Good looking</button></div>`);$('ok').onclick=close;say('A homie warned you a J was undercover. Didn\'t serve him.');return}
         busted();return lickDone('That J was twelve','One of the Js you served was undercover. Nobody warned you. People who got rep get a heads up.',false,true)}
-      S.inv[g.id]-=n;S.cash+=got;if(js){S.jsLeft[S.at]=Math.max(0,jsLeftAt(S.at)-got);if(Math.random()<.15)addCusto(pick(CNAMES),g.id,'block')}const profit=got-S.paid[g.id]*n;S.st.sold+=n*g.sp*5;srvTick(n,g);if(profit>0){S.st.profit+=profit;addXP(Math.floor(profit/500))}
+      S.inv[g.id]-=n;S.cash+=got;if(!js){plugUsed(S.at);S.pbud.u[S.at]=(S.pbud.u[S.at]||0)+got;if(got>6000){S.heat=Math.min(100,S.heat+Math.min(12,Math.floor(got/6000)));say('That much weight moving draws attention. Heat up.')}}if(js){S.jsLeft[S.at]=Math.max(0,jsLeftAt(S.at)-got);if(Math.random()<.15)addCusto(pick(CNAMES),g.id,'block')}const profit=got-S.paid[g.id]*n;S.st.sold+=n*g.sp*5;srvTick(n,g);if(profit>0){S.st.profit+=profit;addXP(Math.floor(profit/500))}
       say(`${js?'Served the Js':'Sold '+plugName(S.at)}: ${amt(n,g)} of ${g.name} for ${money(got)} (${profit>=0?'+':''}${money(profit)}).`);
       if(fk){S.fkKnown=S.fkKnown||{};if(S.fake[g.id]>0)S.fkKnown[g.id]=1;S.rep=Math.max(0,S.rep-3);say(`${fk} of that ${g.name} was ${FAKE[g.id]}. Customers barely paid and your rep took a hit.`)}
       if(S.inv[g.id]===0){S.paid[g.id]=0;S.q[g.id]=50;S.fake[g.id]=0}
