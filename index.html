@@ -2566,7 +2566,7 @@ function lick(k){if(stuckHome())return;if((S.rob.fat||0)>=7){say('Everybody on t
         alarmRun('He fought back',`The homeowner came out swinging. −${dmg} health. You gotta go.`,'You got away','Back out the door and gone.')});
       run(6,false)};
     return}
-  if(k==='strap'){if(S.age&&S.age<18){modal(`<h2>Not yet</h2><p>You too young to be running up on people with straps. Wait till you 18.</p><div class="btns"><button class="btn go" id="ok">Bet</button></div>`);$('ok').onclick=close;return}
+  if(k==='strap'){if(S.age&&S.age<16){modal(`<h2>Not yet</h2><p>You too young to be running up on people with straps. Wait till you 16.</p><div class="btns"><button class="btn go" id="ok">Bet</button></div>`);$('ok').onclick=close;return}
     S.sp=S.sp||{};const NM=['Tay','Lil Ced','Boog','Rello','Big Quan','Kodie','Smoove','JJ','Pook','Dirty Red'],nm=pick(NM),P=S.sp[nm]=S.sp[nm]||{trust:0,burned:0};
     const pool=['smitty','glizzy','glizzy','revolver','shotgun','switchy','micro','micro','baby','rifle','draco','draco'];const g=P.g||(P.g=pick(pool)),G2=GUNS[g],fa=P.fa!==undefined?P.fa:(P.fa=AUTOK.includes(g)&&Math.random()<.3),cash=rnd(800,5000);
     const slip=Math.random()<.15+S.sk.smarts*.05+(hasT('nosey')?.2:0),base=Math.round(14+G2.str*1.6+(fa?4:0)),theirs=Math.max(8,Math.round(base*(slip?.7:1)-P.trust*.15));
@@ -2952,7 +2952,7 @@ function gunBonus(){return Math.max(0,...Object.keys(S.guns||{}).map(gStr))}
 function paneGuns(){const here=S.at===2;if(!here)return '';
   let h=`<div class="sec">Gun dealer · Unc</div><div class="row"><img src="${UNCPIC}" alt="" style="width:56px;height:56px;border-radius:6px;object-fit:cover;flex:none"><div class="info" style="min-width:0"><div class="t">Unc ${here?'<span class="chip here">Here</span>':''}</div><div class="s">Sells out the back of the tire shop on The Bottom. Your best gun adds to your strength in every fight. Get caught with one and you lose it, plus it's another charge.</div></div></div>`;
   if(!here)return h+`<div class="row"><div class="info"><div class="s">Go to The Bottom to buy from Unc.${Object.keys(S.guns||{}).length?` You're carrying: ${Object.keys(S.guns).map(k=>GUNS[k].name).join(', ')}.`:''}</div></div></div>`;
-  if(S.age&&S.age<18)return h+`<div class="row"><div class="info"><div class="s">"Come back when you grown." Unc won't sell to you until 18.</div></div></div>`;
+  if(S.age&&S.age<16)return h+`<div class="row"><div class="info"><div class="s">"Come back when you grown." Unc won't sell to you until 16.</div></div></div>`;
   const g=S.guns||{},semi=g.glizzy?'glizzy':null,fee=2800,frt=g.smitty&&!(S.auto||{}).smitty;
   h+=swIn()?`<div class="row" style="padding:8px 12px;border-color:var(--accent);flex-wrap:wrap;gap:6px"><div class="info" style="flex:1 1 220px;min-width:0"><div class="t">Unc got switches and FRTs in <span class="chip here">Rare</span></div><div class="s">"Don't ask where I got 'em. They ain't gon' be here long."${semi&&!g.switchy?` Unc can put one on your ${GUNS[semi].name} for a healthy fee.`:''}${frt?' He got an FRT for your Smitty too.':''}</div></div>${semi&&!g.switchy?`<button class="btn green" data-a="swput" data-k="${semi}" ${S.cash>=fee?'':'disabled'}>Switch on the Glizzy ${money(fee)}</button>`:''}${frt?`<button class="btn green" data-a="frt" ${S.cash>=2500?'':'disabled'}>FRT on the Smitty $2,500</button>`:''}</div>`
     :`<div class="row" style="padding:8px 12px"><div class="info"><div class="s">No switches or FRTs right now. Unc only gets 'em in every once in a while. Check back.</div></div></div>`;
