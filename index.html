@@ -392,10 +392,10 @@ function render(){if(S&&S.pr)tab='prison';else if(S&&tab==='prison')tab='block';
    $('owner').innerHTML+=`<div class="ai" style="font-size:11px;line-height:1.35;margin-top:4px;color:var(--fg);opacity:.85;text-align:right;white-space:nowrap">Attention <b style="color:${at>=60?'var(--blood)':at>=30?'var(--accent)':'var(--fg)'}">${at>=60?'High':at>=30?'Some':'Low'}</b><br>Js got ${money(jl)} · ${JSTAG(S.at)}${cr?`<br>${cdef(o).name}: ${cr.ally||S.gang===o?'with you':cr.beef>=50?'want smoke':cr.respect>=60?'green light':'watching you'}`:''}</div>`}
   document.querySelectorAll('.tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.t===tab));{const n=[...document.querySelectorAll('.tabs button')].filter(b=>!b.hidden).length;document.querySelector('.tabs').style.setProperty('--tc',n<=6?n:Math.ceil(n/2))}
   document.querySelector('.tabs').style.display=S.pr?'none':'';
-  {const nreq=(S.texts||[]).length+(S.inbox||[]).filter(m=>m.d===S.day).length;$('phtab').textContent=nreq?`📱 Phone ${nreq}`:'📱 Phone';}
-  $('cardtab').textContent=S.hand.length?`🃏 Cards ${S.hand.length}`:'🃏 Cards';
+  try{const nreq=(S.texts||[]).length+(S.inbox||[]).filter(m=>m&&m.d===S.day).length;$('phtab').textContent=nreq?`📱 Phone ${nreq}`:'📱 Phone';}catch(e){console.error('phtab',e)}
+  try{$('cardtab').textContent=(S.hand||[]).length?`🃏 Cards ${S.hand.length}`:'🃏 Cards'}catch(e){console.error('cardtab',e)}
   const FXN={discount:'Plug Love',hype:'Hype Day',ride:'Ride or Die',lawyer:'Lawyer'};
-  $('fx').innerHTML=Object.keys(S.fx).filter(k=>S.fx[k]).map(k=>`<span class="chip here">Active: ${FXN[k]}</span>`).join('');
+  $('fx').innerHTML=Object.keys(S.fx||{}).filter(k=>S.fx[k]).map(k=>`<span class="chip here">Active: ${FXN[k]}</span>`).join('');
   let _ph;try{_ph={sch:paneSchool,rap:paneRap,rob:paneRob,sp:paneSports,phone:panePhone,block:()=>paneBlock()+paneGuns()+(()=>{try{return x8On()?goalHTML():''}catch(e){return ''}})(),move:paneMove,beef:paneBeef,crew:paneCrew,cards:paneCards,prison:panePrison}[tab]()}catch(e){console.error('tab',tab,e);_ph=`<div class="row"><div class="info"><div class="t" style="color:var(--blood)">This tab hit an error</div><div class="s">${esc(e.message||'')} (tell Euro: ${esc(tab)})</div></div></div>`}
   $('pane').innerHTML=_ph;
   $('log').innerHTML=S.log.map(l=>`<p><span class="d">D${l.d}</span>${l.t}</p>`).join('');
