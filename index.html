@@ -759,7 +759,7 @@ function prAct(a,el){const R=S.pr;if(!R)return;const i=+el.dataset.i,n=R.npc[i],
 }
 /* ---------- crew v2: members, loyalty, ranks, specialties, routes, proxy shooter ---------- */
 const CMSPEC={trap:{n:'Trapper',d:'Moves product fast.'},rob:{n:'Robber',d:'Good on licks and plug robberies.'},scam:{n:'Scammer',d:'Smooth on cons and fake sales.'},shoot:{n:'Shooter',d:'Steady hand. Best one to take a shot for you.'},look:{n:'Lookout',d:'Keeps heat down and spots trouble.'}};
-const CRANK={sol:{n:'Soldier',d:'Does the work and follows orders.'},rh:{n:'Right Hand Man',d:'Your number two. Boosts every route, adds strength, and keeps the block paying while you are locked up. Only one.'},enf:{n:'Enforcer',d:'Keeps the crew in line, slows loyalty from fading and adds muscle. Only one.'}};
+const CRANK={sol:{n:'Soldier',d:'Does the work and follows orders.'},rh:{n:'Right Hand Man',d:'Your number two. Boosts every route, adds strength, and keeps the block paying while you are locked up. Only one.'},enf:{n:'Enforcer',d:'Keeps the crew in line, slows loyalty from fading and adds muscle. Only one.'},stash:{n:'Stash House Leader',d:'Runs your stash spot. Keeps the house quiet so your heat drops faster every day. Only one.'},cap:{n:'Block Captain',d:'Runs the corner for you. Brings in money from your turf every few days. Only one.'}};
 const CWANT={money:'a bigger cut',respect:'more respect',work:'more work, he is bored',spot:'a better spot on the block'};
 const CROUTE={trap:{n:'Trap',sk:'trap',t:'worked the corner'},rob:{n:'Rob',sk:'rob',t:'hit a lick'},scam:{n:'Scam',sk:'scam',t:'ran a scam'},guard:{n:'Guard',sk:'look',t:'watched the block'}};
 const CNEED={fight:'is in a jam. Some dudes are trying to jump him.',debt:'owes somebody and they are pressing him.',cops:'got stopped with something on him and needs help.'};
@@ -789,6 +789,9 @@ function cmResolve(m){const r=m.busy.r,R=CROUTE[r],s=m.sk[R.sk],lv=1+Math.min(10
   if(m.loy<30&&Math.random()<.35){pay=Math.round(pay*.5);say(`${m.name} came up short. You think he skimmed.`)}
   S.cash+=pay;S.heat=Math.min(100,S.heat+({trap:3,rob:8,scam:5})[r]);m.trust=Math.min(100,m.trust+2);crewGain(m,R.sk);say(`${m.name} ${R.t} and came back with ${money(pay)}.`)}
 function crewDay(){if(!S.soldiers&&!(S.crewM||[]).length)return;const M=crewList(),enf=crewRank('enf'),rh=crewRank('rh');
+  const sh=crewRank('stash'),cp=crewRank('cap');
+  if(sh&&sh.loy>=30)S.heat=Math.max(0,S.heat-2);
+  if(cp&&cp.loy>=30){const turf=(S.owner||[]).filter(o=>o==='me').length;cp.acc=(cp.acc||0)+Math.round((60+turf*70+rnd(0,80))*(.5+cp.loy/200));if(S.day%4===0&&cp.acc>0){S.cash+=cp.acc;say(`${cp.name} ran the corner and brought back ${money(cp.acc)}.`);cp.acc=0}}
   for(let i=M.length-1;i>=0;i--){const m=M[i];if(!m)continue;
     if(m.busy&&S.day>=m.busy.until)cmResolve(m);
     if(S.day-m.last>=4&&(S.day-m.last)%3===1&&m!==enf){m.loy=Math.max(0,m.loy-(enf?1:2))}
@@ -802,13 +805,13 @@ function crewDay(){if(!S.soldiers&&!(S.crewM||[]).length)return;const M=crewList
 }
 function crewHTML(){const M=crewList();if(!M.length)return `<div class="row"><div class="info"><div class="t">No crew yet</div><div class="s">Hire soldiers below, or ask a close friend to join your gang. They show up here with their own skills, loyalty and trust.</div></div></div>`;
   const rh=M.find(m=>m.rank==='rh'),enf=M.find(m=>m.rank==='enf');
-  let h=`<div class="row"><div class="info"><div class="t">Your crew · ${M.length}</div><div class="s">Right Hand Man: ${rh?rh.name:'none'} · Enforcer: ${enf?enf.name:'none'}. Build loyalty and trust, then promote. Send them out on routes that fit their skills.</div></div></div>`;
+  let h=`<div class="row"><div class="info"><div class="t">Your crew · ${M.length}</div><div class="s">Right Hand Man: ${rh?rh.name:'none'} · Enforcer: ${enf?enf.name:'none'} · Stash House: ${(M.find(m=>m.rank==='stash')||{name:'none'}).name} · Block Captain: ${(M.find(m=>m.rank==='cap')||{name:'none'}).name}. Build loyalty and trust, then promote. Send them out on routes that fit their skills.</div></div></div>`;
   h+=M.map((m,i)=>{const R=CRANK[m.rank],sp=crewBest(m),hurt=m.hurt>=S.day,on=m.busy;
-    const col=m.rank==='rh'?'var(--accent)':m.rank==='enf'?'var(--blood)':'var(--line)';
+    const col=m.rank==='rh'?'var(--accent)':m.rank==='enf'?'var(--blood)':m.rank!=='sol'?'var(--money)':'var(--line)';
     const needTxt=m.need?`<div class="s" style="color:var(--blood);width:100%"><b>${m.name} ${CNEED[m.need.t]}</b> Help him by ${dayTxt(m.need.exp)}.</div><div class="btns" style="width:100%"><button class="btn go" data-a="cmback" data-i="${i}" ${m.need.c&&S.cash<m.need.c?'disabled':''}>${m.need.t==='fight'?'Show up and back him up':'Handle it '+money(m.need.c)}</button><button class="btn" data-a="cmleave" data-i="${i}">Let him handle it</button></div>`:'';
     const st=on?`Out on ${CROUTE[on.r].n.toLowerCase()} until ${dayTxt(on.until)}`:hurt?`Laid up until ${dayTxt(m.hurt)}`:'Ready';
     const can=!on&&!hurt;
-    const pt=m.rank==='rh'?'rh':m.rank==='enf'?'enf':({trap:'trap',rob:'rob',shoot:'shoot',look:'look',scam:'fraud'})[sp]||'trap';
+    const pt=m.rank==='rh'?'rh':m.rank==='enf'?'enf':m.rank==='stash'?'hitter':m.rank==='cap'?'trap':({trap:'trap',rob:'rob',shoot:'shoot',look:'look',scam:'fraud'})[sp]||'trap';
     return `<div class="row" style="flex-wrap:wrap;border-color:${col}">${ART2[pt]?`<img src="${ART2[pt]}" alt="" style="width:72px;height:72px;border-radius:8px;object-fit:cover;flex:0 0 72px">`:''}<div class="info" style="flex:1 1 220px;min-width:0"><div class="t">${esc(m.name)} <span class="chip ${m.rank==='sol'?'':'mine'}">${R.n}</span> <span class="chip">${CMSPEC[sp].n}</span></div>
       <div class="s" style="font-style:italic">${R.d}</div>
       <div class="s">Loyalty ${m.loy}/100</div><div class="bar"><i style="width:${m.loy}%;background:var(--money)"></i></div>
@@ -818,7 +821,7 @@ function crewHTML(){const M=crewList();if(!M.length)return `<div class="row"><di
       ${needTxt}
       <div class="btns" style="width:100%"><button class="btn green" data-a="cmchill" data-i="${i}">Chill</button><button class="btn green" data-a="cmpay" data-i="${i}" ${S.cash>=300?'':'disabled'}>Pay him $300</button><button class="btn" data-a="cmtalk" data-i="${i}">Talk</button></div>
       <div class="btns" style="width:100%">${Object.keys(CROUTE).map(k=>`<button class="btn" data-a="cmsend" data-i="${i}" data-k="${k}" ${can?'':'disabled'}>${CROUTE[k].n} · ${crewFit(m,k)}</button>`).join('')}</div>
-      <div class="btns" style="width:100%">${m.rank!=='rh'?`<button class="btn" data-a="cmrank" data-i="${i}" data-k="rh">Make Right Hand</button>`:''}${m.rank!=='enf'?`<button class="btn" data-a="cmrank" data-i="${i}" data-k="enf">Make Enforcer</button>`:''}${m.rank!=='sol'?`<button class="btn" data-a="cmrank" data-i="${i}" data-k="sol">Demote</button>`:''}<button class="btn red" data-a="cmfire" data-i="${i}">Cut loose</button></div></div>`}).join('');
+      <div class="btns" style="width:100%">${m.rank!=='rh'?`<button class="btn" data-a="cmrank" data-i="${i}" data-k="rh">Make Right Hand</button>`:''}${m.rank!=='enf'?`<button class="btn" data-a="cmrank" data-i="${i}" data-k="enf">Make Enforcer</button>`:''}${m.rank!=='stash'?`<button class="btn" data-a="cmrank" data-i="${i}" data-k="stash">Make Stash Leader</button>`:''}${m.rank!=='cap'?`<button class="btn" data-a="cmrank" data-i="${i}" data-k="cap">Make Block Captain</button>`:''}${m.rank!=='sol'?`<button class="btn" data-a="cmrank" data-i="${i}" data-k="sol">Demote</button>`:''}<button class="btn red" data-a="cmfire" data-i="${i}">Cut loose</button></div></div>`}).join('');
   return h}
 function crewAct(a,el){const M=crewList(),i=+el.dataset.i,m=M[i];if(!m&&a!=='cmx')return;
   const done=(t,x)=>{modal(`<h2>${t}</h2><p>${x}</p><div class="btns"><button class="btn go" id="ok">Continue</button></div>`);$('ok').onclick=()=>{close();render()}};
