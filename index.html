@@ -1361,11 +1361,13 @@ function freshCands(){if(S.candDay>S.day-7&&S.cands.length)return;S.candDay=S.da
     const hustle=rnd(2,9),loyal=rnd(2,9);S.cands.push({id:name+S.day,name,hustle,loyal,wage:40+hustle*25+loyal*10})}}
 const myBlock=bi=>S.owner[bi]==='me'||S.owner[bi]==='none';
 const wCap=w=>[0,40,90,160][wLv(w)];
+const WFEM=['Rosa','Kim','Lupe','Kesha','Nae Nae','Tink','Mya','Bri','Keke','Trina','Mari','Jada','Nae','Lexi','Tiana','Mei','Linh'];
+const wHer=w=>!!w&&(w.f||WFEM.includes(w.name));
 const wStashUsed=w=>GOODS.reduce((a,g)=>a+((w.stash&&w.stash[g.id])||0)*g.sp,0);
 function wStashTxt(w){const e=GOODS.filter(g=>w.stash&&w.stash[g.id]>0).map(g=>`${amt(w.stash[g.id],g)} ${g.name}`);return e.length?e.join(', '):'nothing'}
 function wStashModal(i){const w=S.workers[i];if(!w)return;w.stash=w.stash||{};const free=Math.max(0,wCap(w)-wStashUsed(w));
-  modal(`<h2>${w.name}'s stash</h2><p>Level ${wLv(w)} workers can hold ${wCap(w)} space. He has ${Math.round(wStashUsed(w))} used. Product you front him leaves your pockets, so it frees your carry space, but a low loyalty worker can skim it.</p>
-  <div class="btns" style="flex-direction:column;align-items:stretch">${GOODS.filter(g=>S.inv[g.id]>0||(w.stash[g.id]||0)>0).map(g=>{const can=Math.min(S.inv[g.id],Math.floor(free/g.sp*(g.step<1?2:1))/(g.step<1?2:1));return `<div class="row" style="padding:6px 10px"><div class="info"><div class="t">${g.name}</div><div class="s">You ${amt(S.inv[g.id],g)} · him ${amt(w.stash[g.id]||0,g)}</div></div><button class="btn go" data-a="wgive" data-i="${i}" data-g="${g.id}" data-m="half" ${can>0?'':'disabled'}>Give half</button><button class="btn go" data-a="wgive" data-i="${i}" data-g="${g.id}" data-m="all" ${can>0?'':'disabled'}>Give all</button><button class="btn" data-a="wtake" data-i="${i}" data-g="${g.id}" ${(w.stash[g.id]||0)>0?'':'disabled'}>Take back</button></div>`}).join('')||'<p class="s">You have nothing to front.</p>'}<button class="btn" id="no">Done</button></div>`);$('no').onclick=()=>{close();render()}}
+  modal(`<h2>${w.name}'s stash</h2><p>Level ${wLv(w)} workers can hold ${wCap(w)} space. ${wHer(w)?'She':'He'} has ${Math.round(wStashUsed(w))} used. Product you front ${wHer(w)?'her':'him'} leaves your pockets, so it frees your carry space, but a low loyalty worker can skim it.</p>
+  <div class="btns" style="flex-direction:column;align-items:stretch">${GOODS.filter(g=>S.inv[g.id]>0||(w.stash[g.id]||0)>0).map(g=>{const can=Math.min(S.inv[g.id],Math.floor(free/g.sp*(g.step<1?2:1))/(g.step<1?2:1));return `<div class="row" style="padding:6px 10px"><div class="info"><div class="t">${g.name}</div><div class="s">You ${amt(S.inv[g.id],g)} · ${wHer(w)?'her':'him'} ${amt(w.stash[g.id]||0,g)}</div></div><button class="btn go" data-a="wgive" data-i="${i}" data-g="${g.id}" data-m="half" ${can>0?'':'disabled'}>Give half</button><button class="btn go" data-a="wgive" data-i="${i}" data-g="${g.id}" data-m="all" ${can>0?'':'disabled'}>Give all</button><button class="btn" data-a="wtake" data-i="${i}" data-g="${g.id}" ${(w.stash[g.id]||0)>0?'':'disabled'}>Take back</button></div>`}).join('')||'<p class="s">You have nothing to front.</p>'}<button class="btn" id="no">Done</button></div>`);$('no').onclick=()=>{close();render()};$('mcard').querySelectorAll('[data-a]').forEach(b=>b.onclick=ev=>{ev.stopPropagation();act(b.dataset.a,b)})}
 function wGive(i,gid,m){const w=S.workers[i];if(!w)return;const g=G(gid);w.stash=w.stash||{};w.sq=w.sq||{};const free=Math.max(0,wCap(w)-wStashUsed(w));let n=m==='half'?S.inv[gid]/2:S.inv[gid];n=Math.min(n,free/g.sp);n=g.step<1?Math.floor(n*2)/2:Math.floor(n);if(n<=0){say(`${w.name} can't hold any more.`);return wStashModal(i)}
   const old=w.stash[gid]||0;w.sq[gid]=old?Math.round((w.sq[gid]*old+S.q[gid]*n)/(old+n)):S.q[gid];w.stash[gid]=old+n;S.inv[gid]-=n;if(S.inv[gid]<=0){S.inv[gid]=0;S.paid[gid]=0;S.fake[gid]=0}wStashModal(i)}
 function wTake(i,gid){const w=S.workers[i];if(!w||!w.stash||!w.stash[gid])return;const g=G(gid),n=w.stash[gid];if(used()+n*g.sp>S.cap+.01){say("You don't have room to carry that back.");return wStashModal(i)}
@@ -1382,7 +1384,7 @@ function runTraps(){
       const fk=ws?0:Math.min(S.fake[g.id],Math.round(n*S.fake[g.id]/have));S.fake[g.id]-=fk;
       const p=S.prices[bi]?.[g.id]??street(g);const each=p*gmult(ws?(w.sq[gid]||S.q[g.id]):S.q[g.id])*.8*(rankAt(3)?1.15:1);
       let take=Math.round((n-fk)*each+fk*each*.15);if(ws){w.stash[gid]-=n;if(w.stash[gid]<=0)w.stash[gid]=0}else{S.inv[g.id]-=n;if(S.inv[g.id]<=0){S.inv[g.id]=0;S.paid[g.id]=0;S.fake[g.id]=0}}
-      if(!is('val')&&Math.random()<(10-w.loyal)*.02){const stole=Math.round(take*.3);take-=stole;say(`${w.name} came up short ${money(stole)} at the ${BLOCKS[bi]} trap. Watch him.`)}
+      if(!is('val')&&Math.random()<(10-w.loyal)*.02){const stole=Math.round(take*.3);take-=stole;say(`${w.name} came up short ${money(stole)} at the ${BLOCKS[bi]} trap. Watch ${wHer(w)?'her':'him'}.`)}
       w.held=(w.held||0)+take;S.st.sold+=n*g.sp*5;worked++;
       say(`${w.name} moved ${amt(n,g)} of ${g.name} out the ${BLOCKS[bi]} trap: ${money(take)} waiting for you to collect.`)});
     if(worked){S.heat=Math.min(100,S.heat+Math.ceil(w.hustle/3));const l0=wLv(w);w.sales=(w.sales||0)+1;
@@ -1391,7 +1393,7 @@ function runTraps(){
     if(w.loyal<=3&&Math.random()<.04){S.heat=Math.min(100,S.heat+20);say(`Word is ${w.name} been talking to twelve. Heat +20.`)}
   });
   S.workers.slice().forEach(w=>{const pay=wPay(w),pc=w.pct||100,gone=()=>{if(w.from!==undefined&&S.recr)delete S.recr[w.from];S.workers=S.workers.filter(x=>x!==w);Object.values(S.traps).forEach(t=>{if(t.w===w.id)t.w=null})};
-    S.cash-=pay;if(S.cash<0){S.cash+=pay;S.cash+=(w.held||0);gone();say(`Couldn't pay ${w.name}. He quit and handed back the ${money(w.held||0)} he was holding.`);return}
+    S.cash-=pay;if(S.cash<0){S.cash+=pay;S.cash+=(w.held||0);gone();say(`Couldn't pay ${w.name}. ${wHer(w)?'She':'He'} quit and handed back the ${money(w.held||0)} he was holding.`);return}
     if(pc<75&&w.loyal>1&&Math.random()<.3){w.loyal--;say(`${w.name} feels underpaid. Loyalty is dropping.`)}
     else if(pc>=140&&w.loyal<10&&Math.random()<.2){w.loyal++;say(`${w.name} loves working for you. Loyalty went up.`)}
     if(pc<=60&&w.loyal<=2&&Math.random()<.2){S.cash+=(w.held||0);gone();say(`${w.name} quit. The pay was disrespectful.`);return}
