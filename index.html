@@ -559,7 +559,7 @@ function paneFight(){const f=fsState(),l=fsLvl(),x=f.xp[f.style]||0,nx=FSLV[l];
    <div class="btns" style="margin-top:4px">${Object.keys(FSN).map(k=>`<button class="btn ${k===f.style?'go':''}" data-a="fstyle" data-k="${k}" ${k===f.style?'disabled':''}>${FSN[k]} L${fsLvl(k)}</button>`).join('')}</div><div class="s" style="color:var(--dim)">Pick the style you fight with. Each one levels up separately when you win fights.</div>`}
 function paneBeef(){
   const jb=['Trap','Family','Homies','Girl','Crews'].map(k=>`<button class="btn" style="padding:6px 10px;font-size:12px" data-jump="${k}">${k}</button>`).join('');
-  return `<div class="jump" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:4px">${jb}</div>`+paneFight()+paneTraps()+paneFamily()+paneHome()+paneFriends()+paneGF()+paneBeefCore();
+  return `<div class="jump" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:4px">${jb}</div>`+paneFight()+paneTraps()+paneFamily()+paneHome()+paneFriends()+paneGF()+paneBeefCore()+sf(ctHTML);
 }
 function paneBeefCore(){
   let h=`<div class="sec">Your strength: ${myStr()}</div><div class="row"><div class="info"><div class="t">Firepower ${firepower()}</div><div class="s">${canWar()?'You strapped and got shooters. You can go to war for a block.':`Taking a block takes guns and people. ${warNeed()}.`}</div></div></div>`+paneGang();
@@ -900,11 +900,12 @@ function ctSt(){return S.ct=S.ct||{board:null,out:[],me:null,done:0}}
 function ctEn(c){return Math.round(c.str*.8+8)}
 function ctBoard(){const T=ctSt();if(!T.board||T.board.d!==S.day){const cs=(S.crews||[]).filter(c=>c.alive&&!c.ally&&c.id!==S.gang);T.board={d:S.day,list:cs.sort(()=>Math.random()-.5).slice(0,3).map(c=>({c:c.id,pay:Math.round((2200+c.str*70+rnd(0,1500))/50)*50}))}}return T.board.list}
 function ctHTML(){if(!ctOn())return '';const T=ctSt(),B=ctBoard(),live=(S.crews||[]).filter(c=>c.alive&&!c.ally&&c.id!==S.gang);
-  let h=`<div class="sec">Contracts${T.done?` · ${T.done} filled`:''}</div>${a2i('fixer',300)}`;
+  let h=`<div class="sec">Hits for hire${T.done?` · ${T.done} filled`:''}</div>${a2i('fixer',300)}`;
   if(T.me)h+=`<div class="row"><div class="info"><div class="t" style="color:var(--blood)">There is a contract on you</div><div class="s">The ${cdef(T.me.c).name} paid for it. Hitters are looking. They find you by day ${T.me.due}.</div></div></div>`;
   T.out.forEach(o=>{h+=`<div class="row"><div class="info"><div class="t">Contract out on the ${cdef(o.c).name}</div><div class="s">Your guy handles it by day ${o.due}.</div></div></div>`});
-  h+=B.map((o,i)=>`<div class="row"><div class="info"><div class="t">Take a contract · ${cdef(o.c).name}</div><div class="s">A fixer wants one of theirs handled. Pays ${money(o.pay)}. You play the shootout. Heat +18 and their beef with you goes up.</div></div><button class="btn red" data-a="ctake" data-i="${i}" ${T.board.took===i?'disabled':''}>${T.board.took===i?'Done today':'Take it'}</button></div>`).join('');
-  if(live.length)h+=a2i('hitter',300);h+=live.map(c=>{const cost=3000+c.str*60;return `<div class="row"><div class="info"><div class="t">Put a contract on the ${cdef(c.id).name}</div><div class="s">Pay a hitter to weaken them. About 70% it works. If it goes wrong, he talks and your heat jumps. Costs ${money(cost)}.</div></div><button class="btn" data-a="ctput" data-k="${c.id}" ${S.cash<cost||T.out.some(o=>o.c===c.id)?'disabled':''}>${money(cost)}</button></div>`}).join('');
+  if(!B.length)h+=`<div class="row"><div class="info"><div class="t">Ask for a hit</div><div class="s">The fixer has nothing for you right now. Check back tomorrow.</div></div></div>`;
+  h+=B.map((o,i)=>`<div class="row"><div class="info"><div class="t">Ask for a hit · ${cdef(o.c).name}</div><div class="s">A fixer wants one of theirs handled. Pays ${money(o.pay)}. You play the shootout. Heat +18 and their beef with you goes up.</div></div><button class="btn red" data-a="ctake" data-i="${i}" ${T.board.took===i?'disabled':''}>${T.board.took===i?'Done today':'Take it'}</button></div>`).join('');
+  if(live.length)h+=a2i('hitter',300);h+=live.map(c=>{const cost=3000+c.str*60;return `<div class="row"><div class="info"><div class="t">Pay for a hit on the ${cdef(c.id).name}</div><div class="s">Pay a hitter to weaken them. About 70% it works. If it goes wrong, he talks and your heat jumps. Costs ${money(cost)}.</div></div><button class="btn" data-a="ctput" data-k="${c.id}" ${S.cash<cost||T.out.some(o=>o.c===c.id)?'disabled':''}>${money(cost)}</button></div>`}).join('');
   return h}
 function ctAct(a,el){const T=ctSt();
   if(a==='ctake'){const i=+el.dataset.i,o=ctBoard()[i];if(!o||T.board.took!=null)return;if(!spendEn(15))return;const c=crew(o.c);T.board.took=i;
@@ -1171,7 +1172,6 @@ function paneCrew(){
     <button class="btn green" data-a="hire" ${S.cash>=hireCost()?'':'disabled'}>Hire ${money(hireCost())}</button></div>
    ${sf(crewHTML)}
    ${(()=>{try{return x8On()?rankHTML():''}catch(e){return ''}})()}
-   ${sf(ctHTML)}
    ${sf(shHTML)}
    ${sf(poHTML)}
    ${sf(twHTML)}
