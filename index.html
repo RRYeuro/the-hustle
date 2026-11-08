@@ -395,7 +395,8 @@ function render(){if(S&&S.pr)tab='prison';else if(S&&tab==='prison')tab='block';
   $('cardtab').textContent=S.hand.length?`🃏 Cards ${S.hand.length}`:'🃏 Cards';
   const FXN={discount:'Plug Love',hype:'Hype Day',ride:'Ride or Die',lawyer:'Lawyer'};
   $('fx').innerHTML=Object.keys(S.fx).filter(k=>S.fx[k]).map(k=>`<span class="chip here">Active: ${FXN[k]}</span>`).join('');
-  $('pane').innerHTML={sch:paneSchool,rap:paneRap,rob:paneRob,sp:paneSports,phone:panePhone,block:()=>paneBlock()+paneGuns()+(()=>{try{return x8On()?goalHTML():''}catch(e){return ''}})(),move:paneMove,beef:paneBeef,crew:paneCrew,cards:paneCards,prison:panePrison}[tab]();
+  let _ph;try{_ph={sch:paneSchool,rap:paneRap,rob:paneRob,sp:paneSports,phone:panePhone,block:()=>paneBlock()+paneGuns()+(()=>{try{return x8On()?goalHTML():''}catch(e){return ''}})(),move:paneMove,beef:paneBeef,crew:paneCrew,cards:paneCards,prison:panePrison}[tab]()}catch(e){console.error('tab',tab,e);_ph=`<div class="row"><div class="info"><div class="t" style="color:var(--blood)">This tab hit an error</div><div class="s">${esc(e.message||'')} (tell Euro: ${esc(tab)})</div></div></div>`}
+  $('pane').innerHTML=_ph;
   $('log').innerHTML=S.log.map(l=>`<p><span class="d">D${l.d}</span>${l.t}</p>`).join('');
   if(S.pr){$('here').textContent='Locked up · '+S.pr.place}
   missionUI();save();sndWatch();
@@ -990,6 +991,7 @@ function launDay(){cleanCash();const d=dirtyCash();
   if(d>=20000&&Math.random()<(.02+Math.min(.04,(d-20000)/500000))*(S.lawPay?.5:1)){const lost=Math.round(d*.2);S.cash-=lost;cleanCash();S.heat=Math.min(100,S.heat+8);say(`Investigators froze part of your stash of street money. You lost ${money(lost)}.`)}}
 /* ---------- v189 systems: rivals, case, plug wars, hit list, relationships, family, health, legit, rankings, goals, badges ---------- */
 const X8=()=>S.x8=S.x8||{};
+const sf=f=>{try{return f()}catch(e){try{console.error('section',f.name,e);window._secErr=(window._secErr||[]).concat((f.name||'?')+': '+e.message)}catch(_){}return `<div class="row"><div class="info"><div class="s" style="color:var(--blood)">${esc(f.name||'section')} hit an error: ${esc(e.message||'')}</div></div></div>`}};
 const x8On=()=>!window.noX8&&S&&!S.over&&!S.pr&&!S.inJail&&(!S.age||S.age>=14);
 function x8Modal(img,title,body,btns){if(!$('modal').hidden)return false;
   modal(`${img?a2(img,340):''}<h2>${title}</h2><p>${body}</p><div class="btns" style="flex-direction:column;align-items:stretch">${btns.map((b,i)=>`<button class="btn ${b.c||''}" id="xb${i}">${b.l}</button>`).join('')}</div>`);
@@ -1158,22 +1160,22 @@ function paneCrew(){
    <div class="sec">Your plugs (${S.known.length} of 6 know you)</div>
    ${BLOCKS.map((bl,i)=>`<div class="row" style="padding:8px 12px">${avatar(i,36)}<div class="info"><div class="t">${plugName(i)} ${S.known.includes(i)?'<span class="chip mine">Knows you</span>':'<span class="chip">Stranger</span>'}</div>
     <div class="s">${bl} · <span style="color:${LVL[PINFO[i].lvl].col}">${PINFO[i].lvl} plug</span> · ${S.known.includes(i)?`Trust ${S.trust[i]}/100`:`${3-(S.deals[i]||0)} more deals to get known`}</div></div></div>`).join('')}
-   ${paneSafe()}
-   ${paneLife()}
-   ${paneCareer()}
-   ${paneFakes()}
-   ${paneCut()}
+   ${sf(paneSafe)}
+   ${sf(paneLife)}
+   ${sf(paneCareer)}
+   ${sf(paneFakes)}
+   ${sf(paneCut)}
    <div class="sec">Crew and stash</div>
    <div class="row"><div class="info"><div class="t">Soldiers: ${S.soldiers}</div><div class="s">+6 strength each · cost $150/day each</div></div>
     <button class="btn green" data-a="hire" ${S.cash>=hireCost()?'':'disabled'}>Hire ${money(hireCost())}</button></div>
-   ${crewHTML()}
+   ${sf(crewHTML)}
    ${(()=>{try{return x8On()?rankHTML():''}catch(e){return ''}})()}
-   ${ctHTML()}
-   ${shHTML()}
-   ${poHTML()}
-   ${twHTML()}
-   ${launHTML()}
-   ${paneArm()}
+   ${sf(ctHTML)}
+   ${sf(shHTML)}
+   ${sf(poHTML)}
+   ${sf(twHTML)}
+   ${sf(launHTML)}
+   ${sf(paneArm)}
    <div class="row"><div class="info"><div class="t">More stash space</div><div class="s">Storage units, safes and cars are at the mall and the car lot now.</div></div></div>
    <div class="row"><div class="info"><div class="t">Your turf: ${turf} block${turf===1?'':'s'}</div><div class="s">Each block pays $${300} a day and sells 12% higher</div></div></div>`;
 }
