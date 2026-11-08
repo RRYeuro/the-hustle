@@ -1945,7 +1945,7 @@ function checkKick(){if(!S.par||S.home!=='family')return;
   if((S.gHist||[]).length>=3&&S.par.trust<25&&S.sk.talk>=8&&Math.random()<[.6,.75,.9][Math.min(2,S.sk.talk-8)]){const P=S.par;S.gHist=[];S.par.trust=Math.min(100,S.par.trust+6);say(`${P.name} had your bags by the door, but you talked ${P.him||'them'} down. "You still my baby. One more mess and I mean it." You can stay.`);return}
   if((S.gHist||[]).length>=3&&S.par.trust<25){const P=S.par;S.gHist=[];S.kicked=S.day;S.grounded=0;S.gSeen=0;P.trust=Math.max(0,P.trust-5);moveIn('couch');
     say(`${P.name} put your bags on the porch. "Grounding you ain't working. Figure it out." You're staying with your cousin now.`);}}
-function moveIn(k){const wasFam=S.home==='family';if(S.home==='couch')S.cousinDeal=0;S.comm=30;const X=HOMES[k],old=HOMES[S.home];S.cash-=X.rent;S.cap+=X.stash-old.stash;S.home=k;S.rentDay=S.day+7;
+function moveIn(k){const wasFam=S.home==='family';S.grounded=0;S.gSeen=0;if(S.home==='couch')S.cousinDeal=0;S.comm=30;const X=HOMES[k],old=HOMES[S.home];S.cash-=X.rent;S.cap+=X.stash-old.stash;S.home=k;S.rentDay=S.day+7;
   say(`Moved into the ${X.name.toLowerCase()}.${X.rent?` Paid the first week, ${money(X.rent)}.`:''}`);
   if(used()>S.cap)say('Your stash is over the limit. Sell some before you can buy more.');
   if(wasFam&&k!=='family'&&$('modal').hidden&&!window.FF){modal(`${a2(Math.random()<.5?'moveout':'apt',360)}<h2>On your own</h2><p>You packed up and left. Rules are your own now.</p><div class="btns"><button class="btn go" id="ok">Keep moving</button></div>`);$('ok').onclick=close}}
@@ -2750,7 +2750,7 @@ function gfDo(k){const g=S.gf,p=PR();if(!g)return;
   if(k==='out'){S.cash-=300;g.rel=Math.min(100,g.rel+12);say(`Took ${g.name} out to eat. Relationship +12.`)}
   if(k==='gift'){S.cash-=1000;g.rel=Math.min(100,g.rel+25);say(`Bought ${g.name} something nice. Relationship +25.`)}
   if(k==='leave'){if(gUsed()>0)say(`You broke up with ${g.name}. Everything at ${p.his} place stayed there.`);else say(`You broke up with ${g.name}.`);endGF()}
-  if(k==='movein'){S.cash-=300;const old=HOMES[S.home];S.cap+=HOMES.gfplace.stash-old.stash;S.home='gfplace';S.rentDay=S.day+7;addStress(-10);say(`You moved in with ${g.name}. Y'all splitting the bills.`)}
+  if(k==='movein'){S.cash-=300;S.grounded=0;S.gSeen=0;const old=HOMES[S.home];S.cap+=HOMES.gfplace.stash-old.stash;S.home='gfplace';S.rentDay=S.day+7;addStress(-10);say(`You moved in with ${g.name}. Y'all splitting the bills.`)}
   if(k==='moveout'){S.cap-=HOMES.gfplace.stash;S.home='couch';g.rel=Math.max(0,g.rel-15);say(`You moved out of ${g.name}'s. ${PR().he[0].toUpperCase()+PR().he.slice(1)} wasn't happy about it.`)}}
 function gIn(g){const real=S.inv[g.id]-S.fake[g.id];let n=Math.min(real,(GCAP-gUsed())/g.sp);n=g.step<1?Math.floor(n*2)/2:Math.floor(n);if(n<=0)return say(`No room at ${PR().his} place.`);
   const x=S.gst[g.id]||{n:0,q:50,paid:0};x.q=Math.round((x.q*x.n+S.q[g.id]*n)/(x.n+n));x.paid=Math.round((x.paid*x.n+S.paid[g.id]*n)/(x.n+n));x.n+=n;S.gst[g.id]=x;
