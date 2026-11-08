@@ -3823,8 +3823,8 @@ function nextDay(){S.en=S.restDay?enMax():Math.max(30,enMax()-(S.stress>=70?20:0
   Object.keys(S.burned).forEach(k=>{if(S.day>=S.burned[k])newPlug(+k)});
   addStress(S.heat>50?3:-2);
   if(S.stress>=100){S.hp-=15;S.stress=60;say('You hit your breaking point. Lost a day in your head and took −15 health. Lay low sometimes.');}
-  if(S.soldiers){const cost=S.soldiers*(S.myGang?100:150);S.cash-=cost;if(S.cash<0){S.soldiers=Math.max(0,S.soldiers-1);say('Couldn\'t pay the crew. A soldier walked.');S.cash=Math.max(0,S.cash)}}
-  S.heat=Math.max(0,S.heat-(2+Math.ceil(S.heat/12))-((S.job||Object.keys(S.biz||{}).length)?1:0)-(['condo','house'].includes(S.home)?1:0));
+  if(S.soldiers){const per=S.myGang?100:150,paid=Math.min(S.soldiers,Math.max(0,Math.floor(S.cash/per))),left=S.soldiers-paid;S.cash-=paid*per;if(left>0){S.soldiers=paid;say(left>1?`Couldn't pay the crew. ${left} soldiers walked.`:'Couldn\'t pay the crew. A soldier walked.')}}
+  S.heatY=S.heat;S.heat=Math.max(0,S.heat-(2+Math.ceil(S.heat/12))-((S.job||Object.keys(S.biz||{}).length)?1:0)-(['condo','house'].includes(S.home)?1:0));
   S.crews.forEach(c=>{if(c.alive){if(Math.random()<(S.cal?.15:.5))c.str+=1;c.str=Math.min(c.str,crewCap());if(c.beef>0&&c.beef<45)c.beef=Math.max(0,c.beef-2);c.envy=Math.max(0,c.envy-2);if(c.beef>=45)c.respect=Math.max(0,c.respect-2)}});crewWorld();lawDay();
   roll();
   if(S.day>maxDay()&&!freeMode()){S.over=true;return}
@@ -3850,7 +3850,7 @@ function event(){
   if(!quiet&&!(S.copCD>S.day)&&Math.random()<S.heat/320*D().risk*heatProf()*carryHeat()*((S.friends||[]).some(f=>f.close>=80)?.85:1)*(S.job?.8:1)*(S.school==='in'?.8:1))return cops();
   const en=Object.keys(S.enemies||{}).map(Number).find(bi=>S.burned[bi]);if(!quiet&&en!==undefined&&Math.random()<.15)return enemyHit(en);
   const jel=S.crews.find(c=>c.alive&&c.envy>=70&&!c.ally&&S.gang!==c.id);if(!quiet&&jel&&Math.random()<.3)return jealous(jel);
-  if(!quiet&&S.heat>=40&&Math.random()<HOMES[S.home].raid*(1.4-(S.comm??30)/80)*S.heat/100)return raid();
+  {const hh=Math.max(S.heat,S.heatY||0);if(!quiet&&hh>=40&&Math.random()<HOMES[S.home].raid*(1.4-(S.comm??30)/80)*hh/100)return raid()}
   if(S.home==='couch'&&!S.cousinDeal&&!S.cousinNo&&(S.cash>2000||used()>15)&&Math.random()<.15)return cousinAsk();
   if(Math.random()<({sec8:.3,low:.22,couch:.18,family:.06,apt:.14,condo:.09,house:.06,gfplace:.12,granny:.1})[S.home])return neighborAsk();
   if((S.friends||[]).length<5&&Math.random()<.05)return meetFriend(false);
