@@ -13,6 +13,14 @@ const RAW = "https://raw.githubusercontent.com/RRYeuro/the-hustle/main/discord-b
 const API = "https://discord.com/api/v10";
 const RED = 0xe74c3c, GREEN = 0x2ecc71, GOLD = 0xf1c40f;
 const TESTER = "Hustle Tester";
+const AREAS = [
+  ["Money Testers", "💸", 0x2ECC71, "cost of living, Expenses tab, dirty and clean cash, laundering, businesses and upgrades"],
+  ["Street Testers", "🔌", 0xE67E22, "plugs, Big plug outcomes, crew, upkeep, wars, your own gang"],
+  ["Heat Testers", "🚔", 0xE74C3C, "heat, raids, cops, house arrest, on the run, prison, parole"],
+  ["Rap Testers", "🎤", 0x9B59B6, "songs, shows, tours, merch, the three labels, your own label, buyouts"],
+  ["Life Testers", "🏠", 0x3498DB, "parents, school, kids, girlfriend, friends, cars, homes, jewelry, clothes, block party"],
+];
+const areaMenu = () => ({ type: 1, components: AREAS.map(([n, e]) => ({ type: 2, style: 2, label: n.replace(" Testers", ""), emoji: { name: e }, custom_id: "hustle:area:" + n })) });
 const CH = { bugs: "hustle-bugs", feedback: "hustle-feedback", ideas: "hustle-ideas", scores: "hustle-high-scores", notes: "hustle-patch-notes" };
 
 const PICK_ROLES = [
@@ -157,6 +165,12 @@ async function command(i, env, ctx) {
     return res.ok ? say(`<@${uid}> is now **${r.name}**.`, { flags: 0, allowed_mentions: { parse: [] } }) : say("Move my role above that role in Server Settings > Roles.");
   }
   if (n === "roles") {
+    const cr = await (await rest(env, "GET", `/channels/${i.channel_id}`)).json();
+    if (/tester/i.test(cr.name || "")) {
+      await rest(env, "POST", `/channels/${i.channel_id}/messages`, { embeds: [{ title: "🧪 TESTER SIGN-UP: pick your area", color: RED,
+        description: "The Hustle is getting a full test run before release. Pick the part of the game you'll own. Tap a button to join, tap again to leave. I want 2 testers on each area.\n\n" + AREAS.map(([nm, e, , d]) => `${e} **${nm}**: ${d}`).join("\n") + "\n\nPlay your area hard. Try to break it. Post bugs in your role's channel with a screenshot and what you did right before. Check the version first (hard refresh if it's old)." }], components: [areaMenu()] });
+      return say("Posted the tester sign-up.");
+    }
     await rest(env, "POST", `/channels/${i.channel_id}/messages`, { embeds: [{ title: "Pick your roles", description: "Use the menu below. You can change it any time.", color: GREEN }], components: [roleMenu()] });
     return say("Posted.");
   }
@@ -173,6 +187,16 @@ async function component(i, env) {
     const res = await rest(env, has ? "DELETE" : "PUT", `/guilds/${env.GUILD_ID}/members/${uid}/roles/${r.id}`);
     if (!res.ok) return say("I can't hand out that role yet. An admin needs to drag my role above 'Hustle Tester' in Server Settings > Roles.");
     return say(has ? "Tester role removed. You won't get update pings." : "You're a Hustle Tester now. You'll get update pings.");
+  }
+  if (i.data.custom_id.startsWith("hustle:area:")) {
+    const nm = i.data.custom_id.slice(12), a = AREAS.find((x) => x[0] === nm); if (!a) return say("That area isn't set up.");
+    let r = await role(env, nm);
+    if (!r) { const cr = await rest(env, "POST", `/guilds/${env.GUILD_ID}/roles`, { name: nm, color: a[2], mentionable: true }); if (cr.ok) { r = await cr.json(); cacheRoles = null; } }
+    if (!r) return say("I couldn't make that role. An admin needs to drag my role to the top in Server Settings > Roles.");
+    const has = mine.has(r.id);
+    const res = await rest(env, has ? "DELETE" : "PUT", `/guilds/${env.GUILD_ID}/members/${uid}/roles/${r.id}`);
+    if (!res.ok) return say("I can't hand out that role yet. An admin needs to drag my role to the top in Server Settings > Roles.");
+    return say(has ? `You left ${nm}.` : `You're a ${nm.replace(/s$/, "")} now. Test your area hard and post bugs in your channel.`);
   }
   if (i.data.custom_id === "hustle:roles") {
     const all = await roles(env, true), want = new Set(i.data.values || []), pickable = new Set(PICK_ROLES.map((x) => x[0]));
