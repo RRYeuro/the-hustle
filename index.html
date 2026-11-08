@@ -4071,8 +4071,8 @@ function act(a,el){
 }
 function firepower(){return gunBonus()+armedBonus()+S.soldiers*6+(S.gang&&crew(S.gang)?Math.floor(crew(S.gang).str*.25):0)}
 const blockReq=()=>{const n=myTurf(),need=15+n*12,age=S.age==null?25:S.age;if(age<16)return 'You need to be 16 to run a block.';if(S.rep<need)return `Need ${need} rep to run block number ${n+1}. You have ${S.rep}.`;if(S.lvl<2+n)return `Need level ${2+n}. You are level ${S.lvl}.`;return ''};
-function canWar(){return (gunBonus()>0||armed().length>0)&&(S.soldiers>=2||!!S.gang)}
-function warNeed(){return gunBonus()>0?'Need 2 shooters (soldiers) or a set behind you':'Need a gun first'}
+function canWar(){return (gAge()==null||gAge()>=16)&&(gunBonus()>0||armed().length>0)&&(S.soldiers>=2||!!S.gang)}
+function warNeed(){if(gAge()!=null&&gAge()<16)return 'You need to be 16 to go to war';return gunBonus()>0?'Need 2 shooters (soldiers) or a set behind you':'Need a gun first'}
 function war(c){if(!canWar()){modal(`<h2>No firepower</h2><p>You can't take a block with your hands. ${warNeed()}. Unc on The Bottom sells guns, and you can hire soldiers in the Me tab.</p><div class="btns"><button class="btn go" id="ok">Got it</button></div>`);$('ok').onclick=close;return}
   const d=cdef(c.id),mine=myStr()+(S.fx.ride?12:0);
   const odds=Math.round(mine/(mine+c.str)*100);
