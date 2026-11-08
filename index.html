@@ -1967,25 +1967,28 @@ function raid(){const H=HOMES[S.home];
 /* ---------- plug relationships ---------- */
 const NEWF=['Lupe','Ana','Jess','Linh','Toya','Bri','Nikki','Lala','Shon','Roxy'],NEWM=['Danny','Minh','Jake','Paco','Black','Fresh','Lil Ced','Truck','Gee','Moe'];
 const RECR={Low:{rep:30,cost:1500,hustle:7,wage:200,sales:0},Mid:{rep:60,cost:4000,hustle:8,wage:320,sales:6}};
-function recruitBtn(bi){const L=PINFO[bi].lvl,R=RECR[L];if(!R||!S.known.includes(bi)||!adult())return '';if(S.recr&&S.recr[bi])return '<span class="chip mine">Works for you</span>';const ok=S.rep>=R.rep&&S.trust[bi]>=40&&S.workers.length<3&&S.cash>=R.cost;
-  return `<button class="btn" data-a="precruit" data-i="${bi}" ${ok?'':'disabled'}>${S.rep<R.rep?`Recruit (need ${R.rep} rep)`:S.trust[bi]<40?'Recruit (need 40 trust)':S.workers.length>=3?'Recruit (3 workers max)':`Recruit ${money(R.cost)}`}</button>`}
+const recrLvl=l=>Object.keys(S.recr||{}).some(k=>S.recr[k]&&PINFO[k]&&PINFO[k].lvl===l);
+const recrNeed=L=>L==='Mid'&&!recrLvl('Low')?'Get a low level plug on your team first':'';
+function recruitBtn(bi){const L=PINFO[bi].lvl,R=RECR[L];if(!R||!S.known.includes(bi)||!adult())return '';if(S.recr&&S.recr[bi])return '<span class="chip mine">Works for you</span>';const need=recrNeed(L),ok=!need&&S.rep>=R.rep&&S.trust[bi]>=40&&S.workers.length<3&&S.cash>=R.cost;
+  return `<button class="btn" data-a="precruit" data-i="${bi}" ${ok?'':'disabled'}>${need?'Recruit (low plug first)':S.rep<R.rep?`Recruit (need ${R.rep} rep)`:S.trust[bi]<40?'Recruit (need 40 trust)':S.workers.length>=3?'Recruit (3 workers max)':`Recruit ${money(R.cost)}`}</button>`}
 function recruitAsk(bi){const L=PINFO[bi].lvl,R=RECR[L],o=S.owner[bi],c=o!=='me'&&o!=='none'?crew(o):null,nm=plugName(bi),fem=plugFem(bi),risky=c&&!c.ally&&S.gang!==c.id&&c.respect<60;
   const bigOk=S.known.some(i=>PINFO[i].lvl==='Big'&&!S.burned[i]&&S.trust[i]>=50&&!(S.recr&&S.recr[i]));
   modal(`<h2>Recruit ${nm}?</h2><p>${nm} keeps ${fem?'her':'his'} spot on ${BLOCKS[bi]} and works your traps for you. Signing ${fem?'her':'him'} costs ${money(R.cost)}. <b>${fem?'She':'He'} will stop selling to you.</b></p><p class="s" style="${bigOk?'':'color:var(--blood)'}">${bigOk?'You have a big plug backing you, so you can live without this one.':'You have no big plug connect yet. Without one, cutting off a small plug makes it hard to turn a profit. Big plugs are where the real deals come from.'}</p>${c?`<p class="s">The ${cdef(o).name} run ${BLOCKS[bi]}. ${risky?`<b style="color:var(--blood)">Your respect with them is ${c.respect}. Under 60, they will see this as you taking their people and it causes problems.</b>`:`Your respect with them is ${c.respect}${c.ally||S.gang===c.id?' and y\'all are cool':''}, so they let it slide.`}</p>`:''}
     <div class="btns"><button class="btn go" id="ry">Recruit ${fem?'her':'him'}</button><button class="btn" id="rn">Not now</button></div>`);$('rn').onclick=close;$('ry').onclick=()=>recruitPlug(bi)}
-function recruitPlug(bi){const L=PINFO[bi].lvl,R=RECR[L];if(!R||S.workers.length>=3||S.cash<R.cost)return close();const nm=plugName(bi),fem=plugFem(bi),o=S.owner[bi],c=o!=='me'&&o!=='none'?crew(o):null;
+function recruitPlug(bi){const L=PINFO[bi].lvl,R=RECR[L];if(!R||recrNeed(L)||S.workers.length>=3||S.cash<R.cost)return close();const nm=plugName(bi),fem=plugFem(bi),o=S.owner[bi],c=o!=='me'&&o!=='none'?crew(o):null;
   S.cash-=R.cost;S.recr=S.recr||{};S.recr[bi]=1;S.workers.push({id:nm+S.day,name:nm,hustle:R.hustle,loyal:8,wage:R.wage,sales:R.sales,from:bi});
   let extra='';
   if(c&&!c.ally&&S.gang!==c.id){if(c.respect<60){c.beef=Math.min(100,c.beef+30);c.respect=Math.max(0,c.respect-20);extra=` The ${cdef(o).name} did not like it. Beef went up and respect dropped.`}else{c.respect=Math.min(100,c.respect+3);extra=` The ${cdef(o).name} respect you enough to let it slide.`}}
   if(S.myGang){S.soldiers++;extra+=` ${nm} joined ${S.myGang.name} too.`}
   say(`${nm} signed on as one of your workers and keeps ${fem?'her':'his'} spot on ${BLOCKS[bi]}. ${fem?'She':'He'} won't sell to you anymore.${extra}`);
   modal(`<h2>${nm} is on your team</h2><p>${nm} still holds ${fem?'her':'his'} spot on ${BLOCKS[bi]}, but ${fem?'she':'he'} works for you now and doesn't sell to you anymore.${extra}</p><div class="btns"><button class="btn go" id="ok">Bet</button></div>`);$('ok').onclick=close}
-const bigFateCand=()=>S.known.find(bi=>PINFO[bi].lvl==='Big'&&!S.burned[bi]&&S.trust[bi]>=60&&S.rep>=50&&!(S.fate2||{})[bi]);
+const bigFateCand=()=>!recrLvl('Mid')?undefined:S.known.find(bi=>PINFO[bi].lvl==='Big'&&!S.burned[bi]&&S.trust[bi]>=60&&S.rep>=50&&!(S.fate2||{})[bi]);
 function bigFate(bi){S.fate2=S.fate2||{};S.fate2[bi]=1;const nm=plugName(bi),he=plugFem(bi)?'she':'he',his=plugFem(bi)?'her':'his';
   const p=Math.min(.8,.3+S.trust[bi]/250+S.rep/400+(S.sk.talk-3)*.03);
-  if(Math.random()<p){S.fell=S.fell||{};S.fell[bi]=S.day;S.whole=S.whole||{};S.whole[bi]=1;S.trust[bi]=100;
-    say(`${nm} fell back and put ${his} whole operation under you. Wholesale prices and a cut every week.`);
-    modal(`<h2>${nm} fell down to you</h2><p>"You moving different. I ain't gonna fight it, I'ma ride with it." ${nm} is putting ${his} people under you. You get wholesale prices, and ${he} will kick up money every week.</p><div class="btns"><button class="btn go" id="ok">Real</button></div>`)}
+  if(Math.random()<p){S.recr=S.recr||{};S.recr[bi]=1;S.whole=S.whole||{};S.whole[bi]=1;S.trust[bi]=100;const v=rnd(6000,15000);S.cash+=v;
+    S.workers.push({id:nm+S.day,name:nm,hustle:9,loyal:10,wage:450,sales:10,from:bi});
+    say(`${nm} fell down to you and joined as your worker. ${he==='she'?'She':'He'} brought ${money(v)} and gives you wholesale prices.`);
+    modal(`<h2>${nm} fell down to you</h2><p>"You moving different. I ain't gonna fight it, I'ma ride with it." ${nm} works for you now and brought <b>${money(v)}</b> with ${he==='she'?'her':'him'}. You get wholesale prices too.</p><div class="btns"><button class="btn go" id="ok">Real</button></div>`)}
   else{S.enemies=S.enemies||{};S.enemies[bi]=1;{const bp=burnPlan(bi,15,'fate');S.burned[bi]=S.day+bp.d;}S.known=S.known.filter(i=>i!==bi);S.trust[bi]=0;S.heat=Math.min(100,S.heat+10);
     say(`${nm} sees you as a threat now. ${nm} is beefing with you and ${BLOCKS[bi]} is closed to you.`);
     modal(`<h2 style="color:var(--blood)">${nm} wants smoke</h2><p>"You got too big too fast. I can't have that." ${nm} cut you off and put the word out. ${BLOCKS[bi]} is closed to you and ${his} people will come for you until somebody new takes over.</p><div class="btns"><button class="btn go" id="ok">Watch your back</button></div>`)}
