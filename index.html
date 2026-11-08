@@ -2387,7 +2387,7 @@ function frontQty(bi,o){const g=o.g,nm=plugName(bi),rate=o.fm.rate,days=o.fm.day
   const q=$('fq'),nn=$('fn'),up=()=>{const n=+q.value,v=Math.round(o.u*n);$('fo').textContent=amt(n,g);$('fv').textContent=money(v);$('fw').textContent=money(Math.round(v*(1+rate)));$('fi').innerHTML=pkg(g,n,46);if(document.activeElement!==nn)nn.value=n};
   q.oninput=up;nn.oninput=()=>{let v=Math.max(g.step,Math.min(mx,+nn.value||g.step));v=Math.round(v/g.step)*g.step;q.value=v;up()};up();$('fbk').onclick=()=>frontAsk(bi);
   $('fok').onclick=()=>{const n=+q.value,v=Math.round(o.u*n),of=S.offer[bi][g.id],qq=of.fake?of.q:of.real,have=S.inv[g.id];if(n<=0||used()+n*g.sp>S.cap)return;
-    S.q[g.id]=Math.round((S.q[g.id]*(have-S.fake[g.id])+qq*n)/((have-S.fake[g.id])+n));S.paid[g.id]=Math.round((S.paid[g.id]*have+0)/(have+n));S.inv[g.id]+=n;if(of.fake)S.fake[g.id]+=n;
+    S.q[g.id]=Math.round((S.q[g.id]*(have-S.fake[g.id])+qq*n)/((have-S.fake[g.id])+n));S.paid[g.id]=Math.round((S.paid[g.id]*have+v*(1+rate))/(have+n));S.inv[g.id]+=n;if(of.fake)S.fake[g.id]+=n;
     S.debt=S.debt||[];S.debt.push({bi,princ:v,owe:Math.round(v*(1+rate)),due:S.day+days,ran:0,late:0,g:g.id,n});S.pk[bi]=S.pk[bi]||{};S.pk[bi].fronts=(S.pk[bi].fronts||0)+1;
     say(`${nm} fronted you ${amt(n,g)} of ${g.name}. You owe ${money(Math.round(v*(1+rate)))} in ${days} days.`);close();render()}}
 function debtPay(bi){const d=debtOf(bi);if(!d)return;const nm=plugName(bi),need=Math.round(d.owe*(d.ran?1.25:1)),mx=Math.max(1,Math.min(S.cash,need));
