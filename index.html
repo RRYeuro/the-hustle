@@ -414,7 +414,7 @@ function paneBlock(){
     ${recd?`<div class="s" style="color:var(--accent)"><b>Works for you now.</b> ${plugFem(S.at)?'She':'He'} runs your traps and doesn't sell to you anymore, but ${plugFem(S.at)?'she':'he'} still buys from you. ${plugFem(S.at)?'She':'He'} hits you up in the phone when ${plugFem(S.at)?'she':'he'} needs work.</div>`:locked&&!burnt?`<div class="s" style="color:var(--blood)">Won't serve you until you got ${L.rep} rep.</div>`:''}
     ${(S.enemies||{})[S.at]?`<div class="s" style="color:var(--blood)"><b>Enemy.</b> ${plugName(S.at)} wants you hurt. ${plugFem(S.at)?'Her':'His'} people will come for you until somebody new takes over.</div>`:''}
     ${(S.enemies||{})[S.at]&&burnt?revengeHTML(S.at):''}
-    ${burnt?`<div class="s" style="color:var(--blood)">${plugName(S.at)} is gone. You robbed ${plugFem(S.at)?'her':'him'} and ${plugFem(S.at)?'she':'he'} left ${BLOCKS[S.at]}. Nobody here will deal with you until a new plug takes over around ${dayTxt(S.burned[S.at])}.</div>`:plugActions(S.at)}
+    ${burnt?`<div class="s" style="color:var(--blood)">${plugName(S.at)} is gone. ${({rob:`You robbed ${plugFem(S.at)?'her':'him'} and ${plugFem(S.at)?'she':'he'} left ${BLOCKS[S.at]}.`,raid:`${plugName(S.at)} got raided by the cops and left ${BLOCKS[S.at]}.`,snitch:`${plugName(S.at)} got picked up and left ${BLOCKS[S.at]}.`,fate:`${plugName(S.at)} cut you off and left ${BLOCKS[S.at]}.`})[(S.bwhy||{})[S.at]]||`${plugName(S.at)} left ${BLOCKS[S.at]}.`} Nobody here will deal with you until a new plug takes over around ${dayTxt(S.burned[S.at])}.</div>`:plugActions(S.at)}
     <div class="s">${burnt?'':kn?`Trust ${S.trust[S.at]}/100 · tap Buy or Sell to talk price`:`${plugFem(S.at)?'She':'He'} don't know you. Prices are 15% worse and you can't talk price. Trade with him ${3-(S.deals[S.at]||0)} more time${3-(S.deals[S.at]||0)===1?'':'s'} to get known.`}</div></div></div>`;
   if(o!=='me'&&o!=='none')h+=`<div class="sec">${cdef(o).name} turf: buying here and selling to the plug earns respect. Serving the Js makes them mad, unless it's a drug they don't move here.</div>`;
   h+=GOODS.map(g=>{
@@ -1073,8 +1073,8 @@ function caseHTML(){const C=X8().case;if(!C)return '';const used=C.act===S.day;
 /* 3. plug wars */
 function plugWarDay(){if(window.noPlugWar||!S.known||(gAge()!=null&&gAge()<16))return;const X=X8();
   S.known.slice().forEach(bi=>{if((S.burned&&S.burned[bi]>S.day)||Math.random()>.002+S.heat*.00012)return;const nm=plugName(bi);
-    if(Math.random()<.6){S.burned[bi]=S.day+rnd(6,10);S.swing={until:S.day+7,m:1.2};x8Pop('plugraid',`${nm} on ${BLOCKS[bi]} got raided`,'Twelve hit your plug. Supply is tight everywhere and prices are up for a week. Find another supplier or wait it out.',[{l:'Damn',f:()=>{}}])}
-    else{S.trust[bi]=0;S.known=S.known.filter(i=>i!==bi);S.burned[bi]=S.day+25;S.heat=Math.min(100,S.heat+8);x8Pop('snitchcop',`${nm} flipped`,`Your plug on ${BLOCKS[bi]} is talking to twelve. They are done with you and your heat is up. You will need a new supplier.`,[{l:'Find a new plug',f:()=>{}}])}})}
+    if(Math.random()<.6){S.burned[bi]=S.day+rnd(6,10);(S.bwhy=S.bwhy||{})[bi]='raid';S.swing={until:S.day+7,m:1.2};x8Pop('plugraid',`${nm} on ${BLOCKS[bi]} got raided`,'Twelve hit your plug. Supply is tight everywhere and prices are up for a week. Find another supplier or wait it out.',[{l:'Damn',f:()=>{}}])}
+    else{S.trust[bi]=0;S.known=S.known.filter(i=>i!==bi);S.burned[bi]=S.day+25;(S.bwhy=S.bwhy||{})[bi]='snitch';S.heat=Math.min(100,S.heat+8);x8Pop('snitchcop',`${nm} flipped`,`Your plug on ${BLOCKS[bi]} is talking to twelve. They are done with you and your heat is up. You will need a new supplier.`,[{l:'Find a new plug',f:()=>{}}])}})}
 /* 4. hit on you */
 function hitDay(){const X=X8();
   if(X.hit){if(S.day<X.hit.due)return;const H=X.hit;X.hit=null;
@@ -2105,7 +2105,7 @@ function bigFate(bi){S.fate2=S.fate2||{};S.fate2[bi]=1;const nm=plugName(bi),he=
   else if(Math.random()<.5){delete S.fate2[bi];S.bigWait=S.bigWait||{};S.bigWait[bi]=S.day+20;S.trust[bi]=Math.min(100,S.trust[bi]+8);S.rep+=1;
     say(`${nm} respects you but ain't ready to ride with you yet. Keep moving and ${he} might come around.`);
     modal(`${a2('plugwait',340)}<h2>${nm} respects you</h2><p>"I see what you doing. You ain't ready to run with me yet, but I ain't against you." ${nm} stays neutral, trust +8 and rep +1. Keep growing and ${he} will ask again.</p><div class="btns"><button class="btn go" id="ok">Respect</button></div>`)}
-  else{S.enemies=S.enemies||{};S.enemies[bi]=1;{const bp=burnPlan(bi,15,'fate');S.burned[bi]=S.day+bp.d;}S.known=S.known.filter(i=>i!==bi);S.trust[bi]=0;S.heat=Math.min(100,S.heat+10);
+  else{S.enemies=S.enemies||{};S.enemies[bi]=1;{const bp=burnPlan(bi,15,'fate');S.burned[bi]=S.day+bp.d;(S.bwhy=S.bwhy||{})[bi]='fate';}S.known=S.known.filter(i=>i!==bi);S.trust[bi]=0;S.heat=Math.min(100,S.heat+10);
     say(`${nm} sees you as a threat now. ${nm} is beefing with you and ${BLOCKS[bi]} is closed to you.`);
     modal(`<h2 style="color:var(--blood)">${nm} wants smoke</h2><p>"You got too big too fast. I can't have that." ${nm} cut you off and put the word out. ${BLOCKS[bi]} is closed to you and ${his} people will come for you until somebody new takes over.</p><div class="btns"><button class="btn go" id="ok">Watch your back</button></div>`)}
   $('ok').onclick=close;return true}
@@ -2471,7 +2471,7 @@ function plugRob(bi){const P=PINFO[bi],nm=plugName(bi),her=plugFem(bi)?'her':'hi
     <div class="btns"><button class="btn red" id="y">Run it</button>${big&&!cased?'<button class="btn go" id="cs">Case the spot (takes the day)</button>':''}<button class="btn" id="n">Nah</button></div>`);
   $('n').onclick=close;
   if($('cs'))$('cs').onclick=()=>{pk.cased=S.day;S.heat=Math.min(100,S.heat+3);say(`Spent the day watching ${nm}'s spot. You know when the shift changes now.`);$('modal').hidden=true;nextDay();checkEnd();render()};
-  $('y').onclick=()=>{S.lastRob=S.day;if(S.gf&&S.gf.plug===bi){say(`You robbed your own ${plugFem(bi)?'girl':'man'}. ${nm} is done with you.`);endGF()}{const bp=burnPlan(bi,10,'rob');S.burned[bi]=S.day+bp.d;if(bp.sec||bp.vouch)say(`${bp.sec?'Their second is waiting to step up. ':''}${bp.vouch?'A plug you trust is vouching for the new one. ':''}Back in ${bp.d} days.`)}S.known=S.known.filter(i=>i!==bi);S.trust[bi]=0;S.heat=Math.min(100,S.heat+25);
+  $('y').onclick=()=>{S.lastRob=S.day;if(S.gf&&S.gf.plug===bi){say(`You robbed your own ${plugFem(bi)?'girl':'man'}. ${nm} is done with you.`);endGF()}{const bp=burnPlan(bi,10,'rob');S.burned[bi]=S.day+bp.d;(S.bwhy=S.bwhy||{})[bi]='rob';if(bp.sec||bp.vouch)say(`${bp.sec?'Their second is waiting to step up. ':''}${bp.vouch?'A plug you trust is vouching for the new one. ':''}Back in ${bp.d} days.`)}S.known=S.known.filter(i=>i!==bi);S.trust[bi]=0;S.heat=Math.min(100,S.heat+25);
     robMini(bi,odds,ok=>{if(ok){S.dr={until:S.day+rnd(5,9),bi};say(`🏜️ Drought szn on ${BLOCKS[bi]}. Word got around that the plug got hit and nobody is selling.`);const got=[];const cash=({Low:[1000,3000],Mid:[3000,8000],Big:[10000,25000]})[P.lvl];const c=rnd(cash[0],cash[1]);S.cash+=c;got.push(money(c));
       P.carries.forEach(id=>{const g=G(id);let n=lvlMax(bi,g)*rnd(5,10)/10;n=Math.min(n,(S.cap-used())/g.sp);n=g.step<1?Math.floor(n*2)/2:Math.floor(n);if(n<=0)return;
         const have=S.inv[id],q=rnd(55,90);S.q[id]=Math.round((S.q[id]*have+q*n)/(have+n));S.paid[id]=Math.round(S.paid[id]*have/(have+n));S.inv[id]+=n;got.push(`${amt(n,g)} of ${g.name}`)});
@@ -2595,9 +2595,9 @@ function burnPlan(bi,base,why){const sec=(S.sec||{})[bi],vouch=vouchOf(bi);let d
   if(sec){d=why==='rob'?5:5;tr=why==='rob'?15:30}
   if(vouch){d=Math.max(3,d-2);tr+=10}
   S.nt=S.nt||{};S.nt[bi]=tr;return {d,sec,vouch}}
-function newPlug(bi){{const L=conList(),g=L.find(c=>c.from===bi);if(g){say(`${g.name} stopped answering. Your connect went with ${plugName(bi)}.`);S.cons=L.filter(c=>c!==g);S.connect=S.cons[0]||null}}if(S.whole)delete S.whole[bi];if(S.conAsk)delete S.conAsk[bi];if(S.enemies)delete S.enemies[bi];if(S.gf&&S.gf.plug===bi)endGF();delete S.burned[bi];const sec=(S.sec||{})[bi],fem=sec?!!sec.fem:Math.random()<.5;const nm=sec?sec.name:pick(fem?NEWF:NEWM);S.pname[bi]=nm;S.pfem[bi]=fem?1:0;
+function newPlug(bi){{const L=conList(),g=L.find(c=>c.from===bi);if(g){say(`${g.name} stopped answering. Your connect went with ${plugName(bi)}.`);S.cons=L.filter(c=>c!==g);S.connect=S.cons[0]||null}}if(S.whole)delete S.whole[bi];if(S.conAsk)delete S.conAsk[bi];if(S.enemies)delete S.enemies[bi];if(S.gf&&S.gf.plug===bi)endGF();const why=(S.bwhy||{})[bi];if(S.bwhy)delete S.bwhy[bi];delete S.burned[bi];const sec=(S.sec||{})[bi],fem=sec?!!sec.fem:Math.random()<.5;const nm=sec?sec.name:pick(fem?NEWF:NEWM);S.pname[bi]=nm;S.pfem[bi]=fem?1:0;
   const nt=(S.nt||{})[bi]??20;if(S.sec)delete S.sec[bi];if(S.nt)delete S.nt[bi];
-  S.pbio[bi]=sec?`Was ${fem?'her':'his'} boss's second on ${BLOCKS[bi]}. Stepped up when the last plug fell off. ${nt<=15?'Knows what you did. Walk careful.':'Heard good things about you.'}`:`New plug on ${BLOCKS[bi]}. Took over after the last one got robbed. Don't know much about ${fem?'her':'him'} yet.`;S.trust[bi]=nt;S.deals[bi]=0;
+  S.pbio[bi]=sec?`Was ${fem?'her':'his'} boss's second on ${BLOCKS[bi]}. Stepped up when the last plug fell off. ${nt<=15?'Knows what you did. Walk careful.':'Heard good things about you.'}`:`New plug on ${BLOCKS[bi]}. Took over after the last one ${({rob:'got robbed',raid:'got raided',snitch:'got picked up',fate:'fell out with you'})[why]||'left'}. Don't know much about ${fem?'her':'him'} yet.`;S.trust[bi]=nt;S.deals[bi]=0;
   say(`${nm} ${sec?'stepped up as':'took over as'} the plug on ${BLOCKS[bi]}.`)}
 /* ---------- relationships ---------- */
 const GNAMES=['Maria','Sofia','Jenny','Emily','Aaliyah','Mei','Priya','Ashanti','Kiana','Dee','Brianna','Tasha','Jada','Imani','Shay','Kayla','Monae','Destiny','Tiara'];
