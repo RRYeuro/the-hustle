@@ -1,30 +1,32 @@
 🚨 IMPORTANT, READ NOW 🚨
 
-**SHORT VERSION:** v183 is live. Loan shark, plug daughters, risky gambling wins, strikes tied to difficulty, plus the fixes you reported. Refresh the game and tell me what breaks.
+**SHORT VERSION:** I built a bunch of your ideas, they're live in the game now. Prison is next and I want your input on it before I build it.
 
-Yo OGs, here's what's new since last time:
+Yo OGs, here's what I added from what you've been telling me:
 
-**💼 Loan shark (Phone tab)**
-Mr. Vince will front you $500 up to $10k. You owe 25% back in 7 days. Miss it and the interest keeps climbing, then his collector finds you. Pay him or fight him. Wait too long and he puts a price on you. Is the quick cash worth it? You tell me.
+**🧑‍🤝‍🧑 Dealer stash (Rock Beno)**
+You can front product to your workers so it's not all on you. A worker can only hold so much based on his level, and a low loyalty worker can skim. Fire him and you get it back.
 
-**👧 Girls got a story**
-Some girls you meet are a plug's or a connect's daughter. Treat her right and her dad trusts you more. Cheat on her or dump her and he won't forget it.
+**🎤 Rapper career (Sdozier41, ScotiaBank)**
+- Rappers make WAY more money now (streams, shows)
+- Interview requests and feature requests pop up in the Studio tab
+- Tours, merch drops, answering a rapper who dissed you, and award shows
 
-**🎲 Risky winnings (Rock Beno's idea)**
-Win big at the park or at dice and a sore loser can follow you. Give back most of it or fight him. Bigger bet means bigger risk.
+**⚖️ Lawyer (Sdozier41)**
+He actually works now. A lawyer on call has a 50% chance to get the case thrown out (70% on payroll), so no strike and half your fine back.
 
-**🚔 Strikes depend on difficulty**
-Easy gives 5 strikes, Normal 4, Hard 3.
+**🔓 Robbing a plug is harder (Lowkey)**
+Lower odds, and after you hit a plug every plug is on alert for 5 days.
 
-**🔧 Fixes**
-- "Ask around" on a custo opened the wrong menu, fixed
-- The hack-the-phone maze is much more forgiving on phones (Antwain)
-- Pitching a plug your stuff now tells you what you need if you have nothing to pitch
-- Talk game has a Start screen
-- You have to be at home or at school to go to class
-- Move tab tutorial says where the mall, car lot and lawyer are
+**🎲 Sore losers (Rock Beno)**
+Beat a guy at the park or dice and sometimes he comes back with his cousin later.
 
-**What I need:**
-1. Try the loan shark and tell me if the interest feels too harsh or too easy
-2. Gamble big and see if the sore loser fight feels fair
-3. Screenshot any bug into #hustle-bugs
+**🔧 Fixes:** grounded now clears when you move out (DonMojo).
+
+**PRISON IS NEXT. I need your ideas first:**
+I looked up real prison prices. Cigarettes go for about $20 each inside, a smuggled phone runs $1,500 to $2,000, a phone call can cost $20 for 15 minutes, and commissary food is marked up 2 to 4 times. My plan is a prison where you can build relationships with guards and inmates, find out who's dirty or strict, buy stuff at inside prices (like a phone from a bribed guard), and keep running your business from the inside.
+1. What would YOU want to do in prison?
+2. Cellmates, riots, smuggling, parole... what else?
+3. Anything you think I'm missing? Drop it in #hustle-ideas
+
+If you got something else you want added, same deal. Put it in #hustle-ideas and I'll look at it.
