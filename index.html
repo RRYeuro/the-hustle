@@ -131,7 +131,7 @@ h1{font-family:var(--display);font-weight:400;font-size:34px;letter-spacing:.02e
   <div class="side">
   <div class="row" id="me" style="padding:8px 10px"></div>
   <div class="stats">
-    <div class="stat"><div class="k">Cash</div><div class="v" id="cash" style="color:var(--money)"></div><div id="cashsplit" style="font-size:9px;line-height:1.2;opacity:.8;white-space:nowrap"></div></div>
+    <div class="stat"><div class="k">Cash</div><div class="v" id="cash" style="color:var(--money)"></div><div id="cashsplit" style="font-size:13px;line-height:1.35;font-weight:700;white-space:nowrap;margin-top:3px"></div></div>
     <div class="stat"><div class="k">Stress</div><div class="v" id="stress"></div><div class="bar"><i id="stressb" style="background:var(--blood)"></i></div></div>
     <div class="stat"><div class="k">Stash</div><div class="v" id="stash"></div></div>
     <div class="stat"><div class="k">Health</div><div class="v" id="hp"></div><div class="bar"><i id="hpb" style="background:var(--money)"></i></div></div>
@@ -375,7 +375,7 @@ function render(){if(S&&S.pr)tab='prison';else if(S&&tab==='prison')tab='block';
   groundSend();
   if(S&&S.char==='life')setLifeChar();
   const free=freeMode();$('dlab').hidden=!!S.cal;$('day').textContent=S.cal?'':free?S.day:Math.min(S.day,maxDay());$('dmax').textContent=S.cal?`${calLabel()} · Age ${S.age}${inHS()&&GRADEN[S.grade]?' · '+GRADEN[S.grade]:''}`:S.mode==='life'?` · Age ${S.age}`:free?' · Kingpin mode':` / ${maxDay()}`;$('dmax').textContent+=checkDay()?' · Checks hit':` · Checks in ${daysToCheck()}d`;if(S.strikes)$('dmax').textContent+=` · Strikes ${S.strikes}/3`;$('retire').hidden=!!S.over;
-  $('cash').textContent=money(S.cash);try{const dd=Math.floor(dirtyCash()),cc=Math.max(0,Math.floor(S.cash-dirtyCash()));$('cashsplit').innerHTML=S.cash>=1000?`<span style="color:var(--blood)">${money(dd)} dirty</span> · ${money(cc)} clean`:''}catch(e){}
+  $('cash').textContent=money(S.cash);try{const dd=Math.floor(dirtyCash()),cc=Math.max(0,Math.floor(S.cash-dirtyCash()));$('cashsplit').innerHTML=S.cash>=1000?`<div style="color:#ff8a5c">${money(dd)} dirty</div><div style="color:#7be0a0">${money(cc)} clean</div>`:''}catch(e){}
   $('stress').textContent=S.stress+(S.stress>=70?' · stressed':'');$('stressb').style.width=S.stress+'%';
   const C=CHARS.find(c=>c.id===S.char);$('who').textContent=C.name;
   $('me').innerHTML=`${PORTRAITS[C.id]?`<img src="${PORTRAITS[C.id]}" alt="${C.name}" style="width:56px;height:56px;border-radius:6px;object-fit:cover;flex:none">`:`<div style="width:56px;height:56px;border-radius:6px;background:#2a2430;display:flex;align-items:center;justify-content:center;font-family:var(--display);font-size:26px;color:var(--accent);flex:none">${C.name[0]}</div>`}<div class="info"><div class="t" style="font-family:var(--display);font-size:20px;font-weight:400">${C.name}</div><div class="s">${roleOf(C)}</div></div>`;$('rk').textContent=identity();{const ballOn=!!(S.age&&S.age<18&&is('tank')&&!(S.fate||{}).knee),inS=S.school==='in'||S.college==='in'||ballOn,todo=(S.school==='in'||S.college==='in')&&S.classDay!==S.day&&(S.cal?schoolWeek():true);$('stab').hidden=!inS;$('stab').innerHTML='🏫 School'+(todo?' <span style="color:var(--blood)">●</span>':'');if(!inS&&tab==='sch')tab='block'}$('rtab').hidden=!S.rapOn;$('htab').hidden=!S.robOn;$('sptab').hidden=!(S.sp&&S.sp.kind);if((tab==='rap'&&!S.rapOn)||(tab==='rob'&&!S.robOn))tab='block';
