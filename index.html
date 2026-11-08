@@ -559,8 +559,9 @@ function paneFight(){const f=fsState(),l=fsLvl(),x=f.xp[f.style]||0,nx=FSLV[l];
    <div class="btns" style="margin-top:4px">${Object.keys(FSN).map(k=>`<button class="btn ${k===f.style?'go':''}" data-a="fstyle" data-k="${k}" ${k===f.style?'disabled':''}>${FSN[k]} L${fsLvl(k)}</button>`).join('')}</div><div class="s" style="color:var(--dim)">Pick the style you fight with. Each one levels up separately when you win fights.</div>`}
 function paneBeef(){
   const jb=['Trap','Family','Homies','Girl','Crews'].map(k=>`<button class="btn" style="padding:6px 10px;font-size:12px" data-jump="${k}">${k}</button>`).join('');
-  return `<div class="jump" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:4px">${jb}</div>`+paneFight()+paneTraps()+paneFamily()+paneHome()+paneFriends()+paneGF()+paneBeefCore()+sf(ctHTML);
+  return `<div class="jump" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:4px">${jb}</div>`+paneFight()+paneTraps()+paneFamily()+paneHome()+paneFriends()+paneGF()+crewBlock()+paneBeefCore()+sf(ctHTML);
 }
+function crewBlock(){return `<div class="sec">Your crew</div><div class="row"><div class="info"><div class="t">Soldiers: ${S.soldiers}</div><div class="s">+6 strength each · cost $150/day each</div></div><button class="btn green" data-a="hire" ${S.cash>=hireCost()?'':'disabled'}>Hire ${money(hireCost())}</button></div>${sf(crewHTML)}${(()=>{try{return x8On()?rankHTML():''}catch(e){return ''}})()}`}
 function paneBeefCore(){
   let h=`<div class="sec">Your strength: ${myStr()}</div><div class="row"><div class="info"><div class="t">Firepower ${firepower()}</div><div class="s">${canWar()?'You strapped and got shooters. You can go to war for a block.':`Taking a block takes guns and people. ${warNeed()}.`}</div></div></div>`+paneGang();
   h+=S.crews.map(c=>{
@@ -1155,7 +1156,7 @@ function spDay(){const P=S.sp;if(!P||S.over||S.pr||S.inJail)return;
   const before=(P.cl||[]).length;P.cl=(P.cl||[]).filter(c=>!(c.o<60&&Math.random()<.006));if(P.cl.length<before)say('A prospect you signed quit and went home.')}
 function paneCrew(){
   const turf=S.owner.filter(o=>o==='me').length, need=S.lvl*20;
-  return `<div class="jump" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:4px">${['Skills','Plugs','Stash','Life','School','Jobs','Crew'].map(k=>`<button class="btn" style="padding:6px 10px;font-size:12px" data-jump="${k}">${k}</button>`).join('')}</div>${(S.traits||[]).length?`<div class="row" style="flex-wrap:wrap"><div class="info"><div class="t">Traits</div><div class="s">${S.traits.map(id=>{const t=TRAITS.find(x=>x.id===id);return t?`<b>${t.name}</b> · <i>${t.story}</i><br>${t.sub.replace(' Can\'t be undone.','')}`:''}).join('<br>')}</div></div></div>`:''}<div class="row" style="flex-wrap:wrap"><div class="info"><div class="t">Level ${S.lvl} · ${S.pts} skill point${S.pts===1?'':'s'} to spend</div>
+  return `<div class="jump" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:4px">${['Skills','Plugs','Stash','Life','School','Jobs'].map(k=>`<button class="btn" style="padding:6px 10px;font-size:12px" data-jump="${k}">${k}</button>`).join('')}</div>${(S.traits||[]).length?`<div class="row" style="flex-wrap:wrap"><div class="info"><div class="t">Traits</div><div class="s">${S.traits.map(id=>{const t=TRAITS.find(x=>x.id===id);return t?`<b>${t.name}</b> · <i>${t.story}</i><br>${t.sub.replace(' Can\'t be undone.','')}`:''}).join('<br>')}</div></div></div>`:''}<div class="row" style="flex-wrap:wrap"><div class="info"><div class="t">Level ${S.lvl} · ${S.pts} skill point${S.pts===1?'':'s'} to spend</div>
     <div class="s">XP ${S.xp} / ${need}. Earn XP from profit, fights, taking blocks, missions and mini games.</div><div class="bar"><i style="width:${S.xp/need*100}%;background:var(--accent)"></i></div></div></div>
    ${Object.keys(SKN).map(k=>`<div class="row" style="padding:8px 12px"><div class="info"><div class="t">${SKN[k]} <span style="font-family:var(--label);font-weight:700;color:var(--accent)">${S.sk[k]}</span>/10</div><div class="s">${SKD[k]}</div>
     <div class="bar"><i style="width:${S.sk[k]*10}%;background:var(--accent)"></i></div></div><button class="btn green" data-a="sk" data-k="${k}" ${S.pts>0&&S.sk[k]<10?'':'disabled'}>+1</button></div>`).join('')}
@@ -1168,11 +1169,7 @@ function paneCrew(){
    ${sf(paneCareer)}
    ${sf(paneFakes)}
    ${sf(paneCut)}
-   <div class="sec">Crew and stash</div>
-   <div class="row"><div class="info"><div class="t">Soldiers: ${S.soldiers}</div><div class="s">+6 strength each · cost $150/day each</div></div>
-    <button class="btn green" data-a="hire" ${S.cash>=hireCost()?'':'disabled'}>Hire ${money(hireCost())}</button></div>
-   ${sf(crewHTML)}
-   ${(()=>{try{return x8On()?rankHTML():''}catch(e){return ''}})()}
+   <div class="sec">Stash and more</div>
    ${sf(shHTML)}
    ${sf(poHTML)}
    ${sf(twHTML)}
@@ -4544,7 +4541,7 @@ function mainMenu(canContinue){
   $('msnd').onclick=()=>{SND.sfx=!SND.sfx;sndSave();mainMenu(canContinue)};$('mmus').onclick=()=>{SND.music=!SND.music;sndSave();SND.music?musicStart():musicStop();mainMenu(canContinue)};
 }
 $('newgame').onclick=()=>mainMenu(!S.over);
-document.addEventListener('click',e=>{const b=e.target.closest('[data-jump]');if(!b)return;const k=b.dataset.jump.toLowerCase(),map={jobs:'jobs',skills:'level',plugs:'your plugs',stash:'put up',home:'where you stay',life:'life choices',school:'school',homies:'your homies',girl:'your girl',trap:'trap houses',crew:'crew and stash',family:'family',crews:'your strength'};
+document.addEventListener('click',e=>{const b=e.target.closest('[data-jump]');if(!b)return;const k=b.dataset.jump.toLowerCase(),map={jobs:'jobs',skills:'level',plugs:'your plugs',stash:'put up',home:'where you stay',life:'life choices',school:'school',homies:'your homies',girl:'your girl',trap:'trap houses',crew:'crew and stash',family:'family',crews:'your crew'};
   const t=[...document.querySelectorAll('#pane .sec')].find(x=>x.textContent.toLowerCase().includes(map[k]));if(t)t.scrollIntoView({behavior:'smooth',block:'start'})});
 {const tt=document.createElement('button');tt.className='totop';tt.textContent='↑';tt.setAttribute('aria-label','Back to top');tt.hidden=true;tt.onclick=()=>window.scrollTo({top:0,behavior:'smooth'});document.body.appendChild(tt);
  addEventListener('scroll',()=>{tt.hidden=scrollY<500},{passive:true})}
