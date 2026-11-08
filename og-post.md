@@ -1,32 +1,30 @@
 🚨 IMPORTANT, READ NOW 🚨
 
-**SHORT VERSION:** I built a bunch of your ideas, they're live in the game now. Prison is next and I want your input on it before I build it.
+**SHORT VERSION:** Big update (v184). Prison is playable, your crew is a real crew, identity fraud and contracts are in, and the economy exploit is dead. A huge amount of this came from @ScotiaBank Teller. Go thank him.
 
-Yo OGs, here's what I added from what you've been telling me:
+First, a real thank you to ScotiaBank Teller. Bro, you sat up late typing idea after idea and every single one made the game better. Prison gangs with a hierarchy, kitchen jobs and shanks, phones and drone drops, visitors smuggling less than drones, a heat system that actually punishes you, cellblock raids, random searches, talking down not working when the beef is too high, identity fraud, contracts, and you caught the $2M economy exploit on hard. That is all you. Thank you, for real. You are the reason this update exists. Everybody tell him thanks.
 
-**🧑‍🤝‍🧑 Dealer stash (Rock Beno)**
-You can front product to your workers so it's not all on you. A worker can only hold so much based on his level, and a low loyalty worker can skim. Fire him and you get it back.
+**PRISON (new)**
+- Get caught as an adult and you do real time, day by day.
+- Commissary balance, trade goods (cigs, ramen, stamps), or people outside.
+- Phones from dirty guards, drone drops, visitor smuggling, jobs, prison gangs (Prospect to Shot-caller), parole.
+- Too much heat means searches and cellblock raids.
 
-**🎤 Rapper career (Sdozier41, ScotiaBank)**
-- Rappers make WAY more money now (streams, shows)
-- Interview requests and feature requests pop up in the Studio tab
-- Tours, merch drops, answering a rapper who dissed you, and award shows
+**YOUR CREW (new)**
+- Friends who join your gang move into your Crew. Build loyalty and trust.
+- Ranks: Right Hand Man, Enforcer. Specialties: Trapper, Robber, Scammer, Shooter, Lookout. Send them on routes.
+- Shootouts: a crew member can take the shot for you. You still play the mini game.
 
-**⚖️ Lawyer (Sdozier41)**
-He actually works now. A lawyer on call has a 50% chance to get the case thrown out (70% on payroll), so no strike and half your fine back.
+**NEW HUSTLES**
+- Identity fraud: buy a stranger's file, open cards in his name.
+- Contracts: take one, put one out on a rival, or get one put on YOU when a gang's beef hits 80+. Pay them off, fight, or hide.
 
-**🔓 Robbing a plug is harder (Lowkey)**
-Lower odds, and after you hit a plug every plug is on alert for 5 days.
+**FIXES**
+- Plugs have a daily buying budget now and pay less as you dump on them. Big wholesale sales add heat.
+- Connect texts you when your shipment drops. Messages show when they came in and when they land.
+- Gun-sale talk game has a pool of questions, no more repeats.
+- Talk-down is blocked when beef is too high.
 
-**🎲 Sore losers (Rock Beno)**
-Beat a guy at the park or dice and sometimes he comes back with his cousin later.
+**STILL COMING:** growing up faster (Beno's idea), sports, more.
 
-**🔧 Fixes:** grounded now clears when you move out (DonMojo).
-
-**PRISON IS NEXT. I need your ideas first:**
-I looked up real prison prices. Cigarettes go for about $20 each inside, a smuggled phone runs $1,500 to $2,000, a phone call can cost $20 for 15 minutes, and commissary food is marked up 2 to 4 times. My plan is a prison where you can build relationships with guards and inmates, find out who's dirty or strict, buy stuff at inside prices (like a phone from a bribed guard), and keep running your business from the inside.
-1. What would YOU want to do in prison?
-2. Cellmates, riots, smuggling, parole... what else?
-3. Anything you think I'm missing? Drop it in #hustle-ideas
-
-If you got something else you want added, same deal. Put it in #hustle-ideas and I'll look at it.
+Thank you again @ScotiaBank Teller. Tell me what you think and what to fix next.
