@@ -894,6 +894,25 @@ function ctHit(){const T=ctSt();if(!T.me||S.pr)return;const c=crew(T.me.c);if(!c
   $('ctp').onclick=()=>{S.cash-=cost;c.beef=Math.max(0,c.beef-20);say(`Paid ${money(cost)} to cancel the contract. The ${cdef(c.id).name} cooled off a little.`);end()};
   $('ctf').onclick=()=>{$('modal').hidden=true;shootoutGame(myStr(),Math.round(ctEn(c)*1.1),'The hitters',w=>{if(w){c.beef=Math.max(0,c.beef-10);S.rep+=5;addXP(8);S.heat=Math.min(100,S.heat+8);say('You beat the hitters. The contract is dead and your name got bigger.');lickDone('They failed','The hitters are done. The contract is cancelled. Word travels.',true,true)}else{say('The hitters got you. Contract is over, but you are hurt.');lickDone('They got you','You made it out hurt. The contract is over.',false,true)}T.me=null})};
   $('cth').onclick=()=>{S.en=Math.max(10,(S.en==null?enMax():S.en)-40);addStress(8);if(Math.random()<.45){const d=rnd(18,32);S.hp=Math.max(5,S.hp-d);say(`Hid out but they still caught you. −${d} health.`)}else say('You laid low until the contract expired.');end()}}
+/* ---------- stash house ---------- */
+const SHCOST=4000;
+const shSt=()=>S.sh=S.sh||{own:0,inv:{},q:{},paid:{},fake:{},cash:0};
+function shHTML(){if(S.rep<20&&!shSt().own)return '';const H=shSt();
+  if(!H.own)return `<div class="sec">Stash house</div><div class="row"><div class="info"><div class="t">Rent a stash house</div><div class="s">A place that is not yours on paper. Product and cash kept there survive a bust. Small chance the house gets raided, so keep the heat down. ${money(SHCOST)}.</div></div><button class="btn go" data-a="szbuy" ${S.cash<SHCOST?'disabled':''}>${money(SHCOST)}</button></div>`;
+  const lead=crewRank('stash'),risk=Math.round((.01+S.heat/100*.03)*(lead?.5:1)*(S.lawPay?.7:1)*1000)/10;
+  let h=`<div class="sec">Stash house${lead?` · ${esc(lead.name)} runs it`:''}</div>${a2('door',300)}<div class="row" style="flex-wrap:wrap"><div class="info"><div class="t">Cash in the house ${money(H.cash)}</div><div class="s">Raid risk about ${risk}% a day${lead?'':'. A Stash House Leader cuts it in half.'} Whatever is in here is safe when you get busted.</div></div><div class="btns" style="width:100%"><button class="btn" data-a="szcash" data-k="in" ${S.cash<1000?'disabled':''}>Put in $1,000</button><button class="btn" data-a="szcash" data-k="inall" ${S.cash<1?'disabled':''}>Put in all</button><button class="btn go" data-a="szcash" data-k="out" ${H.cash<1?'disabled':''}>Take it all out</button></div></div>`;
+  GOODS.forEach(g=>{const n=H.inv[g.id]||0,mine=S.inv[g.id]||0;if(!n&&!mine)return;h+=`<div class="row" style="flex-wrap:wrap"><div class="info"><div class="t">${g.name}</div><div class="s">In the house ${n?amt(n,g):'none'} · on you ${mine?amt(mine,g):'none'}</div></div><div class="btns"><button class="btn" data-a="szg" data-k="in" data-g="${g.id}" ${mine?'':'disabled'}>Store all</button><button class="btn go" data-a="szg" data-k="out" data-g="${g.id}" ${n?'':'disabled'}>Take out</button></div></div>`});
+  return h}
+function szAct(a,el){const H=shSt(),g=el.dataset.g?G(el.dataset.g):null,k=el.dataset.k;
+  if(a==='szbuy'){if(S.cash<SHCOST)return;S.cash-=SHCOST;H.own=1;say('You rented a stash house.');return render()}
+  if(a==='szcash'){if(k==='in'){const v=Math.min(1000,S.cash);S.cash-=v;H.cash+=v}else if(k==='inall'){H.cash+=Math.floor(S.cash);S.cash-=Math.floor(S.cash)}else{S.cash+=H.cash;H.cash=0}return render()}
+  if(a==='szg'&&g){const id=g.id;
+    if(k==='in'){const n=S.inv[id]||0;if(!n)return;const old=H.inv[id]||0,fk=Math.round((S.fake[id]||0)*1);H.q[id]=old?Math.round((H.q[id]*old+S.q[id]*n)/(old+n)):S.q[id];H.paid[id]=old?((H.paid[id]*old+(S.paid[id]||0)*n)/(old+n)):(S.paid[id]||0);H.fake[id]=(H.fake[id]||0)+fk;H.inv[id]=old+n;S.inv[id]=0;S.paid[id]=0;S.fake[id]=0;say(`Stored ${amt(n,g)} of ${g.name} at the stash house.`)}
+    else{const n=H.inv[id]||0;if(!n)return;const room=Math.floor((S.cap-used())/g.sp*10)/10,take=Math.min(n,Math.max(0,room));if(take<=0){say('You got no room to carry it.');return render()}const mine=S.inv[id]||0;S.q[id]=mine?Math.round((S.q[id]*mine+H.q[id]*take)/(mine+take)):H.q[id];S.paid[id]=mine?((S.paid[id]||0)*mine+H.paid[id]*take)/(mine+take):H.paid[id];S.inv[id]=mine+take;H.inv[id]=Math.round((n-take)*10)/10;if(H.inv[id]<=0){H.inv[id]=0;H.fake[id]=0}say(`Took ${amt(take,g)} of ${g.name} out of the stash house.`)}
+    return render()}}
+function shDay(){const H=S.sh;if(!H||!H.own||S.pr)return;const has=H.cash>0||GOODS.some(g=>(H.inv[g.id]||0)>0);if(!has)return;
+  const lead=crewRank('stash'),r=(.01+S.heat/100*.03)*(lead?.5:1)*(S.lawPay?.7:1);
+  if(Math.random()<r){const cash=H.cash,list=GOODS.filter(g=>(H.inv[g.id]||0)>0).map(g=>g.name);H.cash=0;GOODS.forEach(g=>{H.inv[g.id]=0;H.fake[g.id]=0});H.own=0;S.heat=Math.min(100,S.heat+12);say(`Twelve raided the stash house. You lost ${money(cash)}${list.length?' and the '+list.join(', '):''}. The house is gone.`)}}
 function paneCrew(){
   const turf=S.owner.filter(o=>o==='me').length, need=S.lvl*20;
   return `<div class="jump" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:4px">${['Skills','Plugs','Stash','Life','School','Jobs','Crew'].map(k=>`<button class="btn" style="padding:6px 10px;font-size:12px" data-jump="${k}">${k}</button>`).join('')}</div>${(S.traits||[]).length?`<div class="row" style="flex-wrap:wrap"><div class="info"><div class="t">Traits</div><div class="s">${S.traits.map(id=>{const t=TRAITS.find(x=>x.id===id);return t?`<b>${t.name}</b> · <i>${t.story}</i><br>${t.sub.replace(' Can\'t be undone.','')}`:''}).join('<br>')}</div></div></div>`:''}<div class="row" style="flex-wrap:wrap"><div class="info"><div class="t">Level ${S.lvl} · ${S.pts} skill point${S.pts===1?'':'s'} to spend</div>
@@ -913,6 +932,7 @@ function paneCrew(){
     <button class="btn green" data-a="hire" ${S.cash>=hireCost()?'':'disabled'}>Hire ${money(hireCost())}</button></div>
    ${crewHTML()}
    ${ctHTML()}
+   ${shHTML()}
    ${paneArm()}
    <div class="row"><div class="info"><div class="t">More stash space</div><div class="s">Storage units, safes and cars are at the mall and the car lot now.</div></div></div>
    <div class="row"><div class="info"><div class="t">Your turf: ${turf} block${turf===1?'':'s'}</div><div class="s">Each block pays $${300} a day and sells 12% higher</div></div></div>`;
@@ -3518,7 +3538,7 @@ function nextDay(){S.en=S.restDay?enMax():Math.max(30,enMax()-(S.stress>=70?20:0
   if(turf){S.cash+=turf*300;}
   {const sh=S.owner.filter(o=>o!=='me'&&o!=='none'&&crew(o)&&crew(o).ally).length;if(sh)S.cash+=sh*100}
   if(S.myGang&&S.soldiers)S.cash+=S.soldiers*50;
-  runTraps();crewDay();ctDay();prisonDay();
+  runTraps();crewDay();ctDay();shDay();prisonDay();
   gfDay();sideDay();if(S.car==='stolen'){S.heat=Math.min(100,S.heat+2);addXP(1)}favorRoll();
   shipDay();debtDay();loanDay();checkpointDay();rapDay();
   if(S.cal?calCheck():(S.day-1)%30===0)say("It's the first of the month. Checks hit and the Js got money to spend.");
@@ -3636,6 +3656,7 @@ function act(a,el){
   if(S.over)return;
   if(a.slice(0,2)==='cm')return crewAct(a,el);
   if(a.slice(0,2)==='ct')return ctAct(a,el);
+  if(a.slice(0,2)==='sz')return szAct(a,el);
   if(a.slice(0,2)==='pz')return prAct(a,el);
   if(a==='buy'||a==='sell')return qtyModal(a,GOODS.find(g=>g.id===el.dataset.g));
   if(S.grounded>S.day&&S.sneakOK!==S.day&&['go','lick','heist','hoops','dice','fmeet','pkick','pfav','phit','hit','gjoin'].includes(a)){
