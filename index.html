@@ -850,6 +850,36 @@ function shootoutGame(mine,theirs,who,done){const ok=crewOk();if(!ok.length||win
       else{m.trust=Math.min(100,m.trust+1);m.hurt=S.day+rnd(3,5);m.loy=Math.max(0,m.loy-2);
         if(Math.random()<Math.max(.03,.1-m.sk.shoot*.008)){const M=crewList(),j=M.indexOf(m);if(j>=0)M.splice(j,1);S.soldiers=Math.max(0,S.soldiers-1);M.forEach(x=>x.loy=Math.max(0,x.loy-8));say(`${m.name} took the shot for you and did not make it. The crew is shook.`)}
         else say(`${m.name} took the hit for you${dmg?` (−${dmg})`:''}. He is laid up a few days.`)}}})})}
+/* ---------- contracts ---------- */
+const ctOn=()=>S.rep>=30&&!S.pr;
+function ctSt(){return S.ct=S.ct||{board:null,out:[],me:null,done:0}}
+function ctEn(c){return Math.round(c.str*.8+8)}
+function ctBoard(){const T=ctSt();if(!T.board||T.board.d!==S.day){const cs=(S.crews||[]).filter(c=>c.alive&&!c.ally&&c.id!==S.gang);T.board={d:S.day,list:cs.sort(()=>Math.random()-.5).slice(0,3).map(c=>({c:c.id,pay:Math.round((2200+c.str*70+rnd(0,1500))/50)*50}))}}return T.board.list}
+function ctHTML(){if(!ctOn())return '';const T=ctSt(),B=ctBoard(),live=(S.crews||[]).filter(c=>c.alive&&!c.ally&&c.id!==S.gang);
+  let h=`<div class="sec">Contracts${T.done?` · ${T.done} filled`:''}</div>`;
+  if(T.me)h+=`<div class="row"><div class="info"><div class="t" style="color:var(--blood)">There is a contract on you</div><div class="s">The ${cdef(T.me.c).name} paid for it. Hitters are looking. They find you by day ${T.me.due}.</div></div></div>`;
+  T.out.forEach(o=>{h+=`<div class="row"><div class="info"><div class="t">Contract out on the ${cdef(o.c).name}</div><div class="s">Your guy handles it by day ${o.due}.</div></div></div>`});
+  h+=B.map((o,i)=>`<div class="row"><div class="info"><div class="t">Take a contract · ${cdef(o.c).name}</div><div class="s">A fixer wants one of theirs handled. Pays ${money(o.pay)}. You play the shootout. Heat +18 and their beef with you goes up.</div></div><button class="btn red" data-a="ctake" data-i="${i}" ${T.board.took===i?'disabled':''}>${T.board.took===i?'Done today':'Take it'}</button></div>`).join('');
+  h+=live.map(c=>{const cost=3000+c.str*60;return `<div class="row"><div class="info"><div class="t">Put a contract on the ${cdef(c.id).name}</div><div class="s">Pay a hitter to weaken them. About 70% it works. If it goes wrong, he talks and your heat jumps. Costs ${money(cost)}.</div></div><button class="btn" data-a="ctput" data-k="${c.id}" ${S.cash<cost||T.out.some(o=>o.c===c.id)?'disabled':''}>${money(cost)}</button></div>`}).join('');
+  return h}
+function ctAct(a,el){const T=ctSt();
+  if(a==='ctake'){const i=+el.dataset.i,o=ctBoard()[i];if(!o||T.board.took!=null)return;if(!spendEn(15))return;const c=crew(o.c);T.board.took=i;
+    return shootoutGame(myStr(),ctEn(c),'The target\'s people',w=>{if(w){S.cash+=o.pay;S.heat=Math.min(100,S.heat+18);c.beef=Math.min(100,c.beef+25);c.str=Math.max(4,c.str-3);S.rep+=6;addXP(8);T.done++;say(`Contract filled on the ${cdef(c.id).name}. +${money(o.pay)}.`);lickDone('Contract filled',`The fixer paid ${money(o.pay)}. The ${cdef(c.id).name} know it was you. Heat +18.`,true,true)}else{S.heat=Math.min(100,S.heat+10);c.beef=Math.min(100,c.beef+10);addStress(10);say('The contract fell through. No pay.');lickDone('Contract failed','No pay and the target\'s people are looking. Heat +10.',false,true)}})}
+  if(a==='ctput'){const c=crew(el.dataset.k),cost=3000+c.str*60;if(!c||S.cash<cost)return;S.cash-=cost;T.out.push({c:c.id,due:S.day+2});say(`Paid ${money(cost)} for a contract on the ${cdef(c.id).name}.`);render()}}
+function ctDay(){if(!S.crews)return;const T=ctSt();
+  T.out=T.out.filter(o=>{if(S.day<o.due)return true;const c=crew(o.c);if(!c||!c.alive)return false;
+    if(Math.random()<.7){c.str=Math.max(4,c.str-10);c.beef=Math.min(100,c.beef+15);S.heat=Math.min(100,S.heat+6);say(`The contract on the ${cdef(c.id).name} was carried out. They are weaker (−10 strength) and they know somebody paid.`)}
+    else{S.heat=Math.min(100,S.heat+15);c.beef=Math.min(100,c.beef+10);say(`Your hitter got caught and talked. Heat +15. The ${cdef(c.id).name} want you more now.`)}return false});
+  if(S.pr||window.noContracts)return;
+  if(T.me){const c=crew(T.me.c);if(!c||!c.alive){T.me=null;return}if(S.day>=T.me.due)setTimeout(ctHit,350);return}
+  const hot=S.crews.filter(c=>c.alive&&!c.ally&&c.beef>=80&&c.id!==S.gang);
+  if(hot.length&&Math.random()<.07){const c=pick(hot);T.me={c:c.id,due:S.day+2};say(`Word is the ${cdef(c.id).name} put a contract on you. Hitters have two days to find you.`);}}
+function ctHit(){const T=ctSt();if(!T.me||S.pr)return;const c=crew(T.me.c);if(!c)return T.me=null;const cost=2500+c.str*50;
+  modal(`<div class="sec" style="margin:0;color:var(--blood)">Contract on you</div><h2>The hitters found you</h2><p class="s" style="color:var(--dim)">The ${cdef(c.id).name} paid for this. You can buy it off, fight, or disappear for a while.</p><div class="btns" style="flex-direction:column;align-items:stretch"><button class="btn green" id="ctp" ${S.cash<cost?'disabled':''}>Pay them off · ${money(cost)}</button><button class="btn red" id="ctf">Fight them</button><button class="btn" id="cth">Hide out</button></div>`);
+  const end=()=>{T.me=null;$('modal').hidden=true;render()};
+  $('ctp').onclick=()=>{S.cash-=cost;c.beef=Math.max(0,c.beef-20);say(`Paid ${money(cost)} to cancel the contract. The ${cdef(c.id).name} cooled off a little.`);end()};
+  $('ctf').onclick=()=>{$('modal').hidden=true;shootoutGame(myStr(),Math.round(ctEn(c)*1.1),'The hitters',w=>{if(w){c.beef=Math.max(0,c.beef-10);S.rep+=5;addXP(8);S.heat=Math.min(100,S.heat+8);say('You beat the hitters. The contract is dead and your name got bigger.');lickDone('They failed','The hitters are done. The contract is cancelled. Word travels.',true,true)}else{say('The hitters got you. Contract is over, but you are hurt.');lickDone('They got you','You made it out hurt. The contract is over.',false,true)}T.me=null})};
+  $('cth').onclick=()=>{S.en=Math.max(10,(S.en==null?enMax():S.en)-40);addStress(8);if(Math.random()<.45){const d=rnd(18,32);S.hp=Math.max(5,S.hp-d);say(`Hid out but they still caught you. −${d} health.`)}else say('You laid low until the contract expired.');end()}}
 function paneCrew(){
   const turf=S.owner.filter(o=>o==='me').length, need=S.lvl*20;
   return `<div class="jump" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:4px">${['Skills','Plugs','Stash','Life','School','Jobs','Crew'].map(k=>`<button class="btn" style="padding:6px 10px;font-size:12px" data-jump="${k}">${k}</button>`).join('')}</div>${(S.traits||[]).length?`<div class="row" style="flex-wrap:wrap"><div class="info"><div class="t">Traits</div><div class="s">${S.traits.map(id=>{const t=TRAITS.find(x=>x.id===id);return t?`<b>${t.name}</b> · <i>${t.story}</i><br>${t.sub.replace(' Can\'t be undone.','')}`:''}).join('<br>')}</div></div></div>`:''}<div class="row" style="flex-wrap:wrap"><div class="info"><div class="t">Level ${S.lvl} · ${S.pts} skill point${S.pts===1?'':'s'} to spend</div>
@@ -868,6 +898,7 @@ function paneCrew(){
    <div class="row"><div class="info"><div class="t">Soldiers: ${S.soldiers}</div><div class="s">+6 strength each · cost $150/day each</div></div>
     <button class="btn green" data-a="hire" ${S.cash>=hireCost()?'':'disabled'}>Hire ${money(hireCost())}</button></div>
    ${crewHTML()}
+   ${ctHTML()}
    ${paneArm()}
    <div class="row"><div class="info"><div class="t">More stash space</div><div class="s">Storage units, safes and cars are at the mall and the car lot now.</div></div></div>
    <div class="row"><div class="info"><div class="t">Your turf: ${turf} block${turf===1?'':'s'}</div><div class="s">Each block pays $${300} a day and sells 12% higher</div></div></div>`;
@@ -3473,7 +3504,7 @@ function nextDay(){S.en=S.restDay?enMax():Math.max(30,enMax()-(S.stress>=70?20:0
   if(turf){S.cash+=turf*300;}
   {const sh=S.owner.filter(o=>o!=='me'&&o!=='none'&&crew(o)&&crew(o).ally).length;if(sh)S.cash+=sh*100}
   if(S.myGang&&S.soldiers)S.cash+=S.soldiers*50;
-  runTraps();crewDay();prisonDay();
+  runTraps();crewDay();ctDay();prisonDay();
   gfDay();sideDay();if(S.car==='stolen'){S.heat=Math.min(100,S.heat+2);addXP(1)}favorRoll();
   shipDay();debtDay();loanDay();checkpointDay();rapDay();
   if(S.cal?calCheck():(S.day-1)%30===0)say("It's the first of the month. Checks hit and the Js got money to spend.");
@@ -3590,6 +3621,7 @@ function lockPopUI(){const L=S.lockPop;if(!L||!$('modal').hidden||S.over)return 
 function act(a,el){
   if(S.over)return;
   if(a.slice(0,2)==='cm')return crewAct(a,el);
+  if(a.slice(0,2)==='ct')return ctAct(a,el);
   if(a.slice(0,2)==='pz')return prAct(a,el);
   if(a==='buy'||a==='sell')return qtyModal(a,GOODS.find(g=>g.id===el.dataset.g));
   if(S.grounded>S.day&&S.sneakOK!==S.day&&['go','lick','heist','hoops','dice','fmeet','pkick','pfav','phit','hit','gjoin'].includes(a)){
