@@ -474,7 +474,7 @@ function cityMap(){
   PLACES.forEach(P=>{let x=P.x,y=P.y,bi=P.bi;
     if(P.id==='studio'&&!S.rapOn)return;
     g+=`<g class="mapp" data-p="${P.id}" style="cursor:pointer"><circle cx="${x}" cy="${y}" r="13" fill="#221e27" stroke="${bi===S.at?'#f5b72a':'#4a4352'}" stroke-width="1.5"/><text x="${x}" y="${y+5}" text-anchor="middle" font-size="13">${P.ic}</text></g>`});
-  return g+`</svg><div class="s" style="color:var(--dim);margin-top:4px">Tap a block to move there (takes a day). Tap a spot to see what's there.</div>`;
+  return g+`</svg><div class="s" style="color:var(--dim);margin-top:4px">👆 Tap a block to move there (takes a day). Tap any spot on the map to open it and see what's there.</div>`;
 }
 function placeAt(id){return PLACES.find(p=>p.id===id).bi}
 function openPlace(id){const P=PLACES.find(p=>p.id===id),bi=placeAt(id);
