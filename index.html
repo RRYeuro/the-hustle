@@ -1262,6 +1262,7 @@ const SCAMDEF={
  skim:{n:'ATM skim ring',t:'Skimmers on a row of machines, then clean it all out. Five steps.',noto:60,cost:1500,st:['simon','maze','pac','inv','pac'],pay:[6500,9500],heat:20},
  drain:{n:'Drain a wallet',t:'Get into a rich mark\'s crypto. Four steps.',shade:1,st:['maze','simon','pac','inv'],pay:[3200,5200],heat:14},
  wipe:{n:'Wipe your record',t:'Tunnel in on a VPN, pull your file and hold the firewall. Heat goes to zero. Three steps.',shade:1,st:['maze','pac','inv'],heat:0,wipe:1},
+ fullz:{n:'Identity fraud',t:'Buy a stranger\'s full file (fullz), pass the bank\'s checks and open cards in his name. Three steps.',shade:1,noto:20,cost:600,st:['simon','maze','pac'],pay:[4200,7200],heat:16,fraud:1},
  tap:{n:'Tap an opp\'s phone',t:'Read a rival crew\'s messages. Two steps.',shade:1,st:['maze','simon'],heat:8,tap:1}};
 const HACK_RUNS=8,HACK_SMARTS=6;
 const hackOK=()=>{const sc=S.scam||{};return is('shade')||(sc.runs||0)>=HACK_RUNS||skv('smarts')>=HACK_SMARTS};
@@ -1275,7 +1276,8 @@ function scamRun(k){const D=SCAMDEF[k],sc=S.scam=S.scam||{noto:0,laptop:0,did:{}
     else if(D.tap){const c=pick(S.crews.filter(c=>c.alive));c.str=Math.max(4,c.str-5);c.beef=Math.max(0,c.beef-10);sc.runs=(sc.runs||0)+1;sc.noto+=5;addXP(5);S.heat=Math.min(100,S.heat+D.heat);t='Phones tapped';x=`You read everything the ${cdef(c.id).name} been saying. They are weaker now (−5 strength).`}
     else{const h=sc.hist[k]=(sc.hist[k]||[]).filter(d=>S.day-d<5);const sat=Math.pow(.6,h.length);h.push(S.day);
       let v=rnd(D.pay[0],D.pay[1])*(1+skv('hustle')*.02+skv('talk')*.015)*sat;if(Math.random()<skv('luck')*.015){v*=1.5;x0=' Luck had it paying extra.'}v=Math.round(v/10)*10;S.cash+=v;sc.runs=(sc.runs||0)+1;sc.noto+=Math.ceil(N*2+v/2500);addXP(N*2);S.heat=Math.min(100,S.heat+D.heat);
-      t=D.n+' paid off';x=`${N} steps done. You walked away with ${money(v)}.${x0}${sat<1?' The same hustle again so soon pays less.':''} Heat +${D.heat}.`}
+      t=D.n+' paid off';if(D.fraud){const nm=pick(['Marcus Hale','Tanya Brooks','Derek Owens','Lena Ortiz','Calvin Reed','Priya Nair','Walt Dunn']),bk=pick(['First Federal','Metro Credit','Harbor Bank','Summit One']);sc.cards=(sc.cards||0)+1;x0=` ${bk} approved a card in ${nm}'s name. You maxed it out before the first statement.`;if(Math.random()<.25){S.heat=Math.min(100,S.heat+8);x0+=' ${nm} caught it early and froze everything. Extra heat.'.replace('${nm}',nm)}}
+      x=`${N} steps done. You walked away with ${money(v)}.${x0}${sat<1?' The same hustle again so soon pays less.':''} Heat +${D.heat}.`}
     say(`${t}.`);lickDone(t,x,true,true)};
   const next=()=>{if(i>=N)return win();const g=D.st[i];gateGame(`${D.n}: step ${i+1} of ${N}`,MGTXT[g],()=>MG[g]({d:N>1?i/(N-1):0},ok=>{if(!ok&&!bail&&Math.random()<skv('luck')*.02){bail=true;ok=true;say('Luck bailed you out on that step.')}ok?(i++,next()):lose()}))};
   next()}
@@ -1287,7 +1289,7 @@ function paneScam(){const sc=S.scam=S.scam||{noto:0,laptop:0,did:{}};
   h+=['fake','phish','skim'].map(row).join('');
   if(is('shade')&&!sc.laptop)sc.laptop=1;
   if(hackOK()){
-    h+=sc.laptop?`<div class="sec">Ghost work${is('shade')?' · Shade\'s laptop':''}</div>`+['drain','wipe','tap'].map(row).join('')
+    h+=sc.laptop?`<div class="sec">Ghost work${is('shade')?' · Shade\'s laptop':''}</div>`+['fullz','drain','wipe','tap'].map(row).join('')
     :`<div class="row"><div class="info"><div class="t">Set up a laptop</div><div class="s">You know enough now to do the ghost work: wallets, records, phones.</div></div><button class="btn green" data-a="laptop" ${S.cash>=2000?'':'disabled'}>$2,000</button></div>`}
   else h+=`<div class="row"><div class="info"><div class="t">Ghost work · locked</div><div class="s">Wallets, police records, rival phones. Pull off ${HACK_RUNS} scam jobs (${sc.runs||0} so far) or get your Smarts skill to ${HACK_SMARTS} (it is ${skv('smarts')} now) to learn it.</div></div></div>`;
   return h}
