@@ -157,6 +157,7 @@ h1{font-family:var(--display);font-weight:400;font-size:34px;letter-spacing:.02e
     <button role="tab" data-t="crew" aria-selected="false">🧍 Me</button>
     <button role="tab" data-t="phone" aria-selected="false" id="phtab">📱 Phone</button>
     <button role="tab" data-t="cards" aria-selected="false" id="cardtab">🃏 Cards</button>
+    <button role="tab" data-t="exp" aria-selected="false" id="exptab">💸 Expenses</button>
   </div>
   <div class="btns" id="fx"></div>
   <div class="pane" id="pane"></div>
@@ -396,7 +397,7 @@ function render(){if(S&&S.pr)tab='prison';else if(S&&tab==='prison')tab='block';
   try{$('cardtab').textContent=(S.hand||[]).length?`🃏 Cards ${S.hand.length}`:'🃏 Cards'}catch(e){console.error('cardtab',e)}
   const FXN={discount:'Plug Love',hype:'Hype Day',ride:'Ride or Die',lawyer:'Lawyer'};
   $('fx').innerHTML=Object.keys(S.fx||{}).filter(k=>S.fx[k]).map(k=>`<span class="chip here">Active: ${FXN[k]}</span>`).join('');
-  let _ph;try{_ph={sch:paneSchool,rap:paneRap,rob:paneRob,sp:paneSports,phone:panePhone,block:()=>paneBlock()+paneGuns()+(()=>{try{return x8On()?goalHTML():''}catch(e){return ''}})(),move:paneMove,beef:paneBeef,crew:paneCrew,cards:paneCards,prison:panePrison}[tab]()}catch(e){console.error('tab',tab,e);_ph=`<div class="row"><div class="info"><div class="t" style="color:var(--blood)">This tab hit an error</div><div class="s">${esc(e.message||'')} (tell Euro: ${esc(tab)})</div></div></div>`}
+  let _ph;try{_ph={sch:paneSchool,rap:paneRap,rob:paneRob,sp:paneSports,phone:panePhone,block:()=>paneBlock()+paneGuns()+(()=>{try{return x8On()?goalHTML():''}catch(e){return ''}})(),move:paneMove,beef:paneBeef,crew:paneCrew,cards:paneCards,exp:paneExp,prison:panePrison}[tab]()}catch(e){console.error('tab',tab,e);_ph=`<div class="row"><div class="info"><div class="t" style="color:var(--blood)">This tab hit an error</div><div class="s">${esc(e.message||'')} (tell Euro: ${esc(tab)})</div></div></div>`}
   $('pane').innerHTML=_ph;
   $('log').innerHTML=S.log.map(l=>`<p><span class="d">D${l.d}</span>${l.t}</p>`).join('');
   if(S.pr){$('here').textContent='Locked up · '+S.pr.place}
@@ -1180,6 +1181,33 @@ function paneCrew(){
    <div class="row"><div class="info"><div class="t">Your turf: ${turf} block${turf===1?'':'s'}</div><div class="s">Each block pays $${300} a day and sells 12% higher</div></div></div>`;
 }
 
+
+/* ---------- cost of living and the expenses tab ---------- */
+function livCost(){const items=[];if(!S||S.home==='family'||S.inJail||S.pr||!HOMES[S.home])return{items,tot:0};const H=HOMES[S.home];
+  items.push(['Food',S.home==='couch'?60:90]);
+  if(S.home!=='couch')items.push(['Phone and internet',40]);
+  if(H.rent>=250)items.push(['Utilities',Math.round(H.rent*.12)]);
+  if(S.car&&S.car!=='stolen'&&CARS[S.car])items.push(['Car insurance and gas',Math.round(80+CARS[S.car].cost/150)]);
+  return{items,tot:items.reduce((a,x)=>a+x[1],0)}}
+function livingDay(){if(!S.livDay){S.livDay=S.day+7;return}if(S.day<S.livDay)return;S.livDay=S.day+7;const c=livCost();if(!c.tot)return;
+  if(S.cash>=c.tot){S.cash-=c.tot;say(`Paid ${money(c.tot)} for living costs this week (${c.items.map(x=>x[0].toLowerCase()).join(', ')}).`)}
+  else{addStress(8);S.rep=Math.max(0,S.rep-1);say(`Couldn't cover ${money(c.tot)} in living costs this week. Stress up, rep −1. Get your bread right.`)}}
+function paneExp(){
+  const H=HOMES[S.home]||{rent:0},L=livCost(),per=S.myGang?100:150,sold=S.soldiers||0,cn=sold*per;
+  const wk=(S.workers||[]).reduce((a,w)=>a+wPay(w),0),law=S.lawPay?1500:0,cousin=S.home==='couch'&&S.cousinDeal?250:0,loan=S.ls&&S.ls.owe?S.ls:null;
+  const row=(t,sub,amt)=>`<div class="row" style="flex-wrap:wrap"><div class="info" style="flex:1 1 200px;min-width:0"><div class="t">${t}</div><div class="s">${sub}</div></div><span class="chip">${amt}</span></div>`;
+  const weekly=(H.rent||0)+L.tot+law+cousin+cn*7;
+  let h=`<div class="sec">What it costs to live</div>`;
+  h+=row('Rent',S.home==='family'?'Your people cover the house.':`${H.name||'Your place'}. Next due in ${Math.max(0,(S.rentDay||S.day)-S.day)} day${(S.rentDay||S.day)-S.day===1?'':'s'}.`,H.rent?money(H.rent)+' / week':'$0');
+  h+=L.tot?L.items.map(x=>row(x[0],'Comes out once a week.',money(x[1])+' / week')).join(''):row('Living costs',S.home==='family'?'Food, phone and bills are on your people while you live at home.':'None right now.','$0');
+  if(cousin)h+=row('Cousin',`You pay your cousin for the couch.`,money(cousin)+' / week');
+  h+=`<div class="sec">Your crew and team</div>`;
+  h+=sold?row('Soldiers',`${sold} soldier${sold===1?'':'s'} at ${money(per)} a day each.${S.myGang?' Your gang brings $50 a day each back in.':''}`,money(cn)+' / day'):row('Soldiers','No soldiers on payroll.','$0');
+  h+=(S.workers||[]).length?row('Worker pay',`${S.workers.length} worker${S.workers.length===1?'':'s'}. Base pay comes out of what they bring in.`,money(wk)+' / day'):row('Workers','No workers.','$0');
+  h+=row('Lawyer',S.lawPay?'Attorney Cole is on retainer. He cuts raid risk and helps your case. Miss a payment and he walks.':'No lawyer on retainer.',law?money(law)+' / week':'$0');
+  h+=`<div class="sec">Debt</div>`+(loan?row('Mr. Vince',`You owe ${money(loan.owe)}. Due day ${loan.due}${S.day>loan.due?'. You are late and the interest is growing.':'.'}`,money(loan.owe)):row('Loans','You do not owe anybody.','$0'));
+  h+=`<div class="sec">Total</div><div class="row"><div class="info"><div class="t">About ${money(weekly)} a week</div><div class="s">Rent, living costs, lawyer, your cousin and soldiers, added up. Worker pay and debt are not in this number. Keep that much clean and ready so you never miss a bill.</div></div></div>`;
+  return h}
 function paneCards(){
   let h=`<div class="sec">Your hand (${S.hand.length}/3)</div>`;
   h+=S.hand.length?S.hand.map((id,i)=>{const c=CARDS.find(c=>c.id===id);
@@ -3812,7 +3840,7 @@ function nextDay(){S.en=S.restDay?enMax():Math.max(30,enMax()-(S.stress>=70?20:0
   shipDay();debtDay();loanDay();checkpointDay();rapDay();
   if(S.cal?calCheck():(S.day-1)%30===0)say("It's the first of the month. Checks hit and the Js got money to spend.");
   demandDay();
-  homeDay();
+  homeDay();try{livingDay()}catch(e){console.error('livingDay',e)}
   lifeDay();
   friendDay();
   phoneDay();
