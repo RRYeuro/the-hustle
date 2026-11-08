@@ -1,30 +1,26 @@
 🚨 IMPORTANT, READ NOW 🚨
 
-**SHORT VERSION:** Big update (v184). Prison is playable, your crew is a real crew, identity fraud and contracts are in, and the economy exploit is dead. A huge amount of this came from @ScotiaBank Teller. Go thank him.
+**SHORT VERSION:** v185 is live. Faces for everybody, a stash house, snitches, crew drama, parole, territory wars, and the game grows up 25% faster. Most of the crime stuff came from @ScotiaBank Teller. Thank him again.
 
-First, a real thank you to ScotiaBank Teller. Bro, you sat up late typing idea after idea and every single one made the game better. Prison gangs with a hierarchy, kitchen jobs and shanks, phones and drone drops, visitors smuggling less than drones, a heat system that actually punishes you, cellblock raids, random searches, talking down not working when the beef is too high, identity fraud, contracts, and you caught the $2M economy exploit on hard. That is all you. Thank you, for real. You are the reason this update exists. Everybody tell him thanks.
+First, another real thank you to ScotiaBank Teller. Bro, you keep sending ideas at 2 AM and every one of them is making this game deeper. Prison, contracts, identity fraud, the economy fix, and now the parole and snitch stuff all came from your push. You are a big reason this game feels real. Thank you.
 
-**PRISON (new)**
-- Get caught as an adult and you do real time, day by day.
-- Commissary balance, trade goods (cigs, ramen, stamps), or people outside.
-- Phones from dirty guards, drone drops, visitor smuggling, jobs, prison gangs (Prospect to Shot-caller), parole.
-- Too much heat means searches and cellblock raids.
-
-**YOUR CREW (new)**
-- Friends who join your gang move into your Crew. Build loyalty and trust.
-- Ranks: Right Hand Man, Enforcer. Specialties: Trapper, Robber, Scammer, Shooter, Lookout. Send them on routes.
-- Shootouts: a crew member can take the shot for you. You still play the mini game.
-
-**NEW HUSTLES**
-- Identity fraud: buy a stranger's file, open cards in his name.
-- Contracts: take one, put one out on a rival, or get one put on YOU when a gang's beef hits 80+. Pay them off, fight, or hide.
+**WHAT'S NEW**
+- 🧑 Every crew member, friend, girlfriend and boyfriend has a face that matches their name. Rank shows as a colored frame.
+- 🏠 Stash house: rent one, store product and cash, and it survives a bust. It can get raided if your heat is high.
+- 👥 New crew roles: Stash House Leader (heat drops faster) and Block Captain (brings in turf money).
+- 🐀 Snitches: low loyalty crew can start talking. Pay to find the leak, then feed him lies or cut him loose.
+- 💬 Crew drama: two of your people beef and you pick a side, squash it, or let them fight.
+- ⛓️ Parole: when you get out you check in with an officer. Miss it or violate and you go back.
+- ⚔️ Territory war: three rounds of shootouts to take a rival's blocks. Win all of them and wipe them out.
+- ⚖️ Lawyer on payroll: motions cut your prison time and help at parole.
+- 🎂 You grow up 25% faster now (Beno's idea).
+- 🔫 Guns unlock at 16.
 
 **FIXES**
-- Plugs have a daily buying budget now and pay less as you dump on them. Big wholesale sales add heat.
-- Connect texts you when your shipment drops. Messages show when they came in and when they land.
-- Gun-sale talk game has a pool of questions, no more repeats.
-- Talk-down is blocked when beef is too high.
+- Sneaking out when you're grounded actually lets you leave now.
+- The pitch buttons work now (Beno's PC bug).
+- New scenes for prison, contracts, identity fraud, graduation and moving out.
 
-**STILL COMING:** growing up faster (Beno's idea), sports, more.
+**NOT YET:** sports. Holding that for later.
 
-Thank you again @ScotiaBank Teller. Tell me what you think and what to fix next.
+Tell me what's broken and what you want next. Thank you @ScotiaBank Teller.
