@@ -926,14 +926,16 @@ function ctHit(){const T=ctSt();if(!T.me||S.pr)return;const c=crew(T.me.c);if(!c
 /* ---------- stash house ---------- */
 const SHCOST=4000;
 const shSt=()=>S.sh=S.sh||{own:0,inv:{},q:{},paid:{},fake:{},cash:0};
+const shCan=()=>adult()||S.home!=='family';
 function shHTML(){if(S.rep<20&&!shSt().own)return '';const H=shSt();
+  if(!H.own&&!shCan())return `<div class="sec">Stash house</div><div class="row"><div class="info"><div class="t">Too young to rent a place</div><div class="s">You still live at home. Get kicked out or move out first, then you can rent a stash house.</div></div></div>`;
   if(!H.own)return `<div class="sec">Stash house</div>${a2i('stash_out',300)}<div class="row"><div class="info"><div class="t">Rent a stash house</div><div class="s">A place that is not yours on paper. Product and cash kept there survive a bust. Small chance the house gets raided, so keep the heat down. ${money(SHCOST)}.</div></div><button class="btn go" data-a="szbuy" ${S.cash<SHCOST?'disabled':''}>${money(SHCOST)}</button></div>`;
   const lead=crewRank('stash'),risk=Math.round((.01+S.heat/100*.03)*(lead?.5:1)*(S.lawPay?.7:1)*1000)/10;
   let h=`<div class="sec">Stash house${lead?` · ${esc(lead.name)} runs it`:''}</div>${a2i('stash_in',300)}<div class="row" style="flex-wrap:wrap"><div class="info"><div class="t">Cash in the house ${money(H.cash)}</div><div class="s">Raid risk about ${risk}% a day${lead?'':'. A Stash House Leader cuts it in half.'} Whatever is in here is safe when you get busted.</div></div><div class="btns" style="width:100%"><button class="btn" data-a="szcash" data-k="in" ${S.cash<1000?'disabled':''}>Put in $1,000</button><button class="btn" data-a="szcash" data-k="inall" ${S.cash<1?'disabled':''}>Put in all</button><button class="btn go" data-a="szcash" data-k="out" ${H.cash<1?'disabled':''}>Take it all out</button></div></div>`;
   GOODS.forEach(g=>{const n=H.inv[g.id]||0,mine=S.inv[g.id]||0;if(!n&&!mine)return;h+=`<div class="row" style="flex-wrap:wrap"><div class="info"><div class="t">${g.name}</div><div class="s">In the house ${n?amt(n,g):'none'} · on you ${mine?amt(mine,g):'none'}</div></div><div class="btns"><button class="btn" data-a="szg" data-k="in" data-g="${g.id}" ${mine?'':'disabled'}>Store all</button><button class="btn go" data-a="szg" data-k="out" data-g="${g.id}" ${n?'':'disabled'}>Take out</button></div></div>`});
   return h}
 function szAct(a,el){const H=shSt(),g=el.dataset.g?G(el.dataset.g):null,k=el.dataset.k;
-  if(a==='szbuy'){if(S.cash<SHCOST)return;S.cash-=SHCOST;H.own=1;say('You rented a stash house.');return render()}
+  if(a==='szbuy'){if(S.cash<SHCOST||!shCan())return;S.cash-=SHCOST;H.own=1;say('You rented a stash house.');return render()}
   if(a==='szcash'){if(k==='in'){const v=Math.min(1000,S.cash);S.cash-=v;H.cash+=v}else if(k==='inall'){H.cash+=Math.floor(S.cash);S.cash-=Math.floor(S.cash)}else{S.cash+=H.cash;H.cash=0}return render()}
   if(a==='szg'&&g){const id=g.id;
     if(k==='in'){const n=S.inv[id]||0;if(!n)return;const old=H.inv[id]||0,fk=Math.round((S.fake[id]||0)*1);H.q[id]=old?Math.round((H.q[id]*old+S.q[id]*n)/(old+n)):S.q[id];H.paid[id]=old?((H.paid[id]*old+(S.paid[id]||0)*n)/(old+n)):(S.paid[id]||0);H.fake[id]=(H.fake[id]||0)+fk;H.inv[id]=old+n;S.inv[id]=0;S.paid[id]=0;S.fake[id]=0;say(`Stored ${amt(n,g)} of ${g.name} at the stash house.`)}
