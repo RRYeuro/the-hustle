@@ -390,7 +390,7 @@ function render(){if(S&&S.pr)tab='prison';else if(S&&tab==='prison')tab='block';
    $('owner').innerHTML+=`<div class="ai" style="font-size:11px;line-height:1.35;margin-top:4px;color:var(--fg);opacity:.85;text-align:right;white-space:nowrap">Attention <b style="color:${at>=60?'var(--blood)':at>=30?'var(--accent)':'var(--fg)'}">${at>=60?'High':at>=30?'Some':'Low'}</b><br>Js got ${money(jl)} · ${JSTAG(S.at)}${cr?`<br>${cdef(o).name}: ${cr.ally||S.gang===o?'with you':cr.beef>=50?'want smoke':cr.respect>=60?'green light':'watching you'}`:''}</div>`}
   document.querySelectorAll('.tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.t===tab));{const n=[...document.querySelectorAll('.tabs button')].filter(b=>!b.hidden).length;document.querySelector('.tabs').style.setProperty('--tc',n<=6?n:Math.ceil(n/2))}
   document.querySelector('.tabs').style.display=S.pr?'none':'';
-  {const nreq=(S.texts||[]).length;$('phtab').textContent=nreq?`📱 Phone ${nreq}`:'📱 Phone';}
+  {const nreq=(S.texts||[]).length+(S.inbox||[]).filter(m=>m.d===S.day).length;$('phtab').textContent=nreq?`📱 Phone ${nreq}`:'📱 Phone';}
   $('cardtab').textContent=S.hand.length?`🃏 Cards ${S.hand.length}`:'🃏 Cards';
   const FXN={discount:'Plug Love',hype:'Hype Day',ride:'Ride or Die',lawyer:'Lawyer'};
   $('fx').innerHTML=Object.keys(S.fx).filter(k=>S.fx[k]).map(k=>`<span class="chip here">Active: ${FXN[k]}</span>`).join('');
@@ -1837,10 +1837,11 @@ function connectCustom(i,g){const C=conList()[i||0];if(!C)return;const m=cmode(C
   const q=$('cq'),nn=$('cn'),up=()=>{const n=+q.value;$('co2').textContent=amt(n,g);$('ct').textContent=money(Math.round(pr*n)+fly);const rk=shipRisk(C,g,n);$('cr').textContent=`Risk of getting caught: ${Math.round(rk*100)}%${rk>=.2?' ⚠':''}`;$('ci').innerHTML=pkg(g,n,46);if(document.activeElement!==nn)nn.value=n};
   q.oninput=up;nn.oninput=()=>{let v=Math.max(g.step,Math.min(mx,+nn.value||g.step));v=Math.round(v/g.step)*g.step;q.value=v;up()};up();
   $('cbk').onclick=()=>connectOrder(i);$('cok').onclick=()=>connectBuy(C,g,+q.value)}
-function connectLand(pk){const g=G(pk.g),n=pk.n,realHave=S.inv[g.id]-S.fake[g.id];S.q[g.id]=Math.round((S.q[g.id]*realHave+pk.q*n)/(realHave+n));S.paid[g.id]=Math.round((S.paid[g.id]*S.inv[g.id]+pk.cost)/(S.inv[g.id]+n));S.inv[g.id]+=n;say(`${pk.c} delivered ${amt(n,g)} of ${g.name}.`)}
+function phoneMsg(f,t){S.inbox=S.inbox||[];S.inbox.unshift({d:S.day,f,t});S.inbox=S.inbox.slice(0,8);say(`📱 ${f}: ${t}`)}
+function connectLand(pk){const g=G(pk.g),n=pk.n,realHave=S.inv[g.id]-S.fake[g.id];S.q[g.id]=Math.round((S.q[g.id]*realHave+pk.q*n)/(realHave+n));S.paid[g.id]=Math.round((S.paid[g.id]*S.inv[g.id]+pk.cost)/(S.inv[g.id]+n));S.inv[g.id]+=n;phoneMsg(pk.c,`"Your ${g.name} just dropped. ${amt(n,g)} is in your stash."`)}
 function shipDay(){if(!S.ship||!S.ship.length)return;const keep=[];S.ship.forEach(pk=>{if(pk.day>S.day){keep.push(pk);return}const g=G(pk.g);
-    if(!shipRoom(g,pk.n)){pk.day=S.day+1;keep.push(pk);say(`${pk.c}'s package is waiting but you got no room for it. Clear your stash.`);return}
-    if(Math.random()<pk.risk){S.heat=Math.min(100,S.heat+12);addStress(8);say(`Your ${g.name} shipment got caught. You lost ${amt(pk.n,g)} and ${money(pk.cost)}. Heat +12.`);return}
+    if(!shipRoom(g,pk.n)){pk.day=S.day+1;keep.push(pk);phoneMsg(pk.c,`"Your package is waiting but you got no room for it. Clear your stash."`);return}
+    if(Math.random()<pk.risk){S.heat=Math.min(100,S.heat+12);addStress(8);phoneMsg(pk.c,`"Your ${g.name} got caught. You lost ${amt(pk.n,g)} and ${money(pk.cost)}."`);say('Shipment got caught. Heat +12.');return}
     connectLand(pk)});S.ship=keep}
 function paneConnect(){return conList().map((C,i)=>paneConnect1(C,i)).join('')}
 function paneConnect1(C,i){const ready=S.day-C.last>=1||(C.ordD===S.day&&C.ordN<3),t=ctier(C),inc=(S.ship||[]).filter(x=>x.c===C.name);
@@ -3048,6 +3049,7 @@ const tBan=t=>`<div style="width:100%;background:rgba(245,183,42,.12);border-lef
 function panePhone(){const C=S.custos||[],T=S.texts||[];
   let h=loanHTML()+paneConnect()+phonePlugs()+workersPhoneHTML()+`<div class="row" style="flex-wrap:wrap;border-color:var(--accent)"><div class="info"><div class="t" style="font-family:var(--display);font-size:20px;font-weight:400">Trap phone</div><div class="s">${C.length} plays saved · plays pay more than the Js, and more the longer they've been buying from you. They come to you, wherever you at.</div></div>
     <div class="btns" style="width:100%"><button class="btn go" style="white-space:normal" data-a="ptext" ${S.texted===S.day||!C.length?'disabled':''}>${S.texted===S.day?'Already texted today':"Text everybody \"I'm open\""}</button><button class="btn" style="white-space:normal" data-a="pcard" ${S.passed===S.day?'disabled':''}>${S.passed===S.day?'Passed it out today':`Pass out your number on ${BLOCKS[S.at]}`}</button></div></div>`;
+  {const ib=(S.inbox||[]).filter(m=>S.day-m.d<=3).slice(0,4);if(ib.length)h+=`<div class="sec">Messages</div>`+ib.map(m=>`<div class="row" style="padding:8px 12px;flex-wrap:wrap">${tBan(`Received ${m.d===S.day?'today':dayTxt(m.d)}`)}<div class="info"><div class="t">📱 ${esc(m.f)}</div><div class="s">${esc(m.t)}</div></div></div>`).join('')}
   h+=`<div class="sec">Texts (${T.length})</div>`;
   h+=T.length?T.map((t,i)=>{const c=C[t.ci];if(!c)return '';const gid=t.g||c.gid,g=G(gid),have=stkG(gid)>=g.step,sz=t.g?altSize(c,gid):c.size;
     return `<div class="row" style="padding:8px 12px;flex-wrap:wrap">${tBan(`Texted ${t.day===S.day?'today':dayTxt(t.day)} · reply by ${dayTxt(t.day+2)}, then they move on`)}${custPic(c.name,44)}<div class="info" style="flex:1 1 200px;min-width:0"><div class="t">📱 ${c.name}${(c.hook||0)>=80?' <span class="chip war">Strung out</span>':''}</div><div class="s">"${t.g?`Switching it up today. `:''}You got ${amt(sz,g)} of ${g.name}?" · pays ~${money(custoPrice(c,gid))} each${have?(qWhere(gid)?' · '+qWhere(gid):''):' · <span style="color:var(--blood)">you\'re out</span>'}${(c.hook||0)>=80?' · <b style="color:var(--blood)">Strung out. Serving them is a risk.</b>':''}</div></div>
