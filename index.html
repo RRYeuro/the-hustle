@@ -2354,16 +2354,34 @@ function sneakGame(done){
     $('ss').textContent=`Steps ${steps} of ${need} · Noise ${noise} of 2 · ${Math.max(0,Math.ceil((LIM-(performance.now()-T0))/1000))}s`;if(noise>=2||steps>=need){if(steps>=need&&performance.now()-T0<LIM*.6){addXP(2);say('Smooth and quiet. +2 XP.')}mgOn=false;setTimeout(()=>done(steps,noise>=2),250)}};
 }
 function talkGame(done){
-  const R=[
+  const Q=[
     {q:'"Is the gun still available? What is it?"',a:[['Yeah, a 9, clean. Barely used.',0],['It shoots, that\'s all you need to know.',2],['Uh, a pistol. A black one.',1]]},
     {q:'"Can you send a video of it first?"',a:[['I don\'t do videos, too hot. You\'ll see it in person.',0],['My phone broke.',2],['Maybe later, I\'m busy.',1]]},
     {q:'"Bet. Meet at the gas station on Main by the cameras?"',a:[['Nah, too many cameras. Back of the park.',0],['Wherever, I don\'t care.',1],['I\'ll send you my address.',2]]},
+    {q:'"How much you want for it?"',a:[['Eight hundred, firm. It\'s worth more.',0],['Whatever you got.',2],['Uh... five hundred? Maybe six?',1]]},
+    {q:'"Where you get it from? It ain\'t hot, is it?"',a:[['Family. Nobody\'s looking for it.',0],['Why you asking so many questions?',2],['Found it.',1]]},
+    {q:'"Got any extra clips with it?"',a:[['Two extra. Full. Comes with the deal.',0],['Nah, just the gun.',1],['I don\'t know, let me check.',2]]},
+    {q:'"My boy said you the one. How do I know you ain\'t the law?"',a:[['Ask anybody on the block. I move quiet.',0],['Do I look like the law?',1],['I\'m not, trust me bro.',2]]},
+    {q:'"You trying to do this tonight?"',a:[['Tonight\'s good. Late, after the block clears.',0],['Whenever, I\'m free all week.',2],['Tomorrow, maybe?',1]]},
+    {q:'"I\'m not paying until I check it. That cool?"',a:[['Check it all you want. It\'s clean.',0],['Nah, cash first.',2],['I guess so.',1]]},
+    {q:'"Who else you got on the hook for it?"',a:[['Couple people asking. You get first look.',0],['Nobody.',1],['A lot of people, hurry up.',2]]},
+    {q:'"Is it registered? Serial number scratched?"',a:[['Serial\'s clean. Nobody ever ran it.',0],['What\'s a serial?',2],['I don\'t know about all that.',1]]},
+    {q:'"Why the rush? You need money bad or something?"',a:[['Nah, I\'m upgrading. Got a better one.',0],['Yeah, I need it today.',2],['Just wanna move it.',1]]}
   ];
+  const MOODS=[
+    {n:'Careful buyer',t:'He wants details before anything.'},
+    {n:'Impatient buyer',t:'He wants to move fast, so don\'t stall.'},
+    {n:'Nervous buyer',t:'He keeps looking over his shoulder.'},
+    {n:'Cocky buyer',t:'He thinks he knows everything.'}
+  ];
+  const mood=pick(MOODS),pool=Q.slice().sort(()=>Math.random()-.5);
+  const R=[pool[0],pool[1],pool[2]];
+  if(Math.random()<.35)R.push(pool[3]);
   let i=0,sus=0;
   const step=()=>{if(i>=R.length){
       modal(`<h2>Time to meet</h2><p>${sus<=1?'He sounds sold.':sus<=3?'He sounded a little unsure.':'He was asking a lot of questions.'}</p><div class="btns"><button class="btn red" id="go">Pull up</button></div>`);$('go').onclick=()=>done(sus);return}
     const r=R[i],opts=r.a.slice().sort(()=>Math.random()-.5);
-    modal(`<div class="sec" style="margin:0">DM ${i+1} of ${R.length}</div><h2>Buyer</h2><p style="font-size:17px">${r.q}</p>
+    modal(`<div class="sec" style="margin:0">DM ${i+1} of ${R.length}</div><h2>${mood.n}</h2><p class="s" style="color:var(--dim)">${mood.t}</p><p style="font-size:17px">${r.q}</p>
       <div class="pane">${opts.map((o,j)=>`<button class="btn" data-j="${j}" style="text-align:left;white-space:normal;text-transform:none;padding:10px 12px">${o[0]}</button>`).join('')}</div>`);
     $('mcard').querySelectorAll('[data-j]').forEach(b=>b.onclick=()=>{sus+=Math.max(0,opts[+b.dataset.j][1]-(S.sk.talk>=7?1:0));i++;step()})};
   step();
