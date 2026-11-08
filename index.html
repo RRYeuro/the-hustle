@@ -131,7 +131,7 @@ h1{font-family:var(--display);font-weight:400;font-size:34px;letter-spacing:.02e
   <div class="side">
   <div class="row" id="me" style="padding:8px 10px"></div>
   <div class="stats">
-    <div class="stat"><div class="k">Cash</div><div class="v" id="cash" style="color:var(--money)"></div></div>
+    <div class="stat"><div class="k">Cash</div><div class="v" id="cash" style="color:var(--money)"></div><div id="cashsplit" style="font-size:9px;line-height:1.2;opacity:.8;white-space:nowrap"></div></div>
     <div class="stat"><div class="k">Stress</div><div class="v" id="stress"></div><div class="bar"><i id="stressb" style="background:var(--blood)"></i></div></div>
     <div class="stat"><div class="k">Stash</div><div class="v" id="stash"></div></div>
     <div class="stat"><div class="k">Health</div><div class="v" id="hp"></div><div class="bar"><i id="hpb" style="background:var(--money)"></i></div></div>
@@ -375,7 +375,7 @@ function render(){if(S&&S.pr)tab='prison';else if(S&&tab==='prison')tab='block';
   groundSend();
   if(S&&S.char==='life')setLifeChar();
   const free=freeMode();$('dlab').hidden=!!S.cal;$('day').textContent=S.cal?'':free?S.day:Math.min(S.day,maxDay());$('dmax').textContent=S.cal?`${calLabel()} · Age ${S.age}${inHS()&&GRADEN[S.grade]?' · '+GRADEN[S.grade]:''}`:S.mode==='life'?` · Age ${S.age}`:free?' · Kingpin mode':` / ${maxDay()}`;$('dmax').textContent+=checkDay()?' · Checks hit':` · Checks in ${daysToCheck()}d`;if(S.strikes)$('dmax').textContent+=` · Strikes ${S.strikes}/3`;$('retire').hidden=!!S.over;
-  $('cash').textContent=money(S.cash);
+  $('cash').textContent=money(S.cash);try{const dd=Math.floor(dirtyCash()),cc=Math.max(0,Math.floor(S.cash-dirtyCash()));$('cashsplit').innerHTML=S.cash>=1000?`<span style="color:var(--blood)">${money(dd)} dirty</span> · ${money(cc)} clean`:''}catch(e){}
   $('stress').textContent=S.stress+(S.stress>=70?' · stressed':'');$('stressb').style.width=S.stress+'%';
   const C=CHARS.find(c=>c.id===S.char);$('who').textContent=C.name;
   $('me').innerHTML=`${PORTRAITS[C.id]?`<img src="${PORTRAITS[C.id]}" alt="${C.name}" style="width:56px;height:56px;border-radius:6px;object-fit:cover;flex:none">`:`<div style="width:56px;height:56px;border-radius:6px;background:#2a2430;display:flex;align-items:center;justify-content:center;font-family:var(--display);font-size:26px;color:var(--accent);flex:none">${C.name[0]}</div>`}<div class="info"><div class="t" style="font-family:var(--display);font-size:20px;font-weight:400">${C.name}</div><div class="s">${roleOf(C)}</div></div>`;$('rk').textContent=identity();{const ballOn=!!(S.age&&S.age<18&&is('tank')&&!(S.fate||{}).knee),inS=S.school==='in'||S.college==='in'||ballOn,todo=(S.school==='in'||S.college==='in')&&S.classDay!==S.day&&(S.cal?schoolWeek():true);$('stab').hidden=!inS;$('stab').innerHTML='🏫 School'+(todo?' <span style="color:var(--blood)">●</span>':'');if(!inS&&tab==='sch')tab='block'}$('rtab').hidden=!S.rapOn;$('htab').hidden=!S.robOn;$('sptab').hidden=!(S.sp&&S.sp.kind);if((tab==='rap'&&!S.rapOn)||(tab==='rob'&&!S.robOn))tab='block';
@@ -970,11 +970,12 @@ function launHTML(){cleanCash();const d=dirtyCash(),W=(S.washD&&S.washD.d===S.da
   let h=`<div class="sec">Laundering</div>${a2('count',300)}<div class="row" style="flex-wrap:wrap"><div class="info"><div class="t">Dirty ${money(d)} · Clean ${money(Math.min(S.clean,S.cash))}</div><div class="s">Street money only gets you so far. Big buys (cars, businesses, a nicer home, anything $5,000 and up) need clean money. Run it through a front, take the fee, and it comes out clean. Holding a lot of dirty cash draws investigators.</div></div></div>`;
   const row=(k,name,cap,fee,extra)=>{const used=W.u[k]||0,left=Math.max(0,cap-used),amt=Math.min(left,Math.floor(d));const pk=({barber:'lw_barber',wash:'lw_wash',laundry:'lw_laundry',club:'lw_club',taq:'lw_taq',ghost:'lw_ghost',smurf:'lw_smurf'})[k];return `<div class="row" style="flex-wrap:wrap">${a3(pk)}<div class="info"><div class="t">${name}</div><div class="s">Up to ${money(cap)} a day · fee ${Math.round(fee*100)}%${extra||''} · ${money(left)} left today</div></div><div class="btns"><button class="btn go" data-a="lwash" data-k="${k}" data-v="1000" ${amt<1000?'disabled':''}>Wash $1,000</button><button class="btn go" data-a="lwash" data-k="${k}" data-v="max" ${amt<1?'disabled':''}>Wash max</button></div></div>`};
   bizOpen().forEach(k=>{const L=LAUNDER_BIZ[k];if(L)h+=row(k,`Through your ${BIZ[k].name.toLowerCase()}`,L.cap,L.fee)});
-  h+=row('smurf','Through your people',800,.3,'. Small deposits through friends');
+  if(hasPeople())h+=row('smurf','Through your people',800,.3,'. Small deposits through friends');else h+=`<div class="row"><div class="info"><div class="t">Through your people</div><div class="s">You have no people yet. Hire a soldier or make a friend first.</div></div></div>`;
   if(S.scam&&S.scam.laptop)h+=row('ghost','Ghost wash (laptop)',8000,.28,'. 12% a day it gets flagged and you lose half');
   return h}
+const hasPeople=()=>{try{return crewList().length>0||(S.friends||[]).length>0}catch(e){return (S.soldiers||0)>0}};
 function launAct(el){cleanCash();const k=el.dataset.k,d=Math.floor(dirtyCash()),W=(S.washD&&S.washD.d===S.day)?S.washD:(S.washD={d:S.day,u:{}});
-  const cap=k==='smurf'?800:k==='ghost'?8000:(LAUNDER_BIZ[k]||{}).cap,fee=k==='smurf'?.3:k==='ghost'?.28:(LAUNDER_BIZ[k]||{}).fee;if(!cap)return;
+  if(k==='smurf'&&!hasPeople())return say('You have no people to run it through.');const cap=k==='smurf'?800:k==='ghost'?8000:(LAUNDER_BIZ[k]||{}).cap,fee=k==='smurf'?.3:k==='ghost'?.28:(LAUNDER_BIZ[k]||{}).fee;if(!cap)return;
   const left=Math.max(0,cap-(W.u[k]||0));let amt=el.dataset.v==='max'?Math.min(left,d):Math.min(1000,left,d);if(amt<=0)return;
   if(k==='ghost'&&Math.random()<.12){const lost=Math.round(amt*.5);S.cash-=lost;cleanCash();S.heat=Math.min(100,S.heat+10);W.u[k]=(W.u[k]||0)+amt;say(`The ghost wash got flagged. You lost ${money(lost)} and heat went up.`);return render()}
   const f=Math.round(amt*fee);S.cash-=f;S.clean+=amt-f;W.u[k]=(W.u[k]||0)+amt;say(`Washed ${money(amt)}. The fee was ${money(f)} and ${money(amt-f)} came out clean.`);render()}
