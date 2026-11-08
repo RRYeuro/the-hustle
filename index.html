@@ -885,7 +885,8 @@ function crewAct(a,el){const M=crewList(),i=+el.dataset.i,m=M[i];
   if(a==='cmfire'){modal(`<h2>Cut ${esc(m.name)} loose?</h2><p>He is gone for good. The rest of the crew will not like how you treat people.</p><div class="btns"><button class="btn red" id="y">Cut him</button><button class="btn" id="n">Never mind</button></div>`);
     $('n').onclick=close;$('y').onclick=()=>{const j=M.indexOf(m);if(j>=0)M.splice(j,1);S.soldiers=Math.max(0,S.soldiers-1);M.forEach(x=>x.loy=Math.max(0,x.loy-4));say(`Cut ${m.name} loose.`);close();render()};return}
 }
-function shootoutGame(mine,theirs,who,done){const ok=crewOk();if(!ok.length||window.noProxy)return shootoutGame0(mine,theirs,who,done);
+const noGun=()=>gunBonus()<=0&&armed().length===0;
+function shootoutGame(mine,theirs,who,done){if(noGun()&&!window.FF){modal(`<h2>No gun</h2><p>You do not have a gun, so you cannot shoot back at ${esc(who)}. You ran and took the loss.</p><div class="btns"><button class="btn go" id="ngo">Damn</button></div>`);$('ngo').onclick=()=>{close();try{done(false)}catch(e){console.error(e)}};return}const ok=crewOk();if(!ok.length||window.noProxy)return shootoutGame0(mine,theirs,who,done);
   modal(`<div class="sec" style="margin:0;color:var(--blood)">Shootout</div><h2>Who takes the shot?</h2><p class="s" style="color:var(--dim)">You still play the mini game either way. If one of your crew takes the shot, the damage lands on him instead of you.</p>
     <div class="btns" style="flex-direction:column;align-items:stretch"><button class="btn red" id="me">Take it myself</button>${ok.map(m=>`<button class="btn go" data-px="${m.id}" style="text-align:left;white-space:normal">${esc(m.name)} · ${CRANK[m.rank].n} · Shooter ${m.sk.shoot}/10 · Loyalty ${m.loy}</button>`).join('')}</div>`);
   $('me').onclick=()=>shootoutGame0(mine,theirs,who,done);
@@ -910,7 +911,7 @@ function ctHTML(){if(!ctOn())return '';const T=ctSt();let h='';
   return h?`<div class="sec">Hits${T.done?` · ${T.done} filled`:''}</div>${h}`:''}
 function ctAct(a,el){const T=ctSt();
   if(a==='ctnone'){const c=crew(el.dataset.c);toast(`The fixer has no hit on the ${c?cdef(c.id).name:'crew'} today. Check back tomorrow.`);return}
-  if(a==='ctake'){const i=+el.dataset.i,o=ctBoard()[i];if(!o||T.board.took!=null)return;if(!spendEn(15))return;const c=crew(o.c);T.board.took=i;
+  if(a==='ctake'){const i=+el.dataset.i,o=ctBoard()[i];if(!o||T.board.took!=null)return;if(noGun()){say('You need a gun to take a hit.');toast('You need a gun to take a hit.');return}if(!spendEn(15))return;const c=crew(o.c);T.board.took=i;
     return shootoutGame(myStr(),ctEn(c),'The target\'s people',w=>{if(w){S.cash+=o.pay;S.heat=Math.min(100,S.heat+18);c.beef=Math.min(100,c.beef+25);c.str=Math.max(4,c.str-3);S.rep+=6;addXP(8);T.done++;say(`Contract filled on the ${cdef(c.id).name}. +${money(o.pay)}.`);lickDone('Contract filled',`The fixer paid ${money(o.pay)}. The ${cdef(c.id).name} know it was you. Heat +18.`,true,true)}else{S.heat=Math.min(100,S.heat+10);c.beef=Math.min(100,c.beef+10);addStress(10);say('The contract fell through. No pay.');lickDone('Contract failed','No pay and the target\'s people are looking. Heat +10.',false,true)}})}
   if(a==='ctput'){const c=crew(el.dataset.k),cost=3000+c.str*60;if(!c||S.cash<cost)return;S.cash-=cost;T.out.push({c:c.id,due:S.day+2});say(`Paid ${money(cost)} for a contract on the ${cdef(c.id).name}.`);render()}}
 function ctDay(){if(!S.crews)return;const T=ctSt();
@@ -1040,7 +1041,7 @@ function hitDay(){const X=X8();
   x8Pop('betray',`The ${nm} put a hit on you`,'Word is a shooter is coming in about three days. Hire a bodyguard, leave town for a bit, or hit first.',[
     {l:'Hire a bodyguard ($2,500, 7 days)',c:'go',f:()=>{if(S.cash<2500){say('Not enough cash for a bodyguard.');return}S.cash-=2500;X.bg=S.day+7;say('Bodyguard hired for a week.')}},
     {l:'Leave town ($600)',f:()=>{if(S.cash<600){say('Not enough to leave town.');return}S.cash-=600;if(Math.random()<.6){X.hit=null;say('You left town. The shooter lost your trail.')}else say('You left but they found you anyway.')}},
-    {l:'Hit first (15 energy)',c:'red',f:()=>{if(!spendEn(15))return;shootoutGame(myStr(),c.str+2,`The ${nm}`,win=>{if(win){X.hit=null;c.str=Math.max(4,c.str-4);S.rep+=5;say(`You hit the ${nm} first. The contract is dead.`)}else{S.hp=Math.max(5,S.hp-rnd(10,22));say('You missed your chance and got hurt.')}render()})}}])}
+    {l:'Hit first (15 energy)',c:'red',f:()=>{if(noGun()){say('You have no gun, so you cannot hit first.');return}if(!spendEn(15))return;shootoutGame(myStr(),c.str+2,`The ${nm}`,win=>{if(win){X.hit=null;c.str=Math.max(4,c.str-4);S.rep+=5;say(`You hit the ${nm} first. The contract is dead.`)}else{S.hp=Math.max(5,S.hp-rnd(10,22));say('You missed your chance and got hurt.')}render()})}}])}
 function hitHTML(){const X=X8();if(!X.hit&&!((X.bg||0)>=S.day))return '';
   return `<div class="sec" style="color:var(--blood)">${X.hit?'Hit on you':'Bodyguard'}</div><div class="row"><div class="info"><div class="t">${X.hit?`Shooter due in ${Math.max(0,X.hit.due-S.day)} day${X.hit.due-S.day===1?'':'s'}`:`Bodyguard on duty until day ${X.bg}`}</div><div class="s">${X.hit?'Hire a bodyguard before the day comes.':'Any hit on you is turned away while he is on.'}</div></div>${X.hit&&!((X.bg||0)>=S.day)?`<button class="btn go" data-a="x8bg" ${S.cash<2500?'disabled':''}>Bodyguard $2,500</button>`:''}</div>`}
 /* 5. relationships */
@@ -3456,7 +3457,7 @@ function shootoutArcade(mine,theirs,who,done){
   const ku=e=>{if(e.key==='Shift'||e.key==='ArrowDown')setCover(false)};
   document.addEventListener('keydown',kd);document.addEventListener('keyup',ku);
   function finish(win){if(over)return;over=true;mgOn=false;S.bodies=(S.bodies||0)+myK+(total<=4?total-left-myK:0);document.removeEventListener('keydown',kd);document.removeEventListener('keyup',ku);
-    setTimeout(()=>{modal(`<h2 style="color:${win?'var(--money)':'var(--blood)'}">${win?'They fell back':'You had to fall back'}</h2><p>${win?`You dropped ${total-left} of them. ${who} scattered.`:`${who} had you pinned. You took ${100-Math.max(0,hp)} damage getting out.`}</p><div class="btns"><button class="btn go" id="ok">Continue</button></div>`);$('ok').onclick=()=>done(win)},400)}
+    setTimeout(()=>{modal(`<h2 style="color:${win?'var(--money)':'var(--blood)'}">${win?'They fell back':'You had to fall back'}</h2><p>${win?`You dropped ${total-left} of them. ${who} scattered.`:`${who} had you pinned. You took ${100-Math.max(0,hp)} damage getting out.`}</p><div class="btns"><button class="btn go" id="ok">Continue</button></div>`);$('ok').onclick=()=>{$('modal').hidden=true;done(win)}},400)}
   const drawOpp=(e,t)=>{const warn=e.up&&e.fire-t<900,fall=e.dead?Math.min(1,(t-e.dt)/450):0,rise=Math.min(1,(t-e.born)/160),dx=e.x,dy=e.y+(1-rise)*22+fall*26;
     x.save();x.globalAlpha=1-fall*.9;{const im=oppImg[e.look%3];if(im&&im.complete&&im.naturalWidth){{const sz=e.y<100?34:e.y<112?40:46;x.drawImage(im,dx-sz/2,dy-sz*.62,sz,sz)}const side=dx<160?1:-1;if(e.up&&e.fire-t<900){x.strokeStyle='#e8504a';x.lineWidth=2.5;x.beginPath();x.arc(dx,dy-6,GS.rad,0,7);x.stroke()}if(e.shot&&t-e.shot<120){x.fillStyle='#ffd25a';x.beginPath();x.arc(dx+side*26,dy+4,7,0,7);x.fill()}x.restore();return}}const L=e.look,top=['#1b1b1f','#7a1d1d','#2c3a55','#2d4a2d'][L],cap=L===3;
     x.fillStyle=top;x.beginPath();x.moveTo(dx-16,dy+22);x.quadraticCurveTo(dx-17,dy+2,dx,dy+1);x.quadraticCurveTo(dx+17,dy+2,dx+16,dy+22);x.fill();
@@ -3506,7 +3507,7 @@ function shootoutGame0(mine,theirs,who,done){mgOn=true;
     $('s2c').innerHTML=cards.map((c,i)=>`<button class="btn ${sel.includes(i)?'go':''}" data-ci="${i}" style="width:54px;height:76px;font-size:24px;font-family:var(--display)">${c}</button>`).join('');
     $('s2c').querySelectorAll('[data-ci]').forEach(b=>b.onclick=()=>{const i=+b.dataset.ci;const j=sel.indexOf(i);if(j>=0)sel.splice(j,1);else sel.push(i);draw()})};
   const finish=win=>{if(over)return;over=true;mgOn=false;S.bodies=(S.bodies||0)+myK;
-    setTimeout(()=>{modal(`<h2 style="color:${win?'var(--money)':'var(--blood)'}">${win?'They fell back':'You had to fall back'}</h2><p>${win?`You dropped ${total-left} of them. ${who} scattered.`:`${who} had you pinned. You took ${100-Math.max(0,hp)} damage getting out.`}</p><div class="btns"><button class="btn go" id="ok">Continue</button></div>`);$('ok').onclick=()=>done(win)},350)};
+    setTimeout(()=>{modal(`<h2 style="color:${win?'var(--money)':'var(--blood)'}">${win?'They fell back':'You had to fall back'}</h2><p>${win?`You dropped ${total-left} of them. ${who} scattered.`:`${who} had you pinned. You took ${100-Math.max(0,hp)} damage getting out.`}</p><div class="btns"><button class="btn go" id="ok">Continue</button></div>`);$('ok').onclick=()=>{$('modal').hidden=true;done(win)}},350)};
   const next=()=>{if(over)return;if(left<=0)return finish(true);if(hp<=0||round>=total*3)return finish(left<=Math.floor(total/2)&&hp>0);deal()};
   const theyShoot=why=>{hp-=dmgIn;msg=why+` −${dmgIn}.`;
     if(S.soldiers>0&&Math.random()<Math.min(.7,.12*S.soldiers+(typeof armed==='function'?armed().length*.08:0))){left--;msg+=' Your shooter dropped one.';}
@@ -3833,7 +3834,7 @@ function nextDay(){S.en=S.restDay?enMax():Math.max(30,enMax()-(S.stress>=70?20:0
 function event(){
   if(window.FF||S.pr)return;
   if(!$('modal').hidden)return;
-  if((S.bodies||0)>=20&&!S.hound&&S.age>=18){houndReveal();return true}
+  if((S.bodies||0)>=20&&!S.hound&&gAge()>=18){houndReveal();return true}
   if(S.kidQ&&S.kidQ.length&&kidEvent())return;
   if(S.schoolQ&&S.schoolQ.length&&schoolEvent())return;
   if(schoolRandom())return;
@@ -4566,7 +4567,7 @@ function gateGame(title,txt,go){modal(`<h2>${title}</h2><p>${txt}</p><p class="s
   talkGame:()=>['Talk your way through','You get a few lines. Pick the answer that fits the moment: confident and calm usually works, mouthing off or sounding unsure can cost you. Read each choice before you tap.'],
   hoopsG:()=>['Shooting contest','A marker slides back and forth. Tap Shoot (or press Space) when it is inside the zone. Bigger bets mean more on the line, so do not rush it.'],
   fightGame0:a=>['Fight vs '+a[2],'THEY SWING (red): hit Dodge. OPENING (green): hit Hit. Yellow with a question mark is a fake, so do nothing. COMBO: tap Hit three times fast. Every swing and dodge costs stamina (bar under your health), so do not spam. Gassed means weak hits and no dodge. Keys: left arrow dodge, right arrow or space hit.']};
- const wrap=(name,fn)=>function(...a){if(window._ing||(name==='fightGame0'&&window.fgGun))return fn.apply(this,a);const [t,x]=INFO[name](a);
+ const wrap=(name,fn)=>function(...a){if(window._ing||(name==='fightGame0'&&window.fgGun)||(name==='shootoutGame'&&noGun()))return fn.apply(this,a);const [t,x]=INFO[name](a);
    gateGame(t,x,()=>{window._ing=1;try{fn.apply(this,a)}finally{window._ing=0}})};
  flowGame=wrap('flowGame',flowGame);grabGame=wrap('grabGame',grabGame);seqGame=wrap('seqGame',seqGame);sneakGame=wrap('sneakGame',sneakGame);padGame=wrap('padGame',padGame);chase=wrap('chase',chase);shootoutGame=wrap('shootoutGame',shootoutGame);fightGame0=wrap('fightGame0',fightGame0);talkGame=wrap('talkGame',talkGame)}
 
