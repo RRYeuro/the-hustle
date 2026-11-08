@@ -3242,6 +3242,8 @@ function devPanel(){if(!S||S.ph)return;
     <div class="sec">Trigger events</div><div class="btns">${B('ecops','Cops')}${B('eamb','Crew ambush')}${B('ejack','Jackboys')}${B('elink','Link-up')}${B('eraid','Raid')}${B('efight','Test fight')}</div>
     <div class="sec">New stuff</div><div class="btns">${B('hp20','Health 20')}${B('hot','Heat 80')}${B('str95','Stress 95')}${B('allg','QP of every drug')}${B('fkp','20 fake Percs')}${B('plays','3 trap phone plays')}${B('hook','Get hooked')}</div>
     <div class="btns">${B('econn','Meet the connect')}${B('dateplug','Date the plug here')}${B('crewok','Crews 75 respect')}${B('crewmad','Crews want smoke')}${B('nogang','Reset gang stuff')}${B('gcall','Gang call')}${B('gally','Ally event')}${B('bizev','Business event')}${B('strap','Gun + 2 soldiers')}${B('swstock','Unc has switches')}${B('bodies','+19 bodies')}${B('jail','Get locked up')}${B('sstrike','School strike')}${B('kid','Have a kid')}${B('kidage','Kid +5 years')}</div>
+    <div class="sec">v193 to v194 tests</div><div class="btns">${B('cclean','+$100K clean','green')}${B('cdirty','+$100K dirty','green')}${B('lvl30','Level 30')}${B('bills','Bills due now')}${B('lcdr','Reset lookouts')}${B('ha','House arrest')}${B('run','Cut monitor (on the run)')}${B('bizall','Own every business')}${B('bizmax','Max upgrades')}${B('szall','Stash house lvl 3')}${B('party','Reset block party')}</div>
+    <div class="btns">${B('f5k','Rap: 5K fans')}${B('f20k','Rap: 20K fans')}${B('fnew','Rap: free agent')}${B('labopen','Open own label')}${B('labart','+3 artists')}${B('labday','Label +7 days')}${B('jew','All jewelry')}${B('jack','Get jumped')}${B('fitold','Fits wear out')}${B('bfate','Big plug decision')}${B('wait0','Clear Big plug wait')}</div>
     <div class="sec">Mini games</div><div class="btns">${B('mchase','Police chase')}${B('mshoot','Shootout')}${B('mhoop','Hoops')}${B('mdice','Dice')}${B('mcar','Steal a car')}${B('mstore','Rob store')}${B('mpharm','Rob pharmacy')}${B('mhouse','Hit a house')}${B('mscam','Fake gun sale')}</div>
     <div class="sec">Go to (free, no day)</div><div class="btns">${BLOCKS.map((b,i)=>B('go'+i,b)).join('')}</div>
     <p class="s" style="color:var(--dim);font-size:13px">Time skips stop when something big happens, like a birthday event.</p>
@@ -3297,6 +3299,27 @@ function devDo(k){
   if(k==='kid'){if(!adult())return done('under 18');if(!S.gf)S.gf={name:'Nia',rel:80};$('modal').hidden=true;return baby()}
   if(k==='kidage'){(S.kids||[]).forEach(c=>c.born-=(S.cal?520:150));kidDay();return done('kids +5 years (events queue for next day)')}
   if(/^go[0-5]$/.test(k)){S.at=+k[2];return done('teleported to '+BLOCKS[S.at])}
+  if(k==='cclean'){cleanCash();S.cash+=100000;S.clean+=100000;return done('+$100,000 clean')}
+  if(k==='cdirty'){cleanCash();S.cash+=100000;return done('+$100,000 dirty (cash only)')}
+  if(k==='lvl30'){let g=0;while(S.lvl<30&&g++<60)addXP(S.lvl*20-S.xp);return done(`now level ${S.lvl}`)}
+  if(k==='bills'){S.livDay=S.day;livingDay();return done('weekly bills ran')}
+  if(k==='lcdr'){S.lcd={};return done('lookouts cleared')}
+  if(k==='ha'){$('modal').hidden=true;houseArrest();return render()}
+  if(k==='run'){if(!S.ha)houseArrest();S.ha.run=1;S.haOK=S.day;return done('on the run: push heat over 70 then +1 turn')}
+  if(k==='bizall'){S.biz=S.biz||{};Object.keys(BIZ).forEach(x=>S.biz[x]=1);return done('own every business')}
+  if(k==='bizmax'){S.bizUp=S.bizUp||{};Object.keys(S.biz||{}).forEach(x=>S.bizUp[x]=3);return done('all businesses level 4')}
+  if(k==='szall'){const H=shSt();H.own=1;H.up=3;return done('stash house level 3')}
+  if(k==='party'){S.bpDay=0;return done('block party ready')}
+  if(k==='f5k'||k==='f20k'){S.rapOn=1;S.rap.fans=Math.max(S.rap.fans,k==='f5k'?5000:20000);if(!S.rap.songs.length)S.rap.songs.push({title:'Dev Song',q:70,day:S.day});return done(`fans ${S.rap.fans}`)}
+  if(k==='fnew'){S.rap.signed=0;S.rap.rec=0;S.rap.take=0;S.rap.dm=1;S.rap.lbl=null;S.rap.nodeal=0;return done('free agent')}
+  if(k==='labopen'){S.rapOn=1;S.rap.fans=Math.max(S.rap.fans,5000);S.rap.lab={name:'Street Dreams Records',art:[],wk:0};return done('label open')}
+  if(k==='labart'){const L=S.rap.lab;if(!L)return done('open the label first');while(L.art.length<3)L.art.push({n:pick(LABNAMES)+L.art.length,fans:rnd(300,900),pot:rnd(30,100),p:0});return done('3 artists')}
+  if(k==='labday'){for(let i=0;i<7;i++){S.day++;labDay()}return done('label ran 7 days')}
+  if(k==='jew'){S.jew=S.jew||{};Object.keys(JEWEL).forEach(x=>S.jew[x]=1);return done('all jewelry')}
+  if(k==='jack'){S.heat=Math.max(S.heat,60);const R=Math.random;Math.random=()=>0.01;try{wearDay()}finally{Math.random=R}return done('jack roll done')}
+  if(k==='fitold'){S.fits=S.fits||{street:1};S.fitB=S.fitB||{};['hood','clean','biz','drip'].forEach(x=>{S.fits[x]=1;S.fitB[x]=S.day-FITLIFE-1});wearDay();return done('fits wore out')}
+  if(k==='bfate'){const bi=S.known.find(i=>PINFO[i].lvl==='Big')??PINFO.findIndex(x=>x.lvl==='Big');if(bi<0)return done('no Big plug');S.known.includes(bi)||S.known.push(bi);S.trust[bi]=70;S.rep=Math.max(S.rep,60);delete (S.fate2||{})[bi];$('modal').hidden=true;return bigFate(bi)}
+  if(k==='wait0'){S.bigWait={};S.fate2={};return done('Big plug wait cleared')}
   if(k==='mis'){const list=mlist();const m=list[S.ms];if(!m)return done('no mission left');$('modal').hidden=true;return finishMission(m)}
   $('modal').hidden=true;
   if(k==='ecops')return cops();
@@ -3655,7 +3678,7 @@ function fightGame0(mine,theirs,who,done){const gun=!!window.fgGun;window.fgGun=
   const fp=$('fp'),fm=$('fm');
   const show=()=>{$('fst').style.width=Math.max(0,sta)+'%';$('fme').style.width=Math.max(0,me)+'%';$('fop').style.width=Math.max(0,op)+'%';fm.textContent=msg+(sta<10?' · GASSED, catch your breath':'');$('fst').style.background=sta<10?'var(--blood)':'var(--heat)'};
   const end=()=>{if(!mgOn)return;mgOn=false;document.removeEventListener('keydown',key);const w=op<=0||(me>0&&op<me);if(w)fsWin();
-    setTimeout(()=>{modal(`<h2 style="color:${w?'var(--money)':'var(--blood)'}">${w?L.won:L.lost}</h2><p>${w?`${who} ain't want it no more.`:`${who} got the best of you.`}</p><div class="btns"><button class="btn go" id="ok">Continue</button></div>`);$('ok').onclick=()=>done(w)},350)};
+    setTimeout(()=>{modal(`<h2 style="color:${w?'var(--money)':'var(--blood)'}">${w?L.won:L.lost}</h2><p>${w?`${who} ain't want it no more.`:`${who} got the best of you.`}</p><div class="btns"><button class="btn go" id="ok">Continue</button></div>`);$('ok').onclick=()=>{$('modal').hidden=true;done(w)}},350)};
   const act=kind=>{if(!mgOn)return;const t=performance.now();if(!prompt&&t-lastRes<300)return;const gassed=sta<10,md=Math.round(myDmg*(gassed?.5:1)*(MS==='brawler'?1+.08*ML:1));sta=Math.max(0,sta-(kind==='dodge'?11:12)*(MS==='boxer'?1-.07*ML:1));
     if(!prompt){msg=kind==='hit'?L.nothing:'Nothing to dodge.';if(kind==='hit'){me-=4}show();return}
     const late=t>deadline;
