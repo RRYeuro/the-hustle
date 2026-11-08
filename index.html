@@ -3868,7 +3868,7 @@ document.addEventListener('keydown',e=>{if((e.key!==' '&&e.key!=='Enter')||e.rep
 /* ---------- calendar (teen start) ---------- */
 const CAL0=Date.UTC(2026,7,10);
 const MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-function calDate(t){t=t??S.day;const w=Math.floor((t-1)/2),ph=(t-1)%2;return new Date(CAL0+(w*7+(ph?5:0))*864e5)}
+function calDate(t){t=t??S.day;const w=Math.floor((t-1)/2),ph=(t-1)%2;if(S&&S.cal&&S.fastW==null)S.fastW=Math.floor((S.day-1)/2);const f=S&&S.fastW!=null&&w>S.fastW?Math.floor((w-S.fastW)/3):0;return new Date(CAL0+((w+f)*7+(ph?5:0))*864e5)}
 const isWknd=()=>!!(S&&S.cal)&&(S.day-1)%2===1;
 function calLabel(){const d=calDate();return `${isWknd()?'Weekend':'Week'} of ${MON[d.getUTCMonth()]} ${d.getUTCDate()}`}
 function mdv(d){return (d.getUTCMonth()+1)*100+d.getUTCDate()}
@@ -3888,7 +3888,7 @@ const schoolWeek=()=>!!S.cal&&!isWknd()&&!schoolBreak()&&S.school==='in'&&!(S.su
 const GRADEN={9:'Freshman',10:'Sophomore',11:'Junior',12:'Senior'};
 function weekTick(){return S.cal?isWknd():S.day%7===0}
 function crossed(m,dd){if(!S.cal||S.day<2)return false;const a=calDate(S.day-1),b=calDate();for(const y of [b.getUTCFullYear()-1,b.getUTCFullYear()]){const t=Date.UTC(y,m-1,dd);if(a.getTime()<t&&b.getTime()>=t)return true}return false}
-function calCheck(){const d=calDate(),span=isWknd()?1:4;for(let i=0;i<=span;i++){if(new Date(d.getTime()+i*864e5).getUTCDate()===1)return true}return false}
+function calCheck(){if(S.day<2)return false;const mi=t=>{const d=new Date(calDate(t).getTime()+((t-1)%2?1:4)*864e5);return d.getUTCFullYear()*12+d.getUTCMonth()};return mi(S.day)>mi(S.day-1)}
 function calToCheck(){const d=calDate();const n=Date.UTC(d.getUTCFullYear(),d.getUTCMonth()+1,1);return Math.max(1,Math.round((n-d.getTime())/864e5))}
 const GUARD={
  tank:{who:'Grandma',name:'Grandma Coleman',strict:80,sub:'Raised you since you were 3. Church every Sunday, and she don\'t miss nothing.'},
