@@ -561,7 +561,7 @@ function paneBeef(){
   const jb=['Trap','Family','Homies','Girl','Crews'].map(k=>`<button class="btn" style="padding:6px 10px;font-size:12px" data-jump="${k}">${k}</button>`).join('');
   return `<div class="jump" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:4px">${jb}</div>`+paneFight()+paneTraps()+paneFamily()+paneHome()+paneFriends()+paneGF()+crewBlock()+paneBeefCore()+sf(ctHTML);
 }
-function crewBlock(){return `<div class="sec">Your crew</div><div class="row"><div class="info"><div class="t">Soldiers: ${S.soldiers}</div><div class="s">+6 strength each · cost $150/day each</div></div><button class="btn green" data-a="hire" ${S.cash>=hireCost()?'':'disabled'}>Hire ${money(hireCost())}</button></div>${sf(crewHTML)}${(()=>{try{return x8On()?rankHTML():''}catch(e){return ''}})()}`}
+function crewBlock(){return `<div class="sec">Your crew</div><div class="row"><div class="info"><div class="t">Soldiers: ${S.soldiers}</div><div class="s">+6 strength each · cost $150/day each</div></div><button class="btn green" data-a="hire" ${S.cash>=hireCost()?'':'disabled'}>Hire ${money(hireCost())}</button></div>${sf(crewHTML)}${sf(paneArm)}${(()=>{try{return x8On()?rankHTML():''}catch(e){return ''}})()}`}
 function paneBeefCore(){
   let h=`<div class="sec">Your strength: ${myStr()}</div><div class="row"><div class="info"><div class="t">Firepower ${firepower()}</div><div class="s">${gAge()!=null&&gAge()<16?'No wars until you are 16.':canWar()?'You strapped and got shooters. You can go to war for a block.':`Taking a block takes guns and people. ${warNeed()}.`}</div></div></div>`+paneGang();
   h+=S.crews.map(c=>{
@@ -1175,7 +1175,7 @@ function paneCrew(){
    ${sf(poHTML)}
    ${sf(twHTML)}
    ${sf(launHTML)}
-   ${sf(paneArm)}
+   <div class="sec">Turf and space</div>
    <div class="row"><div class="info"><div class="t">More stash space</div><div class="s">Storage units, safes and cars are at the mall and the car lot now.</div></div></div>
    <div class="row"><div class="info"><div class="t">Your turf: ${turf} block${turf===1?'':'s'}</div><div class="s">Each block pays $${300} a day and sells 12% higher</div></div></div>`;
 }
