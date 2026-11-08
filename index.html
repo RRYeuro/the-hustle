@@ -563,7 +563,7 @@ function paneBeef(){
 }
 function crewBlock(){return `<div class="sec">Your crew</div><div class="row"><div class="info"><div class="t">Soldiers: ${S.soldiers}</div><div class="s">+6 strength each · cost $150/day each</div></div><button class="btn green" data-a="hire" ${S.cash>=hireCost()?'':'disabled'}>Hire ${money(hireCost())}</button></div>${sf(crewHTML)}${(()=>{try{return x8On()?rankHTML():''}catch(e){return ''}})()}`}
 function paneBeefCore(){
-  let h=`<div class="sec">Your strength: ${myStr()}</div><div class="row"><div class="info"><div class="t">Firepower ${firepower()}</div><div class="s">${canWar()?'You strapped and got shooters. You can go to war for a block.':`Taking a block takes guns and people. ${warNeed()}.`}</div></div></div>`+paneGang();
+  let h=`<div class="sec">Your strength: ${myStr()}</div><div class="row"><div class="info"><div class="t">Firepower ${firepower()}</div><div class="s">${gAge()!=null&&gAge()<16?'No wars until you are 16.':canWar()?'You strapped and got shooters. You can go to war for a block.':`Taking a block takes guns and people. ${warNeed()}.`}</div></div></div>`+paneGang();
   h+=S.crews.map(c=>{
     const d=cdef(c.id), turf=S.owner.filter(o=>o===c.id).length;
     if(!c.alive)return `<div class="row"><div class="info"><div class="t" style="color:${d.color}">${d.name}</div><div class="s">Wiped out. Their blocks are yours.</div></div></div>`;
@@ -577,17 +577,17 @@ function paneBeefCore(){
       ${theirsHere&&!c.foe?`<div class="s" style="width:100%">You on their block. Spend the day building respect: each one takes the whole day, it gets harder as respect goes up, and money stops working past 45 (run with their guys after that).</div><div class="btns" style="width:100%"><button class="btn green" data-a="resp" data-c="${c.id}" data-k="cookout" ${S.cash>=300?'':'disabled'}>Cookout $300</button><button class="btn green" data-a="resp" data-c="${c.id}" data-k="tribute" ${S.cash>=500?'':'disabled'}>Pay respects $500</button><button class="btn green" data-a="resp" data-c="${c.id}" data-k="run">Run with their guys</button></div>`:''}
       <div class="btns">
        ${c.foe?'':`<button class="btn" data-a="squash" data-c="${c.id}" ${c.beef&&S.cash>=squash?'':'disabled'}>Squash ${money(squash)}</button>`}
-       ${S.gang===c.id||c.ally?'':`<button class="btn red" data-a="hit" data-c="${c.id}" ${theirsHere&&canWar()&&!blockReq()?'':'disabled'}>${blockReq()?'Take block (locked)':canWar()?'Take block':'Take block (no firepower)'}</button>`}
+       ${S.gang===c.id||c.ally||(gAge()!=null&&gAge()<16)?'':`<button class="btn red" data-a="hit" data-c="${c.id}" ${theirsHere&&canWar()&&!blockReq()?'':'disabled'}>${blockReq()?'Take block (locked)':canWar()?'Take block':'Take block (no firepower)'}</button>`}
        ${sf(()=>ctBtns(c))}
       </div>${gangBtns(c,theirsHere)}</div>`;
   }).join('');
-  h+=`<div class="s" style="color:var(--dim);font-size:13px;padding:0 2px">"Take block" only works on a block they run, and you need a gun plus 2 soldiers or a set behind you. Go there first.</div>`;
+  if(!(gAge()!=null&&gAge()<16))h+=`<div class="s" style="color:var(--dim);font-size:13px;padding:0 2px">"Take block" only works on a block they run, and you need a gun plus 2 soldiers or a set behind you. Go there first.</div>`;
   return h;
 }
 function paneGang(){
   if(S.gang){const c=crew(S.gang),d=cdef(S.gang);return `<div class="row" style="flex-wrap:wrap;border-color:${d.color}"><div class="info"><div class="t">You claim the <span style="color:${d.color}">${d.name}</span></div><div class="s">They back you in every fight (+${Math.floor(c.str*.25)} strength), you serve their blocks free, and their opps are your opps. Dues ${S.cal?'every weekend':'every 7 days'}. When the set calls, answer.</div>${S.gHold?`<div class="s" style="color:var(--accent)">You owe the set ${money(S.gHold.owe)} for the pack by ${dayTxt(S.gHold.due)}.</div>`:''}</div><button class="btn red" data-a="gleave">Leave the set</button></div>`}
   if(S.myGang)return `<div class="row" style="flex-wrap:wrap;border-color:var(--money)"><div class="info"><div class="t">Your gang: <span style="color:var(--money)">${esc(S.myGang.name)}</span></div><div class="s">${S.soldiers} member${S.soldiers===1?'':'s'}. Members cost $100 a day instead of $150 and each one brings in $50 a day. +5 strength. Make allies, buy blocks, or take them.</div></div></div>`;
-  return `<div class="row" style="flex-wrap:wrap"><div class="info"><div class="t">Gang life</div><div class="s">Get jumped in to a set (need 40 respect with them), or start your own (18+, rep 30, $10,000). You can also make allies, buy a block, or go to war.</div></div><button class="btn go" data-a="gown" ${adult()&&S.rep>=30&&S.cash>=10000?'':'disabled'}>Start your own</button></div>`}
+  return `<div class="row" style="flex-wrap:wrap"><div class="info"><div class="t">Gang life</div><div class="s">Get jumped in to a set (need 40 respect with them), or start your own (18+, rep 30, $10,000). You can also make allies${gAge()!=null&&gAge()<16?'':', buy a block, or go to war'}.</div></div><button class="btn go" data-a="gown" ${adult()&&S.rep>=30&&S.cash>=10000?'':'disabled'}>Start your own</button></div>`}
 function esc(t){return String(t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function gangBtns(c,here){const d=cdef(c.id);if(!c.alive||S.gang===c.id||c.foe)return '';let b='';
   if(!S.gang&&!S.myGang&&c.beef<30)b+=`<button class="btn go" data-a="gjoin" data-c="${c.id}" ${c.respect>=40?'':'disabled'}>${c.respect>=40?'Get jumped in':'Jumped in (need 40 respect)'}</button>`;
