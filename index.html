@@ -670,8 +670,10 @@ function prisonDay(){const R=S.pr;if(!R)return;R.acts={};R.sold={};GOODS.forEach
     if(lost.length){prAdd(rnd(1,3));R.infr++;prHeat(-10);say(`Random search. They took ${lost.join(', ')} and wrote you up. Days added.`)}else say('Random search. They found nothing on you.')}
   if(R.heat>=70&&Math.random()<Math.min(1,(R.heat-60)/50)){const add=rnd(3,6);R.inv.phone=0;R.inv.shank=0;R.dr={};R.inv.cig=Math.floor((R.inv.cig||0)/2);R.job=null;if(R.g)R.g.resp=Math.max(0,R.g.resp-10);prAdd(add);R.infr++;R.hole=S.day+2;R.heat=35;
     say(`Cellblock raid. They tore your cell apart, took all your contraband, and threw you in the hole for 2 days. +${add} days.`);if(!modalUsed){modalUsed=true;modal(`${a2('raid',360)}<h2 style="color:var(--blood)">Cellblock raid</h2><p>Too much heat. The guards came through and tore everything apart. Your phone, your drugs and your shank are gone. You did 2 days in the hole and ${add} days got added to your sentence.</p><div class="btns"><button class="btn go" id="ok">Keep your head down</button></div>`);$('ok').onclick=()=>{close();render()}}}
+  // retainer lawyer files motions
+  if(S.lawPay&&R.until-S.day>3&&Math.random()<.04){const cut=Math.min(R.until-S.day-1,rnd(1,Math.max(2,Math.round((R.until-S.day)*.12))));if(cut>0){R.until-=cut;say(`Attorney Cole filed a motion. ${prLabel(cut)} came off your sentence.`)}}
   // parole
-  if(R.len>=10&&!R.hear&&S.day>=R.start+Math.round(R.len*.6)){R.hear=1;const ch=Math.max(.05,.75-R.heat*.006-R.infr*.15+(R.job?.1:0)+(R.reads>=4?.05:0));
+  if(R.len>=10&&!R.hear&&S.day>=R.start+Math.round(R.len*.6)){R.hear=1;const ch=Math.max(.05,.75-R.heat*.006-R.infr*.15+(R.job?.1:0)+(R.reads>=4?.05:0)+(S.lawPay?.15:0));
     if(Math.random()<ch){const cut=Math.round((R.until-S.day)*.5);R.until=Math.max(S.day+1,R.until-cut);say('Parole board granted early release. Your sentence just got cut in half.')}else say('Parole board denied you. Keep your record clean and you may get another shot.')}
   if(S.day>=R.until)prEnd();
 }
@@ -2240,7 +2242,7 @@ function lawBody(row,b){const R=RL(),v=R.law||0,d=R.d||{},disc=v>=40?.75:1,pr=n=
   h+=row('Clean up your name',pay?'Free while he is on payroll. Heat −30.':'Heat −30.',b('clean',pay?'Free':money(pr(2000)),!pay&&S.cash<pr(2000)||S.heat<1));
   if(v>=25)h+=row('Cole as a customer','He asks for a little something for the weekends.',(S.custos||[]).some(c=>c.name==='Cole')?'<span class="chip mine">Customer</span>':b('lcust','Offer',(S.custos||[]).length>=15));
   if(v>=60&&canNewConnect()&&!R.lawCon)h+=row('Ask about his people','"I know a guy in your line of work." Could be big.',b('lguy','Ask',false));
-  h+=row('Lawyer on payroll',pay?'Cole is on payroll: $1,500 a week. You never lose a retainer, heat cools faster, and cleanups are free.':nw>=200000?'Full time. $1,500 a week. Never lose your retainer, heat cools faster, free cleanups.':`Needs a net worth of ${money(200000)}. You are at ${money(nw)}.`,pay?b('lfire','Let go',false,'red'):b('lpay','Hire',nw<200000||S.cash<1500));
+  h+=row('Lawyer on payroll',pay?'Cole is on payroll: $1,500 a week. You never lose a retainer, heat cools faster, cleanups are free, and if you ever get locked up he files motions to cut your time and helps at parole.':nw>=200000?'Full time. $1,500 a week. Never lose your retainer, heat cools faster, free cleanups, shorter sentences and a better shot at parole.':`Needs a net worth of ${money(200000)}. You are at ${money(nw)}.`,pay?b('lfire','Let go',false,'red'):b('lpay','Hire',nw<200000||S.cash<1500));
   return h}
 function storeBody(row,b){const R=RL(),v=R.store||0,d=R.d||{};
   let h=relRow('Raj (store owner)',v,'raj');
