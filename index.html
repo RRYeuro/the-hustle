@@ -1658,6 +1658,15 @@ const _w5bDP=devPanel;devPanel=function(){_w5bDP();try{const c=$('mcard');if(!c|
 window.__trail=[];window.__errs=[];
 try{window.addEventListener('error',e=>{try{__errs.push((S&&S.day!=null?'Day '+S.day+': ':'')+String(e.message||e).slice(0,200));__errs=__errs.slice(-15)}catch(_){}})}catch(_){}
 try{document.addEventListener('click',e=>{try{const b=e.target.closest('button,[data-a],[data-t]');if(!b)return;const lbl=(b.dataset&&(b.dataset.a||b.dataset.t))||'';const tx=(b.innerText||'').replace(/\s+/g,' ').trim().slice(0,40);__trail.push(`D${S&&S.day!=null?S.day:'?'} ${lbl?'['+lbl+'] ':''}${tx}`);__trail=__trail.slice(-25)}catch(_){}},true)}catch(_){}
+/*BUG-CAM*/
+window.__camT=0;
+function camCatch(msg){try{const now=Date.now();if(now-__camT<4000)return;__camT=now;
+  const N=pnGet();const m=String(msg||'error').slice(0,200);if(N.length&&N[N.length-1].t==='AUTO ERROR: '+m)return;
+  N.push({d:(S&&S.day!=null)?S.day:'?',tab:(typeof tab!=='undefined'?tab:'?'),cash:(typeof money==='function'&&S)?money(S.cash):'?',t:'AUTO ERROR: '+m,ctx:(window.__trail||[]).slice(-6).join(' > ')});pnSet(N.slice(-60));
+  let b=document.getElementById('camb');if(!b){b=document.createElement('button');b.id='camb';b.style.cssText='position:fixed;left:8px;right:8px;top:8px;z-index:99999;padding:9px 12px;border-radius:8px;border:1px solid #c33;background:#2a0c0c;color:#fff;font:600 13px system-ui;text-align:left';document.body.appendChild(b)}
+  b.textContent='🐞 Glitch caught and saved to Notes. Tap to review and copy.';b.hidden=false;b.onclick=()=>{b.hidden=true;try{pnOpen()}catch(e){}};
+  clearTimeout(window.__camH);window.__camH=setTimeout(()=>{b.hidden=true},9000)}catch(_){}}
+try{window.addEventListener('error',e=>camCatch(e.message||e));window.addEventListener('unhandledrejection',e=>camCatch('Promise: '+((e.reason&&e.reason.message)||e.reason)))}catch(_){}
 function pnGet(){try{return JSON.parse(localStorage.getItem('hustle-notes')||'[]')}catch(e){return []}}
 function pnSet(a){try{localStorage.setItem('hustle-notes',JSON.stringify(a))}catch(e){}}
 function pnReport(){const N=pnGet();let r=`THE HUSTLE PLAY NOTES · ${typeof BUILD!=='undefined'?BUILD:''} · ${new Date().toLocaleString()}\n`;
