@@ -2047,6 +2047,7 @@ function poAct(a){const P=S.po;if(!P||(a!=='pocheck'&&a!=='pogo')||P.did===P.due
   say('Checked in with your parole officer. All good.');modal(`${a2('checkin',340)}<h2>Parole check-in</h2><p>You sat across from your officer and kept it short. All good this time.${trip?' The trip took the rest of your day.':''}</p><div class="btns"><button class="btn go" id="ok">Continue</button></div>`);$('ok').onclick=()=>{close();if(trip){nextDay();checkEnd()}render()}}
 function poViol(t){const P=S.po;if(!P)return;P.vio++;S.heat=Math.min(100,S.heat+8);say(`Parole violation. ${t}`);
   if(P.vio>=2){S.po=null;S.strikes=Math.min(maxStrikes()-1,S.strikes);window.FF=false;prStart();S.pr.len=Math.max(3,Math.round(S.pr.len*.5));S.pr.until=S.day+S.pr.len;S.pr.charge='Parole violation';say(`Parole revoked. Back in for ${prLabel(S.pr.len)}.`);return}
+  if($('modal').hidden){modal(`<h2>Parole violation</h2><p>${esc(t)} That is strike one with your officer. One more and you go back in.</p><div class="btns"><button class="btn go" id="ok">Understood</button></div>`);$('ok').onclick=close}
   render()}
 function poDay(){const P=S.po;if(!P||S.pr)return;
   if(S.day>P.until){S.po=null;say('Parole is over. Your officer signed you off.');return}
@@ -2949,7 +2950,7 @@ function paneRob(){const B=S.rob;
   h+=`<div class="row"><div class="info"><div class="s">Want to stop?</div></div><button class="btn" data-a="quit" data-k="rob">Leave the robbing alone</button></div>`;
   return h;
 }
-function heist(k){const H=HEISTS[k];if(typeof stuckHome==='function'&&stuckHome())return;if((S.rob.hd!=null)&&S.day-S.rob.hd<3){say(`The streets are hot from the last job. Wait ${3-(S.day-S.rob.hd)} more day${3-(S.day-S.rob.hd)===1?'':'s'} before another heist.`);return render()}if((S.rob.fat||0)>=6){say('Marks and cops are all on alert. Lay off the robbing for a few days.');return render()}
+function heist(k){const H=HEISTS[k];if(typeof stuckHome==='function'&&stuckHome())return;if(S.age&&S.age<16){say('Too young for a heist. Come back at 16.');return render()}if((S.rob.hd!=null)&&S.day-S.rob.hd<3){say(`The streets are hot from the last job. Wait ${3-(S.day-S.rob.hd)} more day${3-(S.day-S.rob.hd)===1?'':'s'} before another heist.`);return render()}if((S.rob.fat||0)>=6){say('Marks and cops are all on alert. Lay off the robbing for a few days.');return render()}
   modal(`<h2>${H.name}</h2><p>How y'all doing it?</p>
     <button class="btn" id="qt" style="text-align:left;white-space:normal;text-transform:none;padding:10px 12px"><b>Quiet</b> · go in smooth, Street Smarts matters. Less heat.</button>
     <button class="btn" id="ld" style="text-align:left;white-space:normal;text-transform:none;padding:10px 12px"><b>Loud</b> · guns out, Muscle and crew size matter. More heat, bigger take.</button>
@@ -4016,6 +4017,7 @@ function lkBlock(k,what){const n=lkLeft(k);if(!n)return false;const t=`${what} i
   const lkA=k==='pharm'&&ARTX('lookout2')?'lookout2':'lookout';if(ARTX(lkA)&&$('modal').hidden){modal(`${a2(lkA,340)}<h2>On lookout</h2><p>${t}</p><div class="btns"><button class="btn go" id="ok">Fine</button></div>`);$('ok').onclick=close}else render();return true}
 function lick(k){if(stuckHome())return;if(k==='store'&&lkBlock('store','The corner store'))return;if(k==='pharm'&&lkBlock('pharm','The pharmacy'))return;if((k==='house'||k==='strap')&&!window.noTips&&!(S.lt&&S.lt[k]>=S.day)){say('You need a tip first. Check your phone.');return render()}if(S.lt)delete S.lt[k];if((S.rob.fat||0)>=7){say('Everybody on the block is watching for you. Lay off the licks for a few days.');return render()}S.rob.c0=S.cash;if(LCD[k]){S.lcd=S.lcd||{};S.lcd[k]=S.day+LCD[k]}
   const sm=S.sk.smarts+(friendWith('rob')?2:0),mu=S.sk.muscle,st=stressed()?.1:0;
+  if(k==='car'&&S.age&&S.age<16){say('Too young to steal cars. Come back at 16.');return render()}
   if(k==='car')return padGame(ok=>{
     if(ok){const pay=rnd(1500,4000);S.heat=Math.min(100,S.heat+15);addXP(4);addStress(5);
       const sell=()=>{S.cash+=pay;lickDone('Got the whip',`Key programmed, car gone. The chop shop paid ${money(pay)}.`,true)};
@@ -4497,9 +4499,9 @@ function friendRole(i){const f=S.friends[i];
 const GUNS={pistol:{name:'Pistol',cost:800,str:5,heat:3,mag:8,rad:20,rel:900,sub:'Cheap and easy to hide. Jams sometimes.'},
 smitty:{name:'Semi Smitty',cost:1000,str:6,heat:3,mag:10,rad:20,rel:900,sub:'Semi-auto nine. Reliable.'},
 glizzy:{name:'Semi Glizzy',cost:1200,str:7,heat:4,mag:15,rad:20,rel:850,sub:'Fifteen in the clip. Everybody want one.'},
-revolver:{name:'Revolver',cost:1300,str:7,heat:4,mag:6,rad:24,rel:1100,sub:'Old school. Never jams.'},
+revolver:{name:'Revolver',cost:1100,str:7,heat:4,mag:6,rad:24,rel:1100,sub:'Old school. Never jams.'},
 shotgun:{name:'Shotgun',cost:2600,str:10,heat:6,mag:5,rad:34,rel:1300,sub:'Ends arguments. Hard to hide.'},
-switchy:{name:'Glizzy w/ Switch',cost:3500,str:12,heat:9,mag:30,rad:30,rel:1000,burst:3,sub:'Full auto. Every tap sprays 3. Eats ammo. Feds hate it.'},
+switchy:{name:'Glizzy w/ Switch',cost:4800,str:12,heat:9,mag:30,rad:30,rel:1000,burst:3,sub:'Full auto. Every tap sprays 3. Eats ammo. Feds hate it.'},
 baby:{name:'Baby Drako',cost:5500,str:14,heat:9,mag:30,rad:24,rel:1000,sub:'Short barrel, same attitude. Easier to tuck than the big one.'},
 micro:{name:'Micro ARP',cost:4500,str:13,heat:8,mag:30,rad:22,rel:950,sub:'Little rifle, big problems. Fits in a bookbag.'},
 rifle:{name:'Rifle',cost:6000,str:15,heat:10,mag:20,rad:22,rel:1000,sub:'Serious business. Serious heat.'},
