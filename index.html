@@ -373,7 +373,7 @@ function load(n){const raw=readSlot(n||curSlot());if(!raw)return null;const s=mi
 
 /* ---------- render ---------- */
 function groundSend(){if(S&&S.par&&S.home==='family'&&S.grounded>S.day&&S.sneakOK!==S.day&&S.at!==homeBlock()){S.at=homeBlock();say(`${S.par.name} came and got you. You're grounded, so you're back at the house on ${BLOCKS[S.at]}.`)}}
-function render(){try{wTabBtns()}catch(e){}flowTick();if(S&&S.pr)tab='prison';else if(S&&tab==='prison')tab='block';if(S&&S.home&&S.home!=='family'&&S.grounded)S.grounded=0;
+function render(){try{wTabBtns()}catch(e){}setTimeout(alertFlush,350);flowTick();if(S&&S.pr)tab='prison';else if(S&&tab==='prison')tab='block';if(S&&S.home&&S.home!=='family'&&S.grounded)S.grounded=0;
   groundSend();
   if(S&&S.char==='life')setLifeChar();
   const free=freeMode();$('dlab').hidden=!!S.cal;$('day').textContent=S.cal?'':free?S.day:Math.min(S.day,maxDay());$('dmax').textContent=S.cal?`${calLabel()} · Age ${S.age}${inHS()&&GRADEN[S.grade]?' · '+GRADEN[S.grade]:''}`:S.mode==='life'?` · Age ${S.age}`:free?' · Kingpin mode':` / ${maxDay()}`;$('dmax').textContent+=checkDay()?' · Checks hit':` · Checks in ${daysToCheck()}d`;if(S.strikes)$('dmax').textContent+=` · Strikes ${S.strikes}/3`;$('retire').hidden=!!S.over;
@@ -5010,6 +5010,12 @@ function nextDay(){try{cleanCash()}catch(_){}S.en=S.restDay?enMax():Math.max(30,
     say(pick([`Somebody at the gas station put you on with ${plugName(bi)} from ${BLOCKS[bi]}.`,`Your cousin linked you with ${plugName(bi)} on ${BLOCKS[bi]}.`,`Met ${plugName(bi)} from ${BLOCKS[bi]} at a party. ${plugFem(bi)?'She':'He'} got you now.`,`A customer vouched for you. ${plugName(bi)} on ${BLOCKS[bi]} knows you now.`]))}
   event();
 }
+const IMPRX=/shipment|package|just dropped|in your stash|parole|check-?in|your officer|court|trial|judge|bail|house arrest|ankle monitor|warrant|raided|evict|grades are too low|benched|expel|suspend|dropped out|graduat|report card|Mr\. Vince|waiting on your money|interest is growing|moved on|quit|ran off/i;
+function alertFlush(){try{if(!S||S.over||!S.alq||!S.alq.length)return;if(!$('modal').hidden||(typeof mgOn!=='undefined'&&mgOn))return;const L=S.alq.slice(0,6);S.alq=[];
+  modal(`<h2>Heads up</h2>${L.map(x=>`<p style="margin:6px 0">${esc(x)}</p>`).join('')}<div class="btns"><button class="btn go" id="alok">Got it</button></div>`);$('alok').onclick=()=>{close();render()}}catch(e){}}
+{const _ndA=nextDay;nextDay=function(){const top=S&&S.log&&S.log[0];const r=_ndA.apply(this,arguments);try{if(S&&!S.over){const nw=[];for(const l of S.log){if(l===top)break;if(IMPRX.test(l.t))nw.push(l.t.replace(/^📱 /,''))}
+  if(S.po&&!S.pr&&S.po.did!==S.po.due&&S.po.due-S.day<=1&&S.po.due>=S.day)nw.push(`Parole check-in is due ${S.po.due===S.day?'today':'tomorrow'}. Check in with your officer or you go back.`);
+  if(nw.length)S.alq=(S.alq||[]).concat(nw.reverse()).slice(-6)}}catch(e){}return r}}
 function event(){
   if(window.FF||S.pr)return;
   if(!$('modal').hidden)return;
