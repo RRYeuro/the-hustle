@@ -586,7 +586,7 @@ function waveAct(a,el){
 .wtop{display:flex;flex-direction:column;gap:6px}
 .wgoal{background:var(--panel);border:1px solid var(--accent);border-radius:6px;padding:7px 10px}
 .wgoal .t{font-size:13px}.wgoal b{color:var(--accent)}
-.tabs button{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-left:2px!important;padding-right:2px!important}.wq{display:flex;gap:6px;flex-wrap:wrap}.wq .btn{flex:1 1 90px}@media (min-width:900px){.tabs{grid-auto-flow:row;grid-template-columns:repeat(auto-fit,minmax(118px,1fr))}.tabs button{white-space:normal;overflow:visible;text-overflow:clip;padding:8px 4px!important;font-size:13px;line-height:1.15}}`;document.head.appendChild(st);
+.tabs button{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-left:2px!important;padding-right:2px!important}body::before{content:"";position:fixed;left:0;right:0;top:0;height:env(safe-area-inset-top,0px);background:var(--bg);z-index:40;pointer-events:none}.wq{display:flex;gap:6px;flex-wrap:wrap}.wq .btn{flex:1 1 90px}@media (min-width:900px){.tabs{grid-auto-flow:row;grid-template-columns:repeat(auto-fit,minmax(118px,1fr))}.tabs button{white-space:normal;overflow:visible;text-overflow:clip;padding:8px 4px!important;font-size:13px;line-height:1.15}}`;document.head.appendChild(st);
 ['wtint','wsnow','wrain'].forEach(id=>{const d=document.createElement('div');d.id=id;d.hidden=true;document.body.appendChild(d)})}catch(e){console.error('wcss',e)}})();
 /* snapshot and morning summary */
 function waveSummary(){const w=W();if(!S||S.day<2||S.pr)return '';
