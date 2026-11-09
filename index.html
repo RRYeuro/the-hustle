@@ -895,7 +895,7 @@ function w4Act(a,el){if(a.slice(0,3)!=='w4_')return false;const X=w4(),hp=n=>{S.
   if(a==='w4_barb'){if(S.age&&S.age<18)return true;if(S.cash<1200||X.barb)return true;S.cash-=1200;X.barb=1;say('You got your barber license.');render();return true}
   if(a==='w4_chair'){if(X.bd===S.day||!X.barb)return true;if(spendEn(6)===false)return true;X.bd=S.day;const p=rnd(80,170);S.cash+=p;legit(p);say(`Cut hair all day. ${money(p)} clean.`);render();return true}
   if(a==='w4_chopb'){if(S.age&&S.age<18)return true;if(S.cash<8000||needClean(8000,'A chop shop'))return true;{const c0=cleanCash();S.cash-=8000;S.clean=Math.max(0,c0-8000)}X.chop=1;say('Opened a chop shop.');if(ARTX('chop'))wNote('chop','Chop shop open','The garage is ready.');render();return true}
-  if(a==='w4_strip'){if(X.strip===S.day)return true;if(S.car!=='stolen'){say('You need a stolen car in the garage to strip. Take one from the Heists tab first.');render();return true}if(spendEn(12)===false)return true;X.strip=S.day;S.car=null;S.cap=Math.max(10,(S.cap||0)-((CARS.stolen&&CARS.stolen.trunk)||0));if(S.rob)S.rob.car=0;const p=rnd(500,1400);S.cash+=p;S.heat=Math.min(100,S.heat+4);say(`Stripped a car. ${money(p)} dirty.`);if(Math.random()<.05+S.heat/1000){S.heat=Math.min(100,S.heat+10);say('Somebody noticed the plates on the lot. Heat spiked.')}render();return true}
+  if(a==='w4_strip'){if(X.strip===S.day)return true;if(S.car!=='stolen'){say('You need a stolen car in the garage to strip. Take one from the Heists tab first.');render();return true}if(spendEn(12)===false)return true;X.strip=S.day;S.car=null;S.cap=Math.max(10,(S.cap||0)-((CARS.stolen&&CARS.stolen.trunk)||0));if(S.rob)S.rob.car=0;stripGame(n=>{const p=Math.round(rnd(500,1400)*(.45+.22*n));S.cash+=p;S.heat=Math.min(100,S.heat+4);say(`Stripped a car. ${money(p)} dirty.`);if(Math.random()<.05+S.heat/1000){S.heat=Math.min(100,S.heat+10);say('Somebody noticed the plates on the lot. Heat spiked.')}render()});return true}
   if(a==='w4_flip'){if(X.flip===S.day||!X.chop)return true;if(S.car!=='stolen'){say('You need a stolen car in the garage to flip. Take one from the Heists tab first.');render();return true}if(spendEn(12)===false)return true;X.flip=S.day;S.car=null;S.cap=Math.max(10,(S.cap||0)-((CARS.stolen&&CARS.stolen.trunk)||0));if(S.rob)S.rob.car=0;
     wCard('chop','Flip a car','There is a car in the garage. How do you move it?',[{l:'Respray and sell it',c:'go',f:()=>{const p=rnd(1500,3000);S.cash+=p;S.heat=Math.min(100,S.heat+5);addXP(4);if(Math.random()<.15){S.heat=Math.min(100,S.heat+15);say('The buyer was asking too many questions. Heat spiked.')}say(`Flipped the car for ${money(p)} dirty.`)}},{l:'Ship it out of state',c:'',f:()=>{const p=rnd(3000,5500);S.cash+=p;S.heat=Math.min(100,S.heat+8);addXP(5);if(Math.random()<.25){const l=Math.round(p*.5);S.cash=Math.max(0,S.cash-l);say(`The shipper short-changed you. Lost ${money(l)}.`)}say(`Shipped the car and made ${money(p)} dirty.`)}},{l:'Never mind',c:'',f:()=>{X.flip=-9;S.en=Math.min(enMax(),(S.en||0)+12)}}],'Chop shop');return true}
   return false}
@@ -2675,14 +2675,14 @@ function paneCut(){
   let h=`<div class="sec">Cut your product</div>`;
   if(!list.length)return h+`<div class="row"><div class="info"><div class="s">Got Coke, Molly or Lean? Stretch it here. More to sell, but the grade drops.</div></div></div>`;
   return h+list.map(g=>{const real=S.inv[g.id]-S.fake[g.id];return `<div class="row" style="flex-wrap:wrap"><div class="info"><div class="t">${g.name} ${gchip(S.q[g.id],g)}</div><div class="s">You got ${amt(real,g)} real. Cut adds product, drops the grade.</div></div>
-    <div class="btns"><button class="btn" data-a="cut" data-g="${g.id}" data-p="25">+25%</button><button class="btn" data-a="cut" data-g="${g.id}" data-p="50">+50%</button></div></div>`}).join('');
+    <div class="btns"><button class="btn" data-a="cut" data-g="${g.id}" data-p="25">+25%</button><button class="btn" data-a="cut" data-g="${g.id}" data-p="50">+50%</button><button class="btn green" data-a="cutw" data-g="${g.id}">Weigh it</button></div></div>`}).join('');
 }
-function cutProduct(g,pct){const real=S.inv[g.id]-S.fake[g.id];let add=real*pct/100;add=g.step<1?Math.floor(add*2)/2:Math.floor(add);
+function cutProduct(g,pct,ql){ql=ql==null?1:ql;const real=S.inv[g.id]-S.fake[g.id];let add=real*pct/100;add=g.step<1?Math.floor(add*2)/2:Math.floor(add);
   if(add<=0)return say('Not enough to cut.');
   if(used()+add*g.sp>S.cap)return say('Not enough stash space to cut that much.');
   const cost=Math.round(add*(g.unit==='g'?2:1));if(S.cash<cost)return say(`Need ${money(cost)} for cut.`);
   S.cash-=cost;S.inv[g.id]+=add;S.paid[g.id]=Math.round(S.paid[g.id]*S.inv[g.id]/(S.inv[g.id])*(real/(real+add))+0);
-  S.q[g.id]=Math.max(5,Math.round(S.q[g.id]-pct*.6));
+  S.q[g.id]=Math.max(5,Math.round(S.q[g.id]-pct*.6*ql));
   say(`Cut your ${g.name} ${pct}%: +${amt(add,g)} for ${money(cost)}. It's ${grade(S.q[g.id],g)} now.`)}
 /* ---------- career paths ---------- */
 const PATHS={trap:{name:'Trapper',sub:'Buy low, sell high, take blocks, run trap houses.'},rap:{name:'Rapper',sub:'Record songs, build fans and hype, do shows, get signed. You can still trap on the side.'},rob:{name:'Robber',sub:'Hit licks, gear up, put a crew together and pull heists. You can still trap on the side.'}};
@@ -2999,6 +2999,36 @@ function paneRob(){const B=S.rob;
   h+=`<div class="row"><div class="info"><div class="s">Want to stop?</div></div><button class="btn" data-a="quit" data-k="rob">Leave the robbing alone</button></div>`;
   return h;
 }
+function hotwireGame(done){mgOn=true;const R=3,cols=['#e8504a','#f5b72a','#4aa3e8'];let r=0,ok=0,pos=[0,1,2],live=0,can=0;const X=[8,38,68];
+  modal(`<h2>Hotwire it</h2><p id="hm" class="s" style="text-align:center;min-height:20px"></p><div id="hw" style="position:relative;height:84px">${cols.map((c,i)=>`<button class="btn" id="hv${i}" style="position:absolute;top:8px;width:26%;height:64px;left:${X[i]}%;transition:left .22s;background:${c};border-color:${c};color:#0b0b10;font-size:22px"></button>`).join('')}</div><p id="hs" class="s" style="text-align:center">Round 1 of ${R}</p>`);
+  const up=()=>{for(let i=0;i<3;i++){const b=$('hv'+i);if(b)b.style.left=X[pos[i]]+'%'}},alive=()=>mgOn&&$('hw');
+  const round=()=>{can=0;live=rnd(0,2);$('hm').textContent='Watch the live wire.';$('hv'+live).textContent='⚡';
+    setTimeout(()=>{if(!alive())return;$('hv'+live).textContent='';$('hm').textContent='Shuffling...';let n=4+r*2+(S.sk.smarts<3?1:0),sp=Math.max(230,420-S.sk.smarts*14-r*30);
+      const sw=()=>{if(!alive())return;if(n--<=0){can=1;$('hm').textContent='Which one is live?';return}let a=rnd(0,2),b=(a+rnd(1,2))%3;const t=pos[a];pos[a]=pos[b];pos[b]=t;up();setTimeout(sw,sp)};sw()},1100)};
+  for(let i=0;i<3;i++)$('hv'+i).onclick=()=>{if(!can||!alive())return;can=0;const hit=i===live;if(hit)ok++;$('hv'+live).textContent='⚡';$('hm').textContent=hit?'Spark.':'Wrong wire.';r++;
+    setTimeout(()=>{if(!alive())return;if(r>=R){mgOn=false;$('modal').hidden=true;return done(ok>=2)}$('hs').textContent='Round '+(r+1)+' of '+R;round()},800)};
+  window.__hwDbg={live:()=>live,can:()=>can,pos:()=>pos,pick:i=>$('hv'+i).click()};round()}
+function stripGame(done){mgOn=true;const parts=['Wheels','Stereo','Engine','Doors','Plates'],T=Math.max(1500,2400-S.sk.smarts*60-(stressed()?200:0));let i=0,n=0,t0=performance.now();
+  modal(`<h2>Strip it fast</h2><p id="sp" class="s" style="text-align:center">Tap each part before it is gone. Cops roll by soon.</p><div id="sa" style="position:relative;height:190px;border-radius:8px;background:#1b1a20"></div><p id="ss" class="s" style="text-align:center">Parts 0 of ${parts.length}</p>`);
+  const next=()=>{if(!mgOn||!$('sa'))return;if(i>=parts.length){mgOn=false;$('modal').hidden=true;return done(n)}const nm=parts[i],b=document.createElement('button');b.className='btn go';b.textContent=nm;b.style.cssText=`position:absolute;left:${rnd(2,60)}%;top:${rnd(4,70)}%;padding:12px 16px`;$('sa').innerHTML='';$('sa').appendChild(b);let used=0;
+    const end=g=>{if(used)return;used=1;if(g)n++;i++;$('ss').textContent='Parts '+n+' of '+parts.length;setTimeout(next,260)};b.onclick=()=>end(1);setTimeout(()=>end(0),T)};
+  window.__stDbg={tap:()=>{const b=$('sa')&&$('sa').querySelector('button');b&&b.click()}};next()}
+function scaleGame(done){mgOn=true;let bag=0,hits=0,w=0,tgt=0,left=22,last=performance.now(),pour=0,go=1;const newT=()=>{tgt=Math.round(rnd(30,90))/10;w=0};newT();
+  modal(`<h2>Weigh and bag</h2><p class="s" style="text-align:center">Hold Pour, let go near the target, trim with Trim. Lock in within 0.3 g. 3 bags.</p><div style="text-align:center;font-family:var(--display);font-size:34px" id="sw"></div><div class="bar" style="height:8px"><i id="st" style="width:100%;background:var(--blood)"></i></div><p id="sg" class="s" style="text-align:center">Bag 1 of 3</p>
+   <div class="btns" style="justify-content:center"><button class="btn" id="sp1" style="padding:14px 22px;font-size:17px">Pour</button><button class="btn" id="sp2" style="padding:14px 22px;font-size:17px">Trim</button><button class="btn go" id="sp3" style="padding:14px 22px;font-size:17px">Lock in</button></div>`);
+  $('sp1').onclick=e=>e&&e.preventDefault();$('sp1').addEventListener('pointerdown',()=>{pour=1});['pointerup','pointerleave','pointercancel'].forEach(ev=>$('sp1').addEventListener(ev,()=>{pour=0}));
+  $('sp2').onclick=()=>{w=Math.max(0,Math.round((w-.1)*10)/10)};
+  const fin=()=>{if(!mgOn)return;mgOn=false;$('modal').hidden=true;done(hits/3)};
+  $('sp3').onclick=()=>{if(Math.abs(w-tgt)<=.3){hits++}bag++;if(bag>=3)return fin();$('sg').textContent='Bag '+(bag+1)+' of 3 · '+hits+' good';newT()};
+  window.__scDbg={set:v=>{w=v},tgt:()=>tgt};
+  const loop=t=>{if(!mgOn||!$('sw'))return;const dt=(t-last)/1000;last=t;left-=dt;if(pour)w+=2.6*dt;$('sw').textContent=w.toFixed(1)+' g  →  '+tgt.toFixed(1)+' g';$('st').style.width=Math.max(0,left/22*100)+'%';if(left<=0)return fin();requestAnimationFrame(loop)};requestAnimationFrame(loop)}
+function overwatchGame(done){mgOn=true;let hit=0,bad=0,ev=0,N=12;
+  modal(`<h2>Overwatch</h2><p class="s" style="text-align:center">Tap the red gun when it pops in a window. Do not tap civilians. Get 4 and stay clean.</p><div id="ow" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">${Array.from({length:9},(_,i)=>`<button class="btn" id="ow${i}" style="height:64px;font-size:26px"></button>`).join('')}</div><p id="oq" class="s" style="text-align:center">Spotted 0 · Mistakes 0</p>`);
+  const cur={i:-1,k:0,o:0};const q=()=>{$('oq').textContent='Spotted '+hit+' · Mistakes '+bad};
+  for(let i=0;i<9;i++)$('ow'+i).onclick=()=>{if(!mgOn||cur.i!==i||cur.o)return;cur.o=1;if(cur.k){hit++;$('ow'+i).textContent='✔'}else{bad++;$('ow'+i).textContent='✖'}q()};
+  window.__owDbg={cur:()=>cur,tap:()=>$('ow'+cur.i).click()};
+  const step=()=>{if(!mgOn||!$('ow'))return;if(cur.i>=0&&$('ow'+cur.i))$('ow'+cur.i).textContent='';if(ev>=N){mgOn=false;$('modal').hidden=true;return done(hit>=4&&bad<=1)}ev++;cur.i=rnd(0,8);cur.k=Math.random()<.55?1:0;cur.o=0;$('ow'+cur.i).textContent=cur.k?'🔫':'🧍';setTimeout(()=>{if(cur.i>=0&&!cur.o&&$('ow'+cur.i)){cur.o=1}step()},Math.max(650,1000-S.sk.smarts*30))};
+  setTimeout(step,500)}
 function safeGame(o,done){mgOn=true;o=o||{};const NT=o.tumblers||2,TL=(o.sec||16)+S.sk.smarts*.8+(o.help?4:0)-(stressed()?2:0)*1;
   let ti=0,a=50,tg=rnd(12,88),half=Math.max(3.2,5+S.sk.smarts*.5)+(o.help?1.5:0),dir=0,still=0,tleft=TL,last=performance.now(),locked=[],msg='Turn the dial slowly. Hotter means closer.';
   modal(`<h2>${o.title||'Dial the safe'}</h2><div class="s">Alarm</div><div class="bar" style="height:8px"><i id="sal" style="width:100%;background:var(--blood)"></i></div>
@@ -4119,7 +4149,7 @@ function lkBlock(k,what){const n=lkLeft(k);if(!n)return false;const t=`${what} i
 function lick(k){if(proStop())return;if(stuckHome())return;if(k==='store'&&lkBlock('store','The corner store'))return;if(k==='pharm'&&lkBlock('pharm','The pharmacy'))return;if((k==='house'||k==='strap')&&!window.noTips&&!(S.lt&&S.lt[k]>=S.day)){say('You need a tip first. Check your phone.');return render()}if(S.lt)delete S.lt[k];if((S.rob.fat||0)>=7){say('Everybody on the block is watching for you. Lay off the licks for a few days.');return render()}S.rob.c0=S.cash;if(LCD[k]){S.lcd=S.lcd||{};S.lcd[k]=S.day+LCD[k]}
   const sm=S.sk.smarts+(friendWith('rob')?2:0),mu=S.sk.muscle,st=stressed()?.1:0;
   if(k==='car'&&S.age&&S.age<16){say('Too young to steal cars. Come back at 16.');return render()}
-  if(k==='car')return padGame(ok=>{
+  if(k==='car')return hotwireGame(ok=>{
     if(ok){const pay=rnd(1500,4000);S.heat=Math.min(100,S.heat+15);addXP(4);addStress(5);
       const sell=()=>{S.cash+=pay;lickDone('Got the whip',`Key programmed, car gone. The chop shop paid ${money(pay)}.`,true)};
       if(S.car)return sell();
@@ -4411,7 +4441,7 @@ const TUT=[
  ['Welcome to the streets','You start at 14, freshman year. Each turn is a school week or a weekend. Weekdays are for school, weekends are for the streets. Follow your story missions in the yellow box up top. Chapter 1 is high school, Chapter 2 starts at 18.'],
  ['Block tab: the money','Buy from the plug, sell it back for a profit. Sell to the plug for safe money and respect, or serve the Js for 40% more but way more heat and beef. Some blocks have way more money than others, so check the tag on the block. Always check the grade, test for fakes, and talk price once a day.'],
  ['School tab','Going to class takes the whole school week, so do your hustles first. You get 3 moves a week: steal phones, serve classmates, fight, hack your grades, or rap at the lunch table. Get caught and it is a strike: suspended, then alt school, then expelled. Keep your grades at 70 or higher and teachers give you the benefit of the doubt. School hustles only show on school days, and only when you are at the school on Northline.'],
- ['Move tab: the city','Tap a block on the map to go there. Each block has its own plug, prices and crew. The Move tab also has hoops, dice and licks like the pharmacy and stores. In a car, roadblocks split the road: the alley is shorter but tight, the road brings a cop, and heavy rides (minivan, F-150, Jeep) soak one hit. Quiet heists make you crack a safe: turn the dial slowly, stop in the hot zone and hold still for the click. The gym spar is a real fight (no injury, a win levels your style). On foot a chase is a run: jump the low stuff, hold to clear tall fences, slide under the lines (Space/Up/W jump, Down/S slide on PC). With a car you drive. The Time section lets you lay low, take a nap, skip to the next event or lay low for a whole week when things get hot.'],
+ ['Move tab: the city','Tap a block on the map to go there. Each block has its own plug, prices and crew. The Move tab also has hoops, dice and licks like the pharmacy and stores. In a car, roadblocks split the road: the alley is shorter but tight, the road brings a cop, and heavy rides (minivan, F-150, Jeep) soak one hit. Quiet heists make you crack a safe: turn the dial slowly, stop in the hot zone and hold still for the click. Stealing a car is a hotwire wire shuffle, stripping one is a speed tap, cutting product has a Weigh it game, and when a crew runs up on you, Scope it out lets you see them first. The gym spar is a real fight (no injury, a win levels your style). On foot a chase is a run: jump the low stuff, hold to clear tall fences, slide under the lines (Space/Up/W jump, Down/S slide on PC). With a car you drive. The Time section lets you lay low, take a nap, skip to the next event or lay low for a whole week when things get hot.'],
  ['Spots tab: every place','The gym, rec center, stadium, stores, mall, car lot, barber, pharmacy, hospital, lawyer, school, park and studio are all listed here. Tap one to go in. If it is on another block it takes a day to get there. Tip the barber and the rumors get real: a plug tip for tomorrow.'],
  ['Circle tab: your people','Your fight style, trap houses, family and where you stay, homies, your girl and the crews all live here. Your fight style levels up every time you win a fight. After 18 your girl texts you, and how you answer matters. If a plug turns on you, go to their block and settle it. A worker who has put in enough days can be made a trap house manager: he sells out of your stash house, keeps 15%, and you can have two. What you do comes back: slide on a crew\'s opps and they may hit you or your trap later, giving up a name gets out, and your girl remembers how you treated her.'],
  ['Plugs','Every block has a plug. Do 3 deals with one and they know you: better prices, and at Talk 4 you can haggle (that is the talk rhythm game). Rob a plug and they disappear until somebody new takes over the block. With enough rep and trust you can recruit a plug to work for you: they sell whatever you front them on their block, and a trap house sells more with less heat.'],
@@ -4451,7 +4481,7 @@ function devPanel(){if(!S||S.ph)return;
     <div class="btns">${B('econn','Meet the connect')}${B('dateplug','Date the plug here')}${B('crewok','Crews 75 respect')}${B('crewmad','Crews want smoke')}${B('nogang','Reset gang stuff')}${B('gcall','Gang call')}${B('gally','Ally event')}${B('bizev','Business event')}${B('strap','Gun + 2 soldiers')}${B('swstock','Unc has switches')}${B('bodies','+19 bodies')}${B('jail','Get locked up')}${B('sstrike','School strike')}${B('kid','Have a kid')}${B('kidage','Kid +5 years')}</div>
     <div class="sec">v193 to v194 tests</div><div class="btns">${B('cclean','+$100K clean','green')}${B('cdirty','+$100K dirty','green')}${B('wdry','Workers idle +3 days')}${B('prdeal','Prison: dealer trust 60 + 2 packs')}${B('lvl30','Level 30')}${B('bills','Bills due now')}${B('lcdr','Reset lookouts')}${B('ha','House arrest')}${B('run','Cut monitor (on the run)')}${B('bizall','Own every business')}${B('bizmax','Max upgrades')}${B('szall','Stash house lvl 3')}${B('tmgr','Trap manager test')}${B('f9','Slide + snitch window open')}${B('f8','Prison rep + parole + gun')}${B('btip','Barber trusts you (3 tips)')}${B('f12','Connect lays low')}${B('party','Reset block party')}</div>
     <div class="btns">${B('f5k','Rap: 5K fans')}${B('f20k','Rap: 20K fans')}${B('fnew','Rap: free agent')}${B('labopen','Open own label')}${B('labart','+3 artists')}${B('labday','Label +7 days')}${B('jew','All jewelry')}${B('jack','Get jumped')}${B('fitold','Fits wear out')}${B('bfate','Big plug decision')}${B('wait0','Clear Big plug wait')}</div>
-    <div class="sec">Mini games</div><div class="btns">${B('mchase','Police chase (car)')}${B('mfoot','Foot run')}${B('msafe','Dial the safe')}${B('mshoot','Shootout')}${B('mhoop','Hoops')}${B('mdice','Dice')}${B('mcar','Steal a car')}${B('mstore','Rob store')}${B('mpharm','Rob pharmacy')}${B('mhouse','Hit a house')}${B('mscam','Fake gun sale')}</div>
+    <div class="sec">Mini games</div><div class="btns">${B('mchase','Police chase (car)')}${B('mfoot','Foot run')}${B('msafe','Dial the safe')}${B('mhot','Hotwire')}${B('mstrip','Strip a car')}${B('mscale','Weigh and bag')}${B('mowatch','Overwatch')}${B('mshoot','Shootout')}${B('mhoop','Hoops')}${B('mdice','Dice')}${B('mcar','Steal a car')}${B('mstore','Rob store')}${B('mpharm','Rob pharmacy')}${B('mhouse','Hit a house')}${B('mscam','Fake gun sale')}</div>
     <div class="sec">Wave 3 tests (sports and social)</div><div class="btns">${B('w3_sport','Join MMA stage 3')}${B('w3_hurt','Injure 8 days')}${B('w3_endo','Endorsement offer')}${B('w3_mob','Mob offer')}${B('w3_meet','Track meet')}${B('w3_agency','Agency and bar')}${B('w3_social','60K followers')}${B('w3_dm','Test DM')}${B('w3_drama','Social drama')}</div>
     <div class="sec">Go to (free, no day)</div><div class="btns">${BLOCKS.map((b,i)=>B('go'+i,b)).join('')}</div>
     <p class="s" style="color:var(--dim);font-size:13px">Time skips stop when something big happens, like a birthday event.</p>
@@ -4568,6 +4598,10 @@ function devDo(k){
   if(k==='gally'){let c=S.crews.find(c=>c.alive&&c.ally);if(!c){c=S.crews.find(c=>c.alive&&c.id!==S.gang);c.ally=1;c.respect=80}return Math.random()<.5?allyNervous(c):allyHelp(c)}
   if(k==='bizev'){if(!Object.keys(S.biz||{}).length){S.biz=S.biz||{};S.biz.wash=1}const R=Math.random;Math.random=()=>0.01;let fired;try{fired=bizEvent()}finally{Math.random=R}if(!fired)return done('no business event');return}
   if(k==='mshoot'){S.guns=S.guns||{};if(!gunBonus())S.guns.pistol=1;return shootoutGame(myStr(),18,'The opps',w=>{say(`Dev: shootout ${w?'won':'lost'}.`);devPanel()})}
+  if(k==='mhot')return hotwireGame(ok=>{say(`Dev: hotwire ${ok?'worked':'failed'}.`);devPanel()});
+  if(k==='mstrip')return stripGame(n=>{say(`Dev: stripped ${n} parts.`);devPanel()});
+  if(k==='mscale')return scaleGame(a=>{say(`Dev: bags ${Math.round(a*3)} of 3.`);devPanel()});
+  if(k==='mowatch')return overwatchGame(ok=>{say(`Dev: overwatch ${ok?'clean':'failed'}.`);devPanel()});
   if(k==='msafe')return safeGame({tumblers:2},ok=>{say(`Dev: safe ${ok?'cracked':'alarm'}.`);devPanel()});
   if(k==='mfoot')return footRun(ok=>{say(`Dev: foot run ${ok?'escaped':'caught'}.`);devPanel()});
   if(k==='mchase'){window.__laneChase=1;return chase(ok=>{say(`Dev: car chase ${ok?'escaped':'caught'}.`);devPanel()})}
@@ -5347,14 +5381,15 @@ function event(){
   if(r<.08){const g=pick(GOODS);const n=pick(g.sizes.slice(0,2))[0];if(used()+n*g.sp<=S.cap){S.inv[g.id]+=n;say(`Found ${amt(n,g)} of ${g.name} somebody left behind.`)}}
   else if(r<.13){const g=pick(GOODS);S.prices[S.at][g.id]=Math.round(g.hi*rnd(12,15)/10);say(`Nobody got ${g.name} on ${BLOCKS[S.at]}. Prices went up.`)}
 }
-function ambush(c){
-  const d=cdef(c.id), mine=myStr()+(S.fx.ride?12:0);
+function ambush(c,sc){
+  const d=cdef(c.id), mine=Math.round((myStr()+(S.fx.ride?12:0))*(sc===2?.9:1)), ts=Math.round(c.str*(sc===1?.75:1));
   const pay=Math.round(Math.min(S.cash,400+c.beef*20));
   modal(`<h2 style="color:${d.color}">${d.name} ran up on you</h2>
-    <p>They been waiting. Their strength ${c.str} vs yours ${mine}.</p>
-    <div class="btns"><button class="btn red" id="f">Fight</button><button class="btn" id="r">Run</button>
+    <p>They been waiting. Their strength ${ts} vs yours ${mine}.${sc===1?' You spotted them first.':sc===2?' You missed one and it threw you off.':''}</p>
+    <div class="btns"><button class="btn red" id="f">Fight</button>${sc?'':'<button class="btn green" id="ow">Scope it out</button>'}<button class="btn" id="r">Run</button>
     <button class="btn" id="p" ${S.cash>=pay&&pay>0?'':'disabled'}>Pay ${money(pay)}</button></div>`);
-  $('f').onclick=()=>fightGame(mine,c.str,`The ${d.name}`,win=>{S.fx.ride=0;
+  if($('ow'))$('ow').onclick=()=>overwatchGame(ok=>ambush(c,ok?1:2));
+  $('f').onclick=()=>fightGame(mine,ts,`The ${d.name}`,win=>{S.fx.ride=0;
     if(win){const loot=rnd(200,800);S.cash+=loot;S.rep+=6;c.str=Math.max(4,c.str-rnd(2,4));S.heat=Math.min(100,S.heat+(is('shade')?6:12));
       S.st.fights++;addXP(5);addStress(6);say(`You held it down against the ${d.name}. Took ${money(loot)} off them.`);drawCard(.3,'Going through their pockets,')}
     else{const dmg=vcut(rnd(15,35));S.hp-=dmg;stealStash(.4);addStress(15);S.rep=Math.max(0,S.rep-3);say(`The ${d.name} got you. −${dmg} health and they took some of your stash.`)}
@@ -5480,6 +5515,7 @@ function act(a,el){
   if(a==='assign')return assignModal(+el.dataset.i);
   if(a==='tgood')return trapGoodModal(+el.dataset.i);
   if(a==='cut'){cutProduct(G(el.dataset.g),+el.dataset.p)}
+  if(a==='cutw'){const g0=G(el.dataset.g);return scaleGame(acc=>{cutProduct(g0,40,1-acc*.6);say(acc>=1?'Perfect weigh-up. The cut barely hurt the quality.':acc>0?'Decent weigh-up. The cut hurt the quality a little less.':'Sloppy weigh-up. Full quality hit.');render()})}
   if(a==='newcands'){S.cash-=200;S.candDay=-9;freshCands();say('Asked around for new workers.')}
   if(a==='dice')return dice();
   if(a==='pad'){S.cash-=1500;S.pad=1;say('Copped a Pro Pad. Cars are fair game now.')}
@@ -6129,13 +6165,17 @@ function gateGame(title,txt,go){modal(`<h2>${title}</h2><p>${txt}</p><p class="s
   padGame:()=>['Program the key','Lock it in when the marker hits the green (tap Lock in or press Space). Get 2 of 3 before the clock runs out. Higher Street Smarts makes the green wider.'],
   chase:()=>(!S.car&&!window.__laneChase)?[(window.chaseWho?window.chaseWho+' on your tail':'Twelve on your tail'),'You are on foot. Jump the low stuff (hold to go higher over tall fences) and slide under the lines. Two stumbles and they got you. PC: Space, Up or W to jump, Down or S to slide. Phone: tap the Jump and Slide buttons.']:[(window.chaseWho?window.chaseWho+' on your tail':'Twelve on your tail'),'Survive 20 seconds. Some '+(window.chaseWho?'of them':'cops')+' cut over into your lane (watch the flashing outline), some come in fast, and the last 5 seconds they floor it. Tap left or right, or use the arrow keys.'],
   safeGame:a=>[(a[0]||{}).title||'Dial the safe','Turn the dial with the buttons or arrow keys and stop inside the hot zone. Hold still for the click. Spinning fast does nothing, and the alarm bar runs down. Street Smarts widens the zone and a crew member helps.'],
+  hotwireGame:()=>['Hotwire it','Watch which wire lights up, then it gets shuffled. Tap the live one. 3 rounds, get 2 right. Street Smarts slows the shuffle.'],
+  stripGame:()=>['Strip it fast','Parts pop up one at a time. Tap each before it disappears. The more you get, the more the chop shop pays.'],
+  scaleGame:()=>['Weigh and bag','Hold Pour to add product, let go near the target weight, tap Trim to take a little off, then Lock in. Within 0.3 g counts. Better bags mean less quality lost in the cut.'],
+  overwatchGame:()=>['Overwatch','Windows flash. Tap the red gun, never the civilians. Spot 4 and stay clean and you see them first (their strength drops 25%). Fail and you start the fight rattled.'],
   shootoutGame:a=>['Shootout vs '+a[2],'Do the math. Each round shows their cover number and a hand of cards. Tap cards that add up to the number, then hit FIRE before the timer ends. Wrong number or too slow and they shoot you.'],
   talkGame:()=>['Talk your way through','You get a few lines. Pick the answer that fits the moment: confident and calm usually works, mouthing off or sounding unsure can cost you. Read each choice before you tap.'],
   hoopsG:()=>['Shooting contest','A marker slides back and forth. Tap Shoot (or press Space) when it is inside the zone. Bigger bets mean more on the line, so do not rush it.'],
   fightGame0:a=>['Fight vs '+a[2],'THEY SWING (red): hit Dodge. OPENING (green): hit Hit. Yellow with a question mark is a fake, so do nothing. COMBO: tap Hit three times fast. Every swing and dodge costs stamina (bar under your health), so do not spam. Gassed means weak hits and no dodge. Keys: left arrow dodge, right arrow or space hit.']};
  const wrap=(name,fn)=>function(...a){if(window._ing||(name==='fightGame0'&&window.fgGun)||(name==='shootoutGame'&&noGun()))return fn.apply(this,a);const [t,x]=INFO[name](a);
    gateGame(t,x,()=>{window._ing=1;try{fn.apply(this,a)}finally{window._ing=0}})};
- safeGame=wrap('safeGame',safeGame);flowGame=wrap('flowGame',flowGame);grabGame=wrap('grabGame',grabGame);seqGame=wrap('seqGame',seqGame);sneakGame=wrap('sneakGame',sneakGame);padGame=wrap('padGame',padGame);chase=wrap('chase',chase);shootoutGame=wrap('shootoutGame',shootoutGame);fightGame0=wrap('fightGame0',fightGame0);talkGame=wrap('talkGame',talkGame)}
+ safeGame=wrap('safeGame',safeGame);hotwireGame=wrap('hotwireGame',hotwireGame);stripGame=wrap('stripGame',stripGame);scaleGame=wrap('scaleGame',scaleGame);overwatchGame=wrap('overwatchGame',overwatchGame);flowGame=wrap('flowGame',flowGame);grabGame=wrap('grabGame',grabGame);seqGame=wrap('seqGame',seqGame);sneakGame=wrap('sneakGame',sneakGame);padGame=wrap('padGame',padGame);chase=wrap('chase',chase);shootoutGame=wrap('shootoutGame',shootoutGame);fightGame0=wrap('fightGame0',fightGame0);talkGame=wrap('talkGame',talkGame)}
 
 /* ---------- mini games: react on touch-down, not on finger lift ---------- */
 (()=>{let last=null;
