@@ -1022,7 +1022,7 @@ function cityMap(){
       <rect x="${x}" y="${y}" width="${w}" height="${h}" rx="10" fill="${c}" fill-opacity="${here?.18:.08}" stroke="${c}" stroke-width="${here?2.5:1.2}"/>
       <text x="${x+8}" y="${y+18}" font-size="12.5" font-family="Anton,Impact,sans-serif" fill="#efe9e1" letter-spacing=".5">${BLOCKS[i]}</text>
       <text x="${x+8}" y="${y+31}" font-size="8.5" font-family="Barlow,sans-serif" fill="${c}">${S.owner[i]==='me'?'Yours':S.owner[i]==='none'?'Open':cdef(S.owner[i]).name}${S.known.includes(i)?' · ★ plug':''}</text>
-      ${homeBlock()===i?`<g><circle cx="${x+14}" cy="${y+h-14}" r="10" fill="#141118" stroke="#f5b72a" stroke-width="1.5"/><path d="M${x+8} ${y+h-13} L${x+14} ${y+h-19} L${x+20} ${y+h-13} V${y+h-8} H${x+8} Z" fill="#f5b72a"/><rect x="${x+12}" y="${y+h-12}" width="4" height="4" fill="#141118"/></g>`:''}
+      ${homeBlock()===i?`<g><circle cx="${x+w-14}" cy="${y+h-14}" r="10" fill="#141118" stroke="#f5b72a" stroke-width="1.5"/><path d="M${x+w-20} ${y+h-13} L${x+w-14} ${y+h-19} L${x+w-8} ${y+h-13} V${y+h-8} H${x+w-20} Z" fill="#f5b72a"/><rect x="${x+w-16}" y="${y+h-12}" width="4" height="4" fill="#141118"/></g>`:''}
       ${here?`<g><circle cx="${x+w-14}" cy="${y+14}" r="9" fill="#f5b72a"/><text x="${x+w-14}" y="${y+18}" text-anchor="middle" font-size="10" font-weight="700" fill="#1a1408">U</text></g>`:''}</g>`});
   PLACES.forEach(P=>{let x=P.x,y=P.y,bi=P.bi;
     if(P.id==='studio'&&!S.rapOn)return;
@@ -1580,14 +1580,14 @@ function w5bCircle(){const B=b5(),X=S.gf||{};let h=`<div class="sec">Family</div
   const fl=B.fl>=75?'Close':B.fl>=40?'Okay':B.fl>=20?'Distant':'Cut off';
   h+=`<div class="row"><div class="info"><div class="t">Family: ${fl}</div><div class="s">${B.fl>=75?'They look out for you.':B.fl<20?'They are done answering.':'Show up when they need you.'}</div></div></div>`;
   h+=w5bRow('☎️ Call home','Free. Check in on everybody. Every 3 days.','w5b_call',B.fcall>S.day-3?'Wait':'Call',B.fcall>S.day-3);
-  if(S.gf){h+=w5bRow('🌹 Date night','$150. Dinner and a movie. Once every 3 days.','w5b_date',B.dateD>S.day-3?'Wait':'$150',B.dateD>S.day-3||S.cash<150);h+=w5bRow('🎁 Gift','$300. Something nice.','w5b_gift',B.giftD>S.day-7?'Wait':'$300',B.giftD>S.day-7||S.cash<300);if(B.mar){h+=w5bRow('💍 Married',`${esc(S.gf.name)} is your wife.`,'w5b_divorce','Divorce $2,000',S.cash<2000,'red')}else h+=w5bRow('💍 Propose',X.rel>=85&&adult()&&S.age>=20?'$4,000 clean for the ring.':'Needs a strong relationship and being at least 20.','w5b_marry','$4,000',!(X.rel>=85&&adult()&&S.age>=20)||S.cash<4000)}
+  if(S.gf){h+=w5bRow('🌹 Date night','$150. Dinner and a movie. Once every 3 days.','w5b_date',B.dateD>S.day-3?'Wait':'$150',B.dateD>S.day-3||S.cash<150);{const atM=S.at===placeAt('mall');h+=w5bRow('🎁 Gift',atM?'$300. Something nice.':'$300. Buy it at the mall on '+BLOCKS[placeAt('mall')]+'. Head there first.','w5b_gift',B.giftD>S.day-7?'Wait':atM?'$300':'At the mall',B.giftD>S.day-7||S.cash<300||!atM)}if(B.mar){h+=w5bRow('💍 Married',`${esc(S.gf.name)} is your wife.`,'w5b_divorce','Divorce $2,000',S.cash<2000,'red')}else h+=w5bRow('💍 Propose',X.rel>=85&&adult()&&S.age>=20?'$4,000 clean for the ring.':'Needs a strong relationship and being at least 20.','w5b_marry','$4,000',!(X.rel>=85&&adult()&&S.age>=20)||S.cash<4000)}
   return h}
 function w5bMove(){const B=b5();let h=`<div class="sec">Out of town</div>`;
   const best=GOODS.map(g=>({g,v:(S.inv[g.id]||0)*street(g)})).sort((a,b)=>b.v-a.v)[0];
   h+=`<div class="s" style="padding:2px 4px">${best&&best.v>0?`You would take your ${best.g.name.toLowerCase()}. Up to ${w5bUnit(best.g)*3}${w5bUN(best.g)}.`:'Get something to carry first.'} One run every 4 days.</div>`;
   W5BCITY.forEach((c,i)=>{const ct=(B.city[c.n]||{}).contact;h+=w5bRow(`🚗 ${c.n}`,`${money(c.cost)} for gas and a room. Better prices than home.${ct?' You have a contact there.':''}`,'w5b_run',B.ctrip>S.day-4?'Wait':'Go',B.ctrip>S.day-4||S.cash<c.cost||!best||best.v<=0,'',`data-i="${i}"`)});return h}
 const _pb5b=paneBiz,_ps5b=paneSpots,_pc5b=paneBeef,_pm5b=paneMove;
-paneBiz=function(){return _pb5b()+sfn('w5bBiz')};paneSpots=function(){return _ps5b()+sfn('w5bSpots')};paneBeef=function(){return _pc5b()+sfn('w5bCircle')};paneMove=function(){return _pm5b()+sfn('w5bMove')};
+paneBiz=function(){return _pb5b()+sfn('w5bBiz')};paneSpots=function(){return _ps5b()+sfn('w5bSpots')};paneBeef=function(){return _pc5b()};const _pl5b=paneLife;paneLife=function(){let f='';try{f=guardianLine()}catch(e){}return _pl5b()+(f?`<div class="sec">Your people</div>${f}`:'')+sfn('w5bCircle')};paneMove=function(){return _pm5b()+sfn('w5bMove')};
 /* ---- actions ---- */
 function w5bAct(a,el){if(a.slice(0,4)!=='w5b_')return false;const B=b5(),X=B,k=el&&el.dataset||{};if(a==='w5b_x')return true;
   if(a==='w5b_front'){w5bFront(k.k);return true}
@@ -1610,7 +1610,7 @@ function w5bAct(a,el){if(a.slice(0,4)!=='w5b_')return false;const B=b5(),X=B,k=e
   if(a==='w5b_night'){if(S.cash<800||B.nightD>S.day-7)return true;S.cash-=800;B.nightD=S.day;const p=rnd(1500,4500);if(Math.random()<.12){S.heat=Math.min(100,S.heat+10);say('The club night got shut down by the fire marshal. No money, more heat.')}else{S.cash+=p;legit(p);S.rep+=1;say(`Big club night. The house cleared ${money(p)}.`)}render();return true}
   if(a==='w5b_dist'){if(S.cash<10000||B.dist||!(S.soldiers>0))return true;if(needClean(10000,'A distribution route'))return true;{const c0=cleanCash();S.cash-=10000;S.clean=Math.max(0,c0-10000)}B.dist=1;say('Your distribution route is up.');render();return true}
   if(a==='w5b_date'){if(B.dateD>S.day-3||S.cash<150||!S.gf)return true;S.cash-=150;B.dateD=S.day;S.gf.rel=Math.min(100,S.gf.rel+Math.round(8*charmMul()));addStress(-8);say('Had a good date night.');render();return true}
-  if(a==='w5b_gift'){if(B.giftD>S.day-7||S.cash<300||!S.gf)return true;S.cash-=300;B.giftD=S.day;S.gf.rel=Math.min(100,S.gf.rel+Math.round(12*charmMul()));say('Bought her a gift. She loved it.');render();return true}
+  if(a==='w5b_gift'){if(B.giftD>S.day-7||S.cash<300||!S.gf||S.at!==placeAt('mall'))return true;S.cash-=300;B.giftD=S.day;S.gf.rel=Math.min(100,S.gf.rel+Math.round(12*charmMul()));say('Bought her a gift. She loved it.');render();return true}
   if(a==='w5b_run'){w5bRun(+k.i);return true}
   return false}
 WACT.push(w5bAct);
@@ -2228,9 +2228,11 @@ function livingDay(){if(!S.livDay){S.livDay=S.day+7;return}if(S.day<S.livDay)ret
 function paneExp(){
   const H=HOMES[S.home]||{rent:0},L=livCost(),per=S.myGang?100:150,sold=S.soldiers||0,cn=sold*per;
   const wk=(S.workers||[]).reduce((a,w)=>a+wPay(w),0),law=S.lawPay?1500:0,cousin=S.home==='couch'&&S.cousinDeal?250:0,loan=S.ls&&S.ls.owe?S.ls:null;
-  const row=(t,sub,amt)=>`<div class="row" style="flex-wrap:wrap"><div class="info" style="flex:1 1 200px;min-width:0"><div class="t">${t}</div><div class="s">${sub}</div></div><span class="chip">${amt}</span></div>`;
+  const row=(t,sub,amt)=>`<div class="row" style="flex-wrap:wrap"><div class="info" style="flex:1 1 200px;min-width:0"><div class="t">${t}</div><div class="s">${sub}</div></div><span class="chip" style="${/^\$0\b/.test(String(amt))?'':'color:var(--blood);border-color:var(--blood)'}">${amt}</span></div>`;
   const weekly=(H.rent||0)+L.tot+law+cousin+cn*7;
-  let h=`${a2('bills',380)}<div class="sec">What it costs to live</div>`;
+  const gr=(t,sub,amt)=>`<div class="row" style="flex-wrap:wrap"><div class="info" style="flex:1 1 200px;min-width:0"><div class="t">${t}</div><div class="s">${sub}</div></div><span class="chip" style="color:#5fd68a;border-color:#5fd68a">${amt}</span></div>`;
+  let inc='';try{if(S.job&&JOBS[S.job])inc+=gr(JOBS[S.job].name,'Your paycheck.','+'+money(JOBS[S.job].pay)+' / week');Object.keys(S.biz||{}).filter(k=>S.biz[k]&&BIZ[k]&&!BIZ[k].hide).forEach(k=>{inc+=gr(BIZ[k].name,'Base pay before upgrades and events.','+'+money(BIZ[k].pay)+' / day')});if(S.rap&&S.rap.lab&&S.rap.lab.art&&S.rap.lab.art.length)inc+=gr('Your label',S.rap.lab.art.length+' artist'+(S.rap.lab.art.length===1?'':'s')+' bringing in money.','+ every day')}catch(e){}
+  let h=`${a2('bills',380)}`+(inc?`<div class="sec" style="color:#5fd68a">Money coming in</div>${inc}`:'')+`<div class="sec" style="color:var(--blood)">Money going out</div>`;
   h+=row('Rent',S.home==='family'?'Your people cover the house.':`${H.name||'Your place'}. Next due in ${Math.max(0,(S.rentDay||S.day)-S.day)} day${(S.rentDay||S.day)-S.day===1?'':'s'}.`,H.rent?money(H.rent)+' / week':'$0');
   h+=row(`Cost of living in ${BLOCKS[colBlock()]}`,`${Math.round(L.bi*100)}% of the city average. Your lifestyle runs ${Math.round(L.m*100)}%: it climbs with your level, rep and bank. The bigger you get, the more everything costs.`,'×'+(Math.round(L.bi*L.m*100)/100));
   h+=L.tot?L.items.map(x=>row(x[0],'Comes out once a week.',money(x[1])+' / week')).join(''):row('Living costs',S.home==='family'?'Food, phone and bills are on your people while you live at home.':'None right now.','$0');
@@ -3381,7 +3383,7 @@ function eighteen(){const dip=S.cal?S.school==='grad':S.school==='in'&&S.grades>
     <p class="s" style="color:var(--dim)">You can pick any of these later from the Me tab too.</p><div class="btns"><button class="btn go" id="ok">Let's see</button></div>`);$('ok').onclick=()=>{tab='crew';close()}}
 function paneCareer(){if(!S.age&&S.mode!=='life'&&!S.job&&!Object.keys(S.biz||{}).length&&S.lvl<3)return '';
   let h=`<div class="sec">School, work and business</div>`;
-  h+=guardianLine();
+  
   if(S.cal&&S.school==='in'){const sw=schoolWeek(),br=schoolBreak();
     h+=`<div class="row" style="flex-wrap:wrap"><div class="info" style="flex:1 1 220px;min-width:0"><div class="t">${GRADEN[S.grade]||'High school'} year${S.altSchool?' · Alt school':''} · Grades ${S.grades}/100</div><div class="s">${S.suspended>S.day?'<b style="color:var(--blood)">Suspended.</b> You can\'t go back yet.':sw?'School week. Go all week or skip: skipping costs 7 grade points.':isWknd()?'Weekend. No school, the block is yours.':br+'. No school right now.'}${S.altSchool?' You\'re at alternative school.':''}${S.sStrikes?` School strikes: ${S.sStrikes} of 3.`:''} Pass each year with 50+. Graduation is May of senior year.</div><div class="bar"><i style="width:${S.grades}%;background:var(--accent)"></i></div></div>
       <div class="btns">${S.age>=16?'<button class="btn" data-a="dropout">Drop out</button>':''}</div></div>`;
@@ -4376,7 +4378,7 @@ rifle:{name:'Rifle',cost:6000,str:15,heat:10,mag:20,rad:22,rel:1000,sub:'Serious
 draco:{name:'Drako',cost:7500,str:17,heat:12,mag:30,rad:26,rel:1100,sub:'The big stick. Nobody on the block want smoke with this.'},
 ak:{name:'Imported AK',cost:9000,str:21,heat:8,mag:30,rad:28,rel:1000,burst:3,imp:1,sub:'Full auto, straight from overseas. Raj\'s family ships it.'},
 hound:{name:'Bloodhound',cost:0,str:24,heat:0,mag:40,rad:32,rel:900,burst:3,myth:1,sub:'Mythical. All black Drako, full auto from the factory. Only real ones hold this.'}};
-const AUTOK=['micro','baby','rifle','draco'],autoFee=k=>Math.max(3000,Math.round(GUNS[k].cost*.6));
+const AUTOK=['micro','baby','draco'],autoFee=k=>Math.max(3000,Math.round(GUNS[k].cost*.6));
 const isAuto=k=>!!(GUNS[k]&&(GUNS[k].burst||(S.auto||{})[k]));
 const gStr=k=>GUNS[k]&&!(S.noClip||{})[k]?GUNS[k].str+((S.auto||{})[k]?3:0):0;
 const gName=k=>(k==='smitty'&&(S.auto||{}).smitty?'Smitty w/ FRT':GUNS[k].name+((S.auto||{})[k]?' (full auto)':''))+((S.noClip||{})[k]?' (no clip)':'');
