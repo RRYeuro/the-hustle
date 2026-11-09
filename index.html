@@ -474,6 +474,7 @@ function skipTime(kind){
       if(kind==='bday'&&S.age>a0)break;
       if(sch0==='in'&&S.school==='grad')break;
       if(a0<18&&S.age>=18)break;
+      if(a0<16&&S.age>=16)break;
     }
   }catch(e){window.FF=false;console.error('skip',e)}
   window.FF=false;
@@ -3453,8 +3454,8 @@ function lifeCustom(){let fem=false,age=14;
 const JOBS={lawn:{name:'Lawn crew',pay:250},fast:{name:'Fast food',pay:350},retail:{name:'Retail',pay:450},ware:{name:'Warehouse',pay:600},office:{name:'Office job',pay:1300,degree:1}};
 const BIZ={taq:{name:'Family taqueria',cost:0,pay:140,hide:1},barber:{name:'Barbershop',cost:10000,pay:150},wash:{name:'Car wash',cost:15000,pay:220},laundry:{name:'Laundromat',cost:25000,pay:350},club:{name:'Nightclub',cost:60000,pay:900}};
 function lifeDay(){
-  if(S.cal){calTick();if(!S.inJail){if(fate())return;if(S.age>=18&&S.fate&&!S.fate.eighteenShown){S.fate.eighteenShown=1;return eighteen()}}}
-  else if(S.age&&S.day>1&&(S.day-1)%30===0){S.age++;say(`Happy birthday. You're ${S.age} now.`);bdayPop();if(fate())return;if(S.age===18)return eighteen()}
+  if(S.cal){calTick();if(!S.inJail){if(fate())return;if(t16due())return turned16();if(S.age>=18&&S.fate&&!S.fate.eighteenShown){S.fate.eighteenShown=1;return eighteen()}}}
+  else if(S.age&&S.day>1&&(S.day-1)%30===0){S.age++;say(`Happy birthday. You're ${S.age} now.`);bdayPop();if(fate())return;if(t16due())return turned16();if(S.age===18)return eighteen()}
   fateWeekly();
   if(S.cal&&S.school==='in'&&S.par&&isWknd()&&!schoolBreak(calDate(S.day+1))&&!(S.suspended>S.day+1))phoneMsg(S.par.name,"Weekend almost over. School tomorrow, be ready.");
   if(S.cal){const prevSchool=!((S.day-2)%2)&&S.school==='in'&&!schoolBreak(calDate(S.day-1));if(prevSchool&&!S.inJail&&!window.DEVFF&&S.classDay!==S.day-1&&S.day>1&&!(S.suspended>=S.day-1)){S.grades=Math.max(0,(S.grades||0)-7);if(S.grades<15){S.school='out';phoneMsg('School','You missed too much school. You are out.')}else phoneMsg(S.par?S.par.name:'Your people','The school called. They said you skipped. Grades −7.')}}
@@ -3494,6 +3495,16 @@ function fate(){if(!(S.mode==='life'||S.cal)||!S.fate)return false;const F=S.fat
 function fateWeekly(){if(!(S.mode==='life'||S.cal)||!S.fate||!weekTick())return;
   if(is('lucky')&&!S.fate.cut){{const al=S.cal?250:500;S.cash+=al;legit(al)}say(`Allowance hit: ${S.cal?'$250':'$500'}.`)}
   if(is('country')&&S.fate.mom&&S.age<18){const c=Math.min(150,S.cash);S.cash-=c;say(`Sent mom ${money(c)} for rent.`)}}
+/*F7 turning 16*/
+function t16due(){if(!S.age||S.age<16||S.turned16||S.mode==='sandbox')return false;if(S.age>=17||!S.fate){S.turned16=1;return false}if(S.pr||S.inJail||window.FF||!$('modal').hidden)return false;return true}
+function turned16(){S.turned16=1;const P=S.par||{},warn=P.trust!=null&&P.trust<35&&(P.strict||0)>60,who=P.name||'Your people';
+  say("You're 16 now. The street side opened up.");
+  modal(`<div class="sec" style="margin:0;color:var(--accent)">Birthday</div><h2>You're 16</h2><p>${warn?`${who} looks at you different now. "You're getting grown, but I'm watching."`:`${who} nods. "You're growing up. Be smart."`}</p>
+    <p class="s" style="margin:4px 0"><b>Opens up now:</b> heists, laundering, trap houses, a car, distribution and crew roles.</p>
+    <p class="s" style="margin:4px 0"><b>Still closed until 18:</b> real estate, a label, a bar and the sports agency.</p>
+    <p class="s" style="margin:4px 0;color:var(--blood)">Juvie and strikes stay as they are. At 16 and 17 you can still get sent up.</p>
+    <div class="btns" style="flex-direction:column;align-items:stretch"><button class="btn go" id="t1">Keep school</button><button class="btn" id="t2">See jobs</button>${S.school==='in'?'<button class="btn red" id="t3">Drop out</button>':''}</div>`);
+  $('t1').onclick=close;$('t2').onclick=()=>{tab='crew';close()};if($('t3'))$('t3').onclick=()=>{S.school='out';say('You dropped out of school.');close()}}
 function eighteen(){const dip=S.cal?S.school==='grad':S.school==='in'&&S.grades>=50;if(!S.cal){if(S.school==='in')S.school=dip?'grad':'out';S.diploma=dip?1:0}
   say(dip?'You graduated high school.':'You turned 18 without a diploma.');
   modal(`<h2>You're 18</h2><p>${dip?'You walked the stage. Diploma in hand.':S.cal&&S.school==='in'?'Still got senior year to finish. Stay in school and walk that stage.':'No diploma, but you got the streets.'} Relationships are unlocked now.${teenCount()?' <b>Chapter 2 of your story starts now.</b>':''} What's next?</p>
