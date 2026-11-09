@@ -811,7 +811,7 @@ function w4Drama(force){if(window.FF||S.pr||!$('modal').hidden)return false;cons
   return false}
 function w4Mission(idx){const M=w4Mem(),m=M[idx];if(!m)return;
   if(m.w4m!=null&&S.day-m.w4m<5){say(`${m.name} just got back. Give him a few days.`);return render()}
-  const T=[['Hold the corner','trap'],['Collect from a debtor','rob'],['Watch the block','look']];
+  const T=[['Hold the corner','trap'],['Collect street tax','rob'],['Watch the block','look']];
   wCard('loyalty','Mission for '+esc(m.name),`Pick what ${esc(m.name)} runs for you. Better skill and loyalty means better odds.`,T.map(([l,sk])=>{const p0=Math.min(.9,.4+((m.sk&&m.sk[sk])||2)*.05+m.loy/400);return {l:`${l} (${p0>=.7?'good':'even'} odds)`,c:'',f:()=>{m.w4m=S.day;if(Math.random()<p0){const c=rnd(150,500);S.cash+=c;m.loy=Math.min(100,m.loy+10);m.trust=Math.min(100,m.trust+5);w4Br(1);try{crewGain(m,sk)}catch(e){}say(`${m.name} came through. ${money(c)} dirty, and he is closer to you.`)}else{m.hurt=S.day+2;m.loy=Math.max(0,m.loy-3);say(`${m.name} ran into trouble and is laid up for two days.`)}}}}).concat([{l:'Never mind',c:'',f:()=>{}}]),'Crew')}
 function w4Circle(){const M=w4Mem();if(!M.length)return '';
   return `<div class="sec">Your soldiers</div><div class="s wspan" style="padding:0 2px">Send a soldier on a mission to build his loyalty. Ignore them and some will leave.</div>`+M.slice(0,5).map((m,i)=>{const rest=m.w4m!=null&&S.day-m.w4m<5;return `<div class="row" style="flex-wrap:wrap"><div class="info" style="flex:1 1 200px;min-width:0"><div class="t">${esc(m.name)}</div><div class="s">Loyalty ${Math.round(m.loy)} · Trust ${Math.round(m.trust)}${m.loy<30?' · <b style="color:var(--blood)">Thinking about leaving</b>':''}</div><div class="bar"><i style="width:${Math.round(m.loy)}%;background:var(--accent)"></i></div></div><button class="btn go" data-a="w4_mis" data-i="${i}" ${rest?'disabled':''}>${rest?'Resting':'Mission'}</button></div>`}).join('')}
@@ -1809,7 +1809,9 @@ const CNAMES2=['Smoke','Duke','Boog','Moe','Peso','Juice','Deuce','Flaco','Slim'
 function mkMember(name,o){o=o||{};const keys=Object.keys(CMSPEC),main=o.spec||pick(keys),sk={};keys.forEach(k=>sk[k]=rnd(1,3));sk[main]=rnd(4,6);
   return {id:(S.cmId=(S.cmId||0)+1),name,loy:o.loy!=null?o.loy:rnd(45,65),trust:o.trust!=null?o.trust:rnd(25,45),sk,rank:'sol',want:pick(Object.keys(CWANT)),hurt:0,busy:null,last:S.day,from:o.from||'hire',snake:o.snake?1:0}}
 function crewList(){S.crewM=S.crewM||[];const M=S.crewM,n=S.soldiers||0;
-  while(M.length<n){const used=M.map(m=>m.name).concat((S.friends||[]).map(f=>f.name));const pool=CNAMES2.filter(x=>!used.includes(x));M.push(mkMember(pool.length?pick(pool):'Soldier '+(M.length+1)))}
+  try{const taken=new Set((S.workers||[]).map(w=>w.name).concat((S.friends||[]).map(f=>f.name)).concat(BLOCKS.map((b,i)=>{try{return plugName(i)}catch(e){return ''}})));const seen=new Set();M.forEach(m=>{if(taken.has(m.name)||seen.has(m.name)){const used=new Set(M.map(x=>x.name).concat([...taken]));const pool=CNAMES2.filter(x=>!used.has(x));if(pool.length)m.name=pick(pool)}seen.add(m.name)})}catch(e){}
+
+  while(M.length<n){const used=M.map(m=>m.name).concat((S.friends||[]).map(f=>f.name)).concat((S.workers||[]).map(w=>w.name)).concat(BLOCKS.map((b,i)=>{try{return plugName(i)}catch(e){return ''}}));const pool=CNAMES2.filter(x=>!used.includes(x));M.push(mkMember(pool.length?pick(pool):'Soldier '+(M.length+1)))}
   if(M.length>n){const sn=M.filter(m=>m.snake).length;const w=m=>(m.snake&&sn>(S.snakeIn||0)?-1000:0)+(m.rank==='rh'?100:m.rank==='enf'?80:0)+m.loy+m.trust;M.sort((a,b)=>w(a)-w(b));while(M.length>n)M.shift()}
   return M}
 const crewOk=()=>crewList().filter(m=>!m.busy&&m.hurt<S.day);
@@ -3112,13 +3114,13 @@ function plugRevenge(k,bi){const nm=plugName(bi);S.rev=S.rev||{};
       else{S.hp=Math.max(5,S.hp-rnd(18,30));addStress(12);S.cash=Math.round(S.cash*.92);say(`${nm} beat you down and ${plugFem(bi)?'her':'his'} people took some cash.`);shResult('Beat down',`${nm} got the best of you. You lost some cash and some pride.`)}});return}}
 function plugActions(bi){const k=S.pk[bi]||{},kn=S.known.includes(bi),fem=plugFem(bi);const favCool=k.fav&&S.day-k.fav<3;
   const canHook=adult()&&(isF()?!fem:fem)&&kn&&S.trust[bi]>=50;const cool=k.hook&&S.day-k.hook<3;
-  return `<div class="btns" style="margin-top:6px"><button class="btn" data-a="pkick" data-i="${bi}" ${k.kick===S.day?'disabled':''}>${k.kick===S.day?'Kicked it today':'Kick it'}</button>${frontBtn(bi)}
+  return `<div class="btns" style="margin-top:6px"><button class="btn" data-a="pkick" data-i="${bi}" ${k.kick===S.day?'disabled':''}>${k.kick===S.day?'Kicked it today':'Kick it'}</button>${(S.recr&&S.recr[bi])?'':frontBtn(bi)}
     ${adult()&&(isF()?!fem:fem)?`<button class="btn" data-a="phook" data-i="${bi}" ${canHook&&!cool?'':'disabled'}>${!kn||S.trust[bi]<50?'Flirt (need 50 trust)':cool?'Give it a few days':'Shoot your shot'}</button>`:''}
     ${recruitBtn(bi)}
-    ${kn?`<button class="btn" data-a="ppitch" data-i="${bi}" ${k.pitch===S.day?'disabled':''}>${k.pitch===S.day?'Already pitched today':`Pitch ${fem?'her':'him'} your stuff`}</button>`:''}
+    ${kn&&!(S.recr&&S.recr[bi])?`<button class="btn" data-a="ppitch" data-i="${bi}" ${k.pitch===S.day?'disabled':''}>${k.pitch===S.day?'Already pitched today':`Pitch ${fem?'her':'him'} your stuff`}</button>`:''}
     ${kn&&!(S.recr&&S.recr[bi])?`<button class="btn" data-a="pasks" data-i="${bi}" ${k.ask===S.day?'disabled':''}>${k.ask===S.day?'Already asked today':'Ask for something else'}</button>`:''}
     ${(S.recr&&S.recr[bi])?'':`<button class="btn" data-a="pfav" data-k="spin" data-i="${bi}" ${favCool?'disabled':''}>Slide on ${fem?'her':'his'} opps</button>`}
-    <button class="btn red" data-a="prob" data-i="${bi}">Rob ${fem?'her':'him'}</button></div>
+    ${(S.recr&&S.recr[bi])?(()=>{const wi=(S.workers||[]).findIndex(w=>w.from===bi);return wi>=0?`<button class="btn go" data-a="wstash" data-i="${wi}">Give ${fem?'her':'him'} product</button>`:''})():`<button class="btn red" data-a="prob" data-i="${bi}">Rob ${fem?'her':'him'}</button>`}</div>
     ${adult()&&k.hooked&&S.trust[bi]>=80&&!(S.gf&&S.gf.plug===bi)?`<div class="btns" style="margin-top:6px"><button class="btn go" data-a="pdate" data-i="${bi}">Ask ${fem?'her':'him'} out</button></div>>`:k.hooked&&!(S.gf&&S.gf.plug===bi)?`<div class="s">Y'all been creeping. Get ${fem?'her':'him'} to 80 trust and you can make it official.</div>`:''}
     ${S.gf&&S.gf.plug===bi?`<div class="s" style="color:var(--money)">${fem?'She':'He'}'s your ${fem?'girl':'man'}: 15% off every buy, and ${fem?'she':'he'} always tells you if it's fake.</div>`:''}
     ${k.disc?`<div class="s" style="color:var(--money)">${plugName(bi)} is looking out: your next buy from ${fem?'her':'him'} is 30% off.</div>`:''}
