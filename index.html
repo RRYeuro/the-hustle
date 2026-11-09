@@ -2572,6 +2572,11 @@ function runTraps(){const did=new Set();
       if(wLv(w)>l0){w.hustle=Math.min(10,w.hustle+1);say(`${w.name} leveled up to level ${wLv(w)}. ${w.name} can sell ${wLv(w)} products now. Pick them in the trap's Product button.`)}}
     if(w.stash&&wStashUsed(w)>0&&w.loyal<=3&&Math.random()<.05){let lost=0;Object.keys(w.stash).forEach(k=>{const l=Math.floor(w.stash[k]*.3);w.stash[k]-=l;lost+=l});if(lost)say(`${w.name} came up short on the stash you fronted. Watch him.`)}
     if(w.loyal<=3&&Math.random()<.04){S.heat=Math.min(100,S.heat+20);say(`Word is ${w.name} been talking to twelve. Heat +20.`)}
+    /*F4 trap raid*/
+    {const rc=(.008+S.heat/100*.025)*(1-.25*(t.up||0))*(crewRank('stash')?.6:1);
+    if(t.g&&t.w===w.id&&Math.random()<rc){const lost=w.held||0;w.held=0;let keep='';if((t.up||0)>=2&&Math.random()<.5)keep=' The stash was hidden good and made it through.';else if(w.stash){Object.keys(w.stash).forEach(k=>w.stash[k]=0)}
+      t.w=null;w.low=S.day+4;S.heat=Math.min(100,S.heat+10);const msg=`Police hit the ${BLOCKS[bi]} trap. ${w.name} got picked up and ${money(lost)} in cash is gone.${keep||' The product inside went with it.'} The house is empty until you put someone back.`;
+      say(msg);if($('modal').hidden&&!window.FF)modal(`<h2>Trap house raided</h2><p>${msg}</p><p class="s" style="color:var(--dim)">Upgrades make the house harder to hit and hide the stash better.</p><div class="btns"><button class="btn go" id="ok">Damn</button></div>`),$('ok').onclick=close}}
   });
   (S.workers||[]).forEach(w=>{if(w.low>=S.day){did.add(w.id);return}if(w.from===undefined||!(S.recr&&S.recr[w.from])||did.has(w.id)||Object.values(S.traps||{}).some(t=>t.w===w.id))return;
     const bi=w.from;w.stash=w.stash||{};w.sq=w.sq||{};let tot=0;const sold=[];
@@ -2611,7 +2616,7 @@ function paneTraps(){
     if(!t)return `<div class="row"><div class="info"><div class="t">${BLOCKS[i]}</div><div class="s">No trap here yet. A worker sells for you every day.</div></div><button class="btn green" data-a="trap" data-i="${i}" ${S.cash>=trapCost()?'':'disabled'}>Open ${money(trapCost())}</button></div>`;
     const w=S.workers.find(w=>w.id===t.w);
     return `<div class="row" style="flex-wrap:wrap"><div class="info"><div class="t">${BLOCKS[i]} trap</div><div class="s">${w?`${w.name} working`:'Nobody working'} · ${t.g?`selling ${trapGoods(t).map(x=>`${G(x).name} (${S.inv[x]?amt(S.inv[x],G(x)):'none'})`).join(', ')}`:'no product picked'}</div></div>
-      <div class="btns"><button class="btn" data-a="assign" data-i="${i}">Worker</button><button class="btn" data-a="tgood" data-i="${i}">Product</button></div></div>`}).join('');
+      <div class="btns"><button class="btn" data-a="assign" data-i="${i}">Worker</button><button class="btn" data-a="tgood" data-i="${i}">Product</button>${(t.up||0)<3?`<button class="btn green" data-a="tup" data-i="${i}" ${cleanCash()>=[3000,8000,20000][t.up||0]?'':'disabled'}>Upgrade ${money([3000,8000,20000][t.up||0])}</button>`:''}</div>${t.up?`<div class="s" style="flex-basis:100%;color:var(--dim)">Fortified, level ${t.up}. Harder for police to hit.</div>`:''}</div>`}).join('');
   if(!spots.length)h+=`<div class="row"><div class="info"><div class="s">You need a block to open a trap. Take one from a crew.</div></div></div>`;
   const busy=id=>Object.values(S.traps).some(t=>t.w===id);
   {const tot=S.workers.reduce((a,w)=>a+(w.held||0),0);h+=`<div class="sec">Your workers (${S.workers.length})</div>`+(tot?`<div class="row" style="padding:8px 12px"><div class="info"><div class="t">${money(tot)} waiting</div><div class="s">Workers hold the money until you collect it. Low loyalty workers can skim or run.</div></div><button class="btn green" data-a="wcollectall">Collect all</button></div>`:'');}
@@ -5334,6 +5339,7 @@ function act(a,el){
   if(a==='wcollectall'){let t=0;S.workers.forEach(w=>{t+=w.held||0;w.held=0});if(t){S.cash+=t;say(`Collected ${money(t)} from your workers.`)}}
   if(a==='wpay')return wPayModal(+el.dataset.i);
   if(a==='firew'){const w=S.workers.splice(+el.dataset.i,1)[0];if(w&&w.stash)Object.keys(w.stash).forEach(k=>{S.inv[k]+=w.stash[k]});if(w.from!==undefined&&S.recr)delete S.recr[w.from];S.cash+=(w.held||0);Object.values(S.traps).forEach(t=>{if(t.w===w.id)t.w=null});say(`Cut ${w.name} off.`)}
+  if(a==='tup'){const bi=+el.dataset.i,t=S.traps[bi];if(!t||(t.up||0)>=3)return;const c=[3000,8000,20000][t.up||0];if(cleanCash()<c){say('Upgrades come out of clean money.');return render()}S.cash-=c;S.clean=Math.max(0,cleanCash()-c);t.up=(t.up||0)+1;say(`Fortified the ${BLOCKS[bi]} trap. Level ${t.up}. Police will have a harder time hitting it.`);return render()}
   if(a==='assign')return assignModal(+el.dataset.i);
   if(a==='tgood')return trapGoodModal(+el.dataset.i);
   if(a==='cut'){cutProduct(G(el.dataset.g),+el.dataset.p)}
