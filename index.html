@@ -1179,11 +1179,11 @@ const prDeal=k=>{const R=S.pr,d=R&&R.deal&&R.deal[k];return d&&d.d===S.day?d.m:1
 const prDrugPrice=g=>Math.round(prDrugBase(g)*prDeal('buy'));
 const prSellPrice=g=>Math.round(prDrugBase(g)*1.1*prDeal('sell'));
 const prDrugN=()=>Object.keys(S.pr.dr).reduce((a,k)=>a+(S.pr.dr[k]||0),0);
-function prWorth(){const R=S.pr;return R.bal+Object.keys(PRI).reduce((a,k)=>a+(R.inv[k]||0)*PRI[k].p*.9,0)}
-function prPay(c){const R=S.pr;if(prWorth()<c-.001)return false;let need=c;const b=Math.min(R.bal,need);R.bal-=b;need-=b;
+function prWorth(){const R=S.pr;if(!R)return 0;return R.bal+Object.keys(PRI).reduce((a,k)=>a+(R.inv[k]||0)*PRI[k].p*.9,0)}
+function prPay(c){const R=S.pr;if(!R)return false;if(prWorth()<c-.001)return false;let need=c;const b=Math.min(R.bal,need);R.bal-=b;need-=b;
   if(need>0){for(const k of ['stamp','ramen','coffee','mack','cig']){while(need>0.001&&(R.inv[k]||0)>0){R.inv[k]--;need-=PRI[k].p*.9}}if(need<0)R.bal+=Math.round(-need)}R.bal=Math.round(R.bal);return true}
 function prHeat(n){const R=S.pr;if(!R)return;R.heat=Math.max(0,Math.min(100,R.heat+n))}
-function prAdd(d){const R=S.pr;R.until=Math.min(R.start+Math.round(R.len*1.8),R.until+d)}
+function prAdd(d){const R=S.pr;if(!R)return;R.until=Math.min(R.start+Math.round(R.len*1.8),R.until+d)}
 function prStart(){const gun=S.bustGun;S.bustGun=0;S.ha=null;
   const len=Math.round((S.cal?(S.strikes<=1?6:24):(S.strikes<=1?5:12))*(gun?1.25:1));
   const sh=a=>a.slice().sort(()=>Math.random()-.5),gn=sh(PGN),inn=sh(PIN),gt=sh(['dirty','strict','fair']),gang=pick(PGANGS);
@@ -1217,14 +1217,14 @@ function prisonDay(){const R=S.pr;if(!R)return;R.acts={};R.sold={};GOODS.forEach
   let modalUsed=false;
   for(const f of R.fronts){if(S.day>f.due&&!modalUsed&&!lock0){modalUsed=true;f.owe=Math.round(f.owe*1.15);f.due=S.day+2;const str=rnd(20,34);
     modal(`<h2 style="color:var(--blood)">${esc(f.who)} wants his money</h2><p>You owe ${money(f.owe)} for the ${G(f.gid).name.toLowerCase()} he fronted you. He brought two people to collect.</p><div class="btns"><button class="btn go" id="pay" ${prWorth()>=f.owe?'':'disabled'}>Pay ${money(f.owe)}</button><button class="btn red" id="fg">Fight them</button></div>`);
-    $('pay').onclick=()=>{prPay(f.owe);R.fronts=R.fronts.filter(x=>x!==f);say(`Paid off ${f.who}.`);close();render()};
+    $('pay').onclick=()=>{if(!prPay(f.owe)){close();render();return}R.fronts=R.fronts.filter(x=>x!==f);say(`Paid off ${f.who}.`);close();render()};
     $('fg').onclick=()=>{close();fightGame(myStr()+(R.inv.shank?4:0),str,`${f.who}'s people`,win=>{prHeat(10);if(win){R.fronts=R.fronts.filter(x=>x!==f);S.rep+=2;say(`You beat ${f.who}'s people and the debt is dead.`)}else{const d=vcut(rnd(12,28));S.hp-=d;say(`${f.who}'s people beat you down. −${d} health. The debt is still there.`)}checkEnd();render()})}}}
   // lockdown, tests
   if(!lock0&&Math.random()<.05){R.lock=S.day+3;say('Lockdown. Everything shut down for a few days. Prices on the inside doubled and no deliveries or visits are getting through.')}
   if(!modalUsed&&!lock0&&Math.random()<.1*(R.g?Math.pow(.6,R.g.r+1):1)*(R.npc[6].trust>=40?.6:1)){modalUsed=true;const str=rnd(10,28);
     modal(`<h2>Somebody tests you</h2><p>Some dude steps to you in the dayroom to see what you are about. Everybody is watching.</p><div class="btns"><button class="btn red" id="fg">Fight him</button><button class="btn" id="pay" ${prWorth()>=100?'':'disabled'}>Pay him $100</button><button class="btn" id="bd">Back down</button></div>`);
     $('fg').onclick=()=>{close();fightGame(myStr()+(R.inv.shank?4:0),str,'the dude in the dayroom',win=>{prHeat(10);if(win){S.rep+=1;addXP(3);say('Handled somebody in the dayroom. People noticed.')}else{const d=vcut(rnd(10,25));S.hp-=d;say(`Lost a fight in the dayroom. −${d} health.`)}checkEnd();render()})};
-    $('pay').onclick=()=>{prPay(100);say('Paid a dude $100 to leave you alone.');close();render()};
+    $('pay').onclick=()=>{if(!prPay(100)){close();render();return}say('Paid a dude $100 to leave you alone.');close();render()};
     $('bd').onclick=()=>{addStress(10);S.rep=Math.max(0,S.rep-1);say('Backed down. That will follow you for a while.');close();render()}}
   // searches and raids
   const sfx=R.safe>=S.day;
@@ -3527,7 +3527,7 @@ function tapGame(o,done){mgOn=true;const R=o.rounds||3,Z=o.zone,MS=o.ms;let r=0,
   const pos=t=>{const ph=((t-t0)%(MS*2))/MS;return ph<1?ph:2-ph};
   const place=()=>{const z=$('tz');if(z){z.style.left=((zc-Z/2)*100)+'%';z.style.width=(Z*100)+'%'}};place();
   const loop=t=>{if(!mgOn||!$('tm'))return;$('tm').style.left=(pos(t)*100)+'%';requestAnimationFrame(loop)};requestAnimationFrame(loop);
-  $('tb').onclick=()=>{const x=pos(performance.now()),hit=Math.abs(x-zc)<=Z/2+.025;if(hit)hits++;r++;$('tf').textContent=hit?'Clean':'Missed';$('tf').style.color=hit?'var(--money)':'var(--blood)';
+  $('tb').onclick=()=>{if(!mgOn)return;const x=pos(performance.now()),hit=Math.abs(x-zc)<=Z/2+.025;if(hit)hits++;r++;$('tf').textContent=hit?'Clean':'Missed';$('tf').style.color=hit?'var(--money)':'var(--blood)';
     if(r>=R){mgOn=false;setTimeout(()=>done(hits>=(o.need||2)),450);return}
     zc=Math.random()*(1-Z)+Z/2;place();setTimeout(()=>{if($('tf')){$('tf').textContent='Round '+(r+1)+' of '+R;$('tf').style.color=''}},500)};
 }
@@ -3993,6 +3993,7 @@ function lickDone(title,text,good,noLick,img){
   modal(`${img?a2(img,340):''}<h2 style="color:${good?'var(--money)':'var(--blood)'}">${title}</h2><p>${text}</p><div class="btns"><button class="btn go" id="ok">Continue</button></div>`);
   $('ok').onclick=()=>{$('modal').hidden=true;nextDay();checkEnd();render()};
 }
+function lickBust(title,text){lickDone(title,text,false);const _ok=$('ok');if(_ok)_ok.onclick=()=>{$('modal').hidden=true;busted();if($('modal').hidden){nextDay();checkEnd()}render()}}
 function caughtOrNot(ok,goodTitle,goodText,then){
   if(ok){then&&then();return lickDone(goodTitle,goodText,true)}
   lickDone('Twelve got you','The chase ended in cuffs.',false);{const _ok=$('ok');if(_ok)_ok.onclick=()=>{$('modal').hidden=true;busted();if($('modal').hidden){nextDay();checkEnd()}render()}}
@@ -4016,7 +4017,7 @@ function lick(k){if(stuckHome())return;if(k==='store'&&lkBlock('store','The corn
     $('r').onclick=()=>chase(c=>{addStress(8);caughtOrNot(c,ok2,ok2t)});
     $('bl').onclick=()=>{const odds=.25+S.sk.talk*.05+(S.sk.smarts-3)*.02-(stressed()?.1:0);const line=pick(['"I\'m with the cable company, I got the wrong address."','"My cousin lives here, he told me to grab his charger."','"Wrong house, bro. I\'m drunk, my fault."','"I\'m just looking for my dog, have you seen a pit bull?"']);
       if(Math.random()<odds){addStress(4);say(`Bluffed your way out: ${line}`);return lickDone('They bought it',`You said ${line} and walked off like nothing happened. Nobody called it in.`,false)}
-      addStress(12);busted();lickDone('Nobody believed you',`You said ${line} They looked at you like you were crazy and held you there until twelve pulled up.`,false)}};
+      addStress(12);lickBust('Nobody believed you',`You said ${line} They looked at you like you were crazy and held you there until twelve pulled up.`,false)}};
   if(k==='pharm')return grabGame((got,alarm)=>{
     if(alarm||got<4){S.heat=Math.min(100,S.heat+25);return alarmRun('Alarm tripped',alarm?'You grabbed right in front of the camera. Cops are on the way.':'You were too slow. The pharmacist hit the silent alarm.','You got away','Empty handed, but free.')}
     if(Math.random()<.3){S.heat=Math.min(100,S.heat+25);return alarmRun('The pharmacist saw you','He came out from the back with the phone in his hand. You dropped half the bags running.','You got away','They almost had you.')}
@@ -4060,7 +4061,7 @@ function lick(k){if(stuckHome())return;if(k==='store'&&lkBlock('store','The corn
     $('no').onclick=close;$('sn').onclick=sneak;
     $('hi').onclick=()=>{inv=true;cut('door','');S.heat=Math.min(100,S.heat+6);
       if(Math.random()<.45)return fightGame(myStr(),rnd(14,30),'The homeowner',win=>{if(win)return run(6,false);const dmg=vcut(rnd(20,45));S.hp-=dmg;S.heat=Math.min(100,S.heat+10);addStress(14);
-        say(`Home invasion went bad. The homeowner fought back. −${dmg} health.`);if(S.hp>0&&Math.random()<.35){busted();return lickDone('He fought back','The homeowner came out swinging and held you down till twelve pulled up.',false)}
+        say(`Home invasion went bad. The homeowner fought back. −${dmg} health.`);if(S.hp>0&&Math.random()<.35){return lickBust('He fought back','The homeowner came out swinging and held you down till twelve pulled up.')}
         alarmRun('He fought back',`The homeowner came out swinging. −${dmg} health. You gotta go.`,'You got away','Back out the door and gone.')});
       run(6,false)};
     return}
@@ -4079,7 +4080,7 @@ function lick(k){if(stuckHome())return;if(k==='store'&&lkBlock('store','The corn
     const runUp=(str)=>fightGame(myStr(),str,nm,win=>{S.heat=Math.min(100,S.heat+14);addStress(12);
       if(win){const extra=take();S.cash+=cash;S.rep+=6;addXP(6);P.burned=1;P.trust=0;P.g=null;P.fa=undefined;return lickDone('Took his strap',`You caught ${nm} slipping and walked off with his ${G2.name.toLowerCase()}${fa?' (full auto)':''} and ${money(cash)}.${extra} Rep +6.`,true)}
       const dmg=vcut(rnd(30,60));S.hp-=dmg;S.rep=Math.max(0,S.rep-4);let lost='';const mine=Object.keys(S.guns||{});if(mine.length&&Math.random()<.55){const l=pick(mine);delete S.guns[l];if(S.auto)delete S.auto[l];houndGone();lost=` He took your ${GUNS[l].name.toLowerCase()} too.`}
-      if(S.hp>0&&Math.random()<.2){busted();return lickDone('He pulled first',`${nm} saw you coming and let it fly. −${dmg} health.${lost} Shots fired brought twelve, and they snatched you up.`,false)}
+      if(S.hp>0&&Math.random()<.2){return lickBust('He pulled first',`${nm} saw you coming and let it fly. −${dmg} health.${lost} Shots fired brought twelve, and they snatched you up.`,false)}
       say(`Tried to take ${nm}'s strap. He pulled first. −${dmg} health.${lost}`);lickDone('He pulled first',`${nm} saw you coming and let it fly. −${dmg} health, rep −4.${lost}`,false)});
     $('y').onclick=()=>runUp(theirs);
     if($('fz'))$('fz').onclick=()=>{const line=pick(['"Damn, that\'s hard. Lemme see that."','"Bro where you got that from? Let me hold it real quick."','"That\'s the new one? Let me see how it feel."']);
@@ -4093,7 +4094,7 @@ function lick(k){if(stuckHome())return;if(k==='store'&&lkBlock('store','The corn
       $('gb').onclick=()=>{P.trust=Math.min(100,P.trust+25);addXP(2);S.rep+=1;lickDone('Gave it back',`You looked it over and handed it back. "That's clean, bro." ${nm} trusts you more now (${P.trust}/100). Next time you see him, he'll be easier to finesse, and he won't see it coming if you decide to rob him.`,true,true)}};
     return}
   if(k==='scam')return talkGame(sus=>{
-    if(Math.random()<.1+sus*.03-S.sk.talk*.005-girlB()){busted();return lickDone('It was a setup','The "buyer" was undercover. Should have known.',false)}
+    if(Math.random()<.1+sus*.03-S.sk.talk*.005-girlB()){return lickBust('It was a setup','The "buyer" was undercover. Should have known.')}
     if(sus<=1){const pay=rnd(600,1800);S.cash+=pay;S.rep+=2;S.heat=Math.min(100,S.heat+10);addXP(3);addStress(5);
       return lickDone('He came with the bread',`He fell for every word. Buyer showed up with ${money(pay)} and you took it.`,true)}
     if(sus<=3){const dmg=vcut(rnd(10,30));S.hp-=dmg;addStress(12);return lickDone('He came strapped',`He didn't trust you, so he came ready. You got out, but not clean. −${dmg} health.`,false)}
@@ -4180,7 +4181,7 @@ function padGame(done){
   const zn=$('zn'),mk=$('mk');const place=()=>{zn.style.left=zs+'%';zn.style.width=zone+'%'};place();let last=performance.now();
   const loop=t=>{if(!mgOn||!mk.isConnected)return;const left=1-(performance.now()-T0)/LIM;if($('tb'))$('tb').style.width=Math.max(0,left*100)+'%';if(left<=0){mgOn=false;$('hs').textContent='Time is up';setTimeout(()=>done(false),250);return}const dt=(t-last)/16.7;last=t;pos+=dir*(2.2+tries*.5)*dt;if(pos>=100){pos=100;dir=-1}if(pos<=0){pos=0;dir=1}mk.style.left=pos+'%';requestAnimationFrame(loop)};
   requestAnimationFrame(loop);
-  $('sh').onclick=()=>{tries++;if(pos>=zs-2.5&&pos<=zs+zone+2.5)hits++;zs=rnd(5,95-zone);place();$('hs').textContent=`${hits} locked · Try ${Math.min(tries+1,3)} of 3 · ${Math.max(0,Math.ceil((LIM-(performance.now()-T0))/1000))}s`;
+  $('sh').onclick=()=>{if(!mgOn)return;tries++;if(pos>=zs-2.5&&pos<=zs+zone+2.5)hits++;zs=rnd(5,95-zone);place();$('hs').textContent=`${hits} locked · Try ${Math.min(tries+1,3)} of 3 · ${Math.max(0,Math.ceil((LIM-(performance.now()-T0))/1000))}s`;
     if(hits>=2||tries-hits>=2){if(hits>=2&&performance.now()-T0<LIM*.6){addXP(2);say('Fast hands. +2 XP.')}mgOn=false;setTimeout(()=>done(hits>=2),250)}};
 }
 /* ---------- dealing with fakes ---------- */
@@ -4558,7 +4559,7 @@ function serveCusto(ci,fromText,o){o=o||{};const c=S.custos[ci];if(!c)return;con
   {const want=Math.round(sz*(o.mult||1)*((c.hook||0)>=50?1.5:1)/g.step)*g.step||sz;if(S.inv[gid]<want&&safeN(gid)>0){const need=Math.min(want-S.inv[gid],safeN(gid));vTake(gid,need,1);say(`Told ${c.name} to go in the safe for ${amt(need,g)} of ${g.name}.`)}}
   const n=Math.min(Math.round(sz*(o.mult||1)*((c.hook||0)>=50?1.5:1)/g.step)*g.step||sz,S.inv[gid]);
   if(n<g.step){if(fromText){say(`You ain't got no ${g.name} for ${c.name}.`)}else say(`You don't have ${g.name} to bring ${c.name}.`);render();return}
-  if(c.uc&&c.buys<2&&Math.random()<.6){busted();S.custos.splice(ci,1);S.texts=[];return lickDone('New number was the feds','That "new play" was undercover. Should have kept it to people you know.',false,true)}
+  if(c.uc&&c.buys<2&&Math.random()<.6){S.custos.splice(ci,1);S.texts=[];return lickBust('New number was the feds','That "new play" was undercover. Should have kept it to people you know.')}
   const fk=Math.min(S.fake[gid],Math.round(n*S.fake[gid]/S.inv[gid]));S.fake[gid]-=fk;
   const each=Math.round(custoPrice(c,gid)*(o.price||1)),got=Math.round((n-fk)*each+fk*each*.1);S.inv[gid]-=n;if(S.inv[gid]<=0){S.inv[gid]=0;S.paid[gid]=0;S.q[gid]=50;S.fake[gid]=0}
   const profit=got-S.paid[gid]*n;S.cash+=got;if(profit>0){S.st.profit+=profit;addXP(Math.floor(profit/500))}S.st.sold+=n*g.sp*5;S.heat=Math.min(100,S.heat+1);srvTick(n,g);
@@ -4733,7 +4734,7 @@ function shootoutArcade(mine,theirs,who,done){
 function shootoutGame0(mine,theirs,who,done){mgOn=true;
   const share=mine/(mine+theirs),best=Object.keys(S.guns||{}).sort((a,b)=>gStr(b)-gStr(a))[0]||'pistol',auto=typeof isAuto==='function'&&isAuto(best),tol=(auto?1:0);
   const total=Math.max(3,Math.min(7,3+Math.round(theirs/10))),dmgIn=Math.round(9+(1-share)*11),nC=total>=6?6:5,TMS=Math.max(5200,Math.round(11000+S.sk.smarts*450-theirs*30-(stressed()?1800:0)));
-  let hp=100,left=total,myK=0,round=0,sel=[],cards=[],target=0,tEnd=0,over=false,msg='Do the math. Add the cards to match their cover.';
+  let hp=100,left=total,myK=0,round=0,s2busy=false,sel=[],cards=[],target=0,tEnd=0,over=false,msg='Do the math. Add the cards to match their cover.';
   modal(`<div class="sec" style="margin:0;color:var(--blood)">Shootout</div><h2>You vs ${who}</h2>
    <div style="display:flex;justify-content:space-between;font-family:var(--label);font-size:13px"><span id="s2h"></span><span id="s2l"></span></div>
    <div style="text-align:center;padding:6px"><div class="s" style="color:var(--dim)">Their cover number</div><div id="s2t" style="font-family:var(--display);font-size:54px;line-height:1"></div><div id="s2s" style="font-size:18px;min-height:24px"></div></div>
@@ -4742,7 +4743,7 @@ function shootoutGame0(mine,theirs,who,done){mgOn=true;
    <p id="s2m" class="s" style="text-align:center;min-height:20px"></p>
    <div class="btns" style="justify-content:center"><button class="btn red" id="s2f" style="padding:14px 40px;font-size:20px">FIRE</button></div>
    <p class="s" style="text-align:center;color:var(--dim)">Tap cards to add them up. Match their number ${tol?'(or be 1 off with your '+gName(best)+')':'exactly'} and hit FIRE before the bar runs out. Miss and they shoot back.</p>`);
-  const deal=()=>{round++;const k=rnd(2,3);const base=[];for(let i=0;i<k;i++)base.push(rnd(2,9+(total>=6?3:0)));target=base.reduce((a,b)=>a+b,0);cards=base.slice();while(cards.length<nC)cards.push(rnd(1,9+(total>=6?3:0)));cards.sort(()=>Math.random()-.5);sel=[];tEnd=performance.now()+TMS;draw()};
+  const deal=()=>{round++;s2busy=false;const k=rnd(2,3);const base=[];for(let i=0;i<k;i++)base.push(rnd(2,9+(total>=6?3:0)));target=base.reduce((a,b)=>a+b,0);cards=base.slice();while(cards.length<nC)cards.push(rnd(1,9+(total>=6?3:0)));cards.sort(()=>Math.random()-.5);sel=[];tEnd=performance.now()+TMS;draw()};
   const sum=()=>sel.reduce((a,i)=>a+cards[i],0);
   const draw=()=>{if(!$('s2c'))return;$('s2t').textContent=target;$('s2s').textContent=`Your total: ${sum()}`;$('s2h').textContent=`You ${Math.max(0,hp)}`;$('s2l').textContent=`${left} left`;$('s2m').textContent=msg;
     $('s2c').innerHTML=cards.map((c,i)=>`<button class="btn ${sel.includes(i)?'go':''}" data-ci="${i}" style="width:54px;height:76px;font-size:24px;font-family:var(--display)">${c}</button>`).join('');
@@ -4750,10 +4751,10 @@ function shootoutGame0(mine,theirs,who,done){mgOn=true;
   const finish=win=>{if(over)return;over=true;mgOn=false;S.bodies=(S.bodies||0)+myK;
     setTimeout(()=>{modal(`<h2 style="color:${win?'var(--money)':'var(--blood)'}">${win?'They fell back':'You had to fall back'}</h2><p>${win?`You dropped ${total-left} of them. ${who} scattered.`:`${who} had you pinned. You took ${100-Math.max(0,hp)} damage getting out.`}</p><div class="btns"><button class="btn go" id="ok">Continue</button></div>`);$('ok').onclick=()=>{$('modal').hidden=true;done(win)}},350)};
   const next=()=>{if(over)return;if(left<=0)return finish(true);if(hp<=0||round>=total*3)return finish(left<=Math.floor(total/2)&&hp>0);deal()};
-  const theyShoot=why=>{hp-=dmgIn;msg=why+` −${dmgIn}.`;
+  const theyShoot=why=>{s2busy=true;hp-=dmgIn;msg=why+` −${dmgIn}.`;
     if(S.soldiers>0&&Math.random()<Math.min(.7,.12*S.soldiers+(typeof armed==='function'?armed().length*.08:0))){left--;msg+=' Your shooter dropped one.';}
     draw();setTimeout(next,700)};
-  $('s2f').onclick=()=>{if(over||!sel.length)return;const d=Math.abs(sum()-target);if(d<=tol){left--;myK++;msg=pick(['Got one.','Dropped him.','He\'s down.']);draw();setTimeout(next,600)}else theyShoot(d===1?'Close, but it was off.':'Wrong number.')};
+  $('s2f').onclick=()=>{if(over||s2busy||!sel.length)return;s2busy=true;const d=Math.abs(sum()-target);if(d<=tol){left--;myK++;msg=pick(['Got one.','Dropped him.','He\'s down.']);draw();setTimeout(next,600)}else theyShoot(d===1?'Close, but it was off.':'Wrong number.')};
   const loop=t=>{if(over||!mgOn||!$('s2b'))return;const p=Math.max(0,(tEnd-t)/TMS);$('s2b').style.width=(p*100)+'%';if(t>tEnd&&!window.__s2lock){window.__s2lock=1;theyShoot('Too slow.');setTimeout(()=>{window.__s2lock=0},750);tEnd=t+1e9}requestAnimationFrame(loop)};
   deal();requestAnimationFrame(loop)}
 const FSTYLES={boxer:{nm:'Boxer',tip:'Quick jabs, little warning.',w:.85,f:.1,d:.9,g:.75},brawler:{nm:'Brawler',tip:'Slow, but he hits like a truck.',w:1.2,f:.05,d:1.35,g:1.25},street:{nm:'Street fighter',tip:'He fakes a lot. Do not bite.',w:1,f:.3,d:1,g:1}};
