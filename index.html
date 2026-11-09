@@ -694,10 +694,10 @@ function w6WkNew(){const c=pick(W6WK);return {k:c[0],t:c[1],d:c[2],need:c[3],rw:
 function w6WkProg(c){const f=W6WK.find(x=>x[0]===c.k);return f?Math.max(0,f[5]()-c.base):0}
 /* score and local best runs */
 function w6Score(){const X=(typeof X8==='function'&&X8().ach)||{},turf=(S.owner||[]).filter(o=>o==='me').length;
-  const rows=[['Money',Math.round(Math.max(0,w6Net())/100)],['Reputation',(S.rep||0)*5],['Days survived',S.day||0],['Badges',Object.keys(X).length*100],['Turf',turf*150],['Level',(S.lvl||1)*50]];
-  const sub=rows.reduce((a,r)=>a+r[1],0),m=w6Iron()?2:S.diff==='hard'?1.5:S.diff==='easy'?.7:1;return {rows,sub,m,total:Math.round(sub*m)}}
+  const cs=Math.max(0,S.cash||0),rows=[['Money',Math.round(100*Math.log10(Math.max(1,w6Net())))],['Clean money',cs>0?Math.round(200*Math.min(1,(typeof cleanCash==='function'?cleanCash():0)/cs)):0],['Strikes',-15*(S.strikesTot||0)],['Reputation',(S.rep||0)*5],['Days survived',S.day||0],['Badges',Object.keys(X).length*100],['Turf',turf*150],['Level',(S.lvl||1)*50]];
+  const sub=Math.max(0,rows.reduce((a,r)=>a+r[1],0)),m=w6Iron()?2:S.diff==='hard'?1.5:S.diff==='easy'?.7:1;return {rows,sub,m,total:Math.round(sub*m)}}
 function lbGet(){try{return JSON.parse(localStorage.getItem('hustle-lb')||'[]')}catch(e){return []}}
-function lbSubmit(){try{const sc=w6Score(),e={n:(S.custom&&S.custom.name)||S.char||'You',score:sc.total,net:Math.round(w6Net()),day:S.day,iron:w6Iron()?1:0,path:S.endPath||'',t:Date.now()};const L=lbGet();L.push(e);L.sort((a,b)=>b.score-a.score);localStorage.setItem('hustle-lb',JSON.stringify(L.slice(0,8)));return L.findIndex(x=>x===e)}catch(e){return -1}}
+function lbSubmit(){try{const sc=w6Score(),e={n:(S.custom&&S.custom.name)||S.char||'You',score:sc.total,net:Math.round(w6Net()),day:S.day,iron:w6Iron()?1:0,path:S.endPath||'',v:2,t:Date.now()};const L=lbGet();L.push(e);L.sort((a,b)=>((b.v===2)-(a.v===2))||b.score-a.score);localStorage.setItem('hustle-lb',JSON.stringify(L.slice(0,8)));return L.findIndex(x=>x===e)}catch(e){return -1}}
 /* endings */
 const W6END={king:['Kingpin','The city is yours. People cross the street when you walk. It cost you everything you used to be.','endking'],
  legit:['Legit empire','The books are clean. The block still knows your name, but now they say it with respect.','endlegit'],
@@ -738,7 +738,7 @@ function w6Me(){const X=w6();w6Ach();const ti=w6TitIdx(),nx=W6TIT[ti+1];
   if(X.wk){const c=X.wk,p=Math.min(c.need,w6WkProg(c));h+=`<div class="sec">Weekly challenge</div>${a2i('challenge',300)}<div class="row" style="flex-wrap:wrap"><div class="info"><div class="t">${esc(c.t)}${c.got?' · done':''}</div><div class="s">${c.d} ${p}/${c.need} · reward ${money(c.rw)} · ends day ${c.until}</div><div class="bar"><i style="width:${p/c.need*100}%;background:var(--accent)"></i></div></div>${!c.got&&p>=c.need?'<button class="btn go" data-a="w6_claim">Claim</button>':''}</div>`}
   h+=`<div class="sec">Stats</div><div class="row" style="flex-wrap:wrap"><div class="info"><div class="s">${w6Stats().slice(0,6).map(r=>`${r[0]}: <b>${r[1]}</b>`).join(' · ')}</div></div><button class="btn" data-a="w6_stats">All stats</button></div>`;
   h+=`<div class="sec">How runs end</div>`+['king','legit','jail','walk'].map(k=>`<div class="row" style="padding:6px 12px"><div class="info"><div class="t">${W6END[k][0]}</div><div class="s">${({king:'Net worth $500,000, 3 blocks and 100 rep.',legit:'Use Go legit when you have 100K clean and a business.',jail:'Three strikes.',walk:'Retire any time.'})[k]}</div></div></div>`).join('');
-  const L=lbGet();if(L.length)h+=`<div class="sec">Best runs on this device</div>`+L.slice(0,5).map((e,i)=>`<div class="row" style="padding:6px 12px"><div class="info"><div class="t">${i+1}. ${esc(e.n)}${e.iron?' (Ironman)':''}</div><div class="s">${(e.score||0).toLocaleString()} points · ${money(e.net||0)} · day ${e.day}</div></div></div>`).join('');
+  const L=lbGet();if(L.length)h+=`<div class="sec">Best runs on this device</div>`+L.slice(0,5).map((e,i)=>`<div class="row" style="padding:6px 12px"><div class="info"><div class="t">${i+1}. ${esc(e.n)}${e.iron?' (Ironman)':''}${e.v===2?'':' (old score)'}</div><div class="s">${(e.score||0).toLocaleString()} points · ${money(e.net||0)} · day ${e.day}</div></div></div>`).join('');
   if(!w6Iron()&&S.day<=5)h+=`<div class="sec">Ironman</div>${a2i('ironman',300)}<div class="row" style="flex-wrap:wrap"><div class="info"><div class="t">Go Ironman</div><div class="s">Hard rules, one life, score x2. When the run ends the save is deleted. Only in the first 5 days.</div></div><button class="btn red" data-a="w6_iron">Go Ironman</button></div>`;
   else if(w6Iron())h+=`<div class="row"><div class="info"><div class="t" style="color:var(--blood)">Ironman is on</div><div class="s">One life. Score x2.</div></div></div>`;
   return h}
@@ -5266,7 +5266,7 @@ function busted(){addStress(20);if(canNewConnect()&&!S.cellCon&&Math.random()<.3
   const fine=Math.max(0,Math.round(S.cash*.35));S.cash-=fine;GOODS.forEach(g=>S.inv[g.id]=0);S.heat=Math.max(0,S.heat-30);S.hp-=5;
   say(`Got jammed up. Lost your whole stash and ${money(fine)}.`);
   if(lawFree()&&Math.random()<(S.lawPay?.7:.5)){S.cash+=Math.round(fine*.5);say(S.lawPay?'Attorney Cole got the case thrown out. No strike, and he got half your fine back.':'Your lawyer got the case thrown out. No strike, and half your fine back.');if(!S.lawPay)S.fx.lawyer=0;return}
-  S.strikes=(S.strikes||0)+1;const teen=S.age&&S.age<18,place=teen?'juvie':'county';if(teen)S.juv=(S.juv||0)+1;cut('bust','LOCKED UP');
+  S.strikes=(S.strikes||0)+1;S.strikesTot=(S.strikesTot||0)+1;const teen=S.age&&S.age<18,place=teen?'juvie':'county';if(teen)S.juv=(S.juv||0)+1;cut('bust','LOCKED UP');
   if(S.strikes>=maxStrikes()&&!teen){S.over=true;S.prison=1;say('Final strike. They gave you life.');setTimeout(()=>{try{render();checkEnd()}catch(e){}},60);return}
   const life=S.strikes>=maxStrikes()&&teen,turns=life?0:S.cal?(S.strikes===1?4:26):(S.strikes===1?2:5),label=life?'until you turned 18':S.cal?(S.strikes===1?'2 weeks':'3 months'):(S.strikes===1?'2 days':'5 days');
   if(!teen&&!life&&!window.FF&&!window.noPrison&&S.strikes===1&&!S.ha&&!S.pr&&Math.random()<.55)return houseArrest();
@@ -5470,7 +5470,7 @@ function checkEnd(){
   const net=S.cash+(S.safe||0);
   const turf=S.owner.filter(o=>o==='me').length;
   if(S.prison)cut('prison','THREE STRIKES');else if(S.hp<=0)cut('dead','');
-  const title=S.prison?'Out of strikes':S.hp<=0?'You got took out':net>=100000?'Kingpin':net>=40000?'Boss':net>=10000?'Hustler':net>=3000?'Corner boy':'Broke';
+  const title=S.prison?'Out of strikes':S.hp<=0?'You got took out':net>=100000?'Big timer':net>=40000?'Boss':net>=10000?'Hustler':net>=3000?'Corner boy':'Broke';
   setTimeout(()=>{modal(`<h2>${title}</h2>
     <p>${S.prison?(S.prison===2?`Third time locked up at ${S.age}. The judge sent you to a youth facility until you're 21. By the time you get out, the streets moved on without you.`:`Third time locked up. The judge gave you life${S.cal?' at '+S.age:''}. The streets keep going without you.`):S.cal?(S.hp<=0?`The streets got you at ${S.age}. ${calLabel()}.`:`You retired at ${S.age}. ${calLabel()}.`):S.hp<=0?'The streets got you on day '+S.day+'.':(freeMode()?'You retired on day '+S.day+'.':`${maxDay()} days are up and your story was not finished.`)}</p>
     <p><b style="font-size:20px">Ended with ${money(net)}</b><br>Turf: ${turf} · Rep: ${S.rep}</p>
