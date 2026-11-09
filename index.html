@@ -642,7 +642,7 @@ function paneBag(){const G2=GOODS.filter(g=>S.inv[g.id]>0);let h=`<div class="se
   h+=`<div class="sec">Ride and home</div><div class="row"><div class="info"><div class="t">${S.car?CARS[S.car].name:'No car'}</div><div class="s">${S.car?`+${CARS[S.car].trunk} stash space`:'Visit the car lot in Spots.'}</div></div></div><div class="row"><div class="info"><div class="t">Home: ${HOMES[S.home]?HOMES[S.home].name||S.home:S.home}</div><div class="s">${BLOCKS[homeBlock()]}</div></div></div>`;
   const fits=Object.keys(S.fits||{street:1}).filter(k=>(S.fits||{street:1})[k]&&FITS[k]);h+=`<div class="sec">Clothes and jewelry</div><div class="row"><div class="info"><div class="t">Wearing: ${(FITS[S.fit||'street']||{}).n||'Street'}</div><div class="s">${fits.length} fit${fits.length===1?'':'s'} owned. Change at the mall.</div></div></div>`;
   const jw=Object.keys(JEWEL).filter(k=>(S.jew||{})[k]);h+=`<div class="row"><div class="info"><div class="t">Jewelry</div><div class="s">${jw.length?jw.map(k=>JEWEL[k].n).join(', '):'None yet.'}</div></div></div>`;
-  h+=sfn('paneGuns');return h}
+  return h}
 function paneMoney(){return sfn('cashSplitHTML')+sfn('loanHTML')+sfn('launHTML')}
 WACT.push(waveAct2);
 function waveAct2(a,el){
@@ -1040,7 +1040,7 @@ function openPlace(id){const P=PLACES.find(p=>p.id===id),bi=placeAt(id);
   if(id==='studio'){tab='rap';close();render();return}
   if(id==='park')body=row('Hoop at the park','Bet on a 5-shot shootout. Once a day.',b('hoops',S.park===S.day?'Played today':'Play',S.park===S.day||S.cash<100))+row('Shoot dice','Street craps with whoever is out here.',b('dice','Play',S.cash<50))+row('Throw a block party','$2,000. Community +8, heat -6, rep +1. Once a week.',b('bparty',(S.bpDay&&S.bpDay>S.day-7)?'Wait':'$2,000',S.cash<2000||(S.bpDay&&S.bpDay>S.day-7)))+row('Meet people','Friends hang out here.',b('fmeet',S.fmeet===S.day?'Went out today':'Kick it',S.fmeet===S.day||(S.friends||[]).length>=5));
   if(id==='store')body=storeBody(row,b)+row('Rob the register','Quick cash. Clerk might have a bat. Takes the day.',b('lstore',lkLeft('store')?`Lookout ${lkLeft('store')}d`:'Rob it',lkLeft('store')>0,'red'))+row('Grab snacks','Stress −5.',b('snack','$10',S.cash<10));
-  if(id==='tire'){close();setTimeout(()=>{const el=[...document.querySelectorAll('.sec')].find(x=>x.textContent.includes('Gun dealer'));if(el)el.scrollIntoView({behavior:'smooth'})},50);return}
+  if(id==='tire'){close();tab='block';render();setTimeout(()=>{const el=[...document.querySelectorAll('.sec')].find(x=>x.textContent.includes('Gun dealer'));if(el)el.scrollIntoView({behavior:'smooth'})},50);return}
   if(id==='carlot')body=(S.car?row(`Your ride: ${CARS[S.car].name}`,S.car==='stolen'?'+30 stash space. It runs hot: more heat every day. Trade up to ditch it.':`+${CARS[S.car].trunk} stash space. Trade it in for 60% back.`,'<span class="chip mine">Yours</span>'):S.rob.car?row('Your getaway car','Cops drive slower in every chase. Buy a real car below for stash space.','<span class="chip mine">Owned</span>'):'')+Object.entries(CARS).filter(([ck,C])=>!C.hidden).map(([ck,C])=>{const old=S.car?CARS[S.car]:null,price=Math.max(0,C.cost-(old?Math.round(old.cost*.6):0)),young=gAge()&&gAge()<16;
       return S.car===ck?'':row(`${carPic(ck,34)} ${C.name}`,`+${C.trunk} stash space${C.rep?`, rep +${C.rep}`:''}. ${C.sub} ${old?` Trade-in knocks off ${money(Math.round(old.cost*.6))}.`:''}${young?' You need to be 16 to buy a car.':''}`,b('buycar:'+ck,money(price),S.cash<price||young))}).join('')+row('Pro Pad','Program keys and steal cars.',S.pad?'<span class="chip mine">Owned</span>':b('pad','$1,500',S.cash<1500))+row('Steal a car off the lot','Needs the Pro Pad. Takes the day.',b('lcar','Do it',!S.pad,'red'));
   if(id==='pawn'){const gs=Object.keys(S.guns||{}).filter(k=>!GUNS[k].myth);body=row('Sell a gun','Unc\'s prices, half back.',gs.length?b('pawngun',`Sell ${GUNS[gs[0]].name} for ${money(Math.round(GUNS[gs[0]].cost/2))}`):'<span class="s">No guns to sell</span>')+row('Hit a house nearby','Pawn shop buys whatever you bring back. Takes the day.',b('lhouse','Do it',false,'red'))}
@@ -1588,7 +1588,7 @@ function w5bMove(){const B=b5();let h=`<div class="sec">Out of town</div>`;
   h+=`<div class="s" style="padding:2px 4px">${best&&best.v>0?`You would take your ${best.g.name.toLowerCase()}. Up to ${w5bUnit(best.g)*3}${w5bUN(best.g)}.`:'Get something to carry first.'} One run every 4 days.</div>`;
   W5BCITY.forEach((c,i)=>{const ct=(B.city[c.n]||{}).contact;h+=w5bRow(`🚗 ${c.n}`,`${money(c.cost)} for gas and a room. Better prices than home.${ct?' You have a contact there.':''}`,'w5b_run',B.ctrip>S.day-4?'Wait':'Go',B.ctrip>S.day-4||S.cash<c.cost||!best||best.v<=0,'',`data-i="${i}"`)});return h}
 const _pb5b=paneBiz,_ps5b=paneSpots,_pc5b=paneBeef,_pm5b=paneMove;
-paneBiz=function(){return _pb5b()+sfn('w5bBiz')};paneSpots=function(){return _ps5b()+sfn('w5bSpots')};paneBeef=function(){let f='';try{f=guardianLine()}catch(e){}return _pc5b()+(f?`<div class="sec">Your people</div>${f}`:'')+sfn('w5bCircle')};paneMove=function(){return _pm5b()+sfn('w5bMove')+sfn('twHTML')};
+paneBiz=function(){return _pb5b()+sfn('w5bBiz')};paneSpots=function(){return _ps5b()+sfn('w5bSpots')};paneBeef=function(){let f='';try{f=guardianLine()}catch(e){}return _pc5b()+sfn('twHTML')+(f?`<div class="sec">Your people</div>${f}`:'')+sfn('w5bCircle')};paneMove=function(){return _pm5b()+sfn('w5bMove')};
 /* ---- actions ---- */
 function w5bAct(a,el){if(a.slice(0,4)!=='w5b_')return false;const B=b5(),X=B,k=el&&el.dataset||{};if(a==='w5b_x')return true;
   if(a==='w5b_front'){w5bFront(k.k);return true}
@@ -2185,7 +2185,7 @@ function spDay(){const P=S.sp;if(!P||S.over||S.pr||S.inJail)return;
   const before=(P.cl||[]).length;P.cl=(P.cl||[]).filter(c=>!(c.o<60&&Math.random()<.006));if(P.cl.length<before)say('A prospect you signed quit and went home.')}
 function paneCrew(){
   const turf=S.owner.filter(o=>o==='me').length, need=S.lvl*20;
-  return `<div class="jump" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:4px">${['Skills','Plugs','Stash','Life'].map(k=>`<button class="btn" style="padding:6px 10px;font-size:12px" data-jump="${k}">${k}</button>`).join('')}</div>${(S.traits||[]).length?`<div class="row" style="flex-wrap:wrap"><div class="info"><div class="t">Traits</div><div class="s">${S.traits.map(id=>{const t=TRAITS.find(x=>x.id===id);return t?`<b>${t.name}</b> · <i>${t.story}</i><br>${t.sub.replace(' Can\'t be undone.','')}`:''}).join('<br>')}</div></div></div>`:''}<div class="row" style="flex-wrap:wrap"><div class="info"><div class="t">Level ${S.lvl} · ${S.pts} skill point${S.pts===1?'':'s'} to spend</div>
+  return `<div class="jump" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:4px">${['Skills','Plugs','Stash','Life'].map(k=>`<button class="btn" style="padding:6px 10px;font-size:12px" data-jump="${k}">${k}</button>`).join('')}</div><div class="sec">Level and skills</div>${(S.traits||[]).length?`<div class="row" style="flex-wrap:wrap"><div class="info"><div class="t">Traits</div><div class="s">${S.traits.map(id=>{const t=TRAITS.find(x=>x.id===id);return t?`<b>${t.name}</b> · <i>${t.story}</i><br>${t.sub.replace(' Can\'t be undone.','')}`:''}).join('<br>')}</div></div></div>`:''}<div class="row" style="flex-wrap:wrap"><div class="info"><div class="t">Level ${S.lvl} · ${S.pts} skill point${S.pts===1?'':'s'} to spend</div>
     <div class="s">XP ${S.xp} / ${need}. Earn XP from profit, fights, taking blocks, missions and mini games.</div><div class="bar"><i style="width:${S.xp/need*100}%;background:var(--accent)"></i></div></div></div>
    ${Object.keys(SKN).map(k=>`<div class="row" style="padding:8px 12px"><div class="info"><div class="t">${SKN[k]} <span style="font-family:var(--label);font-weight:700;color:var(--accent)">${S.sk[k]}</span>/10</div><div class="s">${SKD[k]}</div>
     <div class="bar"><i style="width:${S.sk[k]*10}%;background:var(--accent)"></i></div></div><button class="btn green" data-a="sk" data-k="${k}" ${S.pts>0&&S.sk[k]<10?'':'disabled'}>+1</button></div>`).join('')}
@@ -2197,9 +2197,8 @@ function paneCrew(){
    ${sf(paneLife)}
    ${sf(paneFakes)}
    ${sf(paneCut)}
-   <div class="sec">Stash and more</div>
    ${sf(shHTML)}
-   ${sf(haHTML)}${sf(poHTML)}
+   ${sf(poHTML)}
    
    <div class="sec">Turf and space</div>
    <div class="row"><div class="info"><div class="t">More stash space</div><div class="s">On foot you carry 250 max. More room comes from cars, safes and a stash house.</div></div></div>
@@ -2259,7 +2258,7 @@ function paneExp(){
     if(held)h+=fr('Waiting on your workers','Money your workers made that you have not collected. It comes in dirty.','+'+money(held),G);
     if(crewDay)h+=fr('Crew every day','Soldiers and worker pay. This comes out of your dirty money first.','-'+money(crewDay)+' / day',B);
   }catch(e){}
-  h+=`<div class="sec">Debt</div>`+(loan?row('Mr. Vince',`You owe ${money(loan.owe)}. Due day ${loan.due}${S.day>loan.due?'. You are late and the interest is growing.':'.'}`,money(loan.owe)):row('Loans','You do not owe anybody.','$0'));
+  h+=`<div class="sec">Debt</div>`+(loan?row('Mr. Vince',`You owe ${money(loan.owe)}. Due day ${loan.due}${S.day>loan.due?'. You are late and the interest is growing.':'.'}`,money(loan.owe)):'')+(()=>{try{const B=b5();return B.gdebt>0?row('Backer',`You owe ${money(B.gdebt)}, due ${dayTxt?dayTxt(B.gdue):'soon'}. Pay it in Spots, Gambling.`,money(B.gdebt)):''}catch(e){return ''}})()+(!loan&&!(()=>{try{return b5().gdebt>0}catch(e){return false}})()?row('Loans','You do not owe anybody.','$0'):'');
   h+=`<div class="sec">Total</div><div class="row"><div class="info"><div class="t">About ${money(weekly)} a week</div><div class="s">Rent, living costs, lawyer, your cousin and soldiers, added up. Worker pay and debt are not in this number. Keep that much clean and ready so you never miss a bill.</div></div></div>`;
   return h}
 function paneCards(){
@@ -2850,7 +2849,7 @@ const HEISTS={
 };
 function paneRob(){const B=S.rob;
   let h=`<div class="row" style="flex-wrap:wrap;border-color:var(--blood)"><div class="info"><div class="t" style="font-family:var(--display);font-size:20px;font-weight:400">Notoriety ${B.noto}</div>
-    <div class="s">${S.st.licks||0} licks · ${B.heists} heists · crew of ${S.soldiers}</div><div class="s">Hire soldiers in the Me tab for heists. Every member takes a 10% cut.</div></div></div>`;
+    <div class="s">${S.st.licks||0} licks · ${B.heists} heists · crew of ${S.soldiers}</div><div class="s">Hire soldiers in the Your Circle tab for heists. Every member takes a 10% cut.</div></div></div>`;
   h+=`<div class="sec">Gear</div>
    <div class="row"><div class="info"><div class="t">Ski mask ${B.mask?'<span class="chip mine">Owned</span>':''}</div><div class="s">Less heat from licks and better heist odds.</div></div>${B.mask?'':`<button class="btn green" data-a="gear" data-k="mask" ${S.cash>=50?'':'disabled'}>$50</button>`}</div>
    <div class="row"><div class="info"><div class="t">Getaway car ${B.car?'<span class="chip mine">Owned</span>':''}</div><div class="s">Cops drive slower in every chase.</div></div>${B.car?'':`<button class="btn green" data-a="gear" data-k="car" ${S.cash>=5000?'':'disabled'}>$5,000</button>`}</div>
@@ -3422,11 +3421,11 @@ function paneCareer(){if(!S.age&&S.mode!=='life'&&!S.job&&!Object.keys(S.biz||{}
   h+=`<div class="sec">Own a business</div><div class="row"><div class="info"><div class="s">Legit money every day, and it washes your heat down. Run it as a front and stay in the streets.</div></div></div>`;
   h+=Object.entries(BIZ).filter(([k,B])=>!B.hide||(S.biz||{})[k]).map(([k,B])=>{const own=(S.biz||{})[k];return `<div class="row" style="padding:8px 12px"><div class="info"><div class="t">${B.name} ${own?'<span class="chip mine">Yours</span>':''}</div><div class="s">${money(bizPay(k))} a day${own&&(S.bizUp||{})[k]?` · Level ${S.bizUp[k]+1}`:''}${own&&(S.bizShut||{})[k]>S.day?` · <b style="color:var(--blood)">Shut down until ${dayTxt(S.bizShut[k])}</b>`:''}${own?((S.bizSec||{})[k]?' · Security on':' · No security'):''}</div></div>${own?((S.bizSec||{})[k]?'':`<button class="btn" data-a="bizsec" data-k="${k}" ${S.cash>=2000?'':'disabled'}>Security $2,000</button>`)+(bizUpC(k)?`<button class="btn green" data-a="bizup" data-k="${k}" ${S.cash>=bizUpC(k)?'':'disabled'}>Upgrade ${money(bizUpC(k))}</button>`:'<span class="chip mine">Maxed</span>'):`<button class="btn green" data-a="buybiz" data-k="${k}" ${S.cash>=B.cost&&adult()?'':'disabled'}>${money(B.cost)}</button>`}</div>`}).join('');
   return h}
-function paneFamily(){const k=S.kids||[];if(!k.length)return S.par?`<div class="sec">Family</div>`:'';
+function paneFamily(){const k=S.kids||[];if(!k.length)return '';
   return `<div class="sec">Family</div>`+k.map((c,i)=>{if(c.bond==null)c.bond=60;const a=kidAge(c),gr=a>=18;return `<div class="row" style="padding:8px 12px;flex-wrap:wrap"><div class="info" style="flex:1 1 200px;min-width:0"><div class="t">${c.name} <span class="chip">${kidStage(c)} · ${a}</span></div><div class="s">${c.other?`With ${c.other} · `:''}${gr?({college:'In college. Proud of them.',street:'Rolls with you now.',gone:'Went their own way.',grown:'Moved out. Calls on Sundays.'})[c.out]||'Grown now.':`${money(kidCost(c))} a week`}</div><div class="s">Bond ${c.bond}/100</div><div class="bar"><i style="width:${c.bond}%;background:var(--money)"></i></div></div>${gr?'':`<div class="btns"><button class="btn go" data-a="kidtime" data-i="${i}" ${c.t===S.day?'disabled':''}>${c.t===S.day?'Spent time today':'Spend time'}</button><button class="btn" data-a="kidgift" data-i="${i}" ${cashAvail()>=500?'':'disabled'}>Gift $500</button></div>`}</div>`}).join('')+`<div class="row"><div class="info"><div class="s">Kids notice everything. High heat, getting hurt, and not coming around hurt your bond. A nice home and a legit business help.</div></div></div>`}
 function baby(){const g=S.gf,nm=pick(['Amir','Zion','Kai','Jaylen','Nova','Aria','Maya','Josiah','Luna','Isaiah','Sofia','Malik']);S.kids=S.kids||[];S.kids.push({name:nm,born:S.day,other:g.name});addStress(-10);
   say(`${g.name} had a baby. Welcome to the world, ${nm}.`);
-  modal(`<h2>You're a parent</h2><p>${g.name} had the baby. Say hi to <b>${nm}</b>.</p><p>Babies cost $200 a week, more as they grow, and they notice how you live. Find them in the Me tab.</p><div class="btns"><button class="btn go" id="ok">Let's go</button></div>`);$('ok').onclick=close}
+  modal(`<h2>You're a parent</h2><p>${g.name} had the baby. Say hi to <b>${nm}</b>.</p><p>Babies cost $200 a week, more as they grow, and they notice how you live. Find them in the Your Circle tab.</p><div class="btns"><button class="btn go" id="ok">Let's go</button></div>`);$('ok').onclick=close}
 function jackboys(){const str=Math.round(Math.min(14+(S.cal?S.lvl*4:S.day/2),crewCap())*D().crew),mine=myStr();
   modal(`<h2 style="color:var(--blood)">Jackboys</h2><p>Two dudes in ski masks ran up on you outside the gas station. They know you got ${money(S.cash)} on you.</p>
     <p class="s" style="color:var(--dim)">Their strength about ${str}, yours ${mine}. Should've put that money up.</p>
@@ -5269,7 +5268,7 @@ function firepower(){return gunBonus()+armedBonus()+S.soldiers*6+(S.gang&&crew(S
 const blockReq=()=>{const n=myTurf(),need=15+n*12,age=S.age==null?25:S.age;if(age<16)return 'You need to be 16 to run a block.';if(S.rep<need)return `Need ${need} rep to run block number ${n+1}. You have ${S.rep}.`;if(S.lvl<2+n)return `Need level ${2+n}. You are level ${S.lvl}.`;return ''};
 function canWar(){return (gAge()==null||gAge()>=16)&&(gunBonus()>0||armed().length>0)&&(S.soldiers>=2||!!S.gang)}
 function warNeed(){if(gAge()!=null&&gAge()<16)return 'You need to be 16 to go to war';return gunBonus()>0?'Need 2 shooters (soldiers) or a set behind you':'Need a gun first'}
-function war(c){if(!canWar()){modal(`<h2>No firepower</h2><p>You can't take a block with your hands. ${warNeed()}. Unc on The Bottom sells guns, and you can hire soldiers in the Me tab.</p><div class="btns"><button class="btn go" id="ok">Got it</button></div>`);$('ok').onclick=close;return}
+function war(c){if(!canWar()){modal(`<h2>No firepower</h2><p>You can't take a block with your hands. ${warNeed()}. Unc on The Bottom sells guns, and you can hire soldiers in the Your Circle tab.</p><div class="btns"><button class="btn go" id="ok">Got it</button></div>`);$('ok').onclick=close;return}
   const d=cdef(c.id),mine=myStr()+(S.fx.ride?12:0);
   const odds=Math.round(mine/(mine+c.str)*100);
   modal(`<img src="${WARBAN}" alt="" style="width:100%;border-radius:6px;display:block"><h2 style="color:${d.color}">Take ${BLOCKS[S.at]}?</h2>
@@ -5761,8 +5760,8 @@ function mainMenu(canContinue){
   $('msnd').onclick=()=>{SND.sfx=!SND.sfx;sndSave();mainMenu(canContinue)};$('mmus').onclick=()=>{SND.music=!SND.music;sndSave();SND.music?musicStart():musicStop();mainMenu(canContinue)};
 }
 $('newgame').onclick=()=>mainMenu(!S.over);
-document.addEventListener('click',e=>{const b=e.target.closest('[data-jump]');if(!b)return;const k=b.dataset.jump.toLowerCase(),map={jobs:'jobs',skills:'level',plugs:'your plugs',stash:'stash and safe',home:'where you stay',life:'life choices',school:'school',homies:'your homies',girl:'your girl',trap:'trap houses',crew:'crew and stash',family:'family',crews:'your crew'};
-  const t=[...document.querySelectorAll('#pane .sec')].find(x=>x.textContent.toLowerCase().includes(map[k]));if(t)t.scrollIntoView({behavior:'smooth',block:'start'})});
+document.addEventListener('click',e=>{const b=e.target.closest('[data-jump]');if(!b)return;const k=b.dataset.jump.toLowerCase(),map={jobs:'jobs',skills:'level and skills',plugs:'your plugs',stash:'stash and safe',home:'where you stay',life:'life choices',school:'school',homies:'your homies',girl:['your girl','relationships'],trap:'trap houses',crew:'crew and stash',family:'family',crews:'your crew'};
+  const want=[].concat(map[k]||k);const t=[...document.querySelectorAll('#pane .sec')].find(x=>want.some(w=>x.textContent.toLowerCase().includes(w)));if(t)t.scrollIntoView({behavior:'smooth',block:'start'});else toast('Nothing there yet.')});
 {const tt=document.createElement('button');tt.className='totop';tt.textContent='↑';tt.setAttribute('aria-label','Back to top');tt.hidden=true;tt.onclick=()=>window.scrollTo({top:0,behavior:'smooth'});document.body.appendChild(tt);
  addEventListener('scroll',()=>{tt.hidden=scrollY<500},{passive:true})}
 $('devbtn').onclick=()=>devPanel();
