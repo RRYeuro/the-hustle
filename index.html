@@ -1908,8 +1908,8 @@ function crewAct(a,el){const M=crewList(),i=+el.dataset.i,m=M[i];
 const noGun=()=>gunBonus()<=0&&armed().length===0;
 function shootoutGame(mine,theirs,who,done){if(noGun()&&!window.FF){modal(`<h2>No gun</h2><p>You do not have a gun, so you cannot shoot back at ${esc(who)}. You ran and took the loss.</p><div class="btns"><button class="btn go" id="ngo">Damn</button></div>`);$('ngo').onclick=()=>{close();try{done(false)}catch(e){console.error(e)}};return}const ok=crewOk();if(!ok.length||window.noProxy)return shootoutGame0(mine,theirs,who,done);
   modal(`<div class="sec" style="margin:0;color:var(--blood)">Shootout</div><h2>Who takes the shot?</h2><p class="s" style="color:var(--dim)">You still play the mini game either way. If one of your crew takes the shot, the damage lands on him instead of you.</p>
-    <div class="btns" style="flex-direction:column;align-items:stretch"><button class="btn red" id="me">Take it myself</button>${ok.map(m=>`<button class="btn go" data-px="${m.id}" style="text-align:left;white-space:normal">${esc(m.name)} · ${CRANK[m.rank].n} · Shooter ${m.sk.shoot}/10 · Loyalty ${m.loy}</button>`).join('')}</div>`);
-  $('me').onclick=()=>shootoutGame0(mine,theirs,who,done);
+    <div class="btns" style="flex-direction:column;align-items:stretch"><button class="btn red" id="pxme">Take it myself</button>${ok.map(m=>`<button class="btn go" data-px="${m.id}" style="text-align:left;white-space:normal">${esc(m.name)} · ${CRANK[m.rank].n} · Shooter ${m.sk.shoot}/10 · Loyalty ${m.loy}</button>`).join('')}</div>`);
+  $('pxme').onclick=()=>shootoutGame0(mine,theirs,who,done);
   $('mcard').querySelectorAll('[data-px]').forEach(b=>b.onclick=()=>{const m=crewList().find(x=>x.id===+b.dataset.px);if(!m)return shootoutGame0(mine,theirs,who,done);
     const hp0=S.hp;S.hp=hp0+900;m.last=S.day;
     shootoutGame0(mine+3+m.sk.shoot*2+(m.rank==='enf'?3:0),theirs,who,win=>{const before=S.hp;try{done(win)}finally{const dmg=Math.max(0,before-S.hp);S.hp=hp0;
