@@ -2974,7 +2974,7 @@ function paneRob(){const B=S.rob;
   h+=`<div class="row"><div class="info"><div class="s">Want to stop?</div></div><button class="btn" data-a="quit" data-k="rob">Leave the robbing alone</button></div>`;
   return h;
 }
-function heist(k){const H=HEISTS[k];if(typeof stuckHome==='function'&&stuckHome())return;if(S.age&&S.age<16){say('Too young for a heist. Come back at 16.');return render()}if((S.rob.hd!=null)&&S.day-S.rob.hd<3){say(`The streets are hot from the last job. Wait ${3-(S.day-S.rob.hd)} more day${3-(S.day-S.rob.hd)===1?'':'s'} before another heist.`);return render()}if((S.rob.fat||0)>=6){say('Marks and cops are all on alert. Lay off the robbing for a few days.');return render()}
+function heist(k){const H=HEISTS[k];if(proStop())return;if(typeof stuckHome==='function'&&stuckHome())return;if(S.age&&S.age<16){say('Too young for a heist. Come back at 16.');return render()}if((S.rob.hd!=null)&&S.day-S.rob.hd<3){say(`The streets are hot from the last job. Wait ${3-(S.day-S.rob.hd)} more day${3-(S.day-S.rob.hd)===1?'':'s'} before another heist.`);return render()}if((S.rob.fat||0)>=6){say('Marks and cops are all on alert. Lay off the robbing for a few days.');return render()}
   modal(`<h2>${H.name}</h2><p>How y'all doing it?</p>
     <button class="btn" id="qt" style="text-align:left;white-space:normal;text-transform:none;padding:10px 12px"><b>Quiet</b> · go in smooth, Street Smarts matters. Less heat.</button>
     <button class="btn" id="ld" style="text-align:left;white-space:normal;text-transform:none;padding:10px 12px"><b>Loud</b> · guns out, Muscle and crew size matter. More heat, bigger take.</button>
@@ -4058,7 +4058,7 @@ const LCD={store:3,pharm:7,phones:3};
 const lkLeft=k=>Math.max(0,((S.lcd||{})[k]||0)-S.day);
 function lkBlock(k,what){const n=lkLeft(k);if(!n)return false;const t=`${what} is on lookout. Wait ${n} more day${n===1?'':'s'} before you try it again.`;say(t);
   const lkA=k==='pharm'&&ARTX('lookout2')?'lookout2':'lookout';if(ARTX(lkA)&&$('modal').hidden){modal(`${a2(lkA,340)}<h2>On lookout</h2><p>${t}</p><div class="btns"><button class="btn go" id="ok">Fine</button></div>`);$('ok').onclick=close}else render();return true}
-function lick(k){if(stuckHome())return;if(k==='store'&&lkBlock('store','The corner store'))return;if(k==='pharm'&&lkBlock('pharm','The pharmacy'))return;if((k==='house'||k==='strap')&&!window.noTips&&!(S.lt&&S.lt[k]>=S.day)){say('You need a tip first. Check your phone.');return render()}if(S.lt)delete S.lt[k];if((S.rob.fat||0)>=7){say('Everybody on the block is watching for you. Lay off the licks for a few days.');return render()}S.rob.c0=S.cash;if(LCD[k]){S.lcd=S.lcd||{};S.lcd[k]=S.day+LCD[k]}
+function lick(k){if(proStop())return;if(stuckHome())return;if(k==='store'&&lkBlock('store','The corner store'))return;if(k==='pharm'&&lkBlock('pharm','The pharmacy'))return;if((k==='house'||k==='strap')&&!window.noTips&&!(S.lt&&S.lt[k]>=S.day)){say('You need a tip first. Check your phone.');return render()}if(S.lt)delete S.lt[k];if((S.rob.fat||0)>=7){say('Everybody on the block is watching for you. Lay off the licks for a few days.');return render()}S.rob.c0=S.cash;if(LCD[k]){S.lcd=S.lcd||{};S.lcd[k]=S.day+LCD[k]}
   const sm=S.sk.smarts+(friendWith('rob')?2:0),mu=S.sk.muscle,st=stressed()?.1:0;
   if(k==='car'&&S.age&&S.age<16){say('Too young to steal cars. Come back at 16.');return render()}
   if(k==='car')return padGame(ok=>{
@@ -5026,6 +5026,8 @@ function buyMore(){if((ptxo().n[S.at]||0)>=PTX_MAX)return false;if(S.over||!PINF
 function close(){$('modal').hidden=true;checkEnd();render();const nw=S&&S.log&&S.log[0];if(nw&&nw!==window._lt&&$('modal').hidden&&!S.over)toast(nw.t);window._lt=nw}
 const crewHere=()=>{const o=S.owner[S.at];return o!=='me'&&o!=='none'};
 const HAACT=['go','lick','heist','hoops','dice','fmeet','pkick','pfav','phit','hit','gjoin'];
+function proLock(){return !!(S&&S.sp&&S.sp.kind&&(S.sp.stage||0)>=4)}
+function proStop(){if(!proLock())return false;$('modal').hidden=true;say("You're a pro athlete now. The block is behind you. Quit the sport if you want the street back.");render();return true}
 function stuckHome(atHomeOK){if(S&&S.ha&&S.haOK!==S.day&&!S.pr&&!(atHomeOK&&S.at===homeBlock())){$('modal').hidden=true;say(`You're on house arrest. The ankle monitor keeps you on your block. Hustle from home or lay low.`);render();return true}if(S&&S.grounded>S.day&&S.sneakOK!==S.day){$('modal').hidden=true;say(`You're grounded. ${S.par?S.par.name:'They'} ain't letting you leave the house. Lay low, go to school, or text your plays to come to you.`);render();return true}return false}
 
 /* ---------- house arrest ---------- */
@@ -5042,7 +5044,7 @@ function haGate(a,el){const snap={dataset:{...(el&&el.dataset||{})}};
     S.haOK=S.day;S.ha.run=1;S.heat=Math.min(100,S.heat+8);say('Cut the monitor and slipped out. You are on the run now. Heat +8. Keep your heat at 70 or under or they find you.');$('modal').hidden=true;act(a,snap)}}
 const plugBud=bi=>({Low:2500,Mid:9000,Big:24000})[PINFO[bi].lvl]||5000;
 function plugUsed(bi){if(!S.pbud||S.pbud.d!==S.day)S.pbud={d:S.day,u:{}};return S.pbud.u[bi]||0}
-function qtyModal(kind,g,to,bl){if(to==='js'&&stuckHome(true))return;if(kind==='buy'&&frontBlock(S.at))return;
+function qtyModal(kind,g,to,bl){if(proStop())return;if(to==='js'&&stuckHome(true))return;if(kind==='buy'&&frontBlock(S.at))return;
   if(kind==='buy'&&S.recr&&S.recr[S.at]){modal(`<h2>${plugName(S.at)} works for you</h2><p>${plugName(S.at)} signed on to run your traps and doesn't sell to you anymore. ${plugFem(S.at)?'She':'He'} will still buy from you though. Get product from another plug, or serve the Js.</p><div class="btns"><button class="btn go" id="ok">Bet</button></div>`);$('ok').onclick=close;return}
   to=kind==='sell'?(to||'plug'):null;const js=to==='js';
   if(!js&&(ptxo().n[S.at]||0)>=PTX_MAX){modal(`<h2>${plugName(S.at)} is done for today</h2><p>You already did ${PTX_MAX} deals with ${plugFem(S.at)?'her':'him'} today. ${plugFem(S.at)?'She':'He'} ain't doing no more till tomorrow. Splitting it up into little buys won't work.</p><div class="btns"><button class="btn go" id="ok">Bet</button></div>`);$('ok').onclick=close;return}
@@ -5329,7 +5331,7 @@ function act(a,el){
   if(a==='use')useCard(+el.dataset.i);
   if(a==='sk'&&S.pts>0&&S.sk[el.dataset.k]<10){S.pts--;S.sk[el.dataset.k]++;say(`${SKN[el.dataset.k]} went up to ${S.sk[el.dataset.k]}.`)}
   if(a==='hoops')return hoops();
-  if(a==='trap'){const bi=+el.dataset.i;S.cash-=trapCost();S.traps[bi]={w:null,g:null};say(`Opened a trap house on ${BLOCKS[bi]}.`)}
+  if(a==='trap'){if(proStop())return;const bi=+el.dataset.i;S.cash-=trapCost();S.traps[bi]={w:null,g:null};say(`Opened a trap house on ${BLOCKS[bi]}.`)}
   if(a==='hirew'){if(S.workers.length>=3)return say('You can only run 3 workers.');const c=S.cands.splice(+el.dataset.i,1)[0];S.cash-=500;S.workers.push(c);say(`Put ${c.name} on the team for $500 up front and ${money(c.wage)} a day.`)}
   if(a==='precruit'){recruitAsk(+el.dataset.i);return}
   if(a==='wstash')return wStashModal(+el.dataset.i);
@@ -5449,7 +5451,7 @@ function firepower(){return gunBonus()+armedBonus()+S.soldiers*6+(S.gang&&crew(S
 const blockReq=()=>{const n=myTurf(),need=15+n*12,age=S.age==null?25:S.age;if(age<16)return 'You need to be 16 to run a block.';if(S.rep<need)return `Need ${need} rep to run block number ${n+1}. You have ${S.rep}.`;if(S.lvl<2+n)return `Need level ${2+n}. You are level ${S.lvl}.`;return ''};
 function canWar(){return (gAge()==null||gAge()>=16)&&(gunBonus()>0||armed().length>0)&&(S.soldiers>=2||!!S.gang)}
 function warNeed(){if(gAge()!=null&&gAge()<16)return 'You need to be 16 to go to war';return gunBonus()>0?'Need 2 shooters (soldiers) or a set behind you':'Need a gun first'}
-function war(c){if(!canWar()){modal(`<h2>No firepower</h2><p>You can't take a block with your hands. ${warNeed()}. Unc on The Bottom sells guns, and you can hire soldiers in the Your Circle tab.</p><div class="btns"><button class="btn go" id="ok">Got it</button></div>`);$('ok').onclick=close;return}
+function war(c){if(proStop())return;if(!canWar()){modal(`<h2>No firepower</h2><p>You can't take a block with your hands. ${warNeed()}. Unc on The Bottom sells guns, and you can hire soldiers in the Your Circle tab.</p><div class="btns"><button class="btn go" id="ok">Got it</button></div>`);$('ok').onclick=close;return}
   const d=cdef(c.id),mine=myStr()+(S.fx.ride?12:0);
   const odds=Math.round(mine/(mine+c.str)*100);
   modal(`<img src="${WARBAN}" alt="" style="width:100%;border-radius:6px;display:block"><h2 style="color:${d.color}">Take ${BLOCKS[S.at]}?</h2>
