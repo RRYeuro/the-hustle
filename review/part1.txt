@@ -1,0 +1,1217 @@
+/* The Hustle v196 code, part 1 of 6. Pictures removed (shown as ART). */
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="The Hustle"><meta name="theme-color" content="#141118"><link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="icon" href="icon-192.png"><style>:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif}img{max-width:100%}[hidden]{display:none!important}html{-webkit-text-size-adjust:100%;touch-action:manipulation}</style></head><body>
+<title>The Hustle: No Days Off</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow+Condensed:wght@500;700&family=Barlow:wght@400;600&display=swap">
+<style>
+/* Layout: one-screen phone app — stat strip, tabbed panel, event log; single dark "streetlight" look */
+:root{
+  --bg:#121014; --panel:#1c191f; --line:#2f2a33; --fg:#efe9e1; --dim:#9a9198;
+  --accent:#f5b72a; --money:#5fd38a; --blood:#e8504a; --heat:#4aa3ff;
+  --display:'Anton',Impact,'Arial Narrow',sans-serif;
+  --label:'Barlow Condensed','Arial Narrow',sans-serif;
+  --body:'Barlow',system-ui,sans-serif;
+  color-scheme:dark;
+}
+[hidden]{display:none!important}
+html,body{height:100%}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;
+  padding-left:max(12px,env(safe-area-inset-left,0px));padding-right:max(12px,env(safe-area-inset-right,0px))}
+*{box-sizing:border-box}
+.app{max-width:560px;margin:0 auto;padding-block:12px 24px;display:flex;flex-direction:column;gap:12px}
+header{display:flex;align-items:baseline;justify-content:space-between;gap:4px 12px;flex-wrap:wrap}
+h1 span{white-space:nowrap}
+h1{font-family:var(--display);font-weight:400;font-size:34px;letter-spacing:.02em;margin:0;line-height:1;
+  color:var(--accent);text-shadow:0 0 18px rgba(245,183,42,.25)}
+.day{font-family:var(--label);font-size:16px;color:var(--dim);text-transform:uppercase;letter-spacing:.08em}
+.day b{color:var(--fg);font-size:20px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:6px 8px;min-width:0}
+.stat .k{font-family:var(--label);font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:var(--dim)}
+.stat .v{font-family:var(--label);font-weight:700;font-size:20px;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar{height:4px;background:var(--line);border-radius:2px;margin-top:4px;overflow:hidden}
+.bar i{display:block;height:100%}
+.where{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:10px 12px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.where .n{font-family:var(--display);font-size:22px;letter-spacing:.02em}
+.where .o{font-family:var(--label);font-size:14px;color:var(--dim);text-align:right}
+.tabs{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:4px}
+.tabs button{font-family:var(--label);font-weight:700;font-size:14px;text-transform:uppercase;letter-spacing:.06em;
+  background:transparent;color:var(--dim);border:1px solid var(--line);border-radius:6px;padding:9px 0;cursor:pointer}
+.tabs button[aria-selected="true"]{background:var(--accent);color:#1a1408;border-color:var(--accent)}
+.pane{display:flex;flex-direction:column;gap:8px}
+.row{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:10px 12px;display:flex;align-items:center;gap:10px}
+.row .info{flex:1;min-width:0}
+.row .t{font-weight:600}
+.row .s{font-size:13px;color:var(--dim)}
+.price{font-family:var(--label);font-weight:700;font-size:20px;font-variant-numeric:tabular-nums;min-width:62px;text-align:right}
+.up{color:var(--blood)} .down{color:var(--money)}
+.btn{font-family:var(--label);font-weight:700;font-size:15px;text-transform:uppercase;letter-spacing:.05em;
+  background:#2a252e;color:var(--fg);border:1px solid var(--line);border-radius:6px;padding:8px 12px;cursor:pointer;white-space:nowrap}
+.btn:active{transform:translateY(1px)}
+.btn.go{background:var(--accent);color:#1a1408;border-color:var(--accent)}
+.btn.red{background:var(--blood);color:#fff;border-color:var(--blood)}
+.btn.green{background:var(--money);color:#0b1a10;border-color:var(--money)}
+.btn:disabled{opacity:.35;cursor:not-allowed}
+.btn:focus-visible,.tabs button:focus-visible{outline:2px solid var(--fg);outline-offset:2px}
+.btns{display:flex;gap:6px;flex-wrap:wrap}
+.chip{font-family:var(--label);font-size:12px;text-transform:uppercase;letter-spacing:.08em;padding:2px 6px;border-radius:4px;border:1px solid var(--line);color:var(--dim)}
+.chip.mine{color:var(--money);border-color:var(--money)}
+.chip.war{color:var(--blood);border-color:var(--blood)}
+.chip.here{color:var(--accent);border-color:var(--accent)}
+.sec{font-family:var(--label);font-size:13px;text-transform:uppercase;letter-spacing:.12em;color:var(--dim);margin:4px 2px 0}
+.log{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:10px 12px;max-height:180px;overflow:auto;font-size:13px;display:flex;flex-direction:column;gap:4px}
+.log p{margin:0;color:var(--dim)} .log p:first-child{color:var(--fg)}
+.log .d{font-family:var(--label);color:var(--accent);margin-right:6px}
+.gcell{position:relative}.gcell::after{content:attr(data-l);position:absolute;top:3px;left:6px;font-size:11px;font-weight:700;letter-spacing:.04em;opacity:.7;pointer-events:none}@media(hover:none){.gcell::after{display:none}}
+.modal{position:fixed;inset:0;background:rgba(5,4,6,.82);display:flex;align-items:center;justify-content:center;padding:20px;z-index:20}
+.modal.splash{background:#0b0910;padding:0;align-items:stretch;overflow:hidden}
+.modal.splash::before{content:"";position:absolute;inset:-30px;background:var(--sp) center/cover no-repeat;filter:blur(16px) brightness(.55) saturate(1.2)}
+.modal.splash::after{content:"";position:absolute;inset:0;background:linear-gradient(to bottom,rgba(8,6,12,0) 0%,rgba(8,6,12,.1) 40%,rgba(8,6,12,.9) 80%),var(--sp) center 34px/100% auto no-repeat}
+.modal.splash .card{position:relative;z-index:1;background:transparent;border:0;max-width:460px;margin:0 auto;max-height:none;height:100%;padding:22px 18px calc(22px + env(safe-area-inset-bottom));overflow:auto;gap:9px}
+.modal.splash .swrap{flex:1;min-height:100%;box-sizing:border-box}
+.modal.splash .btn{background:rgba(16,13,20,.74);backdrop-filter:blur(3px)}
+.modal.splash .btn.go{background:var(--accent)}
+.modal.splash .stitle{margin-bottom:auto;text-shadow:0 2px 14px #000,0 0 30px rgba(0,0,0,.8)}
+@media (min-aspect-ratio:1/1){.modal.splash{justify-content:flex-start}.modal.splash::after{background:linear-gradient(to right,rgba(11,9,16,.92) 0%,rgba(11,9,16,.55) 30%,rgba(11,9,16,0) 55%),var(--sp) right center/auto 100% no-repeat}.modal.splash .card{margin:0 0 0 7vw;max-width:400px;justify-content:center;gap:10px}.modal.splash .stitle{margin-bottom:6px}}
+.xbtn{position:sticky;top:-10px;align-self:flex-end;margin:-10px -10px -24px 0;z-index:2;width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:var(--bg);color:var(--fg);font-size:16px;line-height:1;cursor:pointer;flex:none}
+.totop{position:fixed;right:max(14px,env(safe-area-inset-right,0px));bottom:calc(76px + env(safe-area-inset-bottom,0px));z-index:50;width:44px;height:44px;border-radius:50%;border:1px solid var(--accent);background:var(--panel);color:var(--accent);font-size:20px;box-shadow:0 4px 16px rgba(0,0,0,.4);cursor:pointer}
+.card{max-height:calc(100vh - 40px);overflow:auto;background:var(--panel);border:1px solid var(--accent);border-radius:8px;padding:18px;max-width:420px;width:100%;display:flex;flex-direction:column;gap:12px}
+.card h2{font-family:var(--display);font-weight:400;font-size:28px;margin:0;letter-spacing:.02em;text-wrap:balance}
+.card p{margin:0;line-height:1.45}
+.qty{display:flex;align-items:center;gap:8px}
+.invg{display:grid;grid-template-columns:minmax(0,1fr);gap:12px}.invc{display:flex;flex-direction:column;gap:8px;min-width:0}
+@media (min-width:900px){.invg{grid-template-columns:minmax(0,1.1fr) minmax(0,1fr)}.invg .invc .row{min-width:0}}
+.qty input{width:100%;accent-color:var(--accent)}
+.qty output{font-family:var(--label);font-weight:700;font-size:22px;min-width:48px;text-align:right;font-variant-numeric:tabular-nums}
+@media (prefers-reduced-motion:no-preference){.card{animation:pop .18s ease-out}@keyframes pop{from{transform:scale(.96);opacity:.6}}}
+.side,.main{display:contents}
+.late{order:2}
+@media (min-width:900px){
+  .app{max-width:1180px;display:grid;grid-template-columns:minmax(300px,360px) minmax(0,1fr);column-gap:22px;row-gap:12px;align-items:start}
+  header{grid-column:1/-1}
+  .side,.main{display:flex;flex-direction:column;gap:12px;min-width:0}
+  .side{position:sticky;top:12px}
+  .late{order:0}
+  .log{max-height:340px}
+}
+
+@media (max-width:899px){
+  .app{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:8px;padding-block:8px 132px}
+  .app>*,.side>*,.main>*{grid-column:1/-1}
+  header{grid-row:1}
+  #me{grid-column:1;grid-row:2;padding:6px 8px!important;gap:8px}
+  .where{grid-column:2;grid-row:2;padding:6px 10px;flex-direction:column;align-items:flex-start;justify-content:center;gap:2px}
+  .where .n{font-size:18px}.where .o{text-align:left}.where .o .chip{font-size:10px;padding:1px 4px}.where .sec{font-size:10px}
+  #me img,#me>div:first-child{width:40px!important;height:40px!important}
+  #me .s{font-size:12px}
+  h1{font-size:26px}h1 .sub{display:none}
+  header{align-items:center}
+  .day{font-size:12px;letter-spacing:.06em}
+  .stats{gap:5px}
+  .stat{padding:4px 7px}
+  .stat .k{font-size:10px}
+  .stat .v{font-size:16px}
+  .stat .bar{height:3px;margin-top:2px}
+  #mission{padding:7px 10px}
+  #mission .t{font-size:14px}#mission .sec{font-size:11px}#mission .s{font-size:12px}
+  .tabs{position:fixed;left:0;right:0;bottom:0;z-index:15;margin:0;background:var(--bg);border-top:1px solid var(--line);
+    padding:6px max(8px,env(safe-area-inset-right,0px)) calc(6px + env(safe-area-inset-bottom,0px)) max(8px,env(safe-area-inset-left,0px));
+    grid-auto-flow:row;grid-template-columns:repeat(var(--tc,6),minmax(0,1fr));box-shadow:0 -6px 18px rgba(0,0,0,.35)}
+  .tabs button{padding:11px 0;font-size:12px}
+  .pane .btn{padding:7px 10px;font-size:13px}
+  .pane .row{padding:8px 10px}
+}
+</style>
+
+<div class="app">
+  <header>
+    <h1>THE HUSTLE <span class="sub" style="font-family:var(--label);font-size:15px;letter-spacing:.14em;color:var(--dim);text-shadow:none;vertical-align:middle">NO DAYS OFF</span></h1>
+    <div class="day"><span id="who"></span> · <span id="rk" style="color:var(--accent)"></span> · <span id="dlab">Day </span><b id="day">1</b><span id="dmax"> / 30</span></div>
+  </header>
+  <div class="side">
+  <div class="row" id="me" style="padding:8px 10px"></div>
+  <div class="stats">
+    <div class="stat"><div class="k">Cash</div><div class="v" id="cash" style="color:var(--money)"></div><div id="cashsplit" style="font-size:13px;line-height:1.35;font-weight:700;white-space:nowrap;margin-top:3px"></div></div>
+    <div class="stat"><div class="k">Stress</div><div class="v" id="stress"></div><div class="bar"><i id="stressb" style="background:var(--blood)"></i></div></div>
+    <div class="stat"><div class="k">Stash</div><div class="v" id="stash"></div></div>
+    <div class="stat"><div class="k">Health</div><div class="v" id="hp"></div><div class="bar"><i id="hpb" style="background:var(--money)"></i></div></div>
+    <div class="stat"><div class="k">Heat</div><div class="v" id="heat"></div><div class="bar"><i id="heatb" style="background:var(--heat)"></i></div></div>
+    <div class="stat"><div class="k">Rep</div><div class="v" id="rep" style="color:var(--accent)"></div></div>
+    <div class="stat" style="grid-column:1/-1"><div class="k">Energy <span id="en" style="margin-left:6px"></span><span style="float:right;text-transform:none;opacity:.6">buy 6 · sell 7 · serve 11 · hit up 8 · Js 13</span></div><div class="bar"><i id="enb" style="background:var(--heat)"></i></div></div>
+  </div>
+  <div class="where"><div><div class="sec" style="margin:0">You're on</div><div class="n" id="here"></div></div><div class="o" id="owner"></div></div>
+  <div class="row" id="mission" style="border-color:var(--accent)"></div>
+  <div class="sec late">What's happening</div>
+  <div class="log late" id="log"></div>
+  <div class="btns late"><button class="btn" id="newgame">Menu</button><button class="btn" id="devbtn" style="border-color:var(--heat);color:var(--heat)" hidden>Dev</button><button class="btn go" id="retire" hidden>Retire and see your score</button></div>
+  </div>
+  <div class="main">
+  <div class="tabs" role="tablist">
+    <button role="tab" data-t="sch" aria-selected="false" id="stab" hidden>🏫 School</button>
+    <button role="tab" data-t="rap" aria-selected="false" id="rtab" hidden>🎤 Studio</button>
+    <button role="tab" data-t="rob" aria-selected="false" id="htab" hidden>🥷 Heists</button>
+    <button role="tab" data-t="sp" aria-selected="false" id="sptab" hidden>🏆 Sports</button>
+    <button role="tab" data-t="block" aria-selected="true">📍 Block</button>
+    <button role="tab" data-t="move" aria-selected="false">🚗 Move</button>
+    <button role="tab" data-t="beef" aria-selected="false">👥 Your Circle</button>
+    <button role="tab" data-t="crew" aria-selected="false">🧍 Me</button>
+    <button role="tab" data-t="phone" aria-selected="false" id="phtab">📱 Phone</button>
+    <button role="tab" data-t="cards" aria-selected="false" id="cardtab">🃏 Cards</button>
+    <button role="tab" data-t="exp" aria-selected="false" id="exptab">💸 Expenses</button>
+  </div>
+  <div class="btns" id="fx"></div>
+  <div class="pane" id="pane"></div>
+  </div>
+</div>
+<div class="modal" id="modal" hidden><div class="card" id="mcard"></div></div>
+
+<script>
+const WEIGHTS=[[3.5,'8th'],[7,'Quarter'],[14,'Half'],[28,'Zip'],[112,'QP'],[448,'Pound'],[1000,'Key']];
+const GOODS=[
+ {id:'loud',name:'Weed',lo:7,hi:13,unit:'g',sp:.25,step:.5,sizes:WEIGHTS},
+ {id:'bars',name:'Xans',lo:2,hi:5,unit:'pills',sp:.05,step:1,sizes:[[10,'10'],[50,'50'],[100,'100'],[500,'Boat']]},
+ {id:'snow',name:'Coke',lo:65,hi:100,unit:'g',sp:.2,step:.5,sizes:WEIGHTS},
+ {id:'kicks',name:'Molly',lo:22,hi:40,unit:'g',sp:.2,step:.5,sizes:WEIGHTS.slice(0,5)},
+ {id:'percs',name:'Percs',lo:8,hi:15,unit:'pills',sp:.05,step:1,sizes:[[10,'10'],[50,'50'],[100,'100'],[500,'Boat']]},
+ {id:'phones',name:'Lean',lo:18,hi:30,unit:'oz',sp:2,step:1,sizes:[[1,'1 oz'],[4,'4 oz'],[16,'Pint'],[32,'Quart']]},
+];
+const G=id=>GOODS.find(g=>g.id===id);
+/* heat by drug type: weed is chill, hard stuff draws attention */
+const GHEAT={loud:.75,bars:.95,percs:1,phones:1.05,kicks:1.25,snow:1.5};
+const carryHeat=()=>{let m=1;try{GOODS.forEach(g=>{if((S.inv[g.id]||0)>0)m=Math.max(m,GHEAT[g.id]||1)});}catch(e){}return m===1?1:1+(m-1)*.5};
+const PCOL={loud:'#4b9a3c',snow:'#eef0f2',kicks:'#e9bf74',bars:'#f0c6d8',percs:'#a9c8f0',phones:'#8a4bc0'};
+const PKGART={"snow": ["data:image/jpeg;base64,ART", "data:image/jpeg;base64,ART", "data:image/jpeg;base64,ART", "data:image/jpeg;base64,ART", "data:image/jpeg;base64,ART", "data:image/jpeg;base64,ART"], "kicks": ["data:image/jpeg;base64,ART", "data:image/jpeg;base64,ART", "data:image/jpeg;base64,ART", "data:image/jpeg;base64,ART", "data:image/jpeg;base64,ART", "data:image/jpeg;base64,ART"], "bars": ["data:image/jpeg;base64,ART", "data:image/jpeg;base64,ART", "data:image/jpeg;base64,ART", "data:image/jpeg;base64,ART", "data:image/jpeg;base64,ART", "data:image/jpeg;base64,ART"], "percs": ["data:image/jpeg;base64,ART", "data:image/jpeg;base64,ART", "data:image/jpeg;base64,ART", "data:image/jpeg;base64,ART", "data:image/jpeg;base64,ART", "data:image/jpeg;base64,ART"], "phones": ["data:image/jpeg;base64,ART", "data:image/jpeg;base64,ART", "data:image/jpeg;base64,ART", "data:image/jpeg;base64,ART", "data:image/jpeg;base64,ART", "data:image/jpeg;base64,ART"], "loud": ["data:image/jpeg;base64,ART", "data:image/jpeg;base64,ART", "data:image/jpeg;base64,ART", "data:image/jpeg;base64,ART", "data:image/jpeg;base64,ART", "data:image/jpeg;base64,ART"]};
+function pkgK(g,n){const id=g.id;if(id==='loud')return n<7?0:n<28?1:n<112?2:n<448?3:n<1000?4:5;if(id==='snow')return n<3.5?0:n<28?1:n<448?2:n<1000?3:n<=1000?4:5;if(id==='kicks')return n<3.5?0:n<7?1:n<14?2:n<28?3:n<112?4:5;if(g.unit==='pills')return n<=10?0:n<=50?1:n<=100?2:n<=200?3:n<=500?4:5;return n<=1?0:n<=4?1:n<=16?2:n<=32?3:n<=128?4:5}
+function pkg(g,n,sz){sz=sz||40;if(PKGART[g.id]){return `<img src="${PKGART[g.id][pkgK(g,n)]}" alt="" style="width:${sz}px;height:${sz}px;border-radius:6px;object-fit:cover;flex:none;vertical-align:middle">`}const c=PCOL[g.id]||'#ccc',o='#1b1920',k=g.unit==='g'?(n<7?0:n<28?1:n<112?2:n<448?3:n<1000?4:5):g.unit==='pills'?(n<=10?0:n<=50?1:n<=100?2:n<=500?3:4):(n<=1?0:n<=4?1:n<=16?2:3);let b='';
+  const bag=(w,h,tie)=>{const x=24-w/2,y=44-h;return `<path d="M${x} ${y+4} L${x+w} ${y+4} L${x+w-2} 44 L${x+2} 44 Z" fill="${c}" stroke="${o}" stroke-width="1.6" stroke-linejoin="round"/><path d="M${x+3} ${y+8} h${w-6}" stroke="#fff" stroke-opacity=".5" stroke-width="1.4"/>${tie?`<path d="M${24-6} ${y+4} q6 -9 12 0" fill="none" stroke="${o}" stroke-width="1.6"/>`:`<rect x="${x}" y="${y}" width="${w}" height="4" rx="1.5" fill="#d8dde3" stroke="${o}" stroke-width="1.2"/>`}`};
+  const brick=(w,h)=>{const x=24-w/2,y=44-h;return `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="3" fill="${c}" stroke="${o}" stroke-width="1.8"/><path d="M${x+2} ${y+4} h${w-4}" stroke="#fff" stroke-opacity=".55" stroke-width="1.6"/><rect x="${24-4}" y="${y}" width="8" height="${h}" fill="#b98a4a" stroke="${o}" stroke-width="1.2"/><circle cx="${x+w-9}" cy="${y+h/2}" r="4" fill="none" stroke="${o}" stroke-width="1.3"/>`};
+  const bottle=(w,h,capc)=>{const x=24-w/2,y=44-h;return `<rect x="${x}" y="${y+5}" width="${w}" height="${h-5}" rx="3" fill="#d98a2e" fill-opacity=".92" stroke="${o}" stroke-width="1.6"/><rect x="${x+1}" y="${y}" width="${w-2}" height="6" rx="2" fill="${capc}" stroke="${o}" stroke-width="1.4"/><rect x="${x+3}" y="${y+12}" width="${w-6}" height="${Math.max(7,h/3)}" fill="#fff" fill-opacity=".9"/>`};
+  if(g.unit==='g'){b=k===0?bag(12,14):k===1?bag(18,20):k===2?bag(24,26):k===3?brick(24,14):k===4?bag(34,38,1):brick(44,30)}
+  else if(g.unit==='pills'){b=k===0?bag(18,18)+`<circle cx="21" cy="36" r="2.4" fill="${c}" stroke="${o}"/><circle cx="27" cy="34" r="2.4" fill="${c}" stroke="${o}"/>`:k===1?bottle(16,26,'#fff'):k===2?bottle(20,32,'#fff'):k===3?`<rect x="10" y="12" width="28" height="32" rx="5" fill="#cfe7f5" fill-opacity=".85" stroke="${o}" stroke-width="1.8"/><rect x="12" y="8" width="24" height="6" rx="2" fill="#555" stroke="${o}"/>${[16,22,28,19,25,31].map((x,i)=>`<circle cx="${x+3}" cy="${[36,38,36,30,31,30][i]}" r="3" fill="${c}" stroke="${o}"/>`).join('')}`:`<rect x="5" y="16" width="38" height="28" rx="3" fill="#a77b4a" stroke="${o}" stroke-width="1.8"/><path d="M5 24 H43" stroke="${o}" stroke-width="1.4"/>${[11,19,27,35].map(x=>`<rect x="${x}" y="8" width="7" height="10" rx="2" fill="#d98a2e" stroke="${o}"/>`).join('')}`}
+  else{b=k===0?`<path d="M15 14 L33 14 L30 44 L18 44 Z" fill="#f2f2f2" stroke="${o}" stroke-width="1.8"/><path d="M16.5 24 L31.5 24 L30 44 L18 44 Z" fill="${c}"/>`:k===1?bottle(16,30,c):k===2?bottle(22,38,c):`<rect x="9" y="10" width="30" height="34" rx="6" fill="${c}" fill-opacity=".9" stroke="${o}" stroke-width="1.8"/><path d="M33 12 q10 4 4 14" fill="none" stroke="${o}" stroke-width="2.4"/><rect x="16" y="6" width="16" height="6" rx="2" fill="#ddd" stroke="${o}"/>`}
+  return `<svg viewBox="0 0 48 48" width="${sz}" height="${sz}" style="flex:none;vertical-align:middle" aria-hidden="true">${b}</svg>`}
+const amt=(n,g)=>{n=Math.round(n*10)/10;if(g.unit==='g'){const w=WEIGHTS.find(w=>w[0]===n);return w?`${w[1]} (${n}g)`:n+'g'}return n+' '+g.unit};
+const BLOCKS=['Eastside','Southpark','The Bottom','Westgate','Northline','Downtown'];
+const CREWS=[
+ {id:'v',name:'Vipers',color:'#7ad36b',desc:'Young and wild out of The Bottom. Quick to start beef, quick to forget it.'},
+ {id:'r',name:'Red Hill Boys',color:'#e8504a',desc:'Old heads from Red Hill who run Westgate and Downtown. Patient, organized, dangerous.'},
+ {id:'k',name:'Kingz',color:'#b88cff',desc:'A mixed crew from Northline: Black, white and Asian kids who grew up on the same courts.'},
+ {id:'c',name:'Los Cuervos',color:'#4ec9d4',desc:'Family crew out of Southpark. Mostly cousins. Cross one of them and you crossed all of them.'},
+];
+const PLUGS=['Lil Dre','Auntie Pat','Smoke','Big Tone','Mya','Ms. Lee'];
+const FEM=[0,1,0,0,1,1];
+const PINFO=[
+ {lvl:'Low',carries:['loud','bars','percs'],skin:'#8a5a3c',shirt:'#c0392b',hat:'cap',bio:'Young boy running a corner out of his grandma\'s house. Small amounts, but he always picks up the phone.'},
+ {lvl:'Mid',carries:['loud','snow','kicks','bars'],skin:'#5c3a24',shirt:'#8e44ad',hat:'scarf',bio:'Been in the game longer than anybody on Southpark. Feeds the whole block and remembers every face.'},
+ {lvl:'Low',carries:['loud','kicks','phones'],skin:'#a06a45',shirt:'#3d7a4f',hat:'none',fakeBonus:10,bio:'Always high, always around. Keeps it cheap, but check what he sells you.'},
+ {lvl:'Big',carries:['loud','snow','percs'],skin:'#4a2e1c',shirt:'#1f1f1f',hat:'beanie',bio:'Moves weight across three counties. If you ain\'t buying serious weight, don\'t waste his time.'},
+ {lvl:'Mid',carries:['bars','percs','phones','kicks'],skin:'#6b4429',shirt:'#2c5d8f',hat:'long',glasses:1,bio:'College dropout who runs it like a business. Pills and lean are her thing.'},
+ {lvl:'Big',carries:['snow','kicks','loud'],skin:'#e6c09a',shirt:'#b8860b',hat:'bun',bio:'Owns a nail shop downtown. Nobody knows how much she really moves, and nobody asks.'},
+];
+const LVL={Low:{mult:1.1,g:28,pills:100,oz:4,rep:0,col:'var(--dim)'},Mid:{mult:1,g:112,pills:500,oz:16,rep:0,col:'var(--heat)'},Big:{mult:.85,g:1000,pills:2000,oz:64,rep:25,col:'var(--accent)'}};
+const lvlMax=(bi,g)=>{const L=LVL[PINFO[bi].lvl];return g.unit==='g'?L.g:g.unit==='pills'?L.pills:L.oz};
+const OPPPICS=['data:image/jpeg;base64,ART','data:image/jpeg;base64,ART','data:image/jpeg;base64,ART'];
+const WARBAN='data:image/jpeg;base64,ART';
+const SHOOTBG='data:image/jpeg;base64,ART';
+const TITLEART='data:image/jpeg;base64,ART';
+const SPLASHP='data:image/jpeg;base64,ART';
+const BLOCKART={0:'data:image/jpeg;base64,ART',1:'data:image/jpeg;base64,ART',2:'data:image/jpeg;base64,ART',3:'data:image/jpeg;base64,ART',4:'data:image/jpeg;base64,ART',5:'data:image/jpeg;base64,ART'};
+const GUARDPICS={tank:'data:image/jpeg;base64,ART',slick:'data:image/jpeg;base64,ART',shade:'data:image/jpeg;base64,ART',val:'data:image/jpeg;base64,ART',country:'data:image/jpeg;base64,ART',lucky:'data:image/jpeg;base64,ART'};
+function parPic(sz){const P=S.par,g=GUARD[S.char];if(!P||!g||g.name!==P.name||!GUARDPICS[S.char])return '';return `<img src="${GUARDPICS[S.char]}" alt="" style="width:${sz}px;height:${sz}px;border-radius:6px;object-fit:cover;flex:none">`}
+const UNCPIC='data:image/jpeg;base64,ART';
+const CONNPICS={"Marisol":"data:image/jpeg;base64,ART","Deacon":"data:image/jpeg;base64,ART","Tasha K":"data:image/jpeg;base64,ART",'Silk':'data:image/jpeg;base64,ART','Javi':'data:image/jpeg;base64,ART','Mr. Kim':'data:image/jpeg;base64,ART','Big Chief':'data:image/jpeg;base64,ART','OG Mook':'data:image/jpeg;base64,ART','Nadia':'data:image/jpeg;base64,ART'};
+const ART={"marisol":"data:image/jpeg;base64,ART","deacon":"data:image/jpeg;base64,ART","tasha":"data:image/jpeg;base64,ART","frontp":"data:image/jpeg;base64,ART","paybackp":"data:image/jpeg;base64,ART","ranoffp":"data:image/jpeg;base64,ART","nostrapp":"data:image/jpeg;base64,ART","talkitp":"data:image/jpeg;base64,ART","commp":"data:image/jpeg;base64,ART","sbk1":"data:image/jpeg;base64,ART","sbk2":"data:image/jpeg;base64,ART","sbk3":"data:image/jpeg;base64,ART","sbk4":"data:image/jpeg;base64,ART","sbk5":"data:image/jpeg;base64,ART","van": "data:image/jpeg;base64,ART", "light": "data:image/jpeg;base64,ART", "note": "data:image/jpeg;base64,ART", "stop": "data:image/jpeg;base64,ART", "barber": "data:image/jpeg;base64,ART", "gas": "data:image/jpeg;base64,ART", "raj": "data:image/jpeg;base64,ART", "cole": "data:image/jpeg;base64,ART", "smoke": "data:image/jpeg;base64,ART", "contract": "data:image/jpeg;base64,ART", "robber": "data:image/jpeg;base64,ART", "war": "data:image/jpeg;base64,ART", "tag": "data:image/jpeg;base64,ART", "tired": "data:image/jpeg;base64,ART", "studio": "data:image/jpeg;base64,ART", "promoter": "data:image/jpeg;base64,ART", "fence": "data:image/jpeg;base64,ART", "marked": "data:image/jpeg;base64,ART"};
+ART.sol='data:image/jpeg;base64,ART';
+ART.tasha='data:image/jpeg;base64,ART';
+ART.cell='data:image/jpeg;base64,ART';
+ART.marisol='data:image/jpeg;base64,ART';
+ART.deacon='data:image/jpeg;base64,ART';
+ART.tire='data:image/jpeg;base64,ART';
+ART.eng='data:image/jpeg;base64,ART';
+ART.gang='data:image/jpeg;base64,ART';
+const artImg=(k,w)=>ART[k]?`<img src="${ART[k]}" alt="" style="width:100%;max-width:${w||380}px;border-radius:8px;align-self:center;margin-bottom:6px">`:'';
+const artFace=(k,sz)=>ART[k]?`<img src="${ART[k]}" alt="" style="width:${sz||56}px;height:${sz||56}px;border-radius:6px;object-fit:cover;object-position:top;flex:none">`:'';
+const SCENEKEY={'Silk':'van','Javi':'light','Mr. Kim':'note','Big Chief':'stop','OG Mook':'barber','Nadia':'gas','Uncle Sol':'sol','Tasha K':'tasha','Marisol':'marisol','Deacon':'deacon'};
+const cpic=(n,sz)=>CONNPICS[n]?`<img src="${CONNPICS[n]}" alt="" style="width:${sz}px;height:${sz}px;border-radius:6px;object-fit:cover;flex:none">`:'';
+const PLUGPICS={5:'data:image/jpeg;base64,ART',4:'data:image/jpeg;base64,ART',0:'data:image/jpeg;base64,ART',1:'data:image/jpeg;base64,ART',2:'data:image/jpeg;base64,ART',3:'data:image/jpeg;base64,ART'};
+function avatar(bi,sz=64){const P=PINFO[bi];
+  if(PLUGPICS[bi]&&!(S&&S.pname&&S.pname[bi]))return `<img src="${PLUGPICS[bi]}" alt="" style="width:${sz}px;height:${sz}px;border-radius:6px;object-fit:cover;flex:none">`;
+  const hat=P.hat==='cap'?`<path d="M18 26 Q32 10 46 26 Z" fill="${P.shirt}"/><rect x="30" y="24" width="22" height="4" rx="2" fill="${P.shirt}"/>`
+   :P.hat==='beanie'?`<path d="M17 28 Q32 6 47 28 Z" fill="#333"/><rect x="16" y="25" width="32" height="5" rx="2" fill="#444"/>`
+   :P.hat==='scarf'?`<path d="M15 32 Q32 6 49 32 L46 30 Q32 14 18 30 Z" fill="${P.shirt}"/>`
+   :P.hat==='long'?`<path d="M16 34 Q14 12 32 12 Q50 12 48 34 L50 50 L44 48 L44 30 Q32 18 20 30 L20 48 L14 50 Z" fill="#1a1a1a"/>`
+   :P.hat==='bun'?`<circle cx="32" cy="13" r="7" fill="#1a1a1a"/><path d="M18 30 Q32 12 46 30 Z" fill="#1a1a1a"/>`
+   :`<path d="M19 28 Q32 14 45 28 Z" fill="#1a1a1a"/>`;
+  const gl=P.glasses?`<rect x="23" y="31" width="8" height="5" rx="1" fill="none" stroke="#ddd" stroke-width="1.5"/><rect x="33" y="31" width="8" height="5" rx="1" fill="none" stroke="#ddd" stroke-width="1.5"/>`:'';
+  return `<svg width="${sz}" height="${sz}" viewBox="0 0 64 64" aria-hidden="true" style="flex:none;border-radius:6px;background:#2a2430">
+    <path d="M8 64 Q10 46 32 46 Q54 46 56 64 Z" fill="${P.shirt}"/><rect x="28" y="40" width="8" height="8" fill="${P.skin}"/>
+    <ellipse cx="32" cy="32" rx="13" ry="14" fill="${P.skin}"/>${hat}
+    <circle cx="27" cy="33" r="1.6" fill="#111"/><circle cx="37" cy="33" r="1.6" fill="#111"/>${gl}
+    <path d="M28 40 Q32 42 36 40" stroke="#111" stroke-width="1.4" fill="none"/></svg>`}
+const CARDS=[
+ {id:'discount',name:'Plug Love',r:'Common',w:22,txt:'Your next buy is 30% off.'},
+ {id:'hype',name:'Hype Day',r:'Common',w:22,txt:'Your next sell pays 40% more.'},
+ {id:'medic',name:'Patch Up',r:'Common',w:18,txt:'+40 health right now.'},
+ {id:'ghost',name:'Ghost',r:'Rare',w:10,txt:'Heat drops 35 right now.'},
+ {id:'ride',name:'Ride or Die',r:'Rare',w:10,txt:'+12 strength for your next fight.'},
+ {id:'lawyer',name:'Lawyer on Call',r:'Rare',w:8,txt:'Next time you get jammed up there is a 50% chance he gets it thrown out: no strike, half your fine back. On payroll it is 70%. The stash is still gone.'},
+ {id:'peace',name:'Peace Talk',r:'Rare',w:6,txt:'Every crew cools off by 40 beef.'},
+ {id:'stash',name:'Secret Spot',r:'Legendary',w:2,txt:'+40 stash space for good.'},
+ {id:'bag',name:'Big Bag',r:'Legendary',w:2,txt:'+$4,000 cash right now.'},
+];
+const RCOL={Common:'var(--dim)',Rare:'var(--heat)',Legendary:'var(--accent)'};
+const $=id=>document.getElementById(id);
+const rnd=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
+const pick=a=>a[rnd(0,a.length-1)];
+const money=n=>(n<0?'-$':'$')+Math.abs(Math.round(n)).toLocaleString();
+let S, tab='block';
+
+const PORTRAITS={country:'data:image/jpeg;base64,ART',val:'data:image/jpeg;base64,ART',slick:'data:image/jpeg;base64,ART',shade:'data:image/jpeg;base64,ART',lucky:'data:image/jpeg;base64,ART',tank:'data:image/jpeg;base64,ART'};
+const CHARS=[
+ {id:'slick',name:'Slick',role:'The Talker',cash:3000,story:'Jalen "Slick" Moore. Started rapping about stealing cars, and the songs were not made up. He could get into anything on four wheels and talk his way out of any stop, until the one he could not. Did three years, came home with a rap name and a plug list, and now he talks his way into every deal.',perk:'Knows 2 plugs from the jump and they trust him. +20% odds when talking price.'},
+ {id:'tank',name:'Tank',role:'The Fallen Star',cash:2000,story:'Darius "Tank" Coleman. Star running back on a full ride, scouts at every game, headed to the league. Tore his knee up in the championship game and it was over. Tried the 9-to-5, got let go, and missed the love he used to get on Friday nights. The streets still know his name, so he started trapping.',perk:'Knows 1 plug. People still know his name: starts with 15 rep, +10 strength and a soldier. Bad knee: worse at running away. Football comeback: try out at the park with a head start, but the knee gets hurt easier.'},
+ {id:'shade',name:'Shade',role:'The Ghost',cash:2500,story:'Andre "Shade" Wallace. His songs are all over the city, but nobody has seen his face. No interviews, no pictures, no shows. People argue about who he really is. That mystery is the reason nobody can pin anything on him.',perk:'Always watching: knows 3 plugs and can spot fakes. Heat builds half as fast. Gets away from cops way more.'},
+ {id:'val',name:'Val',role:'The Boss Lady',cash:2500,story:'Valentina "Val" Reyes. Ran the register at her family\'s taqueria since she was twelve and learned the back door moves more money than the front. When her dad got sick, she took over everything.',perk:'Knows 2 plugs. Runs it like a business: the Js pay her 10% more and her workers never steal.'},
+ {id:'country',name:'Casper',role:'Raised by the Block',cash:2000,story:'Cody "Casper" Walsh. Only white boy on Eastside growing up. His mom worked doubles, so the block raised him: the corner store fed him, the older homies taught him. Everybody knows Casper, and he ain\'t going nowhere.',perk:'Knows 1 plug. The block raised him: every crew starts out respecting him, and staying cool with cops is easier.'},
+ {id:'life',name:'You',role:'Your life',cash:1000,story:'',perk:''},
+ {id:'lucky',name:'Lucky',role:'The Rich Girl',cash:4000,story:'Keisha "Lucky" Grant. Gated community, private school, daddy\'s money. She started rapping and nobody took her seriously because she never struggled. Now she is out here to prove she is real, and she is spending her trust fund to do it.',perk:'Only plug she knows is her ex, Tre. Starts with the most cash, and things just fall her way: double the odds on every card drop.'},
+];
+const is=id=>S.char===id;
+const KNOWN={life:1,slick:2,tank:1,shade:3,lucky:1,val:2,country:1};
+const isF=()=>is('lucky')||is('val')||(is('life')&&!!(S.custom&&S.custom.fem));
+const adult=()=>!S.age||S.age>=18;
+const gAge=()=>S.school==='out'&&S.age&&S.age<18?18:S.age;
+const SKSTART={life:{hustle:3,talk:3,muscle:3,smarts:3,luck:3},val:{hustle:6,talk:4,muscle:2,smarts:3,luck:2},country:{hustle:4,talk:3,muscle:4,smarts:3,luck:3},slick:{hustle:4,talk:6,muscle:2,smarts:3,luck:3},tank:{hustle:3,talk:2,muscle:6,smarts:2,luck:2},shade:{hustle:3,talk:3,muscle:2,smarts:6,luck:3},lucky:{hustle:3,talk:3,muscle:2,smarts:2,luck:6}};
+function knownStart(ch){const k=[0];const rest=[1,2,3,4,5].sort(()=>Math.random()-.5);while(k.length<KNOWN[ch])k.push(rest.pop());return k}
+function plugName(bi){if(S.pname&&S.pname[bi])return S.pname[bi];return is('lucky')&&bi===S.ex?'Tre':PLUGS[bi]}
+const plugFem=bi=>S.pname&&S.pname[bi]?S.pfem[bi]:FEM[bi];
+const DIFF={easy:{st:5,name:'Easy',days:40,buy:.9,heat:.8,crew:.8,risk:.7,sub:'Cheaper plugs, chill crews, less heat.'},normal:{st:4,name:'Normal',days:35,buy:1,heat:1,crew:1,risk:1,sub:'The way it\'s meant to be played.'},hard:{st:3,name:'Hard',days:30,buy:1.12,heat:1.3,crew:1.3,risk:1.4,sub:'Pricey plugs, more heat, crews hit harder, jackboys everywhere.'}};
+const D=()=>DIFF[S.diff||'normal'];
+const maxStrikes=()=>(S&&DIFF[S.diff||'normal']?DIFF[S.diff||'normal'].st:3)||3;
+const maxDay=()=>S&&S.cal?1e9:D().days;
+let pendingDiff='normal';
+function fresh(ch='tank',mode='story'){
+  const owners=['none','c','v','r','k','r']; // block 0 is open, rest held by crews
+  const C=CHARS.find(c=>c.id===ch);
+  return {char:ch,day:1,cash:C.cash,hp:100,heat:0,rep:ch==='tank'?15:0,cap:100,at:0,soldiers:ch==='tank'?1:0,
+    inv:Object.fromEntries(GOODS.map(g=>[g.id,0])),
+    paid:Object.fromEntries(GOODS.map(g=>[g.id,0])),
+    owner:owners.slice(),
+    crews:CREWS.map((c,i)=>({id:c.id,str:Math.round([12,16,20,15][i]*DIFF[pendingDiff].crew),beef:0,alive:true,respect:0,envy:0})),
+    prices:{},prev:{},log:[],over:false,
+    home:'couch',rentDay:8,pk:{},burned:{},pname:{},pfem:{},pbio:{},path:'trap',rapOn:0,robOn:0,rap:{fans:0,hype:0,songs:[],show:0,signed:0},rob:{noto:0,mask:0,car:0,heists:0},mode,stress:0,rk:0,pad:0,gf:null,gst:{},dm:0,chill:0,traps:{},workers:[],cands:[],candDay:-9,units:1,sk:{stamina:3,charm:3,biz:3,discipline:3,...SKSTART[ch]},xp:0,lvl:1,pts:0,park:0,ms:0,st:{sold:0,profit:0,fights:0,blocks:0,cops:0,talks:0,cards:0},hand:[],fx:{},trust:BLOCKS.map(()=>ch==='slick'?50:30),talked:{},deal:null,offer:{},tested:{},q:Object.fromEntries(GOODS.map(g=>[g.id,50])),fake:Object.fromEntries(GOODS.map(g=>[g.id,0])),known:knownStart(ch),deals:{},ex:-1};
+}
+function migrate(s){if(!s.char)return null;if(!s.v7){s.v7=1;s.cap=(s.cap||100)+80}if(s.homeAt===undefined)s.homeAt=0;if(!s.v5){s.v5=1;if(s.ms>=3)s.storyDone=1;if(s.safe===undefined)s.safe=0}if(s.crews&&!s.crews.find(c=>c.id==='c')){s.crews.push({id:'c',str:15,beef:0,alive:true,respect:0,envy:0});if(s.owner[1]==='v')s.owner[1]='c'}if(s.crews)s.crews.forEach(c=>{if(c.respect===undefined){c.respect=0;c.envy=0}});const f=fresh(s.char);if(s.stress===undefined){s.stress=0;s.rk=0;s.mode='story'}if(s.pad===undefined)s.pad=0;if(!s.home){s.home='couch';s.rentDay=s.day+7}if(!s.pk){s.pk={};s.burned={};s.pname={};s.pfem={};s.pbio={}}if(s.rapOn===undefined){s.rapOn=s.path==='rap'?1:0;s.robOn=s.path==='rob'?1:0}if(!s.path){s.path='trap';s.rap={fans:0,hype:0,songs:[],show:0,signed:0};s.rob={noto:0,mask:0,car:0,heists:0}}if(s.gst===undefined){s.gf=null;s.gst={};s.dm=0;s.chill=0}if(!s.traps){s.traps={};s.workers=[];s.cands=[];s.candDay=-9}if(!s.sk){s.sk={...SKSTART[s.char]};s.xp=0;s.lvl=1;s.pts=0;s.park=0}
+  ['inv','paid','q','fake'].forEach(k=>{if(s[k])GOODS.forEach(g=>{if(s[k][g.id]===undefined)s[k][g.id]=f[k][g.id]})});for(const k in f)if(s[k]===undefined)s[k]=f[k];return s}
+function drawCard(chance,why){
+  if(is('lucky'))chance*=2;
+  chance*=1+(S.sk.luck-3)*.1;
+  if(Math.random()>=chance)return;
+  const tot=CARDS.reduce((a,c)=>a+c.w,0);let x=Math.random()*tot;
+  const c=CARDS.find(c=>(x-=c.w)<0)||CARDS[0];
+  if(S.hand.length>=3){say(`${why} you found a ${c.name} card, but your hand is full.`);return}
+  S.hand.push(c.id);say(`${why} you pulled a ${c.r} card: ${c.name}.`);
+}
+function useCard(i){
+  const id=S.hand.splice(i,1)[0],c=CARDS.find(c=>c.id===id);
+  if(id==='medic')S.hp=Math.min(100,S.hp+40);
+  else if(id==='ghost')S.heat=Math.max(0,S.heat-35);
+  else if(id==='peace')S.crews.forEach(k=>k.beef=Math.max(0,k.beef-40));
+  else if(id==='stash')S.cap+=40;
+  else if(id==='bag')S.cash+=4000;
+  else S.fx[id]=1;
+  S.st.cards++;say(`Played ${c.name}. ${c.txt}`);
+}
+function crew(id){return S.crews.find(c=>c.id===id)}
+function cdef(id){return CREWS.find(c=>c.id===id)}
+function roll(){
+  if(S.dr&&S.dr.until<S.day){delete S.dr;say('Drought szn is over. The streets are flowing again.')}
+  else if(!S.dr&&S.day>8&&Math.random()<.02){{const db=rnd(0,5);S.dr={until:S.day+rnd(4,10),bi:db};say(`🏜️ Drought szn on ${BLOCKS[db]}. Nobody there got nothing and everybody is asking more.`)}}
+  S.prev=S.prices;S.prices={};S.talked={};S.bluffed={};S.deal=null;S.jsLeft=BLOCKS.map((b,i)=>jsBudget(i));S.tested={};S.offer={};
+  BLOCKS.forEach((b,bi)=>{S.offer[bi]={};GOODS.forEach(g=>{
+    const r=Math.random(),big=PINFO[bi].lvl==='Big',q=big?(r<.88?rnd(78,96):r<.96?rnd(60,74):rnd(30,55)):r<.25?rnd(75,95):r<.75?rnd(45,70):rnd(15,40);
+    const kn=S.known.includes(bi);const fc=big?(r>=.96?18:1.5):(kn?Math.max(2,12-S.trust[bi]/10):25)+(PINFO[bi].fakeBonus||0);
+    const fake=Math.random()*100<fc;
+    const shown=fake?rnd(55,90):q;S.offer[bi][g.id]={q:shown,real:q,fake,v:pick(VARS[g.id][tier(shown)]),stock:newStock(bi,g)};})});
+  BLOCKS.forEach((b,bi)=>{
+    S.prices[bi]={};
+    GOODS.forEach(g=>{
+      let p=rnd(g.lo,g.hi);
+      const r=Math.random();
+      if(r<.05)p=Math.round(p*rnd(7,8)/10);      // flood
+      else if(r<.09)p=Math.round(p*rnd(12,14)/10); // local dry spell
+      if(droughtAt(bi))p=Math.round(p*1.5);
+      if(S.owner[bi]==='me')p=Math.round(p*1.12);
+      S.prices[bi][g.id]=p;
+    });
+  });
+  plugTips();
+}
+function offMenu(bi,g){return !!(S.off&&S.off.day===S.day&&S.off.bi===bi&&S.off.g===g)}
+function plugTips(){if(!S.trust||!S.known)return;
+  (S.tips||[]).filter(t=>t.day===S.day&&!S.burned?.[t.bi]).forEach(t=>{const o=S.offer[t.bi][t.g];o.q=o.real=t.q;o.fake=false;o.tip=t.disc;o.stock=Math.max(G(t.g).step*3,Math.round(newStock(t.bi,G(t.g))*1.5));o.v=pick(VARS[t.g][2]);if(t.off)S.off={day:S.day,bi:t.bi,g:t.g}});
+  S.tips=(S.tips||[]).filter(t=>t.day>S.day);
+  S.known.forEach(bi=>{if(S.trust[bi]<60||S.burned?.[bi]||S.recr?.[bi]||S.tips.some(t=>t.bi===bi)||Math.random()>=.18)return;
+    const offm=S.trust[bi]>=70&&Math.random()<.25,odd=GOODS.filter(x=>!PINFO[bi].carries.includes(x.id));
+    if(offm&&odd.length){const g1=pick(odd),nm=plugName(bi),how=pick([`My people just hit a lick and came up on ${g1.name}.`,`I hit a lick last night and came up on ${g1.name}.`,`Somebody paid off a debt with ${g1.name}.`,`We ran a stash house and ${g1.name} was everywhere.`,`A shorty left ${g1.name} with me and ain't coming back.`]);
+      S.tips.push({bi,g:g1.id,day:S.day+1,disc:pick([.8,.75,.7]),q:rnd(70,95),off:1});
+      say(`📱 ${nm}: "${how} I don't normally move it, but tomorrow I got some on ${BLOCKS[bi]}. First look is yours."`);return}
+    const g=pick(PINFO[bi].carries),G1=G(g),now=S.offer[bi]?.[g],disc=pick([.85,.8,.75]),q=rnd(78,95);
+    S.tips.push({bi,g,day:S.day+1,disc,q});
+    const nm=plugName(bi),trash=now&&tier(now.real)===0;
+    say(`📱 ${nm}: "${trash?`I know that last ${G1.name} was some bullshit. `:''}New load of ${G1.name} landing tomorrow on ${BLOCKS[bi]}. Real fire. I got you at ${Math.round((1-disc)*100)}% off."`)});
+}
+function say(t){S.log.unshift({d:S.day,t});S.log=S.log.slice(0,40)}
+function used(){return Math.round((GOODS.reduce((a,g)=>a+S.inv[g.id]*g.sp,0)+vUsed())*10)/10}
+function gangBack(){let b=0;(S.crews||[]).forEach(c=>{if(!c.alive)return;if(S.gang===c.id)b+=Math.floor(c.str*.25);else if(c.ally)b+=Math.floor(c.str*.1)});return b+(S.myGang?5:0)}
+function myStr(){return Math.round((6+S.sk.muscle*2+S.soldiers*6+armedBonus()+Math.floor(S.rep/10)+friendBack()+gunBonus()+gangBack()+crewBonus()+(buf('snow')?8:0)-(buf('phones')?3:0))*(stressed()?.8:1))}
+const slotKey=n=>n===1?'thuglife':'thuglife'+n;
+function curSlot(){try{return +localStorage.getItem('tl-cur')||1}catch(e){return 1}}
+function save(){if(S&&S.ph)return;if(S&&S.over&&(S.iron||S.diff==='iron'))return;try{localStorage.setItem(slotKey(S.slot||1),JSON.stringify(S));localStorage.setItem('tl-cur',S.slot||1)}catch(e){}}
+function readSlot(n){try{const s=JSON.parse(localStorage.getItem(slotKey(n)));if(s&&s.day&&s.char)return s}catch(e){}return null}
+function load(n){const raw=readSlot(n||curSlot());if(!raw)return null;const s=migrate(raw);if(s&&!s.slot)s.slot=n||curSlot();return s}
+
+/* ---------- render ---------- */
+function groundSend(){if(S&&S.par&&S.home==='family'&&S.grounded>S.day&&S.sneakOK!==S.day&&S.at!==homeBlock()){S.at=homeBlock();say(`${S.par.name} came and got you. You're grounded, so you're back at the house on ${BLOCKS[S.at]}.`)}}
+function render(){try{wTabBtns()}catch(e){}flowTick();if(S&&S.pr)tab='prison';else if(S&&tab==='prison')tab='block';if(S&&S.home&&S.home!=='family'&&S.grounded)S.grounded=0;
+  groundSend();
+  if(S&&S.char==='life')setLifeChar();
+  const free=freeMode();$('dlab').hidden=!!S.cal;$('day').textContent=S.cal?'':free?S.day:Math.min(S.day,maxDay());$('dmax').textContent=S.cal?`${calLabel()} · Age ${S.age}${inHS()&&GRADEN[S.grade]?' · '+GRADEN[S.grade]:''}`:S.mode==='life'?` · Age ${S.age}`:free?' · Kingpin mode':` / ${maxDay()}`;$('dmax').textContent+=checkDay()?' · Checks hit':` · Checks in ${daysToCheck()}d`;if(S.strikes)$('dmax').textContent+=` · Strikes ${S.strikes}/3`;$('retire').hidden=!!S.over;
+  $('cash').textContent=money(S.cash);try{const dd=Math.floor(dirtyCash()),cc=Math.max(0,Math.floor(S.cash-dirtyCash()));$('cashsplit').innerHTML=S.cash>=1000?`<div style="color:#ff8a5c">${money(dd)} dirty</div><div style="color:#7be0a0">${money(cc)} clean</div>`:''}catch(e){}
+  $('stress').textContent=S.stress+(S.stress>=70?' · stressed':'');$('stressb').style.width=S.stress+'%';
+  const C=CHARS.find(c=>c.id===S.char);$('who').textContent=C.name;
+  $('me').innerHTML=`${PORTRAITS[C.id]?`<img src="${PORTRAITS[C.id]}" alt="${C.name}" style="width:56px;height:56px;border-radius:6px;object-fit:cover;flex:none">`:`<div style="width:56px;height:56px;border-radius:6px;background:#2a2430;display:flex;align-items:center;justify-content:center;font-family:var(--display);font-size:26px;color:var(--accent);flex:none">${C.name[0]}</div>`}<div class="info"><div class="t" style="font-family:var(--display);font-size:20px;font-weight:400">${C.name}</div><div class="s">${roleOf(C)}</div></div>`;$('rk').textContent=identity();{const ballOn=!!(S.age&&S.age<18&&is('tank')&&!(S.fate||{}).knee),inS=S.school==='in'||S.college==='in'||ballOn,todo=(S.school==='in'||S.college==='in')&&S.classDay!==S.day&&(S.cal?schoolWeek():true);$('stab').hidden=!inS;$('stab').innerHTML='🏫 School'+(todo?' <span style="color:var(--blood)">●</span>':'');if(!inS&&tab==='sch')tab='block'}$('rtab').hidden=!S.rapOn;$('htab').hidden=!S.robOn;$('sptab').hidden=!(S.sp&&S.sp.kind);if((tab==='rap'&&!S.rapOn)||(tab==='rob'&&!S.robOn))tab='block';
+  $('stash').textContent=Math.round(used())+'/'+S.cap;safeFix();{const sp=$('stash').parentElement;if(!sp._inv){sp._inv=1;sp.style.cursor='pointer';sp.onclick=invModal;sp.querySelector('.k').textContent='Stash ›'}}
+  $('hp').textContent=S.hp<=35?S.hp+' · hospital':S.hp;$('hp').style.color=S.hp<=35?'var(--blood)':'';$('hpb').style.width=S.hp+'%';$('hpb').style.background=S.hp<=35?'var(--blood)':'var(--money)';
+  $('heat').textContent=S.heat;$('heatb').style.width=S.heat+'%';
+  $('rep').textContent=S.rep;{const M=enMax(),e=S.en==null?M:S.en;$('en').textContent=e<=0?'· wiped, advance the day':e<M*.25?'· low':`${Math.round(e)}/${M}`;$('enb').style.width=Math.max(0,Math.min(100,e/M*100))+'%'}
+  $('here').textContent=BLOCKS[S.at]+(droughtAt(S.at)?' · 🏜️ Drought szn':'');{const w=document.querySelector('.where'),art=BLOCKART[S.at];w.style.backgroundImage=art?`linear-gradient(90deg,rgba(20,17,24,.92) 30%,rgba(20,17,24,.45)),url(${art})`:'';w.style.backgroundSize=art?'cover':'';w.style.backgroundPosition=art?'center 60%':''}
+  const o=S.owner[S.at];
+  $('owner').innerHTML=o==='me'?'<span class="chip mine">Your turf</span>':o==='none'?'<span class="chip">Nobody\'s turf</span>':
+    `<span class="chip" style="color:${cdef(o).color};border-color:${cdef(o).color}">${cdef(o).name} turf</span>`;
+  {const at=Math.round((S.att||[])[S.at]||0),jl=jsLeftAt(S.at),cr=o!=='me'&&o!=='none'?crew(o):null;
+   $('owner').innerHTML+=`<div class="ai" style="font-size:11px;line-height:1.35;margin-top:4px;color:var(--fg);opacity:.85;text-align:right;white-space:nowrap">Attention <b style="color:${at>=60?'var(--blood)':at>=30?'var(--accent)':'var(--fg)'}">${at>=60?'High':at>=30?'Some':'Low'}</b><br>Js got ${money(jl)} · ${JSTAG(S.at)}${cr?`<br>${cdef(o).name}: ${cr.ally||S.gang===o?'with you':cr.beef>=50?'want smoke':cr.respect>=60?'green light':'watching you'}`:''}</div>`}
+  document.querySelectorAll('.tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.t===tab));{const n=[...document.querySelectorAll('.tabs button')].filter(b=>!b.hidden).length;document.querySelector('.tabs').style.setProperty('--tc',n<=6?n:Math.ceil(n/2))}
+  document.querySelector('.tabs').style.display=S.pr?'none':'';
+  try{const nreq=(S.texts||[]).length+(S.inbox||[]).filter(m=>m&&m.d===S.day).length;$('phtab').textContent=nreq?`📱 Phone ${nreq}`:'📱 Phone';}catch(e){console.error('phtab',e)}
+  try{$('cardtab').textContent=(S.hand||[]).length?`🃏 Cards ${S.hand.length}`:'🃏 Cards'}catch(e){console.error('cardtab',e)}
+  const FXN={discount:'Plug Love',hype:'Hype Day',ride:'Ride or Die',lawyer:'Lawyer'};
+  $('fx').innerHTML=Object.keys(S.fx||{}).filter(k=>S.fx[k]).map(k=>`<span class="chip here">Active: ${FXN[k]}</span>`).join('');
+  let _ph;try{_ph={sch:paneSchool,rap:paneRap,rob:paneRob,sp:paneSports,phone:panePhone,block:()=>sf(haHTML)+paneBlock()+paneGuns()+(()=>{try{return x8On()?goalHTML():''}catch(e){return ''}})(),move:paneMove,beef:paneBeef,crew:paneCrew,cards:paneCards,exp:paneExp,prison:panePrison,spots:paneSpots,biz:paneBiz,bag:paneBag,money:paneMoney}[tab]()}catch(e){console.error('tab',tab,e);_ph=`<div class="row"><div class="info"><div class="t" style="color:var(--blood)">This tab hit an error</div><div class="s">${esc(e.message||'')} (tell Euro: ${esc(tab)})</div></div></div>`}
+  $('pane').innerHTML=waveTop()+_ph;
+  $('log').innerHTML=S.log.map(l=>`<p><span class="d">D${l.d}</span>${l.t}</p>`).join('');
+  if(S.pr){$('here').textContent='Locked up · '+S.pr.place}
+  missionUI();try{waveDecor()}catch(e){}save();sndWatch();
+}
+function paneBlock(){
+  const o=S.owner[S.at];
+  const kn=S.known.includes(S.at);
+  const P=PINFO[S.at],L=LVL[P.lvl];const burnt=!!S.burned[S.at];const recd=!!(S.recr&&S.recr[S.at]),locked=(S.rep<L.rep&&!rankAt(2))||burnt||recd;const RW=recd?(S.workers||[]).find(w=>w.from===S.at):null,RWi=RW?S.workers.indexOf(RW):-1,RWs=(RW&&RW.stash)||{};
+  let h=`<div class="row" style="align-items:flex-start;border-color:${L.col}">${avatar(S.at)}<div class="info"><div class="t" style="font-family:var(--display);font-size:20px;font-weight:400">${plugName(S.at)}</div>
+    <div class="btns" style="margin:2px 0 4px">${recd?'<span class="chip mine">Your worker</span>':''}<span class="chip" style="color:${L.col};border-color:${L.col}">${P.lvl} level${recd?'':' plug'}</span>${(S.fell||{})[S.at]!==undefined?'<span class="chip mine">Works under you</span>':''}${recd?'':kn?'<span class="chip mine">Knows you</span>':'<span class="chip">Stranger</span>'}${is('lucky')&&S.at===S.ex?`<span class="chip">${S.age&&S.age<18?'Your cousin\'s homeboy':'Your ex'}</span>`:''}</div>
+    <div class="s" style="font-style:italic">${S.pbio[S.at]||P.bio}</div>
+    <div class="s">Carries ${P.carries.map(id=>G(id).name).join(', ')} · ${P.lvl==='Big'?'moves keys, 15% cheaper':P.lvl==='Mid'?'moves pounds, normal prices':'small stock, 10% higher'}</div>
+    ${recd?`<div class="s" style="color:var(--accent)"><b>Your worker.</b> ${plugFem(S.at)?'She':'He'} runs your traps and moves whatever you front ${plugFem(S.at)?'her':'him'}, not just ${plugFem(S.at)?'her':'his'} old menu. ${plugFem(S.at)?'She':'He'} doesn't sell to you anymore, but still buys from you and hits you up in the phone when ${plugFem(S.at)?'she':'he'} needs work.</div>${RW?`<div class="s">Holding for you: ${wStashTxt(RW)}.</div><div class="btns" style="margin-top:4px"><button class="btn" data-a="wstash" data-i="${RWi}">${plugFem(S.at)?'Her':'His'} stash</button></div>`:''}`:locked&&!burnt?`<div class="s" style="color:var(--blood)">Won't serve you until you got ${L.rep} rep.</div>`:''}
+    ${(S.enemies||{})[S.at]?`<div class="s" style="color:var(--blood)"><b>Enemy.</b> ${plugName(S.at)} wants you hurt. ${plugFem(S.at)?'Her':'His'} people will come for you until somebody new takes over.</div>`:''}
+    ${(S.enemies||{})[S.at]&&burnt?revengeHTML(S.at):''}
+    ${burnt?`<div class="s" style="color:var(--blood)">${plugName(S.at)} is gone. ${({rob:`You robbed ${plugFem(S.at)?'her':'him'} and ${plugFem(S.at)?'she':'he'} left ${BLOCKS[S.at]}.`,raid:`${plugName(S.at)} got raided by the cops and left ${BLOCKS[S.at]}.`,snitch:`${plugName(S.at)} got picked up and left ${BLOCKS[S.at]}.`,fate:`${plugName(S.at)} cut you off and left ${BLOCKS[S.at]}.`})[(S.bwhy||{})[S.at]]||`${plugName(S.at)} left ${BLOCKS[S.at]}.`} Nobody here will deal with you until a new plug takes over around ${dayTxt(S.burned[S.at])}.</div>`:plugActions(S.at)}
+    <div class="s">${burnt?'':kn?`Trust ${S.trust[S.at]}/100 · tap Buy or Sell to talk price`:`${plugFem(S.at)?'She':'He'} don't know you. Prices are 15% worse and you can't talk price. Trade with him ${3-(S.deals[S.at]||0)} more time${3-(S.deals[S.at]||0)===1?'':'s'} to get known.`}</div></div></div>`;
+  if(o!=='me'&&o!=='none')h+=`<div class="sec">${cdef(o).name} turf: buying here and selling to the plug earns respect. Serving the Js makes them mad, unless it's a drug they don't move here.</div>`;
+  h+=GOODS.map(g=>{
+    const raw=S.prices[S.at][g.id], pv=S.prev[S.at]?.[g.id];
+    const cls=pv?(raw>pv?'up':raw<pv?'down':''):'';
+    const p=plugPrice('buy',g), sp=plugPrice('sell',g);
+    const have=S.inv[g.id], of=S.offer[S.at][g.id];
+    const val=street(g)*gmult(of.q), tag=p<val*.85?'<span class="chip mine">Deal</span>':p>val*1.15?'<span class="chip war">Overpriced</span>':'';
+    const ttag=of.tip?` <span class="chip here">New load · ${Math.round((1-of.tip)*100)}% off</span>`:'';
+    const dm=demand(S.at,g.id),dtag=ttag+(dm>=1.4?' <span class="chip here">Hot right now</span>':dm>1?' <span class="chip mine">In demand</span>':dm<1?' <span class="chip">Low demand</span>':'');
+    const look=is('shade')&&of.fake?` <span class="chip war">Looks like ${FAKE[g.id]}</span>`:'';
+    const carry=P.carries.includes(g.id)||offMenu(S.at,g.id);
+    const held=RWs[g.id]||0;
+    if(!carry&&!have&&!held)return '';
+    const no=!carry;
+    return `<div class="row">${drugPic(g.id,34)}<div class="info" style="min-width:0"><div class="t">${g.name}${!no&&of.v?` <span style="color:var(--dim);font-weight:400">· ${of.v}</span>`:''} ${no?(held?`<span class="chip mine">Holding ${amt(held,g)} for you</span>`:recd?`<span class="chip">Not on ${plugFem(S.at)?'her':'his'} old menu</span>`:`<span class="chip">${plugFem(S.at)?'She':'He'} don't carry it</span>`):`<span title="what ${plugFem(S.at)?'she':'he'} says">${plugFem(S.at)?'Says':'Says'}:</span> ${gchip(of.q,g)} ${tag}${look}`}${dtag}</div>
+      <div class="s">${!no?(stockOf(S.at,g)>=g.step?`${plugFem(S.at)?'She':'He'} got ${amt(stockOf(S.at,g),g)} · `:'<b style="color:var(--blood)">Sold out today</b> · '):''}Street ~${money(street(g))} · You got ${have?amt(have,g):'0'}${have?` (${grade(S.q[g.id],g)})`:''}${have?(S.paid[g.id]?` · paid ~${money(S.paid[g.id])}`:' · got it free'):''}${have?` · ${!P.carries.includes(g.id)&&P.lvl==='Low'?'plug won\'t take it':`plug pays ${money(sp)}${!P.carries.includes(g.id)?' (30% less, '+(plugFem(S.at)?'she':'he')+' don\'t carry it)':''}`}, Js pay ~${money(Math.round(plugPrice('sell',g,true)*1.4))}`:''}</div></div>
+      <div class="price ${cls}">${no?'<span style="color:var(--dim)">—</span>':money(p)}</div>
+      <div class="btns"><button class="btn green" data-a="buy" data-g="${g.id}" ${carry&&!locked&&stockOf(S.at,g)>=g.step?'':'disabled'}>Buy</button>
+      <button class="btn" data-a="sell" data-g="${g.id}" ${have&&!burnt?'':'disabled'}>Sell</button></div></div>`;
+  }).join('');
+  return h;
+}
+/*W1-START time skip, energy, labels, places*/
+const W=()=>S.w=S.w||{};
+function wCard(art,title,text,opts,tag){ // generic choice card; opts=[{l,f,c,dis}]
+  modal(`${art&&ARTX(art)?a2(art,340):''}${tag?`<div class="sec" style="margin:0;color:var(--accent)">${tag}</div>`:''}<h2>${title}</h2><p>${text}</p><div class="btns" style="flex-direction:column;align-items:stretch">${opts.map((o,i)=>`<button class="btn ${o.c||(i?'':'go')}" id="wc${i}" ${o.dis?'disabled':''}>${o.l}</button>`).join('')}</div>`);
+  opts.forEach((o,i)=>{const e=$('wc'+i);if(e)e.onclick=()=>{$('modal').hidden=true;try{o.f&&o.f()}catch(er){console.error('wcard',er)}render()}})}
+function wNote(art,title,text){wCard(art,title,text,[{l:'Okay',f:()=>{}}])}
+function skipBlock(kind){
+  try{
+    if(S.over||S.pr||S.inJail)return 'Not now.';
+    if(S.ls&&S.ls.owe&&S.ls.due-S.day<=1)return 'Mr. Vince wants his money by tomorrow. Handle that first.';
+    if((S.debt||[]).some(d=>d.due-S.day<=1))return 'You have a debt due tomorrow. Handle that first.';
+    if(kind!=='lay7'&&S.heat>=75)return 'You are too hot to skip time. Lay low first.';
+    if(S.soldiers){const per=S.myGang?100:150;if(S.cash<per*S.soldiers*3)return 'Your crew needs paying and your cash is low. Fix that before you skip time.'}
+  }catch(e){}
+  return ''}
+function skipTime(kind){
+  if(!S||S.over||S.pr||S.inJail||!$('modal').hidden)return;
+  if(kind==='lay7'&&!atHome()){say('You gotta be at your place to lay low.');return render()}
+  if(kind==='bday'&&!S.age){say('There are no birthdays in this mode.');return render()}
+  const why=skipBlock(kind);if(why){say(why);return render()}
+  const cal=!!S.cal,lim=kind==='lay7'?(cal?2:7):kind==='bday'?(cal?140:40):(cal?16:14);
+  const a0=S.age,g0=S.grade,gr0=S.grades||0,c0=S.cash,h0=S.heat,r0=S.rep,s0=S.soldiers||0,d0=S.day,log0=S.log[0],ar0=(((S.rap||{}).lab||{}).art||[]).length,fr0=(S.friends||[]).length,sch0=S.school,ha0=!!S.ha;
+  let n=0,stop='';
+  try{
+    for(let i=0;i<lim;i++){
+      const nb=i?skipBlock(kind):'';if(nb){stop=nb;break}
+      if(S.school==='in'&&S.classDay!==S.day&&!(S.suspended>=S.day)&&(cal?schoolWeek():(S.age&&S.age<18))){S.classDay=S.day;if(Math.random()<.07+(S.stress>=70?.1:0)+((S.grades||0)<60?.05:0))S.grades=Math.max(0,(S.grades||0)-rnd(1,3))}
+      if(kind==='lay7'){S.restDay=1;S.heat=Math.max(0,S.heat-(i?8:15));S.hp=Math.min(100,S.hp+(i?8:15));addStress(i?-12:-25);S.quiet=S.day+1}
+      const live=kind==='next'||(Math.random()<(kind==='lay7'?.03:.05+S.heat/800));
+      $('modal').hidden=true;window.FF=!live;nextDay();window.FF=false;n++;
+      if(S.over||S.pr||S.inJail){stop='';break}
+      if(!$('modal').hidden){stop='event';break}
+      if(S.ha&&!ha0){break}
+      if(kind==='bday'&&S.age>a0)break;
+      if(sch0==='in'&&S.school==='grad')break;
+      if(a0<18&&S.age>=18)break;
+    }
+  }catch(e){window.FF=false;console.error('skip',e)}
+  window.FF=false;
+  const lines=[];
+  if(S.age>a0)lines.push(`You turned <b>${S.age}</b>.`);
+  if(S.grade>g0&&S.cal)lines.push(`Moved up to ${GRADEN[S.grade]||'the next grade'}.`);
+  if(S.school==='grad'&&sch0==='in')lines.push('<b>You graduated.</b>');
+  if(sch0==='in'&&S.school==='in'&&Math.round(S.grades||0)!==Math.round(gr0))lines.push(`Grades ${Math.round(gr0)} to ${Math.round(S.grades||0)}.`);
+  const dc=Math.round(S.cash-c0);lines.push(`Cash ${dc>=0?'+':'-'}${money(Math.abs(dc)).replace('-','')}.`);
+  lines.push(`Heat ${Math.round(h0)} to ${Math.round(S.heat)}.`);
+  if(S.rep!==r0)lines.push(`Rep ${S.rep>r0?'+':''}${S.rep-r0}.`);
+  if((S.soldiers||0)<s0)lines.push(`${s0-(S.soldiers||0)} soldier${s0-(S.soldiers||0)>1?'s':''} walked while you were gone.`);
+  const ar1=(((S.rap||{}).lab||{}).art||[]).length;if(ar1<ar0)lines.push(`${ar0-ar1} of your artists left.`);
+  const fr1=(S.friends||[]).length;if(fr1<fr0)lines.push(`${fr0-fr1} friend${fr0-fr1>1?'s':''} drifted off.`);
+  const hl=[];for(const l of S.log){if(l===log0)break;if(hl.length<5&&!/Happy birthday|brought in|Got paid|Let the day/.test(l.t))hl.push(l.t)}
+  if(stop==='event')lines.push('<b>Something came up, so time stopped.</b>');else if(stop)lines.push(stop);
+  const lab=kind==='lay7'?'Laid low':kind==='bday'?(S.age>a0?'Happy birthday':'Time passed'):'Time passed';
+  say(`${lab}: ${n} ${cal?(n===1?'step':'steps'):(n===1?'day':'days')} went by.`);
+  if(!$('modal').hidden){render();return}
+  render();checkEnd();
+  if(S.over)return;
+  modal(`${a2(kind==='bday'&&S.age>a0?'bday':kind==='lay7'?'laylow':'skip',340)}<h2>${lab}</h2><p class="s" style="color:var(--dim)">${cal?calLabel():'Day '+S.day}</p><p>${lines.join(' ')}</p>${hl.length?`<div class="s" style="text-align:left;margin:6px 0">${hl.map(t=>`<p style="margin:3px 0">${t}</p>`).join('')}</div>`:''}<div class="btns"><button class="btn go" id="ok">Okay</button></div>`);
+  $('ok').onclick=close}
+function napDo(){if(S.napDay===S.day)return;S.napDay=S.day;S.en=Math.min(enMax(),(S.en==null?enMax():S.en)+15);addStress(-5);say('Took a nap. Energy back a bit.');render()}
+function skipRows(){if(S.pr)return '';const ok=atHome(),row=(t,s,a,l,d)=>`<div class="row" style="padding:8px 12px;flex-wrap:wrap"><div class="info" style="flex:1 1 180px"><div class="t">${t}</div><div class="s">${s}</div></div><button class="btn ${d?'':'go'}" data-a="${a}" ${d?'disabled':''}>${l}</button></div>`;
+  return `<div class="sec">Time</div>`+
+   row('😴 Take a nap','A little energy back. Once a day.','nap','Nap',S.napDay===S.day)+
+   row('🌙 Lay low for a week',S.cal?'Stay in for a week and a weekend. Heat falls, health and stress come back. Bills and the crew still cost money, and something can still come up.':'Stay in for 7 days. Heat falls, health and stress come back. Bills and the crew still cost money, and something can still come up.','lay7','A week',!ok)+
+   (S.age?row('🎂 Skip to your birthday','Let time pass until you are a year older. School keeps going, bills still hit, and it stops if something big comes up.','skipb','Skip',false):'')+
+   row('⏭️ Skip to the next event','Let days pass until something happens.','skipn','Skip',false)}
+/* label artists: loyalty, requests, events */
+const LREQ={
+ feature:{t:'wants a feature',txt:n=>`${n} wants to record a feature with a bigger name. It takes money to get that artist in the booth.`,c:2500,art:'artfeat'},
+ magazine:{t:'wants a magazine spot',txt:n=>`${n} wants a magazine cover and says you need to pay to get them in.`,c:3500,art:'artmag'},
+ timeoff:{t:'needs time off',txt:n=>`${n} says they are burned out and need a week off the studio.`,c:0,art:'artreq'},
+ advance:{t:'wants a bigger advance',txt:n=>`${n} says the deal is not enough and wants more money up front.`,c:5000,art:'artreq'},
+ studio:{t:'wants a studio upgrade',txt:n=>`${n} wants better gear and a better room to record in.`,c:4000,art:'artreq'},
+ walk:{t:'says pay me or I walk',txt:n=>`${n} says other labels are calling. Pay more or they walk.`,c:2500,art:'artleave'}};
+function labReqHTML(){const L=(S.rap||{}).lab,q=L&&L.req;if(!q)return '';const D=LREQ[q.k],a=L.art[q.i];if(!a)return '';
+  return `<div class="row" style="flex-wrap:wrap;border-color:var(--accent)"><div class="info" style="flex:1 1 200px"><div class="t">${esc(a.n)} ${D.t}</div><div class="s">${D.txt(esc(a.n))} Answer in ${Math.max(0,q.exp-S.day)} day${q.exp-S.day===1?'':'s'}.</div></div><div class="btns"><button class="btn go" data-a="labreq" data-o="pay" ${S.cash<D.c?'disabled':''}>${D.c?'Pay '+money(D.c):'Give it'}</button><button class="btn" data-a="labreq" data-o="neg" ${D.c?'':'style="display:none"'}>Negotiate</button><button class="btn red" data-a="labreq" data-o="no">Say no</button></div></div>`}
+function labReqDo(o){const L=(S.rap||{}).lab,q=L&&L.req;if(!q)return;const D=LREQ[q.k],a=L.art[q.i];L.req=null;if(!a)return render();a.loy=a.loy==null?60:a.loy;const n=esc(a.n);
+  const up=(l,f)=>{a.loy=Math.min(100,a.loy+l);if(f)a.fans+=Math.round(a.fans*f)};
+  if(o==='no'){a.loy=Math.max(0,a.loy-(q.k==='walk'?(Math.random()<.55?0:100):10));if(q.k==='walk'&&a.loy<=0){L.art.splice(q.i,1);say(`${n} walked. You called the bluff and lost.`);return wNote('artleave',`${n} walked`,`You called the bluff and ${n} took the other deal.`)}
+    if(q.k==='timeoff'){a.loy-=2}say(`Told ${n} no. They are not happy.`);return render()}
+  if(o==='neg'){const ok=Math.random()<.35+(S.sk.talk||3)*.05,cost=Math.round(D.c/2);if(S.cash<cost)return render();S.cash-=cost;if(ok){up(4,q.k==='feature'||q.k==='magazine'?.1:0);if(q.k==='studio')a.pot=Math.min(100,a.pot+4);say(`Talked ${n} down and it worked. Spent ${money(cost)}.`)}else{a.loy=Math.max(0,a.loy-5);say(`${n} did not like the lowball. Spent ${money(cost)}.`)}return render()}
+  if(S.cash<D.c)return render();S.cash-=D.c;
+  if(q.k==='feature'){up(8,.22);say(`Paid for ${n}'s feature. Fans up.`)}
+  else if(q.k==='magazine'){up(8,.28);say(`${n} got the magazine spot.`)}
+  else if(q.k==='timeoff'){a.off=S.day+7;up(10);say(`${n} gets a week off.`)}
+  else if(q.k==='advance'){up(16);say(`Gave ${n} a bigger advance.`)}
+  else if(q.k==='studio'){a.pot=Math.min(100,a.pot+8);up(8);say(`Upgraded ${n}'s studio. They are getting better.`)}
+  else if(q.k==='walk'){up(18);say(`Paid ${n} to stay.`)}
+  render()}
+function labEvents(){const L=(S.rap||{}).lab;if(!L||!L.art||!L.art.length||S.pr)return;L.art.forEach(a=>{if(a.loy==null)a.loy=60});
+  if(L.req&&S.day>L.req.exp){const a=L.art[L.req.i];if(a){a.loy=Math.max(0,a.loy-8);say(`You never answered ${a.n}. They are upset.`)}L.req=null}
+  L.art=L.art.filter(a=>{if(a.loy<25&&Math.random()<.03){say(`${a.n} left your label. Nobody was looking out for them.`);if(!window.FF&&$('modal').hidden)wNote('artleave',`${esc(a.n)} left`,`${esc(a.n)} felt ignored and signed with somebody else.`);return false}
+    if(a.loy>=60&&a.loy<100&&Math.random()<.04)a.loy++;if(a.loy>35&&Math.random()<.03)a.loy--;return true});
+  if(!L.art.length||window.FF)return;
+  if(!L.req&&Math.random()<.06){const k=pick(Object.keys(LREQ)),i=rnd(0,L.art.length-1);if(k==='timeoff'&&L.art[i].off>S.day)return;L.req={k,i,exp:S.day+4};const a=L.art[i],D=LREQ[k];say(`${a.n} ${D.t}.`);
+    if($('modal').hidden)wCard(D.art,`${esc(a.n)} ${D.t}`,D.txt(esc(a.n))+' You can also check the Studio tab.',[{l:D.c?'Pay '+money(D.c):'Give it',f:()=>labReqDo('pay'),dis:S.cash<D.c},{l:'Negotiate',f:()=>labReqDo('neg'),c:'',dis:!D.c||S.cash<Math.round(D.c/2)},{l:'Say no',f:()=>labReqDo('no'),c:'red'}],'Your label');return}
+  if(Math.random()<.025&&$('modal').hidden){const a=pick(L.art),r=Math.random();
+    if(r<.4){a.fans=Math.round(a.fans*1.6);say(`${a.n}'s song went viral.`);wNote('artviral',`${esc(a.n)} went viral`,`A song of ${esc(a.n)}'s took off online. Fans way up.`)}
+    else if(r<.65){a.fans=Math.round(a.fans*.85);a.loy=Math.max(0,a.loy-5);say(`${a.n} got into a beef.`);wNote('artreq',`${esc(a.n)} got into a beef`,`${esc(a.n)} started a fight online and lost some fans.`)}
+    else if(r<.85){const t=rnd(1500,4000);S.cash+=t;legit(t);a.fans+=Math.round(a.fans*.1);say(`${a.n} went on tour and cleared ${money(t)}.`);wNote('artfeat',`${esc(a.n)} went on tour`,`The tour cleared ${money(t)} for the label.`)}
+    else{a.fans=Math.round(a.fans*.8);a.loy=Math.max(0,a.loy-8);say(`${a.n} got caught in a scandal.`);wNote('artreq',`${esc(a.n)} scandal`,`Something old came out about ${esc(a.n)}. Fans dropped.`)}}}
+/*W1-END*/
+/*W1B-START places*/
+const WD=[labEvents];
+function waveDay(){WD.forEach(f=>{try{f()}catch(e){console.error('wd',f.name,e)}})}
+
+function wavePlaceBody(id,row,b){
+  if(id==='gym'){const d=S.gymDay===S.day;return row('🏋️ Work out','Lift and get stronger. Costs energy, helps stress and health. Once a day.',b('gwork',d?'Done today':'$30',d||S.cash<30))+row('🥊 Heavy bag and spar','Fight practice. Builds strength a little at a time.',b('gspar',S.sparDay===S.day?'Done today':'$20',S.sparDay===S.day||S.cash<20))+row('🧊 Recovery','Ice bath and stretching. Gets an injury healing faster.',b('grec','$100',!(S.sp&&S.sp.inj>S.day)||S.cash<100))+row('🥤 Snack bar','Stress −5, a little energy.',b('snack','$10',S.cash<10))}
+  if(id==='rec'){const club=(S.age&&S.age<14)?'':row(spOn()?`${SPORTS[S.sp.kind].ic} Your team`:'🏀 Join a team',spOn()?`${SPORTS[S.sp.kind].st[S.sp.stage]} · Overall ${S.sp.ovr}. Open the Sports tab.`:S.char==='tank'?'Your comeback starts here. Join, train, play and move up.':'Pickup, tryouts and the youth leagues start here: ball, boxing, MMA, track.',b('zsjoin',spOn()?'Open':'Join',false));
+    const y=(W().youth||0)>S.day-7;return row('🏀 Pickup game','Bet on a 5-shot shootout. Once a day.',b('hoops',S.park===S.day?'Played today':'Play',S.park===S.day||S.cash<100))+club+(adult()?row('👦 Run a youth camp','$600. Community +6, heat −3, rep +1. Once a week. Maybe you spot some talent.',b('wyouth',y?'Wait':'$600',y||S.cash<600)):'')}
+  if(id==='stadium'){return row('🏟️ Game day',spOn()?'Your games and tryouts are in the Sports tab.':'Join a team first at the rec center.',spOn()?b('wsptab','Sports tab'):b('zsjoin','Join a team'))+(adult()&&spOn()&&S.sp.stage>=2?row('Sports agency','Run an agency: sign athletes and take a cut. Open the Business tab.',b('wagency','Open')):'')}
+  if(id==='barber'){const cd=(W().cutDay||-9)>S.day-3,sw=W().sweepDay===S.day;return row('💈 Fresh cut','$40. Rep +1, stress −4. Every few days.',b('wcut',cd?'Wait':'$40',cd||S.cash<40))+row('👂 Hear the rumors','Everybody talks in the chair. Free, once a day.',b('wrumor',W().rumDay===S.day?'Heard it':'Listen',W().rumDay===S.day))+row('🧹 Sweep up for tips','Small clean money. Costs energy.',b('wsweep',sw?'Done today':'Work',sw))+(adult()?row('📋 The bookie','Bet on games, or fix one. Once a day.',b('zsbook',spSt().bet===S.day?'Done today':'Bet',spSt().bet===S.day||(spSt().ban||0)>S.day)):'')}
+  return ''}
+function wavePlaceAct(k,id,back){
+  if(k==='gwork'){if(S.gymDay===S.day||S.cash<30)return true;if(spendEn(10)===false)return true;S.cash-=30;S.gymDay=S.day;addStress(-8);S.hp=Math.min(100,S.hp+4);S.gymX=(S.gymX||0)+1;if(S.gymX>=6&&S.sk.muscle<10){S.gymX=0;S.sk.muscle++;say('Worked out all month. Muscle +1.')}else say('Got a workout in.');back();return true}
+  if(k==='gspar'){if(S.sparDay===S.day||S.cash<20)return true;if(spendEn(8)===false)return true;S.cash-=20;S.sparDay=S.day;addStress(-4);addXP(2);S.gymX=(S.gymX||0)+2;if(S.gymX>=6&&S.sk.muscle<10){S.gymX=0;S.sk.muscle++;say('Hit the bag all month. Muscle +1.')}else say('Worked the heavy bag.');back();return true}
+  if(k==='grec'){if(!(S.sp&&S.sp.inj>S.day)||S.cash<100)return true;S.cash-=100;S.sp.inj=Math.max(S.day,S.sp.inj-3);say('Ice bath and stretching. The injury is healing faster.');back();return true}
+  if(k==='wyouth'){if((W().youth||0)>S.day-7||S.cash<600)return true;S.cash-=600;W().youth=S.day;S.comm=Math.min(100,(S.comm??30)+6);S.heat=Math.max(0,S.heat-3);S.rep+=1;say('Ran a youth camp. The neighborhood noticed.');artPop('youth');if(Math.random()<.25&&spOn()){const P=spSt();P.ovr=Math.min(100,P.ovr+1);say('One of the kids pushed you. Overall +1.')}back();return true}
+  if(k==='wsptab'){tab='sp';$('modal').hidden=true;render();return true}
+  if(k==='wagency'){tab='biz';$('modal').hidden=true;render();return true}
+  if(k==='wcut'){if((W().cutDay||-9)>S.day-3||S.cash<40)return true;S.cash-=40;W().cutDay=S.day;S.rep+=1;addStress(-4);say('Fresh cut. Rep +1.');back();return true}
+  if(k==='wrumor'){if(W().rumDay===S.day)return true;W().rumDay=S.day;const bi=rnd(0,BLOCKS.length-1),r=Math.random();say(r<.35?`Heard ${plugName(bi)} on ${BLOCKS[bi]} is getting nervous about the cops.`:r<.7?`Word is prices are about to move on ${BLOCKS[bi]}.`:`Somebody on ${BLOCKS[bi]} has been asking about you.`);back();return true}
+  if(k==='wsweep'){if(W().sweepDay===S.day)return true;if(spendEn(6)===false)return true;W().sweepDay=S.day;const t=rnd(40,110);S.cash+=t;legit(t);say(`Swept up and got ${money(t)} in tips.`);back();return true}
+  return false}
+const WACT=[];
+function waveAct(a,el){
+  for(const f of WACT){if(f(a,el))return true}
+  if(a==='lay7'){skipTime('lay7');return true}
+  if(a==='skipb'){skipTime('bday');return true}
+  if(a==='skipn'){skipTime('next');return true}
+  if(a==='nap'){napDo();return true}
+  if(a==='labreq'){labReqDo(el.dataset.o);return true}
+  return false}
+/*W1B-END*/
+/*W2-START screen, tabs*/
+(function(){try{const st=document.createElement('style');st.id='wavecss';st.textContent=`
+@media (min-width:1280px){.app{max-width:1500px}.pane{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 12px;align-items:start}.pane>.sec,.pane>.wspan{grid-column:1/-1}}
+@keyframes wpulse{50%{opacity:.5}}
+@media (prefers-reduced-motion:no-preference){.stat.wd{border-color:var(--blood);animation:wpulse 1.1s infinite}}
+@media (prefers-reduced-motion:reduce){.stat.wd{border-color:var(--blood)}}
+.wdot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--blood);margin-left:4px;vertical-align:middle}
+#wtint{position:fixed;inset:0;pointer-events:none;z-index:5;transition:background 1s}
+#wsnow{position:fixed;inset:0;pointer-events:none;z-index:6;opacity:.5;background-image:radial-gradient(2px 2px at 20px 30px,#fff,transparent),radial-gradient(2px 2px at 60px 80px,#fff,transparent),radial-gradient(1.5px 1.5px at 110px 20px,#fff,transparent),radial-gradient(2px 2px at 150px 120px,#fff,transparent);background-size:180px 160px}
+@media (prefers-reduced-motion:no-preference){#wsnow{animation:wsnow 9s linear infinite}@keyframes wsnow{to{background-position:30px 160px}}}
+#wrain{position:fixed;inset:0;pointer-events:none;z-index:6;opacity:.25;background-image:linear-gradient(105deg,transparent 48%,#9cc8ff 50%,transparent 52%);background-size:14px 26px}
+@media (prefers-reduced-motion:no-preference){#wrain{animation:wrain .5s linear infinite}@keyframes wrain{to{background-position:-14px 26px}}}
+.wtop{display:flex;flex-direction:column;gap:6px}
+.wgoal{background:var(--panel);border:1px solid var(--accent);border-radius:6px;padding:7px 10px}
+.wgoal .t{font-size:13px}.wgoal b{color:var(--accent)}
+.tabs button{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-left:2px!important;padding-right:2px!important}body::before{content:"";position:fixed;left:0;right:0;top:0;height:env(safe-area-inset-top,0px);background:var(--bg);z-index:40;pointer-events:none}.wq{display:flex;gap:6px;flex-wrap:wrap}.wq .btn{flex:1 1 90px}@media (min-width:900px){.tabs{grid-auto-flow:row;grid-template-columns:repeat(auto-fit,minmax(118px,1fr))}.tabs button{white-space:normal;overflow:visible;text-overflow:clip;padding:8px 4px!important;font-size:13px;line-height:1.15}}`;document.head.appendChild(st);
+['wtint','wsnow','wrain'].forEach(id=>{const d=document.createElement('div');d.id=id;d.hidden=true;document.body.appendChild(d)})}catch(e){console.error('wcss',e)}})();
+/* snapshot and morning summary */
+function waveSummary(){const w=W();if(!S||S.day<2||S.pr)return '';
+  if(w.snapD!==S.day){const o=w.snap;if(o&&w.snapD===S.day-1){const L=[];const dc=Math.round(S.cash-o.cash);if(dc)L.push(`Cash ${dc>0?'+':'-'}${money(Math.abs(dc)).replace('-','')}`);const dh=Math.round(S.heat-o.heat);if(dh)L.push(`Heat ${dh>0?'+':''}${dh}`);const dr=S.rep-o.rep;if(dr)L.push(`Rep ${dr>0?'+':''}${dr}`);const dp=Math.round(S.hp-o.hp);if(dp)L.push(`Health ${dp>0?'+':''}${dp}`);
+      const ev=[];for(const l of S.log){if(l.d===S.day-1||l.d===S.day){if(ev.length<4&&!/Let the day/.test(l.t))ev.push(l.t)}}
+      w.sum={d:S.day,L,ev}}
+    w.snapD=S.day;w.snap={cash:S.cash,heat:S.heat,rep:S.rep,hp:S.hp}}
+  const m=w.sum;if(!m||m.d!==S.day||w.sumSeen===S.day||(!m.L.length&&!m.ev.length))return '';
+  return `<div class="row wspan" style="flex-wrap:wrap;border-color:var(--line)">${ARTX('summary')?a2i('summary',64):''}<div class="info" style="flex:1 1 200px"><div class="t">☀️ Yesterday</div><div class="s">${m.L.join(' · ')||'Quiet.'}</div>${m.ev.map(t=>`<div class="s" style="color:var(--fg)">${t}</div>`).join('')}</div><button class="btn" data-a="wsumx">Got it</button></div>`}
+/* goal bar */
+function waveGoal(){const cc=cleanCash();let g;
+  if(!S.known.length)g={t:'Make your first deal with a plug.',c:0,m:1};
+  else if(S.cash<1000)g={t:'Build up $1,000 cash.',c:S.cash,m:1000,$:1};
+  else if(!Object.keys(S.biz||{}).length&&!S.job&&cc<8000)g={t:'Save $8,000 clean for your first business.',c:cc,m:8000,$:1};
+  else if(S.rapOn&&(S.rap.fans||0)<5000)g={t:'Reach 5,000 fans to unlock a label.',c:S.rap.fans||0,m:5000};
+  else if(cc<25000)g={t:'Build your clean money to $25,000.',c:cc,m:25000,$:1};
+  else if(cc<100000)g={t:'Go legit: reach $100,000 clean and keep heat low.',c:cc,m:100000,$:1};
+  else return '';
+  const f=n=>g.$?money(n):Math.round(n).toLocaleString();
+  return `<div class="wgoal wspan"><div class="t">🎯 <b>Next:</b> ${g.t} <span style="color:var(--dim)">${f(Math.min(g.c,g.m))} / ${f(g.m)}</span></div><div class="bar"><i style="width:${Math.min(100,g.c/g.m*100)}%;background:var(--accent)"></i></div></div>`}
+function waveQuick(){const u=W().use||{},c=['adv','lay','nap','skipn','lay7'],lb={adv:'Next day',lay:'Lay low',nap:'Nap',skipn:'Skip ahead',lay7:'Lay low a week'};
+  const top=c.filter(k=>u[k]).sort((a,b)=>u[b]-u[a]).concat(['adv','lay','nap']).filter((k,i,a)=>a.indexOf(k)===i).slice(0,3);
+  return `<div class="wq wspan">${top.map(k=>`<button class="btn" data-a="wq" data-k="${k}">${lb[k]}</button>`).join('')}</div>`}
+function waveTop(){let h='';try{h+=waveGoal()}catch(e){}try{h+=waveSummary()}catch(e){}try{if(!S.pr&&!S.inJail)h+=waveQuick()}catch(e){}return h}
+/* danger, tint, badges */
+function waveDecor(){try{
+  const st=(id,on)=>{const e=$(id);if(e&&e.closest('.stat'))e.closest('.stat').classList.toggle('wd',!!on)};
+  st('heatb',S.heat>=75);st('stressb',S.stress>=80);st('hpb',S.hp<=25);
+  const t=$('wtint');if(t){const ph=S.day%4,col=['rgba(255,170,90,.025)','rgba(0,0,0,0)','rgba(255,110,40,.035)','rgba(20,40,110,.07)'][ph];t.style.background=col;t.hidden=false;const lab=$('dmax');if(lab&&!/ · (Dawn|Day|Dusk|Night)/.test(lab.textContent))lab.textContent+=' · '+['Dawn','Day','Dusk','Night'][ph]}
+  let winter=false;try{if(S.cal){const m=calDate().getUTCMonth();winter=m===11||m<=1}else winter=(S.day%90)>=60}catch(e){}
+  if(W().fw)winter=W().fw===1;const sn=$('wsnow');if(sn)sn.hidden=!winter;const rn=$('wrain');if(rn)rn.hidden=!(W().rain===S.day);
+  const dots={phone:((S.texts||[]).length>0),crew:(S.pts||0)>0,rap:!!(S.rapReq||((S.rap||{}).lab||{}).req),exp:!!(S.ls&&S.ls.owe&&S.ls.due-S.day<=2),beef:false};
+  if(W().alld)document.querySelectorAll('.tabs button').forEach(x=>dots[x.dataset.t]=true);
+  document.querySelectorAll('.tabs button').forEach(b=>{b.querySelectorAll('.wdot').forEach(x=>x.remove());if(dots[b.dataset.t])b.insertAdjacentHTML('beforeend','<i class="wdot"></i>')})
+}catch(e){console.error('wdecor',e)}}
+WD.push(()=>{if(Math.random()<.12)W().rain=S.day+1});
+/* new tabs: Spots, Business, Bag, Money */
+function wTabBtns(){const t=document.querySelector('.tabs');if(!t||t.dataset.w)return;t.dataset.w=1;
+  const mk=(k,l,after)=>{const b=document.createElement('button');b.setAttribute('role','tab');b.dataset.t=k;b.setAttribute('aria-selected','false');b.textContent=l;const ref=t.querySelector(`[data-t="${after}"]`);ref?ref.after(b):t.appendChild(b)};
+  WTABS.forEach(x=>mk(x[0],x[1],x[2]))}
+/* TABS list: [key,label,insert-after-key]. Add a new tab with one line here, then add its key to the pane map in render(). */
+const WTABS=[['spots','🏬 Spots','move'],['biz','💼 Business','spots'],['bag','🎒 Bag','crew'],['money','💰 Money','bag']];
+const sfn=(n,...a)=>{try{return typeof window[n]==='function'?window[n](...a):''}catch(e){console.error('sfn',n,e);return ''}};
+function paneSpots(){const G=[['Fitness and sports',['gym','rec','stadium']],['Shops',['store','mall','pawn','tire','carlot','barber']],['Services',['pharm','hosp','lawyer','school']],['Out and about',['park','studio']]];
+  return `<div class="s wspan" style="padding:0 2px">Tap a place to go in. If it is on another block it takes a day to get there.</div>`+G.map(([t,ids])=>`<div class="sec">${t}</div>`+ids.map(id=>{const P=PLACES.find(p=>p.id===id);if(!P||(id==='studio'&&!S.rapOn))return '';return `<div class="row mapp" data-p="${id}" style="cursor:pointer"><div style="font-size:24px">${P.ic}</div><div class="info"><div class="t">${P.name}</div><div class="s">${BLOCKS[P.bi]}${P.bi===S.at?' · you are here':''}</div></div><span class="chip ${P.bi===S.at?'here':''}">${P.bi===S.at?'Here':'Go'}</span></div>`}).join('')).join('')}
+function paneBiz(){let h=`<div class="s wspan" style="padding:0 2px">Everything that makes you money outside the street: jobs, businesses, your label and going legit.</div>`;
+  h+=sfn('paneCareer');if((S.rap||{}).lab||(S.rapOn&&(S.rap.fans||0)>=5000))h+=sfn('labHTML');
+  if(typeof sportsAgencyHTML==='function')h+=sfn('sportsAgencyHTML');if(typeof socialBizHTML==='function')h+=sfn('socialBizHTML');
+  h+=sfn('legitHTML');return h}
+function paneBag(){const G2=GOODS.filter(g=>S.inv[g.id]>0);let h=`<div class="sec">On you</div>`+(G2.length?G2.map(g=>`<div class="row">${drugPic(g.id,30)}<div class="info"><div class="t">${g.name}</div><div class="s">${amt(S.inv[g.id],g)} (${grade(S.q[g.id],g)})</div></div></div>`).join(''):`<div class="row"><div class="info"><div class="s">Nothing on you right now.</div></div></div>`);
+  h+=`<div class="row"><div class="info"><div class="t">Stash space</div><div class="s">${Math.round(used())} of ${S.cap} used</div></div><button class="btn" data-a="inv">Open inventory</button></div>`;
+  h+=`<div class="sec">Ride and home</div><div class="row"><div class="info"><div class="t">${S.car?CARS[S.car].name:'No car'}</div><div class="s">${S.car?`+${CARS[S.car].trunk} stash space`:'Visit the car lot in Spots.'}</div></div></div><div class="row"><div class="info"><div class="t">Home: ${HOMES[S.home]?HOMES[S.home].name||S.home:S.home}</div><div class="s">${BLOCKS[homeBlock()]}</div></div></div>`;
+  const fits=Object.keys(S.fits||{street:1}).filter(k=>(S.fits||{street:1})[k]&&FITS[k]);h+=`<div class="sec">Clothes and jewelry</div><div class="row"><div class="info"><div class="t">Wearing: ${(FITS[S.fit||'street']||{}).n||'Street'}</div><div class="s">${fits.length} fit${fits.length===1?'':'s'} owned. Change at the mall.</div></div></div>`;
+  const jw=Object.keys(JEWEL).filter(k=>(S.jew||{})[k]);h+=`<div class="row"><div class="info"><div class="t">Jewelry</div><div class="s">${jw.length?jw.map(k=>JEWEL[k].n).join(', '):'None yet.'}</div></div></div>`;
+  h+=sfn('paneGuns');return h}
+function paneMoney(){return sfn('cashSplitHTML')+sfn('loanHTML')+sfn('launHTML')}
+WACT.push(waveAct2);
+function waveAct2(a,el){
+  const w=W();w.use=w.use||{};if(a in {adv:1,lay:1,nap:1,skipn:1,lay7:1})w.use[a]=(w.use[a]||0)+1;
+  if(a==='wsumx'){w.sumSeen=S.day;render();return true}
+  if(a==='wq'){act(el.dataset.k,{dataset:{}});return true}
+  return false}
+/*W2-END*/
+/*W6-START perks, stats, endings, weekly challenge, ironman, score*/
+function w6(){const w=W();return w.w6=w.w6||{end:{},wk:null,pk:[],opt:null,wkDone:0,iron:0,peak:0,tit:0}}
+DIFF.iron={st:3,name:'Ironman',days:30,buy:1.12,heat:1.3,crew:1.3,risk:1.4,sub:'Hard rules and one life. When the run ends, the save is deleted. Score x2.'};
+const w6Iron=()=>!!S&&(S.diff==='iron'||!!S.iron);
+const w6Net=()=>(S.cash||0)+(S.safe||0);
+/* street names by rep, with small perks */
+const W6TIT=[[0,'Nobody','Nothing yet.'],[10,'Known on the block','People nod at you.'],[30,'Respected','A plug you know trusts you a little more each week.'],[60,'Feared','Heat cools a little faster.'],[100,'Legend','People pay their respects: +$50 a day.'],[200,'Untouchable','Nobody talks about you without lowering their voice.']];
+function w6TitIdx(){let r=0;W6TIT.forEach((x,i)=>{if((S.rep||0)>=x[0])r=i});return r}
+function repTitle(){return W6TIT[w6TitIdx()][1]}
+/* extra badges, added to the existing badge list the first time it is needed */
+let w6AchDone=0;
+function w6Ach(){if(w6AchDone)return;w6AchDone=1;try{[
+ ['Made $10k',()=>S.cash>=10000],['Six figures',()=>S.cash>=100000],['Millionaire',()=>S.cash>=1000000],['Level 10',()=>S.lvl>=10],['Level 20',()=>S.lvl>=20],
+ ['Still here',()=>S.day>=100],['A full year',()=>S.day>=365],['Famous',()=>!!(S.rap&&S.rap.fans>=10000)],['Went pro',()=>!!(S.sp&&S.sp.stage>=5)],
+ ['Perk picked',()=>w6().pk.length>=1],['Challenge done',()=>w6().wkDone>=1],['Legend',()=>(S.rep||0)>=100],['Ironman 60',()=>w6Iron()&&S.day>=60],['Hard 100',()=>S.diff==='hard'&&S.day>=100]
+ ].forEach(a=>{if(!ACH.some(x=>x[0]===a[0]))ACH.push(a)})}catch(e){console.error('w6ach',e)}}
+/* stats */
+function w6Stats(){const st=S.st||{},A=(typeof X8==='function'&&X8().ach)||{};return [['Days survived',S.day],['Peak net worth',money(Math.max(w6().peak||0,w6Net()))],['Product moved',Math.round(st.sold||0)],['Total profit',money(Math.round(st.profit||0))],['Fights won',st.fights||0],['Blocks taken',st.blocks||0],['Cop run-ins',st.cops||0],['Times locked up',S.strikes||0],['Rep and level',`${S.rep||0} and ${S.lvl||1}`],['Rap fans',(S.rap&&S.rap.fans)||0],['Badges',Object.keys(A).length]]}
+function w6StatsCard(){wCard('summary','Your stats',w6Stats().map(r=>`<b>${r[0]}:</b> ${r[1]}`).join('<br>'),[{l:'Close',f:()=>{}}],repTitle())}
+/* level perks: one pick every 5 levels */
+const W6PK=[['tough','Tough Skin','+3 health every day.'],['lowkey','Low Profile','Heat drops 1 every day.'],['cool','Cool Head','Stress drops 3 every day.'],['cash','Side Money','+$40 a day, clean.'],['repw','Name Rings','+1 rep every week.'],['luck','Lucky Break','3% a day to find $200 to $800.'],['study','Quick Study','+2 XP every day.']];
+const w6Has=k=>w6().pk.includes(k);
+const w6Pend=()=>Math.max(0,Math.floor((S.lvl||1)/5)-w6().pk.length);
+function w6Opts(){const X=w6();if(!X.opt||X.opt.some(k=>X.pk.includes(k))){const pool=W6PK.map(p=>p[0]).filter(k=>!X.pk.includes(k));for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]]}X.opt=pool.slice(0,3)}return X.opt}
+function w6Pick(k){const X=w6();if(w6Pend()<1||X.pk.includes(k)||!W6PK.some(p=>p[0]===k))return;X.pk.push(k);X.opt=null;const p=W6PK.find(x=>x[0]===k);say(`Perk chosen: ${p[1]}.`)}
+function w6PerkCard(force){const X=w6();if(w6Pend()<1||!$('modal').hidden||S.pr||window.FF)return;if(!force&&(X.later||-9)>S.day-3)return;const o=w6Opts();if(!o.length)return;
+  wCard('skillup','Choose a perk',`You hit level ${Math.floor((S.lvl||1)/5)*5}. Pick one perk and keep it for the whole run.`,o.map((k,i)=>{const p=W6PK.find(x=>x[0]===k);return {l:`${p[1]}: ${p[2]}`,c:i?'':'go',f:()=>w6Pick(k)}}).concat([{l:'Decide later',c:'',f:()=>{X.later=S.day}}]),'Level perk')}
+/* weekly challenge (the daily goal already exists) */
+const W6WK=[['sold','Move 60 product','Sell it this week.',60,1200,()=>(S.st||{}).sold||0],['profit','Make $5,000 profit','Earn it this week.',5000,1500,()=>(S.st||{}).profit||0],['blocks','Take a block','Take one over this week.',1,2000,()=>(S.st||{}).blocks||0],['fights','Win 3 fights','Win them this week.',3,1000,()=>(S.st||{}).fights||0],['cops','Handle 3 cop run-ins','Get through them.',3,800,()=>(S.st||{}).cops||0]];
+function w6WkNew(){const c=pick(W6WK);return {k:c[0],t:c[1],d:c[2],need:c[3],rw:c[4],base:c[5](),until:S.day+7,got:0}}
+function w6WkProg(c){const f=W6WK.find(x=>x[0]===c.k);return f?Math.max(0,f[5]()-c.base):0}
+/* score and local best runs */
+function w6Score(){const X=(typeof X8==='function'&&X8().ach)||{},turf=(S.owner||[]).filter(o=>o==='me').length;
+  const rows=[['Money',Math.round(Math.max(0,w6Net())/100)],['Reputation',(S.rep||0)*5],['Days survived',S.day||0],['Badges',Object.keys(X).length*100],['Turf',turf*150],['Level',(S.lvl||1)*50]];
+  const sub=rows.reduce((a,r)=>a+r[1],0),m=w6Iron()?2:S.diff==='hard'?1.5:S.diff==='easy'?.7:1;return {rows,sub,m,total:Math.round(sub*m)}}
+function lbGet(){try{return JSON.parse(localStorage.getItem('hustle-lb')||'[]')}catch(e){return []}}
+function lbSubmit(){try{const sc=w6Score(),e={n:(S.custom&&S.custom.name)||S.char||'You',score:sc.total,net:Math.round(w6Net()),day:S.day,iron:w6Iron()?1:0,path:S.endPath||'',t:Date.now()};const L=lbGet();L.push(e);L.sort((a,b)=>b.score-a.score);localStorage.setItem('hustle-lb',JSON.stringify(L.slice(0,8)));return L.findIndex(x=>x===e)}catch(e){return -1}}
+/* endings */
+const W6END={king:['Kingpin','The city is yours. People cross the street when you walk. It cost you everything you used to be.','endking'],
+ legit:['Legit empire','The books are clean. The block still knows your name, but now they say it with respect.','endlegit'],
+ jail:['Locked up for life','The door closes and the streets keep going without you.','endjail'],
+ youth:['Out of strikes','Three times locked up. Time away changes everything.','endjail'],
+ walk:['Walked away','You took what you had and left it all behind. Nobody knows where you went.','endwalk'],
+ dead:['You got took out','The streets got you.','']};
+function w6Path(){const turf=(S.owner||[]).filter(o=>o==='me').length;if(S.prison)return S.prison===2?'youth':'jail';if(S.hp<=0)return 'dead';if(S.legit)return 'legit';if(w6Net()>=500000&&turf>=3&&(S.rep||0)>=100)return 'king';return 'walk'}
+function w6KingCheck(force){const X=w6();if(X.kingOff&&!force)return;if(!$('modal').hidden||S.pr||S.over||window.FF)return;const turf=(S.owner||[]).filter(o=>o==='me').length;if(!force&&!(w6Net()>=500000&&turf>=3&&(S.rep||0)>=100))return;X.kingOff=1;
+  wCard('endking','The city is yours','Half a million, three blocks and a name nobody forgets. You can retire as the Kingpin right now, or keep playing.',[{l:'Retire as the Kingpin',c:'red',f:()=>{S.over=true;checkEnd()}},{l:'Keep playing',f:()=>{say('You could have retired as the Kingpin. You kept going.')}}],'Ending')}
+function w6EndUI(){const mc=$('mcard');if(!mc||$('modal').hidden||!$('again')||mc.dataset.w6)return;mc.dataset.w6='1';const k=S.endPath,E=W6END[k];if(!E)return;
+  const h=mc.querySelector('h2'),p=mc.querySelector('p');
+  if(h&&!S.endT)h.textContent=E[0];
+  if(p&&!S.endP&&(k==='king'||k==='legit'||k==='walk'))p.textContent=E[1];
+  const im=E[2]?a2(E[2],340):'';if(im)mc.insertAdjacentHTML('afterbegin',im);
+  const sc=w6Score(),L=lbGet(),r=L.findIndex(x=>x.t===w6().sub);
+  const card=`<div class="sec">Final score</div>${sc.rows.map(x=>`<div class="s" style="display:flex;justify-content:space-between"><span>${x[0]}</span><b>${x[1].toLocaleString()}</b></div>`).join('')}<div class="s" style="display:flex;justify-content:space-between"><span>Difficulty x${sc.m}</span><b style="color:var(--accent)">${sc.total.toLocaleString()}</b></div>${r>=0?`<div class="s" style="text-align:center;margin-top:4px">#${r+1} best run on this device</div>`:''}`;
+  const b=mc.querySelector('.btns');if(b)b.insertAdjacentHTML('beforebegin',card)}
+const _ceW6=checkEnd;checkEnd=function(){_ceW6.apply(this,arguments);try{if(!S||!S.over)return;const X=w6();S.endPath=w6Path();if(!X.done){X.done=1;const i=lbSubmit();const L=lbGet();X.sub=L[i]?L[i].t:0}
+  setTimeout(()=>{try{w6EndUI()}catch(e){console.error('w6end',e)}},30);if(w6Iron()){try{localStorage.removeItem(slotKey(S.slot||1))}catch(e){}}}catch(e){console.error('w6ce',e)}};
+/* daily */
+function w6Day(){const X=w6();w6Ach();const net=w6Net();if(net>(X.peak||0))X.peak=net;const ti=w6TitIdx();if(ti>(X.tit||0)){X.tit=ti;say(`Street name: ${W6TIT[ti][1]}. ${W6TIT[ti][2]}`)}
+  if(!S.pr&&!S.inJail){
+    if(w6Has('tough'))S.hp=Math.min(100,(S.hp||0)+3);if(w6Has('lowkey'))S.heat=Math.max(0,S.heat-1);if(w6Has('cool'))addStress(-3);
+    if(w6Has('cash')){S.cash+=40;legit(40)}if(w6Has('repw')&&weekTick())S.rep+=1;if(w6Has('study'))addXP(2);
+    if(w6Has('luck')&&Math.random()<.03){const v=rnd(200,800);S.cash+=v;say(`Lucky break. Found ${money(v)}.`)}
+    if(ti>=3&&S.day%3===0)S.heat=Math.max(0,S.heat-1);
+    if(ti>=4){S.cash+=50;legit(50)}
+    if(ti>=2&&weekTick()&&(S.known||[]).length){const i=pick(S.known);S.trust[i]=Math.min(100,(S.trust[i]||0)+1)}}
+  if(!X.wk||S.day>X.wk.until)X.wk=w6WkNew();
+  sf(()=>w6PerkCard());if(weekTick())sf(()=>w6KingCheck())}
+/* Me tab section and actions */
+function w6Me(){const X=w6();w6Ach();const ti=w6TitIdx(),nx=W6TIT[ti+1];
+  let h=`<div class="sec">Street name</div><div class="row"><div class="info"><div class="t">${esc(repTitle())}</div><div class="s">${W6TIT[ti][2]} ${nx?`Next: ${nx[1]} at ${nx[0]} rep (you have ${S.rep||0}).`:'You are at the top.'}</div></div></div>`;
+  h+=`<div class="sec">Level perks</div>`+(w6Pend()>0?`<div class="row" style="flex-wrap:wrap"><div class="info"><div class="t">${w6Pend()} perk${w6Pend()>1?'s':''} to pick</div><div class="s">Choose one of three. You get one every 5 levels.</div></div><div class="btns" style="width:100%">${w6Opts().map(k=>{const p=W6PK.find(x=>x[0]===k);return `<button class="btn go" data-a="w6_pick" data-k="${k}">${p[1]}: ${p[2]}</button>`}).join('')}</div></div>`:'')
+    +(X.pk.length?X.pk.map(k=>{const p=W6PK.find(x=>x[0]===k);return `<div class="row" style="padding:6px 12px"><div class="info"><div class="t">✅ ${p[1]}</div><div class="s">${p[2]}</div></div></div>`}).join(''):`<div class="row"><div class="info"><div class="s">No perks yet. You unlock the first at level 5 (you are level ${S.lvl||1}).</div></div></div>`);
+  if(!X.wk)X.wk=w6WkNew();
+  if(X.wk){const c=X.wk,p=Math.min(c.need,w6WkProg(c));h+=`<div class="sec">Weekly challenge</div>${a2i('challenge',300)}<div class="row" style="flex-wrap:wrap"><div class="info"><div class="t">${esc(c.t)}${c.got?' · done':''}</div><div class="s">${c.d} ${p}/${c.need} · reward ${money(c.rw)} · ends day ${c.until}</div><div class="bar"><i style="width:${p/c.need*100}%;background:var(--accent)"></i></div></div>${!c.got&&p>=c.need?'<button class="btn go" data-a="w6_claim">Claim</button>':''}</div>`}
+  h+=`<div class="sec">Stats</div><div class="row" style="flex-wrap:wrap"><div class="info"><div class="s">${w6Stats().slice(0,6).map(r=>`${r[0]}: <b>${r[1]}</b>`).join(' · ')}</div></div><button class="btn" data-a="w6_stats">All stats</button></div>`;
+  h+=`<div class="sec">How runs end</div>`+['king','legit','jail','walk'].map(k=>`<div class="row" style="padding:6px 12px"><div class="info"><div class="t">${W6END[k][0]}</div><div class="s">${({king:'Net worth $500,000, 3 blocks and 100 rep.',legit:'Use Go legit when you have 100K clean and a business.',jail:'Three strikes.',walk:'Retire any time.'})[k]}</div></div></div>`).join('');
+  const L=lbGet();if(L.length)h+=`<div class="sec">Best runs on this device</div>`+L.slice(0,5).map((e,i)=>`<div class="row" style="padding:6px 12px"><div class="info"><div class="t">${i+1}. ${esc(e.n)}${e.iron?' (Ironman)':''}</div><div class="s">${(e.score||0).toLocaleString()} points · ${money(e.net||0)} · day ${e.day}</div></div></div>`).join('');
+  if(!w6Iron()&&S.day<=5)h+=`<div class="sec">Ironman</div>${a2i('ironman',300)}<div class="row" style="flex-wrap:wrap"><div class="info"><div class="t">Go Ironman</div><div class="s">Hard rules, one life, score x2. When the run ends the save is deleted. Only in the first 5 days.</div></div><button class="btn red" data-a="w6_iron">Go Ironman</button></div>`;
+  else if(w6Iron())h+=`<div class="row"><div class="info"><div class="t" style="color:var(--blood)">Ironman is on</div><div class="s">One life. Score x2.</div></div></div>`;
+  return h}
+const _pcrW6=paneCrew;paneCrew=function(){return _pcrW6.apply(this,arguments)+sfn('w6Me')};
+function w6Act(a,el){if(a.slice(0,3)!=='w6_')return false;const X=w6();
+  if(a==='w6_pick'){w6Pick(el.dataset.k);render();return true}
+  if(a==='w6_claim'){const c=X.wk;if(c&&!c.got&&w6WkProg(c)>=c.need){c.got=1;X.wkDone=(X.wkDone||0)+1;S.cash+=c.rw;legit(c.rw);S.rep+=1;addXP(4);say(`Weekly challenge done. +${money(c.rw)}.`)}render();return true}
+  if(a==='w6_stats'){w6StatsCard();return true}
+  if(a==='w6_iron'){if(S.day>5||w6Iron())return true;X.iron=1;S.iron=1;S.diff='iron';say('Ironman is on. One life.');render();return true}
+  return false}
+WACT.push(w6Act);WD.push(w6Day);
+/* dev menu */
+function w6Dev(k,done){if(k.slice(0,4)!=='w6d_')return false;const X=w6();
+  if(k==='w6d_perk'){S.lvl=Math.max(S.lvl,10);X.later=-9;X.opt=null;$('modal').hidden=true;w6PerkCard(true);return true}
+  if(k==='w6d_ach'){S.cash=Math.max(S.cash,1000000);S.day=Math.max(S.day,120);S.lvl=Math.max(S.lvl,10);w6Ach();try{achDay()}catch(e){}done('badges checked');return true}
+  if(k==='w6d_wk'){if(!X.wk)X.wk=w6WkNew();const f=W6WK.find(x=>x[0]===X.wk.k);X.wk.base=f[5]()-X.wk.need;done('weekly challenge ready to claim');return true}
+  if(k==='w6d_king'){S.cash=Math.max(S.cash,600000);for(let i=0;i<3;i++)S.owner[i]='me';S.rep=Math.max(S.rep,120);X.kingOff=0;$('modal').hidden=true;w6KingCheck(true);return true}
+  if(k==='w6d_end'){$('modal').hidden=true;S.over=true;checkEnd();return true}
+  if(k==='w6d_iron'){X.iron=1;S.iron=1;S.diff='iron';done('Ironman on');return true}
+  if(k==='w6d_stats'){$('modal').hidden=true;w6StatsCard();return true}
+  return false}
+/*W6-END*/
+
+/*W8-START dev tests for waves 1 and 2*/
+function devW12(k){if(k.slice(0,2)!=='v_')return false;const w=W(),done=m=>{say('Dev: '+m);render();devPanel()};
+  const lab=()=>{S.rapOn=1;S.rap=S.rap||{fans:900,hype:50,songs:[],fat:0};const R=S.rap;R.lab=R.lab||{art:[],cash:0};if(!R.lab.art.length)R.lab.art.push({n:'Test Artist',fans:2000,loy:60,hype:50,song:0});R.lab.art.forEach(a=>{if(a.loy==null)a.loy=60});return R.lab};
+  const req=kk=>{const L=lab();L.req={k:kk,i:0,exp:S.day+4};close();render();const D=LREQ[kk],a=L.art[0];wCard(D.art,`${esc(a.n)} ${D.t}`,D.txt(esc(a.n)),[{l:D.c?'Pay '+money(D.c):'Give it',f:()=>labReqDo('pay')},{l:'Negotiate',f:()=>labReqDo('neg'),c:''},{l:'Say no',f:()=>labReqDo('no'),c:'red'}],'Your label')};
+  const place=id=>{S.at=placeAt(id);close();render();openPlace(id)};
+  try{
+  if(k==='v_lay7'){close();skipTime('lay7');return true}if(k==='v_bday'){close();skipTime('bday');return true}if(k==='v_next'){close();skipTime('next');return true}
+  if(k==='v_nap'){S.napDay=-9;S.en=10;napDo();return done('nap used, energy 10 then back a bit')}
+  if(k==='v_areq'){req('feature');return true}if(k==='v_awalk'){req('walk');return true}
+  if(k==='v_aviral'){const L=lab();close();render();wNote('artviral',`${esc(L.art[0].n)} went viral`,'A song took off online. Fans way up.');L.art[0].fans=Math.round(L.art[0].fans*1.6);return true}
+  if(k==='v_afeat'){req('feature');return true}
+  if(k==='v_rec'){place('rec');return true}if(k==='v_stad'){place('stadium');return true}if(k==='v_barb'){place('barber');return true}if(k==='v_gym'){place('gym');return true}
+  if(k==='v_sum'){w.sumSeen=-1;w.sum={d:S.day,L:['Cash +$420','Heat -6','Rep +2'],ev:['Test event: you got paid.','Test event: a rival showed up.']};tab='block';close();render();return true}
+  if(k==='v_goal'){tab='block';close();render();say('Dev: goal bar is the strip at the top of every tab.');return true}
+  if(k==='v_quick'){S.heat=Math.max(S.heat,60);tab='block';close();render();return true}
+  if(k==='v_dangon'){S.heat=90;S.stress=90;S.hp=20;return done('danger bars on (heat 90, stress 90, health 20)')}
+  if(k==='v_dangoff'){S.heat=0;S.stress=0;S.hp=100;return done('danger bars off')}
+  if(k==='v_winter'){w.fw=w.fw===1?2:1;return done(w.fw===1?'winter overlay forced ON':'winter overlay forced OFF')}
+  if(k==='v_rain'){w.rain=S.day;return done('rain on for today')}
+  if(k==='v_dots'){w.alld=!w.alld;return done(w.alld?'red dots on every tab':'red dots back to normal')}
+  if(k==='v_wide'){modal('<h2>Wide layout</h2><p>The two-column layout turns on when the window is 1280 px wide or more. On a laptop or PC, widen the browser window (or zoom out with Ctrl and minus) and open Spots, Business or Bag. On a phone it stays one column.</p><div class="btns"><button class="btn go" id="vwx">Okay</button></div>');$('vwx').onclick=close;return true}
+  }catch(e){console.error('devW12',e)}return false}
+/*W8-END*/
+/*W4-START crime, crew, court and street systems*/
+function w4(){const w=W();return w.w4=w.w4||{br:30,dog:0,burn:0,inf:0,chop:0,snitch:0,snD:0,prot:0,sw:-9,sj:-9,dv:-9,tow:-9,barb:0,bd:-9,flip:-9,strip:-9,bnt:-9,loy:-9,cook:-9,tx:-9,act:[],tid:0,bail:null,snap:null,noCourt:0}}
+const w4Mul=()=>{try{return w4().dog?.7:1}catch(e){return 1}};
+const w4DogMul=w4Mul;
+function w4row(t,sub,a,l,d,c,extra){return `<div class="row" style="flex-wrap:wrap"><div class="info" style="flex:1 1 200px;min-width:0"><div class="t">${t}</div><div class="s">${sub}</div></div><button class="btn ${c||'go'}" data-a="${a}" ${d?'disabled':''} ${extra||''}>${l}</button></div>`}
+const w4Mem=()=>{try{return crewList().filter(m=>m.hurt<S.day)}catch(e){return []}};
+function w4Quit(m){S.crewM=(S.crewM||[]).filter(x=>x!==m);S.soldiers=Math.max(0,(S.soldiers||0)-1)}
+function w4Br(n){const X=w4();X.br=Math.max(0,Math.min(100,X.br+n))}
+/* ---------- texts you can answer ---------- */
+function w4Add(f,m,k){const X=w4();X.act=(X.act||[]).filter(t=>S.day-t.d<=3);X.act.unshift({id:++X.tid,d:S.day,f,m,k});X.act=X.act.slice(0,4);try{phoneMsg(f,m)}catch(e){}}
+function w4Text(kind){const X=w4(),pool=[];
+  if(S.known&&S.known.length)pool.push(['job',pick(['Plug','Big Mike','Cousin Tay']),pick(['Got a package that has to cross town tonight. It pays right if you can do it.','Need somebody I trust to move something. One night, quick money.'])]);
+  pool.push(['rent','Mama',pick(['Rent is short this month baby. Can you help?','Light bill came in higher than I thought. Can you spare something?'])]);
+  pool.push(['fav',pick(['Cousin','Old friend']),pick(['Need a favor. Pull up when you can.','You around? Got something I need handled.'])]);
+  if(X.inf)pool.push(['raid','Informant','Twelve is planning something on your side. Lay low for a bit.']);
+  const p=kind?(pool.find(x=>x[0]===kind)||pool[0]):pick(pool);w4Add(p[1],p[2],p[0])}
+function w4Reply(id,yes){const X=w4(),t=(X.act||[]).find(x=>x.id===id);if(!t)return;X.act=X.act.filter(x=>x.id!==id);
+  if(!yes){if(t.k==='raid'&&Math.random()<.4){S.heat=Math.min(100,S.heat+8);say('You ignored the warning and twelve came through. Heat up.')}else if(t.k==='rent'){addStress(3);say('You left Mama on read. It sits with you.')}else say('Left it alone.');return render()}
+  if(t.k==='job'){if(spendEn(8)===false)return;if(Math.random()<.82){const p=rnd(300,900);S.cash+=p;S.heat=Math.min(100,S.heat+5);addXP(3);w4Br(-1);say(`Moved the package across town. ${money(p)} dirty.`)}else{S.hp=Math.max(1,S.hp-rnd(10,25));S.heat=Math.min(100,S.heat+8);say('It was a setup. You got out, but you took a beating and heat is up.')}}
+  else if(t.k==='rent'){if(S.cash<200){say('You do not have $200 right now.');return render()}S.cash-=200;w4Br(3);addStress(-5);try{if(S.par)S.par.trust=Math.min(100,S.par.trust+3)}catch(e){}say('Sent Mama $200. She said she loves you.')}
+  else if(t.k==='fav'){if(spendEn(6)===false)return;if(Math.random()<.6){const p=rnd(100,300);S.cash+=p;S.rep+=1;w4Br(3);say(`Handled the favor. They slid you ${money(p)}.`)}else{S.heat=Math.min(100,S.heat+4);say('The favor went nowhere and drew some eyes.')}}
+  else if(t.k==='raid'){S.heat=Math.max(0,S.heat-8);S.restDay=1;say('Laid low like the informant said. Heat down.')}
+  render()}
+function w4Phone(){const X=w4(),L=(X.act||[]).filter(t=>S.day-t.d<=3);if(!L.length)return '';
+  return `<div class="sec">Texts to answer</div>${ARTX('texts')?a2i('texts',300):''}`+L.map(t=>{const lab=({job:['Take it','Pass'],rent:['Send $200','Ignore'],fav:['Pull up','Pass'],raid:['Lay low','Ignore']})[t.k]||['Reply','Ignore'];
+    return `<div class="row" style="flex-wrap:wrap"><div class="info" style="flex:1 1 200px;min-width:0"><div class="t">${esc(t.f)}</div><div class="s">${esc(t.m)}</div></div><div class="btns"><button class="btn go" data-a="w4_ty" data-i="${t.id}">${lab[0]}</button><button class="btn" data-a="w4_tn" data-i="${t.id}">${lab[1]}</button></div></div>`}).join('')}
+/* ---------- Circle: crew drama and soldier missions ---------- */
+function w4Drama(force){if(window.FF||S.pr||!$('modal').hidden)return false;const M=w4Mem();if(!M.length)return false;
+  const kinds=['raise','side','arrest'];if(M.length>=2)kinds.push('argue','argue');const k=force||pick(kinds),m=pick(M);
+  if(k==='argue'){const b=pick(M.filter(x=>x!==m));if(!b)return false;
+    wCard('crewdrama','Crew drama',`${esc(m.name)} and ${esc(b.name)} got into it over a split. The whole crew is watching what you do.`,[{l:`Side with ${esc(m.name)}`,c:'',f:()=>{m.loy=Math.min(100,m.loy+8);b.loy=Math.max(0,b.loy-8);say(`You backed ${m.name}. ${b.name} is quiet now.`)}},{l:`Side with ${esc(b.name)}`,c:'',f:()=>{b.loy=Math.min(100,b.loy+8);m.loy=Math.max(0,m.loy-8);say(`You backed ${b.name}. ${m.name} is quiet now.`)}},{l:'Make them squash it',c:'go',f:()=>{if(Math.random()<.6){m.trust=Math.min(100,m.trust+3);b.trust=Math.min(100,b.trust+3);say('You sat them down and they shook hands.')}else{m.loy=Math.max(0,m.loy-3);b.loy=Math.max(0,b.loy-3);say('It did not take. Both are still mad.')}}}],'Crew');return true}
+  if(k==='raise'){wCard('crewdrama','Crew drama',`${esc(m.name)} wants ${CWANT[m.want]||'a bigger cut'}. He says he has been putting in the work.`,[{l:'Give him a raise ($300)',c:'go',dis:S.cash<300,f:()=>{S.cash-=300;m.loy=Math.min(100,m.loy+12);m.trust=Math.min(100,m.trust+4);say(`${m.name} got his raise and he is locked in.`)}},{l:'Promise it later',c:'',f:()=>{m.loy=Math.max(0,m.loy-3);say(`${m.name} nodded, but he remembers.`)}},{l:'Tell him no',c:'red',f:()=>{m.loy=Math.max(0,m.loy-10);if(m.loy<25&&Math.random()<.4){say(`${m.name} walked. He left the crew.`);w4Quit(m)}else say(`${m.name} did not like that.`)}}],'Crew');return true}
+  if(k==='side'){wCard('crewdrama','Crew drama',`${esc(m.name)} has been running his own hustle on the side and your customers are noticing.`,[{l:'Confront him',c:'red',f:()=>{if(Math.random()<.6){m.trust=Math.min(100,m.trust+5);say(`${m.name} backed off and apologized.`)}else{say(`${m.name} left and took some customers with him.`);S.heat=Math.min(100,S.heat+3);w4Quit(m)}}},{l:'Cut him in ($150)',c:'',dis:S.cash<150,f:()=>{S.cash-=150;m.loy=Math.min(100,m.loy+6);say(`You gave ${m.name} a piece. He is happy and so is the block.`)}}],'Crew');return true}
+  if(k==='arrest'){wCard('crewdrama','Crew drama',`${esc(m.name)} got picked up on a small charge. He is calling you from the station.`,[{l:'Bail him out ($600)',c:'go',dis:S.cash<600,f:()=>{S.cash-=600;m.loy=Math.min(100,m.loy+15);m.trust=Math.min(100,m.trust+8);say(`You bailed ${m.name} out. He will remember that.`)}},{l:'Leave him in there',c:'red',f:()=>{M.forEach(x=>{if(x!==m)x.loy=Math.max(0,x.loy-4)});S.rep=Math.max(0,S.rep-1);w4Br(-3);say(`You left ${m.name}. The rest of the crew took note.`);w4Quit(m)}}],'Crew');return true}
+  return false}
+function w4Mission(idx){const M=w4Mem(),m=M[idx];if(!m)return;
+  if(m.w4m!=null&&S.day-m.w4m<5){say(`${m.name} just got back. Give him a few days.`);return render()}
+  const T=[['Hold the corner','trap'],['Collect street tax','rob'],['Watch the block','look']];
+  wCard('loyalty','Mission for '+esc(m.name),`Pick what ${esc(m.name)} runs for you. Better skill and loyalty means better odds.`,T.map(([l,sk])=>{const p0=Math.min(.9,.4+((m.sk&&m.sk[sk])||2)*.05+m.loy/400);return {l:`${l} (${p0>=.7?'good':'even'} odds)`,c:'',f:()=>{m.w4m=S.day;if(Math.random()<p0){const c=rnd(150,500);S.cash+=c;m.loy=Math.min(100,m.loy+10);m.trust=Math.min(100,m.trust+5);w4Br(1);try{crewGain(m,sk)}catch(e){}say(`${m.name} came through. ${money(c)} dirty, and he is closer to you.`)}else{m.hurt=S.day+2;m.loy=Math.max(0,m.loy-3);say(`${m.name} ran into trouble and is laid up for two days.`)}}}}).concat([{l:'Never mind',c:'',f:()=>{}}]),'Crew')}
+function w4Circle(){const M=w4Mem();if(!M.length)return '';
+  return `<div class="sec">Your soldiers</div><div class="s wspan" style="padding:0 2px">Send a soldier on a mission to build his loyalty. Ignore them and some will leave.</div>`+M.slice(0,5).map((m,i)=>{const rest=m.w4m!=null&&S.day-m.w4m<5;return `<div class="row" style="flex-wrap:wrap"><div class="info" style="flex:1 1 200px;min-width:0"><div class="t">${esc(m.name)}</div><div class="s">Loyalty ${Math.round(m.loy)} · Trust ${Math.round(m.trust)}${m.loy<30?' · <b style="color:var(--blood)">Thinking about leaving</b>':''}</div><div class="bar"><i style="width:${Math.round(m.loy)}%;background:var(--accent)"></i></div></div><button class="btn go" data-a="w4_mis" data-i="${i}" ${rest?'disabled':''}>${rest?'Resting':'Mission'}</button></div>`}).join('')}
+/* ---------- Spots: block reputation, dog, burner, informant, snitch, bounty ---------- */
+function w4Spots(){const X=w4();let h=`<div class="sec">Street business</div>${ARTX('blockrep')?a2i('blockrep',300):''}`;
+  h+=`<div class="row"><div class="info"><div class="t">Block reputation ${Math.round(X.br)}/100</div><div class="s">${X.br>=70?'The block has your back. Heat cools faster and neighbors look out for you.':X.br<=25?'The block does not trust you. Snitches talk and heat sticks.':'The block is watching what you do.'}${X.snitch?' <b style="color:var(--blood)">Marked as a snitch.</b>':''}</div><div class="bar"><i style="width:${X.br}%;background:var(--accent)"></i></div></div></div>`;
+  h+=w4row('🍗 Block cookout','$300. Feed the neighborhood. Block reputation up, heat down.','w4_cook',X.cook===S.day?'Done today':'$300',X.cook===S.day||S.cash<300);
+  h+=w4row('🐕 Guard dog',X.dog?`Your dog ${esc(X.dog.n)} guards the stash house. Raids are less likely. Costs $8 a day.`:'$400. A dog on the stash. Cuts the raid chance on your stash house.',X.dog?'w4_dogx':'w4_dog',X.dog?'Own':'$400',!!X.dog||S.cash<400);
+  h+=w4row('📱 Burner phone',X.burn>0?`${X.burn} burner${X.burn>1?'s':''} ready. One covers your tracks when cops start sniffing.`:'$60 for a pair. Covers your tracks when the cops start sniffing around.','w4_burn','$60',S.cash<60||X.burn>=5);
+  h+=w4row('📱 Swap phones',X.burn>0?'Use a burner to start fresh. Heat −10, but the plugs have to learn your number again.':'You need a burner phone first.','w4_swap',X.sw>S.day-5?'Wait':'Swap',X.burn<=0||X.sw>S.day-5);
+  h+=w4row('🕵️ Informant on the force',X.inf?'Your informant tips you every week and slows any detective case on you. He wants $400 a week.':'$1,500 to put somebody on the payroll. Warns you about raids. Risky.',X.inf?'w4_infx':'w4_inf',X.inf?'Fire':'$1,500',!X.inf&&S.cash<1500,X.inf?'red':'');
+  h+=w4row('🎯 Bounty board','Take a contract on somebody who owes the wrong people. Pays dirty cash. Fights are rough.','w4_bnt',X.bnt===S.day?'Done today':'Take one',X.bnt===S.day||S.hp<30);
+  if(X.snitch){if(!X.snD)X.snD=S.day;const left=Math.max(0,90-(S.day-X.snD)),prot=X.prot>S.day;
+    h+=`<div class="sec">Looking over your shoulder</div>${ARTX('snitch')?a2i('snitch',300):''}<div class="row" style="flex-wrap:wrap"><div class="info" style="flex:1 1 200px;min-width:0"><div class="t">Marked as a snitch</div><div class="s">${prot?`Protected until day ${X.prot}.`:'People are looking for you.'} The mark fades in about ${left} days.</div></div><button class="btn go" data-a="w4_prot" ${prot||S.cash<4000?'disabled':''}>${prot?'Protected':'Protection $4,000'}</button></div>`}
+  return h}
+/* ---------- Biz: side jobs and car flipping ---------- */
+function w4Biz(){const X=w4();let h=`<div class="sec">Side work</div>${ARTX('sidejob')?a2i('sidejob',300):''}`;
+  h+=w4row('🛵 Delivery run','Drop off orders around town. $60 to $140 clean. Once a day.','w4_dv',X.dv===S.day?'Done today':'Ride',X.dv===S.day);
+  h+=w4row('🚚 Tow truck night shift','Hook cars up for the yard. $90 to $180 clean. Once a day.','w4_tow',X.tow===S.day?'Done today':'Work',X.tow===S.day);
+  h+=X.barb?w4row('💈 Barber chair','Your license is paid for. Cut hair for clean money.','w4_chair',X.bd===S.day?'Done today':'Cut',X.bd===S.day):w4row('💈 Barber license','$1,200. Rent a chair at a shop and make clean money every day.','w4_barb','$1,200',S.cash<1200);
+  h+=w4row('🚗 Chop shop',X.chop?'Strip a stolen car for parts. Good dirty money, but cops watch chop shops.':'$8,000 clean. A garage where nobody asks where the cars come from.',X.chop?'w4_strip':'w4_chopb',X.chop?(X.strip===S.day?'Done today':'Strip a car'):'$8,000',X.chop?X.strip===S.day:S.cash<8000);
+  if(X.chop)h+=w4row('🚗 Flip a whole car','Respray it and sell it, or ship it out of state. Better money than parts, but riskier. Once a day.','w4_flip',X.flip===S.day?'Done today':'Flip',X.flip===S.day);
+  return h}
+/* ---------- court, bail and trial ---------- */
+function w4Snap(){try{const inv=GOODS.reduce((a,g)=>a+(S.inv[g.id]||0)*(g.unit==='g'?1:g.unit==='pills'?.25:2),0);w4().snap={d:S.day,gun:Object.keys(S.guns||{}).length>0,car:S.car==='stolen',inv}}catch(e){}}
+function w4Charge(R){const X=w4(),sn=X.snap;X.snap=null;if(!sn||sn.d!==S.day)return;let ch=null,m=1;
+  if(sn.gun){ch='Firearm and drug charges';m=1}
+  else if(sn.inv>=112){ch='Trafficking';m=1.6}
+  else if(sn.inv>=28){ch='Distribution';m=1.25}
+  else if(sn.car){ch='Receiving stolen property';m=.9}
+  else if(sn.inv>0){ch='Possession with intent';m=1}
+  else{ch='Loitering with intent';m=.8}
+  R.charge=ch;R.len=Math.max(3,Math.round(R.len*m));R.until=R.start+R.len;R.place=R.len>=15?'state prison':'county jail'}
+function w4Verdict(p,R,len,charge,bail){const X=w4(),r=Math.random();
+  if(r<p){if(Math.random()<.4){say('Not guilty. The case was thrown out.');if(R){S.strikes=Math.max(0,S.strikes-1);S.pr=null;S.inJail=0;S.heat=Math.max(0,S.heat-10)}else S.heat=Math.max(0,S.heat-8);return wNote('trial','Not guilty','The jury was out for an hour. You walked out the front door.')}
+    const n=Math.max(2,Math.round(len*.5));say(`Reduced to ${prLabel(n)}.`);if(R){R.len=n;R.until=R.start+n}else w4Sent(n,charge);return wNote('trial','Sentence reduced',`The judge cut it to ${prLabel(n)}.`)}
+  const n=Math.round(len*1.2);say('You lost at trial and the judge added time.');if(R){R.len=n;R.until=R.start+n}else w4Sent(n,charge);wNote('trial','Guilty',`The judge gave you ${prLabel(n)}.`)}
+function w4Counsel(R,len,charge,bail){const X=w4(),extra=(S.lawPay?.1:0)+(S.fx&&S.fx.lawyer?.05:0);
+  const go=(fee,base)=>{if(S.cash<fee)return;S.cash-=fee;const wit=(p0)=>wCard('trial','Your strategy',`Your lawyer needs a plan for the jury. ${esc(charge)}. What do you do?`,[{l:'Call an alibi witness',c:'go',dis:!(S.soldiers>0),f:()=>{let p=p0+.1;if(Math.random()<.2){const m=w4Mem()[0];if(m)m.loy=Math.max(0,m.loy-5);say('Prosecutors leaned on your witness.')}w4Verdict(Math.min(.9,p),R,len,charge,bail)}},{l:'Character witness (family)',c:'',dis:!S.par,f:()=>w4Verdict(Math.min(.9,p0+.06),R,len,charge,bail)},{l:'Attack the evidence',c:'',f:()=>w4Verdict(Math.min(.9,p0+(S.fx&&S.fx.lawyer?.1:.06)),R,len,charge,bail)},{l:'Just argue it',c:'',f:()=>w4Verdict(p0,R,len,charge,bail)}],'Court');wit(Math.min(.85,base+extra))};
+  return [{l:'Public defender (free)',c:'',f:()=>go(0,.3)},{l:'Private lawyer ($2,500)',c:'go',dis:S.cash<2500,f:()=>go(2500,.5)},{l:'Top attorney ($7,000)',c:'',dis:S.cash<7000,f:()=>go(7000,.68)}]}
+function w4Court(){const R=S.pr,X=w4();if(!R||R.cc)return;R.cc=1;const len=R.len,charge=R.charge,bail=1500+len*100;
+  const opts=w4Counsel(R,len,charge,false).concat([{l:'Take the plea',c:'',f:()=>{const n=Math.max(2,Math.round(len*.7));R.len=n;R.until=R.start+n;say(`You took the plea. ${prLabel(n)} to do.`)}},{l:`Post bail (${money(bail)})`,c:'',dis:S.cash<bail,f:()=>{S.cash-=bail;X.bail={d:S.day+8,len,charge};S.pr=null;S.inJail=0;say('Posted bail. Trial in 8 days. Show up and fight it.');if(ARTX('bail'))wNote('bail','Out on bail','You have eight days. Get your lawyer ready and do not miss your court date.')}},{l:'Give up a name (snitch)',c:'red',dis:!!X.snitch,f:()=>{X.snitch=1;X.snD=S.day;w4Br(-35);S.rep=Math.max(0,S.rep-8);const n=Math.max(1,Math.round(len*.3));R.len=n;R.until=R.start+n;(S.crews||[]).forEach(c=>{if(c.alive)c.beef=Math.min(100,c.beef+10)});say(`You gave up a name. Sentence cut to ${prLabel(n)}, but the street knows.`);if(ARTX('snitch'))wNote('snitch','Marked','Word travels fast. You are a snitch now.')}}]);
+  wCard('trial','Court date',`${esc(charge)}. The judge is looking at ${prLabel(len)}. Hire counsel and fight it, take the plea, post bail and go home until trial, or give a name.${X.snitch?'':' The prosecutor hints a name could make this go away.'}`,opts,'Court')}
+function w4Trial(len,charge){const X=w4();
+  wCard('trial','Trial day',`You made your court date. ${esc(charge)}. Hire counsel or skip court.`,w4Counsel(null,len,charge,true).concat([{l:'Skip court',c:'red',f:()=>{S.heat=Math.min(100,S.heat+25);say('You skipped court. They added a charge.');w4Sent(Math.round(len*1.4),'Failure to appear')}}]),'Court')}
+function w4Sent(len,charge){const X=w4();X.noCourt=1;S.strikes=Math.max(1,S.strikes||0);try{prStart()}catch(e){console.error(e)}X.noCourt=0;if(S.pr){S.pr.len=Math.max(2,len);S.pr.until=S.day+S.pr.len;S.pr.charge=charge;S.pr.cc=1;say(`Sentenced to ${prLabel(S.pr.len)}.`)}}
+/* ---------- actions ---------- */
+function w4Act(a,el){if(a.slice(0,3)!=='w4_')return false;const X=w4(),hp=n=>{S.hp=Math.max(1,S.hp-n)};
+  if(a==='w4_ty'){w4Reply(+el.dataset.i,true);return true}
+  if(a==='w4_tn'){w4Reply(+el.dataset.i,false);return true}
+  if(a==='w4_mis'){w4Mission(+el.dataset.i);return true}
+  if(a==='w4_cook'){if(S.cash<300||X.cook===S.day)return true;S.cash-=300;X.cook=S.day;w4Br(8);S.heat=Math.max(0,S.heat-4);say('Threw a block cookout. Everybody ate and the block noticed.');render();return true}
+  if(a==='w4_dog'){if(S.cash<400||X.dog)return true;S.cash-=400;X.dog={n:pick(['Rex','Tank','Bruno','Duke','Diesel'])};say(`Got a dog. ${X.dog.n} is on the stash.`);if(ARTX('dog'))wNote('dog','New dog',`${X.dog.n} will watch your stash house.`);render();return true}
+  if(a==='w4_dogx'){return true}
+  if(a==='w4_burn'){if(S.cash<60||X.burn>=5)return true;S.cash-=60;X.burn=Math.min(5,X.burn+2);say('Picked up some burner phones.');if(ARTX('burner')&&X.burn<=2)wNote('burner','Burners','Cheap phones you can throw away.');render();return true}
+  if(a==='w4_swap'){if(X.burn<=0||X.sw>S.day-5)return true;X.burn--;X.sw=S.day;S.heat=Math.max(0,S.heat-10);try{(S.known||[]).forEach(bi=>{S.trust[bi]=Math.max(0,(S.trust[bi]||0)-5)})}catch(e){}say('New phone, new number. Heat down, but the plugs lost some trust.');render();return true}
+  if(a==='w4_inf'){if(S.cash<1500||X.inf)return true;S.cash-=1500;X.inf=1;say('You have a source inside the department now.');if(ARTX('informant'))wNote('informant','Source on the force','A tired detective who likes cash. He will warn you when something is coming.');render();return true}
+  if(a==='w4_infx'){X.inf=0;say('Cut off your informant.');render();return true}
+  if(a==='w4_prot'){if(S.cash<4000||X.prot>S.day)return true;S.cash-=4000;X.prot=S.day+30;say('You paid for protection. Nobody touches you for a month.');render();return true}
+  if(a==='w4_bnt'){if(X.bnt===S.day||S.hp<30)return true;if(spendEn(15)===false)return true;X.bnt=S.day;const pay=rnd(700,3500),pw=5+(S.sk.muscle||0)*2+(S.soldiers||0)*3+Math.floor(S.rep/10),ch=Math.min(.85,.25+pw/60),who=pick(['a man who skipped on a plug','a thief who hit a trap','a runner who talked','a guy who owes the wrong people']);
+    wCard('bounty','Bounty',`A contract is out on ${who}. It pays ${money(pay)}, dirty. Your odds: ${ch>.6?'good':ch>.4?'even':'rough'}.`,[{l:'Take the job',c:'red',f:()=>{if(Math.random()<ch){S.cash+=pay;S.rep+=2;S.heat=Math.min(100,S.heat+8);w4Br(-4);addXP(5);say(`Collected the bounty. ${money(pay)} dirty.`)}else{hp(rnd(15,30));S.rep=Math.max(0,S.rep-1);say('The job went wrong and you took a beating.')}}},{l:'Pass',c:'',f:()=>{}}],'Bounty board');return true}
+  if(a==='w4_dv'){if(X.dv===S.day)return true;if(spendEn(8)===false)return true;X.dv=S.day;const p=rnd(60,140);S.cash+=p;legit(p);w4Br(.3);say(`Finished a delivery run. ${money(p)} clean.`);if(Math.random()<.08){S.heat=Math.min(100,S.heat+3);say('A cop looked at you hard at a red light.')}render();return true}
+  if(a==='w4_tow'){if(X.tow===S.day)return true;if(spendEn(10)===false)return true;X.tow=S.day;const p=rnd(90,180);S.cash+=p;legit(p);say(`Towed cars all night. ${money(p)} clean.`);if(Math.random()<.1){const q=rnd(150,350);S.cash+=q;say(`One owner left the glovebox open. You made ${money(q)} extra.`)}render();return true}
+  if(a==='w4_barb'){if(S.cash<1200||X.barb)return true;S.cash-=1200;X.barb=1;say('You got your barber license.');render();return true}
+  if(a==='w4_chair'){if(X.bd===S.day||!X.barb)return true;if(spendEn(6)===false)return true;X.bd=S.day;const p=rnd(80,170);S.cash+=p;legit(p);say(`Cut hair all day. ${money(p)} clean.`);render();return true}
+  if(a==='w4_chopb'){if(S.cash<8000||needClean(8000,'A chop shop'))return true;{const c0=cleanCash();S.cash-=8000;S.clean=Math.max(0,c0-8000)}X.chop=1;say('Opened a chop shop.');if(ARTX('chop'))wNote('chop','Chop shop open','The garage is ready.');render();return true}
+  if(a==='w4_strip'){if(X.strip===S.day||spendEn(12)===false)return true;X.strip=S.day;const p=rnd(500,1400);S.cash+=p;S.heat=Math.min(100,S.heat+4);say(`Stripped a car. ${money(p)} dirty.`);if(Math.random()<.05+S.heat/1000){S.heat=Math.min(100,S.heat+10);say('Somebody noticed the plates on the lot. Heat spiked.')}render();return true}
+  if(a==='w4_flip'){if(X.flip===S.day||!X.chop)return true;if(spendEn(12)===false)return true;X.flip=S.day;
+    wCard('chop','Flip a car','There is a car in the garage. How do you move it?',[{l:'Respray and sell it',c:'go',f:()=>{const p=rnd(1500,3000);S.cash+=p;S.heat=Math.min(100,S.heat+5);addXP(4);if(Math.random()<.15){S.heat=Math.min(100,S.heat+15);say('The buyer was asking too many questions. Heat spiked.')}say(`Flipped the car for ${money(p)} dirty.`)}},{l:'Ship it out of state',c:'',f:()=>{const p=rnd(3000,5500);S.cash+=p;S.heat=Math.min(100,S.heat+8);addXP(5);if(Math.random()<.25){const l=Math.round(p*.5);S.cash=Math.max(0,S.cash-l);say(`The shipper short-changed you. Lost ${money(l)}.`)}say(`Shipped the car and made ${money(p)} dirty.`)}},{l:'Never mind',c:'',f:()=>{X.flip=-9}}],'Chop shop');return true}
+  return false}
+/* ---------- daily ---------- */
+function w4Day(){const X=w4();if(S.pr){X.br=Math.max(0,X.br-.1);return}
+  X.act=(X.act||[]).filter(t=>S.day-t.d<=3);
+  X.br=Math.max(0,X.br-.15);if(X.br>=70&&S.heat>0)S.heat=Math.max(0,S.heat-1);if(X.br<=25&&Math.random()<.05)S.heat=Math.min(100,S.heat+1);
+  if(X.br>=70&&Math.random()<.05){const t=rnd(20,90);S.cash+=t;say(`A neighbor slid you ${money(t)} for looking out for the block.`)}
+  if(X.dog){S.cash=Math.max(0,S.cash-8);if(Math.random()<.004){say(`${X.dog.n} ran off.`);X.dog=0}}
+  if(S.heat>=25&&Math.random()<.05&&X.burn>0){X.burn--;S.heat=Math.max(0,S.heat-4);say('Twelve was sniffing around your number. A burner covered your tracks and one phone is used up.')}
+  if(Math.random()<.10&&X.tx!==S.day){X.tx=S.day;w4Text()}
+  if(weekTick()){
+    if(X.inf){if(S.cash>=400){S.cash-=400;S.heat=Math.max(0,S.heat-5);try{const C=X8().case;if(C)C.p=Math.max(0,C.p-6)}catch(e){}w4Text('raid');if(Math.random()<.08){X.inf=0;S.heat=Math.min(100,S.heat+15);say('Your informant was working both sides. Heat jumped and he is gone.')}else say('Your informant tipped you. Heat down.')}else{X.inf=0;say('Could not pay your informant. He quit.')}}
+    w4Mem().forEach(m=>{if(m.loy<25&&Math.random()<.08){say(`${m.name} stopped answering and left the crew.`);w4Quit(m)}})}
+  if(X.snitch){if(!X.snD)X.snD=S.day;
+    if(S.day-X.snD>=90){X.snitch=0;X.snD=0;say('The block finally stopped talking about it. The snitch mark is gone.')}
+    else if(X.prot<=S.day&&Math.random()<.04&&!window.FF&&$('modal').hidden){
+      wCard('snitch','Somebody is looking for you','Word got around that you gave up a name. A couple of guys have been asking where you stay.',[{l:'Fight them',c:'red',f:()=>{fightGame(myStr(),rnd(10,20),'The guys from the block',win=>{if(win){S.rep+=2;addXP(4);say('You handled it. They will think twice.')}else{S.hp=Math.max(5,S.hp-rnd(15,30));S.cash=Math.round(S.cash*.92);say('They caught you and took some cash.')}render()})}},{l:'Pay them $500',c:'',dis:S.cash<500,f:()=>{S.cash-=500;say('You paid them off. For now.')}},{l:'Run for it',c:'',f:()=>{if(Math.random()<.5){S.heat=Math.min(100,S.heat+3);say('You got away.')}else{S.hp=Math.max(5,S.hp-rnd(8,18));say('They caught up and roughed you up.')}}}],'Snitch')}}
+  if(!window.FF&&$('modal').hidden&&Math.random()<.04)w4Drama();
+  if(!window.FF&&$('modal').hidden&&X.br<=30&&S.heat>=30&&!X.snitch&&Math.random()<.015){wCard('snitch','Somebody is talking','A kid on the block is telling people he saw you. The police might hear it.',[{l:'Pay him $400 to stay quiet',dis:S.cash<400,f:()=>{S.cash-=400;say('Paid the kid off.')}},{l:'Scare him',c:'red',f:()=>{S.heat=Math.min(100,S.heat+5);w4Br(-5);say('Scared him. The block saw it.')}},{l:'Ignore it',c:'',f:()=>{if(Math.random()<.3){S.heat=Math.min(100,S.heat+12);say('He talked. Heat is up.')}}}],'Block')}
+  if(X.bail&&S.day>=X.bail.d&&!S.pr&&$('modal').hidden){const b=X.bail;X.bail=null;w4Trial(b.len,b.charge)}}
+/* ---------- wiring ---------- */
+const _w4Bi=paneBiz;paneBiz=function(){return _w4Bi()+sfn('w4Biz')};
+const _w4Sp=paneSpots;paneSpots=function(){return _w4Sp()+sfn('w4Spots')};
+const _w4Ph=panePhone;panePhone=function(){return _w4Ph()+sfn('w4Phone')};
+const _w4Be=paneBeef;paneBeef=function(){return _w4Be()+sfn('w4Circle')};
+const _w4Bu=busted;busted=function(){w4Snap();const r=_w4Bu.apply(this,arguments);if(!S.pr)w4().snap=null;return r};
+const _w4Pr=prStart;prStart=function(){_w4Pr.apply(this,arguments);const R=S.pr;if(!R)return;const X=w4();
+  if(!X.noCourt){try{w4Charge(R)}catch(e){console.error(e)}
+    let tries=0;const go=()=>{try{if(!S.pr||S.pr.cc||/Parole|house arrest|Failure/i.test(S.pr.charge||''))return;if(!$('modal').hidden||window.FF){setTimeout(go,700);return}w4Court()}catch(e){console.error(e)}};setTimeout(go,400)}};
+WACT.push(w4Act);WD.push(w4Day);
+function devW4(k){if(!k||k.slice(0,3)!=='w4_')return false;const done=m=>{say('Dev: '+m);render();devPanel();return true};
+  try{
+  if(k==='w4_court'){S.strikes=Math.max(1,S.strikes||0);w4Snap();w4().snap.inv=40;prStart();close();render();return true}
+  if(k==='w4_trial'){close();w4Trial(8,'Distribution');return true}
+  if(k==='w4_bail'){w4().bail={d:S.day,len:8,charge:'Distribution'};return done('bail trial due today, advance a day')}
+  if(k==='w4_argue'){close();S.soldiers=Math.max(S.soldiers||0,3);crewList();w4Drama('argue');return true}
+  if(k==='w4_raise'){close();S.soldiers=Math.max(S.soldiers||0,3);crewList();w4Drama('raise');return true}
+  if(k==='w4_snitch'){const X=w4();X.snitch=1;X.snD=S.day;X.prot=0;return done('snitch mark on')}
+  if(k==='w4_flip'){const X=w4();X.chop=1;X.flip=-9;X.strip=-9;S.cash+=2000;return done('chop shop on, flip ready')}
+  if(k==='w4_mis'){S.soldiers=Math.max(S.soldiers||0,3);crewList();w4Mem().forEach(m=>m.w4m=null);return done('3 soldiers, missions ready')}
+  if(k==='w4_burn'){const X=w4();X.burn=5;X.sw=-9;S.cash+=5000;return done('5 burners')}
+  if(k==='w4_text'){w4Text();return done('text added')}
+  if(k==='w4_br'){w4Br(20);return done('block rep +20')}
+  if(k==='w4_inf'){const X=w4();X.inf=1;S.cash+=3000;return done('informant on, +$3,000')}
+  if(k==='w4_dog'){w4().dog={n:'Rex'};return done('dog on the stash')}
+  }catch(e){console.error('devW4',e)}return true}
+/*W4-END*/
+
+/*PA-START polish: skills, traits hooks, tips, clean/dirty helpers, dev tests*/
+function sk3(k){return(S&&S.sk&&S.sk[k]!=null)?S.sk[k]:3}
+function charmMul(){return Math.max(.7,1+(sk3('charm')-3)*.05)}
+function bizMul(){return Math.max(.7,1+(sk3('biz')-3)*.06)*(hasT('bizkid')?1.1:1)}
+function discStress(){return Math.max(.5,1-Math.max(0,sk3('discipline')-3)*.04)*(hasT('locked')?.9:1)}
+function polishFix(){if(!S||!S.char)return;S.sk=S.sk||{};['stamina','charm','biz','discipline'].forEach(k=>{if(S.sk[k]==null)S.sk[k]=3});if(!S.seenTips)S.seenTips={};if(S.safeClean==null)S.safeClean=0;if(S.safeClean>(S.safe||0))S.safeClean=S.safe||0}
+/* cash that moves into a holder (safe, stash house) keeps its clean or dirty status */
+function holdIn(O,key,ck,x){x=Math.max(0,Math.min(x,S.cash));if(!x)return 0;try{flowTick()}catch(e){}O[ck]=Math.min(O[ck]||0,O[key]||0);const c0=cleanCash(),dirty=S.cash-c0,fc=Math.max(0,x-dirty);S.cash-=x;S.clean=Math.max(0,c0-fc);O[key]=(O[key]||0)+x;O[ck]=(O[ck]||0)+fc;try{S._dl=dirtyCash()}catch(e){}return x}
+function holdOut(O,key,ck,x){const tot=O[key]||0;x=Math.max(0,Math.min(x,tot));if(!x)return 0;try{flowTick()}catch(e){}O[ck]=Math.min(O[ck]||0,tot);const cl=Math.min(x,Math.round(x*(O[ck]||0)/tot));cleanCash();S.cash+=x;S.clean=Math.min(S.cash,(S.clean||0)+cl);O[key]=tot-x;O[ck]=Math.max(0,(O[ck]||0)-cl);try{S._dl=dirtyCash()}catch(e){}return x}
+function cashSplitHTML(){const c=cleanCash(),d=S.cash-c,sf=S.safe||0,sc=Math.min(S.safeClean||0,sf),H=(typeof shSt==='function'&&S.stashH)?S.stashH:null,hs=H?(H.cash||0):0;
+  const row=(t,s,a)=>`<div class="row" style="flex-wrap:wrap"><div class="info" style="flex:1 1 200px;min-width:0"><div class="t">${t}</div><div class="s">${s}</div></div><span class="chip">${a}</span></div>`;
+  return `<div class="sec">Clean and dirty cash</div>`+row('Clean on you','Looks legit. Needed for anything $5,000 and up: cars, businesses, upgrades, nicer homes.',money(c))+row('Dirty on you','Street money. Fine for small buys and it gets spent first. Launder it to make it clean.',money(Math.max(0,d)))+(sf>0?row('In the safe',`${money(sc)} clean and ${money(sf-sc)} dirty. It keeps its status when you take it out.`,money(sf)):'')+(hs>0?row('In the stash house',`${money(Math.min(H.cl||0,hs))} clean. It keeps its status when you take it out. A raid on the house still wipes it.`,money(hs)):'')+`<div class="s wspan" style="padding:2px 4px;color:var(--dim)">Clean comes from jobs, businesses, sports pay, your music and laundering. Go to the Business tab to launder.</div>`}
+const PA_TIPS=[
+ ['skills',()=>S.pts>0,'You have a skill point','Open the Me tab and tap +1 on a skill. There are nine now. Stamina gives more energy, Charm helps your music and shows, Business makes your businesses and label pay more, and Discipline keeps stress and grades under control.'],
+ ['clean',()=>S.cash-cleanCash()>=3000,'Clean money and dirty money','Street money is dirty. Small buys use it first, but anything $5,000 and up needs clean money. Jobs, businesses, sports pay and your music are clean. You can also launder dirty cash in the Business tab for a fee.'],
+ ['energy',()=>S.en!=null&&S.day>=3&&S.en<=enMax()*.35,'Running low on energy','Most moves cost energy and it fills back up in the morning. Take a nap in the Time section of the Move tab for a little back, or end the day. Stamina and Muscle raise your max.'],
+ ['heat',()=>S.heat>=50,'Heat is getting high','Cops show up more as heat climbs. Lay low at your place, or lay low for a whole week from the Time section in the Move tab. Heat only drops when you stay out of trouble.'],
+ ['stress',()=>S.stress>=60,'Stress is stacking up','High stress makes fights and games harder. Work out, take a nap, lay low or spend time with your people. Discipline and some traits make it build slower.'],
+ ['biz',()=>Object.keys(S.biz||{}).length>0,'You own a business','It pays clean money every week, cools your heat a little and works as a front for laundering. Upgrade it in the Business tab. A higher Business skill makes it pay more.']
+];
+function polishShowTip(t){modal(`<div class="sec" style="margin:0;color:var(--accent)">Tip</div><h2>${t[2]}</h2><p>${t[3]}</p><div class="btns"><button class="btn go" id="ok">Got it</button><button class="btn" id="tno">No more tips</button></div>`);$('ok').onclick=close;$('tno').onclick=()=>{S.seenTips=S.seenTips||{};PA_TIPS.forEach(x=>S.seenTips[x[0]]=1);close()}}
+function polishTipsRun(){try{if(!S||!S.char||S.over||S.pr||S.inJail||!$('modal').hidden)return false;S.seenTips=S.seenTips||{};if(S.tipDay===S.day||S.day<2)return false;
+  for(const t of PA_TIPS){if(S.seenTips[t[0]])continue;let ok=false;try{ok=t[1]()}catch(e){}if(!ok)continue;S.seenTips[t[0]]=1;S.tipDay=S.day;polishShowTip(t);return true}}catch(e){console.error('tips',e)}return false}
+function devPA(k){if(String(k).slice(0,3)!=='pa_')return false;
+  const done=m=>{say('Dev: '+m);render();devPanel()};
+  if(k==='pa_tipreset'){S.seenTips={};S.tipDay=0;return done('tips reset, they pop one per day')}
+  if(k==='pa_tip'){S.seenTips=S.seenTips||{};const t=PA_TIPS.find(x=>!S.seenTips[x[0]])||PA_TIPS[0];S.seenTips[t[0]]=1;polishShowTip(t);return true}
+  if(k==='pa_sk8'){['stamina','charm','biz','discipline'].forEach(x=>S.sk[x]=8);return done('new skills at 8. Max energy '+enMax())}
+  if(k==='pa_sk1'){['stamina','charm','biz','discipline'].forEach(x=>S.sk[x]=1);return done('new skills at 1. Max energy '+enMax())}
+  if(k==='pa_split'){S.cash=40000;S.clean=25000;S.safe=0;S.safeClean=0;holdIn(S,'safe','safeClean',30000);const a=`after put 30K: cash ${S.cash}, clean ${S.clean}, safe ${S.safe}, safeClean ${S.safeClean}`;holdOut(S,'safe','safeClean',S.safe);return done(a+` | after take all: cash ${S.cash}, clean ${S.clean}`)}
+  if(k==='pa_needclean'){S.cash=20000;S.clean=1000;S.safe=0;S.safeClean=0;render();needClean(8000,'The test business');return true}
+  if(k==='pa_money'){tab='money';$('modal').hidden=true;render();devPanel();return true}
+  return false}
+/*PA-END*/
+
+const PLACES=[
+ {id:'park',bi:0,x:36,y:86,ic:'🌳',name:'The park'},
+ {id:'gym',bi:0,x:84,y:86,ic:'🏋️',name:'The gym'},
+ {id:'barber',bi:1,x:140,y:86,ic:'💈',name:'Barbershop'},
+ {id:'rec',bi:2,x:322,y:86,ic:'🏀',name:'Rec center'},
+ {id:'stadium',bi:3,x:36,y:184,ic:'🏟️',name:'The stadium'},
+ {id:'store',bi:1,x:212,y:86,ic:'🏪',name:'Corner store'},
+ {id:'studio',bi:1,x:168,y:86,ic:'🎙️',name:'Peanut\'s studio'},
+ {id:'tire',bi:2,x:282,y:86,ic:'🛞',name:'Unc\'s tire shop'},
+ {id:'carlot',bi:3,x:36,y:226,ic:'🚗',name:'Car lot'},
+ {id:'pawn',bi:3,x:80,y:226,ic:'💍',name:'Pawn shop'},
+ {id:'pharm',bi:4,x:168,y:226,ic:'💊',name:'Pharmacy'},
+ {id:'hosp',bi:4,x:212,y:184,ic:'🏥',name:'Northline General'},
+ {id:'school',bi:4,x:212,y:226,ic:'🏫',name:'School'},
+ {id:'mall',bi:5,x:282,y:226,ic:'🛍️',name:'The mall'},
+ {id:'lawyer',bi:5,x:326,y:226,ic:'⚖️',name:'Lawyer\'s office'},
+];
+const CARS={beater:{name:'Old Buick',cost:2500,trunk:20,sub:'Cheapest way to carry more. A beat-up car gets a second look.'},
+ corolla:{name:'Toyota Corolla',cost:4500,trunk:30,sub:'Boring and reliable. Nobody looks twice.'},
+ civic:{name:'Honda Civic',cost:6000,trunk:35,sub:'Cheap and common. Cops know the type.'},
+ minivan:{name:'Dodge Caravan',cost:7500,trunk:100,sub:'Soccer-mom cover and a huge trunk. Zero rep.'},
+ pickup:{name:'Ford F-150',cost:9000,trunk:80,sub:'Hauls a lot and looks like honest work.'},
+ accord:{name:'Honda Accord',cost:11000,trunk:45,rep:1,sub:'Clean, quiet and respectable.'},
+ charger:{name:'Dodge Charger',cost:14000,trunk:55,rep:2,sub:'Raises your rep.'},
+ jeep:{name:'Jeep Wrangler',cost:20000,trunk:70,rep:2,sub:'Doors off, music up. People notice you.'},
+ mustang:{name:'Ford Mustang',cost:22000,trunk:40,rep:3,sub:'Loud and fast. Small trunk, big attention.'},
+ tahoe:{name:'Chevy Tahoe',cost:28000,trunk:90,rep:3,sub:'Big trunk. Raises your rep.'},
+ challenger:{name:'Dodge Challenger',cost:32000,trunk:50,rep:4,sub:'Muscle car money. The block knows the sound.'},
+ sprinter:{name:'Sprinter van',cost:38000,trunk:220,sub:'The biggest trunk on the lot. No rep, and cops love pulling them over.'},
+ escalade:{name:'Cadillac Escalade',cost:48000,trunk:120,rep:5,sub:'Big, black and loud. Everybody knows who pulled up.'},
+ rover:{name:'Range Rover',cost:60000,trunk:140,rep:6,sub:'Top of the lot.'},
+ bmw:{name:'BMW M5',cost:72000,trunk:60,rep:7,sub:'Fast, clean and German.'},
+ benz:{name:'Mercedes S-Class',cost:95000,trunk:80,rep:8,sub:'Quiet money. Back seat like a living room.'},
+ porsche:{name:'Porsche 911',cost:125000,trunk:25,rep:10,sub:'Two seats, no trunk, all rep.'},
+ bentley:{name:'Bentley Continental',cost:190000,trunk:70,rep:12,sub:'You do not park it. You arrive in it.'},
+ lambo:{name:'Lamborghini',cost:270000,trunk:18,rep:15,sub:'Nowhere to hide anything. Everywhere to be seen.'},
+ rolls:{name:'Rolls-Royce',cost:340000,trunk:90,rep:16,sub:'The top of the top. Even the cops stare.'},
+ stolen:{name:'Stolen whip',cost:0,trunk:30,sub:'Free, but hot.',hidden:1}};
+const CARPICS={beater:'data:image/jpeg;base64,ART',civic:'data:image/jpeg;base64,ART',tahoe:'data:image/jpeg;base64,ART',charger:'data:image/jpeg;base64,ART',rover:'data:image/jpeg;base64,ART'};
+const HOMEPICS={};
+Object.assign(HOMEPICS,{trailer:'data:image/jpeg;base64,ART',low:'data:image/jpeg;base64,ART',gfplace:'data:image/jpeg;base64,ART',apt:'data:image/jpeg;base64,ART',family:'data:image/jpeg;base64,ART',couch:'data:image/jpeg;base64,ART',sec8:'data:image/jpeg;base64,ART',duplex:'data:image/jpeg;base64,ART',townhouse:'data:image/jpeg;base64,ART',condo:'data:image/jpeg;base64,ART',loft:'data:image/jpeg;base64,ART',house:'data:image/jpeg;base64,ART',penthouse:'data:image/jpeg;base64,ART',mansion:'data:image/jpeg;base64,ART',compound:'data:image/jpeg;base64,ART',granny:'data:image/jpeg;base64,ART'});
+const homePic=(k,s)=>HOMEPICS[k]?`<img src="${HOMEPICS[k]}" alt="" style="width:${s}px;height:${s}px;border-radius:6px;object-fit:cover;flex:none">`:'';
+const carPic=(k,s)=>CARPICS[k]?`<img src="${CARPICS[k]}" alt="" style="width:${s}px;height:${s}px;border-radius:6px;object-fit:cover;flex:none">`:`<span style="display:inline-flex;width:${s}px;height:${s}px;border-radius:6px;background:#2a2430;align-items:center;justify-content:center;font-size:${Math.round(s*.55)}px;flex:none">🚗</span>`;
+Object.assign(CARPICS,{corolla:'data:image/jpeg;base64,ART',minivan:'data:image/jpeg;base64,ART',pickup:'data:image/jpeg;base64,ART',accord:'data:image/jpeg;base64,ART',jeep:'data:image/jpeg;base64,ART',mustang:'data:image/jpeg;base64,ART',challenger:'data:image/jpeg;base64,ART',sprinter:'data:image/jpeg;base64,ART',escalade:'data:image/jpeg;base64,ART',bmw:'data:image/jpeg;base64,ART',benz:'data:image/jpeg;base64,ART',porsche:'data:image/jpeg;base64,ART',bentley:'data:image/jpeg;base64,ART',lambo:'data:image/jpeg;base64,ART',rolls:'data:image/jpeg;base64,ART'});
+const DIST=[[8,8,112,104],[124,8,112,104],[240,8,112,104],[8,148,112,104],[124,148,112,104],[240,148,112,104]];
+function cityMap(){
+  const col=i=>{const o=S.owner[i];return o==='me'?'#5fd38a':o==='none'?'#7a7280':cdef(o).color};
+  let g=`<svg viewBox="0 0 360 262" role="img" aria-label="City map" style="width:100%;max-width:640px;margin:0 auto;height:auto;display:block;background:#141118;border:1px solid var(--line);border-radius:8px">
+    <defs><pattern id="grid" width="12" height="12" patternUnits="userSpaceOnUse"><path d="M12 0H0V12" fill="none" stroke="#1f1b24" stroke-width="1"/></pattern></defs>
+    <rect width="360" height="262" fill="url(#grid)"/>
+    <path d="M0 126 C80 118 140 138 200 126 S300 116 360 128 L360 140 C300 130 260 142 200 140 S80 132 0 140 Z" fill="#1b2a3a" opacity=".9"/>
+    <path d="M118 0 V262 M238 0 V262 M0 126 H360" stroke="#2c2733" stroke-width="7"/>
+    <path d="M118 0 V262 M238 0 V262" stroke="#4a4352" stroke-width="1" stroke-dasharray="6 7"/>`;
+  DIST.forEach(([x,y,w,h],i)=>{const here=i===S.at,c=col(i);
+    g+=`<g class="mapb" data-a="${here?'':'go'}" data-i="${i}" style="cursor:${here?'default':'pointer'}">
+      ${BLOCKART[i]?`<clipPath id="mc${i}"><rect x="${x}" y="${y}" width="${w}" height="${h}" rx="10"/></clipPath><image href="${BLOCKART[i]}" x="${x}" y="${y}" width="${w}" height="${h}" preserveAspectRatio="xMidYMid slice" clip-path="url(#mc${i})" opacity="${here?.55:.32}"/><rect x="${x}" y="${y}" width="${w}" height="42" rx="10" fill="#141118" fill-opacity=".55" clip-path="url(#mc${i})"/>`:''}
+      <rect x="${x}" y="${y}" width="${w}" height="${h}" rx="10" fill="${c}" fill-opacity="${here?.18:.08}" stroke="${c}" stroke-width="${here?2.5:1.2}"/>
+      <text x="${x+8}" y="${y+18}" font-size="12.5" font-family="Anton,Impact,sans-serif" fill="#efe9e1" letter-spacing=".5">${BLOCKS[i]}</text>
+      <text x="${x+8}" y="${y+31}" font-size="8.5" font-family="Barlow,sans-serif" fill="${c}">${S.owner[i]==='me'?'Yours':S.owner[i]==='none'?'Open':cdef(S.owner[i]).name}${S.known.includes(i)?' · ★ plug':''}</text>
+      ${homeBlock()===i?`<g><circle cx="${x+w-14}" cy="${y+h-14}" r="10" fill="#141118" stroke="#f5b72a" stroke-width="1.5"/><path d="M${x+w-20} ${y+h-13} L${x+w-14} ${y+h-19} L${x+w-8} ${y+h-13} V${y+h-8} H${x+w-20} Z" fill="#f5b72a"/><rect x="${x+w-16}" y="${y+h-12}" width="4" height="4" fill="#141118"/></g>`:''}
+      ${here?`<g><circle cx="${x+w-14}" cy="${y+14}" r="9" fill="#f5b72a"/><text x="${x+w-14}" y="${y+18}" text-anchor="middle" font-size="10" font-weight="700" fill="#1a1408">U</text></g>`:''}</g>`});
+  PLACES.forEach(P=>{let x=P.x,y=P.y,bi=P.bi;
+    if(P.id==='studio'&&!S.rapOn)return;
+    g+=`<g class="mapp" data-p="${P.id}" style="cursor:pointer"><circle cx="${x}" cy="${y}" r="13" fill="#221e27" stroke="${bi===S.at?'#f5b72a':'#4a4352'}" stroke-width="1.5"/><text x="${x}" y="${y+5}" text-anchor="middle" font-size="13">${P.ic}</text></g>`});
+  return g+`</svg><div class="s" style="color:var(--dim);margin-top:4px">👆 Tap a block to move there (takes a day). Tap any spot on the map to open it and see what's there.</div>`;
+}
+function placeAt(id){return PLACES.find(p=>p.id===id).bi}
+function openPlace(id){const P=PLACES.find(p=>p.id===id),bi=placeAt(id);
+  if(bi!==S.at){modal(`<h2>${P.ic} ${P.name}</h2><p>That's on <b>${BLOCKS[bi]}</b>. You're on ${BLOCKS[S.at]}.</p><div class="btns"><button class="btn go" id="gt">Go to ${BLOCKS[bi]} (takes a day)</button><button class="btn" id="no">Not now</button></div>`);
+    $('no').onclick=close;$('gt').onclick=()=>{if(S.grounded>S.day&&S.sneakOK!==S.day){$('modal').hidden=true;say(`You're grounded. ${S.par?S.par.name:'They'} ain't letting you leave the house.`);render();return}$('modal').hidden=true;S.at=bi;say(`Pulled up to ${BLOCKS[bi]}.`);nextDay();checkEnd();render();if($('modal').hidden)openPlace(id)};return}
+  const row=(t,sub,btn)=>`<div class="row" style="padding:8px 12px;flex-wrap:wrap"><div class="info" style="flex:1 1 180px"><div class="t">${t}</div><div class="s">${sub}</div></div>${btn}</div>`;
+  const b=(k,l,dis,c='go')=>`<button class="btn ${c}" data-pl="${k}" ${dis?'disabled':''}>${l}</button>`;
+  let body='';
+  if(id==='studio'){tab='rap';close();render();return}
+  if(id==='park')body=row('Hoop at the park','Bet on a 5-shot shootout. Once a day.',b('hoops',S.park===S.day?'Played today':'Play',S.park===S.day||S.cash<100))+row('Shoot dice','Street craps with whoever is out here.',b('dice','Play',S.cash<50))+row('Throw a block party','$2,000. Community +8, heat -6, rep +1. Once a week.',b('bparty',(S.bpDay&&S.bpDay>S.day-7)?'Wait':'$2,000',S.cash<2000||(S.bpDay&&S.bpDay>S.day-7)))+row('Meet people','Friends hang out here.',b('fmeet',S.fmeet===S.day?'Went out today':'Kick it',S.fmeet===S.day||(S.friends||[]).length>=5));
+  if(id==='store')body=storeBody(row,b)+row('Rob the register','Quick cash. Clerk might have a bat. Takes the day.',b('lstore',lkLeft('store')?`Lookout ${lkLeft('store')}d`:'Rob it',lkLeft('store')>0,'red'))+row('Grab snacks','Stress −5.',b('snack','$10',S.cash<10));
+  if(id==='tire'){close();setTimeout(()=>{const el=[...document.querySelectorAll('.sec')].find(x=>x.textContent.includes('Gun dealer'));if(el)el.scrollIntoView({behavior:'smooth'})},50);return}
+  if(id==='carlot')body=(S.car?row(`Your ride: ${CARS[S.car].name}`,S.car==='stolen'?'+30 stash space. It runs hot: more heat every day. Trade up to ditch it.':`+${CARS[S.car].trunk} stash space. Trade it in for 60% back.`,'<span class="chip mine">Yours</span>'):S.rob.car?row('Your getaway car','Cops drive slower in every chase. Buy a real car below for stash space.','<span class="chip mine">Owned</span>'):'')+Object.entries(CARS).filter(([ck,C])=>!C.hidden).map(([ck,C])=>{const old=S.car?CARS[S.car]:null,price=Math.max(0,C.cost-(old?Math.round(old.cost*.6):0)),young=gAge()&&gAge()<16;
+      return S.car===ck?'':row(`${carPic(ck,34)} ${C.name}`,`+${C.trunk} stash space${C.rep?`, rep +${C.rep}`:''}. ${C.sub} ${old?` Trade-in knocks off ${money(Math.round(old.cost*.6))}.`:''}${young?' You need to be 16 to buy a car.':''}`,b('buycar:'+ck,money(price),S.cash<price||young))}).join('')+row('Pro Pad','Program keys and steal cars.',S.pad?'<span class="chip mine">Owned</span>':b('pad','$1,500',S.cash<1500))+row('Steal a car off the lot','Needs the Pro Pad. Takes the day.',b('lcar','Do it',!S.pad,'red'));
+  if(id==='pawn'){const gs=Object.keys(S.guns||{}).filter(k=>!GUNS[k].myth);body=row('Sell a gun','Unc\'s prices, half back.',gs.length?b('pawngun',`Sell ${GUNS[gs[0]].name} for ${money(Math.round(GUNS[gs[0]].cost/2))}`):'<span class="s">No guns to sell</span>')+row('Hit a house nearby','Pawn shop buys whatever you bring back. Takes the day.',b('lhouse','Do it',false,'red'))}
+  if(id==='hosp'){const cost=Math.max(0,Math.round((100-S.hp)*25));body=row('Get patched up',S.hp>=100?'You at full health.':`Back to 100 health. ${100-S.hp} to heal.`,b('heal',money(cost),S.hp>=100||S.cash<cost))+row('Detox',(S.habit||0)>0?'Get clean. Habit gone, stress −20. Takes the day.':'You clean.',b('detox','$1,000',!(S.habit>0)||S.cash<1000))}
+  if(id==='pharm')body=row('Rob the pharmacy','Percs and Xans off the shelf. Big heat. Takes the day.',b('lpharm',lkLeft('pharm')?`Lookout ${lkLeft('pharm')}d`:'Rob it',lkLeft('pharm')>0,'red'));
+  if(id==='school')body=(S.cal&&S.school==='in')?row(schoolWeek()?'Go to school this week':'No school right now',`Grades ${S.grades}/100.${schoolWeek()?'':' '+(isWknd()?'It\'s the weekend.':schoolBreak())}`,b('class','Go to school',!schoolWeek())):(S.age&&S.age<18&&S.school==='in')?row('Go to class',`Grades ${S.grades}/100. Takes the day.`,b('class','Go to class')):S.college==='in'?row('Go to class',`Degree ${S.cprog}/100. Takes the day.`,b('class','Go to class')):row('College',S.college==='grad'?'You already graduated.':'Enroll for $3,000 from the Me tab.',b('gome','Open Me tab'));
+  if(id==='mall')body=row('Bookbag','+25 stash space.',S.bag?'<span class="chip mine">Owned</span>':b('bag','$150',S.cash<150))+row('Ski mask','Less heat from licks, better heists.',S.rob.mask?'<span class="chip mine">Owned</span>':b('mask','$50',S.cash<50))+Object.entries(FITS).map(([fk,F])=>{const own=(S.fits||{street:1})[fk]||fk==='street',on=(S.fit||'street')===fk,left=fk==='street'?0:Math.max(0,FITLIFE-(S.day-((S.fitB||{})[fk]||S.day)));return row(F.n,F.sub+(own&&fk!=='street'?` Wears out in ${left} day${left===1?'':'s'}.`:fk!=='street'?' Wears out after about 5 weeks.':''),on?'<span class="chip mine">Wearing</span>':own?b('fit:'+fk,'Wear',false,''):b('fit:'+fk,money(F.c),S.cash<F.c))}).join('')+`<div class="s" style="padding:8px 2px 0">${a2i('jewelry',300)}<b>Jewelry</b>: rep for as long as you keep it. Big pieces draw robbers when your heat is up.</div>`+Object.entries(JEWEL).map(([jk,J])=>{const own=(S.jew||{})[jk];return row(J.n,J.sub,own?`<button class="btn" data-pl="jwp:${jk}">Pawn ${money(Math.round(J.c*.6))}</button>`:b('jw:'+jk,money(J.c),S.cash<J.c))}).join('')+(SAFEUP[S.safeLv||0]?row(SAFEUP[S.safeLv||0].n,`${safePic(S.safeLv||0,120)}+${SAFEUP[S.safeLv||0].v} safe space. Stuff in your safe can't get jacked, raided or busted. Safe is at your place.`,b('safeup',money(SAFEUP[S.safeLv||0].c),S.cash<SAFEUP[S.safeLv||0].c)):row('Safe','You own the biggest safe they sell.','<span class="chip mine">Maxed</span>'));
+  if(id==='school'&&S.school==='in'&&S.grades>=70)body+=row('Your teachers','They like you. If security checks your bag, they vouch for you: way better odds of walking.','<span class="chip mine">On your side</span>');
+  if(id==='lawyer')body=lawBody(row,b);
+  if(['gym','rec','stadium','barber'].includes(id))body=wavePlaceBody(id,row,b);
+  modal(`<h2>${P.ic} ${P.name}</h2><p class="s" style="color:var(--dim)">${BLOCKS[bi]}</p><div class="pane">${body}</div><div class="btns"><button class="btn" id="no">Leave</button></div>`);
+  $('no').onclick=close;
+  $('mcard').querySelectorAll('[data-pl]').forEach(x=>x.onclick=()=>placeAct(x.dataset.pl,id));
+}
+function placeAct(k,id){const back=()=>{render();openPlace(id)};try{if(wavePlaceAct(k,id,back))return}catch(e){console.error('wpa',e)}
+  if(k.startsWith('buycar:')){const ck=k.slice(7),C=CARS[ck],old=S.car?CARS[S.car]:null,price=Math.max(0,C.cost-(old?Math.round(old.cost*.6):0));if(S.cash<price)return;if(needClean(price,'The '+C.name))return;{const c0=cleanCash();S.cash-=price;if(price>=5000)S.clean=Math.max(0,c0-price)}S.cap+=C.trunk-(old?old.trunk:0);S.car=ck;S.rob.car=1;S.rep+=C.rep||0;say(`Bought a ${C.name}. +${C.trunk} stash space.${old?` Traded in the ${old.name}.`:''}`);return back()}
+  if(k==='stor'){return;const c=capCost();if(S.cash<c)return;S.cash-=c;S.cap+=50;S.capBuys=(S.capBuys||0)+1;say(`Rented a storage unit for ${money(c)}. +50 stash space. The next one costs more.`);return back()}
+  if(k==='safeup'){const U=SAFEUP[S.safeLv||0];if(!U||S.cash<U.c)return;S.cash-=U.c;S.safeLv=(S.safeLv||0)+1;say(`Bought a ${U.n.toLowerCase()}. +${U.v} safe space.`);return back()}
+  if(k==='zsjoin')return spJoin();if(k==='zsbook')return spBook();
+  if(k==='hoops')return hoops();if(k==='dice')return dice();
+  if(k==='fmeet'){S.fmeet=S.day;return meetFriend(true)}
+  if(k==='lstore')return lick('store');if(k==='lcar')return lick('car');if(k==='lhouse')return lick('house');if(k==='lpharm')return lick('pharm');
+  if(k==='heal'){const cost=Math.round((100-S.hp)*25);S.cash-=cost;S.hp=100;say(`Got patched up at Northline General for ${money(cost)}.`);return back()}
+  if(k==='detox'){S.cash-=1000;S.habit=0;S.crash=null;addStress(-20);say('Checked into detox. You clean now.');$('modal').hidden=true;nextDay();checkEnd();render();return}
+  if(k==='snack'){S.cash-=10;addStress(-5);S.en=Math.min(enMax(),(S.en==null?enMax():S.en)+8);say('Grabbed some snacks.');return back()}
+  if(k==='car'){if(S.cash<5000||needClean(5000,'The getaway car'))return;{const c0=cleanCash();S.cash-=5000;S.clean=Math.max(0,c0-5000)}S.rob.car=1;say('Bought a getaway car.');return back()}
+  if(k==='pad'){S.cash-=1500;S.pad=1;say('Copped a Pro Pad.');return back()}
+  if(k==='pawngun'){const gk=Object.keys(S.guns).filter(k=>!GUNS[k].myth)[0],v=Math.round(GUNS[gk].cost/2);delete S.guns[gk];S.cash+=v;say(`Pawned the ${GUNS[gk].name.toLowerCase()} for ${money(v)}.`);return back()}
+  if(k==='class'){$('modal').hidden=true;return act('class',{dataset:{}})}
+  if(k==='gome'){tab='crew';return close()}
+  if(k==='bag'){S.cash-=150;S.bag=1;S.cap+=25;say('Bought a bookbag. +25 stash.');return back()}
+  if(k==='mask'){S.cash-=50;S.rob.mask=1;say('Copped a ski mask.');return back()}
+  if(k==='bparty'){if(S.cash<2000||(S.bpDay&&S.bpDay>S.day-7))return;S.cash-=2000;S.bpDay=S.day;S.comm=Math.min(100,(S.comm??30)+8);S.heat=Math.max(0,S.heat-6);S.rep+=1;addStress(-6);say('Threw a block party. The whole block showed up. Community +8, heat -6, rep +1.');if(ARTX('blockparty')){close();setTimeout(()=>{if($('modal').hidden){modal(`${a2('blockparty',340)}<h2>Block party</h2><p>Grills going, music up, kids running everywhere. The block remembers who did this.</p><div class="btns"><button class="btn go" id="ok">Love it</button></div>`);$('ok').onclick=close}},0);return render()}return back()}
+  if(k.startsWith('jw:')){const J=JEWEL[k.slice(3)];if(!J)return;S.jew=S.jew||{};if(S.jew[k.slice(3)]||S.cash<J.c)return;if(needClean(J.c,'The '+J.n.toLowerCase()))return;{const c0=cleanCash();S.cash-=J.c;if(J.c>=5000)S.clean=Math.max(0,c0-J.c)}S.jew[k.slice(3)]=1;S.rep+=J.rep;addStress(-4);say(`Bought the ${J.n.toLowerCase()}. Rep +${J.rep}.`);return back()}
+  if(k.startsWith('jwp:')){const jk=k.slice(4),J=JEWEL[jk];if(!J||!(S.jew||{})[jk])return;S.jew[jk]=0;const v=Math.round(J.c*.6);S.cash+=v;S.rep=Math.max(0,S.rep-J.rep);say(`Pawned the ${J.n.toLowerCase()} for ${money(v)}.`);return back()}
+  if(k.startsWith('fit:')){const id=k.slice(4),F=FITS[id];if(!F)return;S.fits=S.fits||{street:1};if(!S.fits[id]&&id!=='street'){if(S.cash<F.c)return;S.cash-=F.c;S.fits[id]=1;S.fitB=S.fitB||{};S.fitB[id]=S.day;if(F.rep)S.rep+=F.rep;addStress(-3)}S.fit=id;say('Wearing the '+F.n.toLowerCase()+'.');return back()}
+  if(k==='drip'){S.cash-=600;S.rep+=2;addStress(-5);say('Bought new drip. Rep +2.');return back()}
+  {const r=lawStoreAct(k);if(r===2)return render();if(r)return back()}
+}
+function paneMove(){
+  let h=`${S.cal&&S.age&&S.age<18?`<div class="s" style="padding:4px 2px;opacity:.85">${S.freeMv===S.day?'You used your free move today.':'Your first move each school day or weekend is free.'}</div>`:''}<div class="row" style="border:1px solid var(--accent);background:rgba(0,0,0,.25)"><div class="info"><div class="t">🌙 Lay low</div><div class="s">Stay in a day: heat −15, health +15, stress −25, energy back.${atHome()?'':` <b style="color:var(--blood)">Head to your place on ${BLOCKS[homeBlock()]} first.</b>`}</div></div><button class="btn go" data-a="lay" ${atHome()?'':'disabled'}>Lay low</button></div>${skipRows()}<div class="sec">The city</div>`+cityMap()+demandList();
+  h+=BLOCKS.map((b,i)=>{
+    const o=S.owner[i];
+    const chip=o==='me'?'<span class="chip mine">Yours</span>':o==='none'?'<span class="chip">Open</span>':
+      `<span class="chip" style="color:${cdef(o).color};border-color:${cdef(o).color}">${cdef(o).name}</span>`;
+    const hm=homeBlock()===i?' <span class="chip here">Your place</span>':'';
+    return `<div class="row" style="${BLOCKART[i]?`background:linear-gradient(90deg,rgba(28,25,31,.95) 35%,rgba(28,25,31,.55)),url(${BLOCKART[i]}) center 55%/cover`:''}">${avatar(i,40)}<div class="info"><div class="t">${b}${hm}</div><div class="s">${chip} · ${plugName(i)}, <span style="color:${LVL[PINFO[i].lvl].col}">${PINFO[i].lvl} plug</span> ${S.known.includes(i)?'<span class="chip mine">Knows you</span>':'<span class="chip">Stranger</span>'}</div><div class="s">${droughtAt(i)?'<span class="chip" style="color:var(--blood)">🏜️ Drought</span> ':''}${moChip(i)} ${tappedOut(i)?'<span class="chip" style="color:var(--blood)">Tapped out</span>':''}</div></div>
+      ${i===S.at?'<span class="chip here">Here</span><button class="btn" data-a="adv">Stay here, next day</button>':`<button class="btn go" data-a="go" data-i="${i}">Go</button>`}</div>`;
+  }).join('');
+  h+=`<div class="sec">Mini games on ${BLOCKS[S.at]}</div>
+   <div class="row"><div class="info"><div class="t">Hoop at the park</div><div class="s">Bet on a 5-shot shootout. Once a day.${is('tank')?' Tank still got it: bigger green zone.':''}</div></div><button class="btn go" data-a="hoops" ${S.park===S.day||S.cash<100?'disabled':''}>${S.park===S.day?'Played today':'Play'}</button></div>
+   <div class="row"><div class="info"><div class="t">Shoot dice</div><div class="s">Street craps. 7 or 11 wins, 2, 3 or 12 loses, anything else is your point.</div></div><button class="btn go" data-a="dice" ${S.cash<50?'disabled':''}>Play</button></div>
+   ${S.robOn?'':paneLicks()}
+   ${S.scamOn?paneScam():''}
+   `;
+  return h;
+}
+function beefLabel(b){return b>=75?'<span class="chip war">War</span>':b>=45?'<span class="chip war">Beefing</span>':b>=20?'<span class="chip">Tense</span>':'<span class="chip">Cool</span>'}
+
+/* ---------- your fighting style ---------- */
+const FSDEF={tank:'brawler',val:'brawler',country:'brawler',slick:'street',shade:'boxer',lucky:'boxer'};
+const FSLV=[0,3,8,15,25],FSN={boxer:'Boxer',brawler:'Brawler',street:'Street fighter'};
+const FSPERK={boxer:['Footwork: dodging costs less stamina','Tighter guard: you tire slower','Counter-puncher: dodging costs even less','Iron lungs: you recover stamina faster','Pro boxer: huge stamina edge'],
+ brawler:['Heavy hands: you hit harder','Brawn: hits land harder again','Bully: heavier hits','Wrecking ball: hits hurt more','Knockout power: you hit like a truck'],
+ street:['Dirty tricks: a little more time to react','Street smarts: more time again','Read him: even more time to react','Hard to fool: you see everything coming','Street legend: massive reaction edge']};
+function fsState(){if(!S.fs)S.fs={style:FSDEF[S.char]||'boxer',xp:{boxer:0,brawler:0,street:0}};if(!S.fs.xp)S.fs.xp={boxer:0,brawler:0,street:0};return S.fs}
+function fsLvl(st){const f=fsState(),x=f.xp[st||f.style]||0;let l=1;FSLV.forEach((v,i)=>{if(x>=v)l=i+1});return l}
+function fsWin(){const f=fsState(),old=fsLvl();f.xp[f.style]=(f.xp[f.style]||0)+1;const nw=fsLvl();if(nw>old)say(`Your ${FSN[f.style]} style hit level ${nw}. ${FSPERK[f.style][nw-1]}.`)}
+function paneFight(){const f=fsState(),l=fsLvl(),x=f.xp[f.style]||0,nx=FSLV[l];
+  return `<div class="sec">Your fight style</div><div class="row" style="flex-wrap:wrap"><div class="info" style="flex:1 1 220px;min-width:0"><div class="t">${FSN[f.style]} · Level ${l}${l>=5?' (max)':''}</div><div class="s">${FSPERK[f.style][l-1]}.</div>${nx?`<div class="bar"><i style="width:${Math.round((x-FSLV[l-1])/(nx-FSLV[l-1])*100)}%;background:var(--money)"></i></div><div class="s">${nx-x} more win${nx-x===1?'':'s'} to level ${l+1}.</div>`:''}</div></div>
+   <div class="btns" style="margin-top:4px">${Object.keys(FSN).map(k=>`<button class="btn ${k===f.style?'go':''}" data-a="fstyle" data-k="${k}" ${k===f.style?'disabled':''}>${FSN[k]} L${fsLvl(k)}</button>`).join('')}</div><div class="s" style="color:var(--dim)">Pick the style you fight with. Each one levels up separately when you win fights.</div>`}
+function paneBeef(){
+  const jb=['Trap','Family','Homies','Girl','Crews'].map(k=>`<button class="btn" style="padding:6px 10px;font-size:12px" data-jump="${k}">${k}</button>`).join('');
+  return `<div class="jump" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:4px">${jb}</div>`+paneFight()+paneTraps()+paneFamily()+paneHome()+paneFriends()+paneGF()+crewBlock()+paneBeefCore()+sf(ctHTML);
+}
+function crewBlock(){return `<div class="sec">Your crew</div><div class="row"><div class="info"><div class="t">Soldiers: ${S.soldiers}</div><div class="s">+6 strength each · cost $150/day each</div></div><button class="btn green" data-a="hire" ${S.cash>=hireCost()?'':'disabled'}>Hire ${money(hireCost())}</button></div>${sf(crewHTML)}${sf(paneArm)}${(()=>{try{return x8On()?rankHTML():''}catch(e){return ''}})()}`}
+function paneBeefCore(){
+  let h=`<div class="sec">Your strength: ${myStr()}</div><div class="row"><div class="info"><div class="t">Firepower ${firepower()}</div><div class="s">${gAge()!=null&&gAge()<16?'No wars until you are 16.':canWar()?'You strapped and got shooters. You can go to war for a block.':`Taking a block takes guns and people. ${warNeed()}.`}</div></div></div>`+paneGang();
+  h+=S.crews.map(c=>{
+    const d=cdef(c.id), turf=S.owner.filter(o=>o===c.id).length;
+    if(!c.alive)return `<div class="row"><div class="info"><div class="t" style="color:${d.color}">${d.name}</div><div class="s">Wiped out. Their blocks are yours.</div></div></div>`;
+    const squash=Math.round(300+c.beef*25);
+    const theirsHere=S.owner[S.at]===c.id;
+    return `<div class="row" style="flex-wrap:wrap"><div class="info" style="flex:1 1 220px;min-width:0"><div class="t" style="color:${d.color}">${d.name} ${S.gang===c.id?'<span class="chip mine">Your set</span>':c.ally?'<span class="chip mine">Allies</span>':beefLabel(c.beef)}</div><div class="s" style="font-style:italic">${d.desc||''}</div>
+      <div class="s">Strength ${c.str} · ${turf} block${turf===1?'':'s'} · Beef ${c.beef}/100 ${c.respect>=60?'<span class="chip mine">Green light</span>':''}</div>
+      <div class="bar"><i style="width:${c.beef}%;background:var(--blood)"></i></div>
+      <div class="s">${c.foe?'<b style="color:var(--blood)">They hate you. No deals unless they wave the white flag.</b>':`Respect ${c.respect}/100${c.respect<60?' · hit 60 and they let you serve the Js on their blocks':''}`}</div><div class="bar"><i style="width:${c.respect}%;background:var(--money)"></i></div>
+      ${c.respect>=60||c.envy?`<div class="s">Envy ${c.envy}/100${c.envy>=70?' · <b style="color:var(--blood)">jealousy is real, watch your back</b>':''}</div><div class="bar"><i style="width:${c.envy}%;background:var(--accent)"></i></div>`:''}</div>
+      ${theirsHere&&!c.foe?`<div class="s" style="width:100%">You on their block. Spend the day building respect: each one takes the whole day, it gets harder as respect goes up, and money stops working past 45 (run with their guys after that).</div><div class="btns" style="width:100%"><button class="btn green" data-a="resp" data-c="${c.id}" data-k="cookout" ${S.cash>=300?'':'disabled'}>Cookout $300</button><button class="btn green" data-a="resp" data-c="${c.id}" data-k="tribute" ${S.cash>=500?'':'disabled'}>Pay respects $500</button><button class="btn green" data-a="resp" data-c="${c.id}" data-k="run">Run with their guys</button></div>`:''}
+      <div class="btns">
+       ${c.foe?'':`<button class="btn" data-a="squash" data-c="${c.id}" ${c.beef&&S.cash>=squash?'':'disabled'}>Squash ${money(squash)}</button>`}
+       ${S.gang===c.id||c.ally||(gAge()!=null&&gAge()<16)?'':`<button class="btn red" data-a="hit" data-c="${c.id}" ${theirsHere&&canWar()&&!blockReq()?'':'disabled'}>${blockReq()?'Take block (locked)':canWar()?'Take block':'Take block (no firepower)'}</button>`}
+       ${sf(()=>ctBtns(c))}
+      </div>${gangBtns(c,theirsHere)}</div>`;
+  }).join('');
+  if(!(gAge()!=null&&gAge()<16))h+=`<div class="s" style="color:var(--dim);font-size:13px;padding:0 2px">"Take block" only works on a block they run, and you need a gun plus 2 soldiers or a set behind you. Go there first.</div>`;
+  return h;
+}
+function paneGang(){
+  if(S.gang){const c=crew(S.gang),d=cdef(S.gang);return `<div class="row" style="flex-wrap:wrap;border-color:${d.color}"><div class="info"><div class="t">You claim the <span style="color:${d.color}">${d.name}</span></div><div class="s">They back you in every fight (+${Math.floor(c.str*.25)} strength), you serve their blocks free, and their opps are your opps. Dues ${S.cal?'every weekend':'every 7 days'}. When the set calls, answer.</div>${S.gHold?`<div class="s" style="color:var(--accent)">You owe the set ${money(S.gHold.owe)} for the pack by ${dayTxt(S.gHold.due)}.</div>`:''}</div><button class="btn red" data-a="gleave">Leave the set</button></div>`}
+  if(S.myGang)return `<div class="row" style="flex-wrap:wrap;border-color:var(--money)"><div class="info"><div class="t">Your gang: <span style="color:var(--money)">${esc(S.myGang.name)}</span></div><div class="s">${S.soldiers} member${S.soldiers===1?'':'s'}. Members cost $100 a day instead of $150 and each one brings in $50 a day. +5 strength. Make allies, buy blocks, or take them.</div></div></div>`;
+  return `<div class="row" style="flex-wrap:wrap"><div class="info"><div class="t">Gang life</div><div class="s">Get jumped in to a set (need 40 respect with them), or start your own (16+, rep 30, $10,000). You can also make allies${gAge()!=null&&gAge()<16?'':', buy a block, or go to war'}.</div></div><button class="btn go" data-a="gown" ${(gAge()==null||gAge()>=16)&&S.rep>=30&&S.cash>=10000?'':'disabled'}>Start your own</button></div>`}
+function esc(t){return String(t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function gangBtns(c,here){const d=cdef(c.id);if(!c.alive||S.gang===c.id||c.foe)return '';let b='';
+  if(!S.gang&&!S.myGang&&c.beef<30)b+=`<button class="btn go" data-a="gjoin" data-c="${c.id}" ${c.respect>=40?'':'disabled'}>${c.respect>=40?'Get jumped in':'Jumped in (need 40 respect)'}</button>`;
+  if(!S.gang&&!c.ally){const ac=3000+c.str*50;b+=`<button class="btn" data-a="gally" data-c="${c.id}" ${c.respect>=70&&c.beef<20&&S.cash>=ac?'':'disabled'}>${c.respect>=70&&c.beef<20?'Ally up '+money(ac):'Ally (need 70 respect)'}</button>`}
+  if(!S.gang&&here){const bc=8000+c.str*300;b+=`<button class="btn green" data-a="gbuy" data-c="${c.id}" ${c.respect>=50&&c.beef<30&&S.cash>=bc&&!blockReq()?'':'disabled'}>Buy ${BLOCKS[S.at]} ${money(bc)}</button>${blockReq()?`<div class="s" style="width:100%;color:var(--dim)">${blockReq()}</div>`:''}`}
+  if(!S.gang&&c.ally)b+=`<button class="btn red" data-a="gopps" data-c="${c.id}">Turn on them</button>`;
+  return b?`<div class="btns" style="width:100%">${b}</div>`:''}
+function gangJoin(c){const d=cdef(c.id),mine=myStr();
+  modal(`<h2 style="color:${d.color}">Get jumped in</h2><p>To claim the ${d.name}, you gotta take a beating from the homies. Hold your own and they respect you more. Either way, if you stand on it, you're in.</p><p class="s" style="color:var(--dim)">Their opps become your opps. Every other crew gets more beef with you.</p><div class="btns"><button class="btn red" id="y">Stand on it</button><button class="btn" id="n">Nah</button></div>`);
+  $('n').onclick=close;
+  $('y').onclick=()=>fightGame(mine,Math.round(c.str*.6),`The ${d.name} homies`,win=>{const dmg=win?rnd(8,15):rnd(18,30);S.hp=Math.max(5,S.hp-dmg);S.gang=c.id;c.respect=Math.max(c.respect,win?90:75);c.beef=0;c.envy=0;
+    S.crews.forEach(o=>{if(o.id!==c.id&&o.alive&&!o.ally)o.beef=Math.min(100,o.beef+15)});S.rep+=5;addXP(5);addStress(8);say(`Got jumped in to the ${d.name}. −${dmg} health.`);
+    modal(`<h2 style="color:${d.color}">You're in</h2><p>${win?'You was throwing back the whole time. The homies loved that.':'They put hands on you for a minute, but you ain\'t fold.'} −${dmg} health.</p><p>You claim the ${d.name} now. They ride for you.</p><div class="btns"><button class="btn go" id="ok">Bet</button></div>`);$('ok').onclick=close})}
+function gangLeave(){const c=crew(S.gang),d=cdef(S.gang);
+  modal(`<h2>Leave the ${d.name}?</h2><p>Ain't no clean way out. They gon' jump you out, and after that y'all opps.</p><div class="btns"><button class="btn red" id="y">I'm out</button><button class="btn" id="n">Never mind</button></div>`);
+  $('n').onclick=close;$('y').onclick=()=>fightGame(myStr()-Math.floor(c.str*.25),c.str,`The ${d.name}`,win=>{const dmg=win?rnd(12,20):rnd(22,35);S.hp=Math.max(5,S.hp-dmg);S.gang=null;c.respect=10;c.beef=70;addStress(15);say(`Got jumped out of the ${d.name}. −${dmg} health. Y'all opps now.`);close()})}
+function gangOwn(){modal(`<h2>Start your own gang</h2><p>$10,000 to get it going. Your soldiers become members: they cost less and bring money in.</p><input id="gn" maxlength="22" placeholder="Name your gang" style="width:100%;padding:10px;border-radius:6px;border:1px solid var(--line);background:var(--bg);color:var(--fg);font:inherit"><div class="btns"><button class="btn go" id="y">Start it</button><button class="btn" id="n">Not yet</button></div>`);
+  $('n').onclick=close;$('y').onclick=()=>{const nm=($('gn').value||'').trim()||`${CHARS.find(x=>x.id===S.char)?.name||'My'} Gang`;S.cash-=10000;S.myGang={name:nm,day:S.day};S.rep+=10;addXP(10);say(`Started your own gang: ${nm}.`);close()}}
+const capCost=()=>Math.round(2500*Math.pow(1.3,S.capBuys||0)/50)*50,hireCost=()=>Math.min(6000,1000+250*(S.soldiers||0)),trapCost=()=>4000+2500*Object.keys(S.traps||{}).length;
+/* ---------- prison: playable sentence ---------- */
+const PRI={ramen:{n:'Ramen',p:2},stamp:{n:'Stamps',p:1},coffee:{n:'Coffee',p:5},mack:{n:'Mackerel',p:8},cig:{n:'Cigarette',p:20}};
+const PACK={loud:7,bars:10,snow:1,kicks:2,percs:10,phones:1};
+const PGANGS=['The Yard Kings','Concrete Saints','The Lifers','Dayroom Dogs'];
+const PGR=['Prospect','Soldier','Captain','Shot-caller'];
+const PJOBS={kitchen:{n:'Kitchen',pay:6,d:'Steady food. Take extra, and cook up shanks to sell. Strict guards watch the knives.'},laundry:{n:'Laundry',pay:5,d:'Good place to stash contraband. Searches find less on you and heat builds slower.'},library:{n:'Law library',pay:3,d:'Study your case. Enough hours shave days off your sentence.'},maint:{n:'Maintenance',pay:4,d:'You work the fences and the roof. Drone drops land easier.'}};
+const PGN=['Officer Hayes','Sgt. Dunn','Officer Pruitt','Officer Banks','Lt. Voss'];
+const PIN=['Big Rome','Cookie','Deshawn','Mickey','Tito','Old Man Walt','Preacher','Sleepy','Capone','Lil Jay'];
+const PTYPE={dirty:'Dirty',strict:'Strict',fair:'Fair',dealer:'Dealer',gang:'Gang',snitch:'Snitch',cell:'Cellmate'};
+const prNow=()=>S.pr&&S.pr.lock>=S.day;
+const prHole=()=>S.pr&&S.pr.hole>=S.day;
+const prAvg=g=>(g.lo+g.hi)/2;
+const prDrugPrice=g=>Math.round(prAvg(g)*PACK[g.id]*(S.pr.px[g.id]||6)*(prNow()?2:1)*(S.pr.g?1-.08*S.pr.g.r:1));
+const prDrugN=()=>Object.keys(S.pr.dr).reduce((a,k)=>a+(S.pr.dr[k]||0),0);
+function prWorth(){const R=S.pr;return R.bal+Object.keys(PRI).reduce((a,k)=>a+(R.inv[k]||0)*PRI[k].p*.9,0)}
+function prPay(c){const R=S.pr;if(prWorth()<c-.001)return false;let need=c;const b=Math.min(R.bal,need);R.bal-=b;need-=b;
+  if(need>0){for(const k of ['stamp','ramen','coffee','mack','cig']){while(need>0.001&&(R.inv[k]||0)>0){R.inv[k]--;need-=PRI[k].p*.9}}if(need<0)R.bal+=Math.round(-need)}R.bal=Math.round(R.bal);return true}
+function prHeat(n){const R=S.pr;if(!R)return;R.heat=Math.max(0,Math.min(100,R.heat+n))}
+function prAdd(d){const R=S.pr;R.until=Math.min(R.start+Math.round(R.len*1.8),R.until+d)}
+function prStart(){const gun=S.bustGun;S.bustGun=0;S.ha=null;
+  const len=Math.round((S.cal?(S.strikes<=1?6:24):(S.strikes<=1?5:12))*(gun?1.25:1));
+  const sh=a=>a.slice().sort(()=>Math.random()-.5),gn=sh(PGN),inn=sh(PIN),gt=sh(['dirty','strict','fair']),gang=pick(PGANGS);
+  const npc=[0,1,2].map(i=>({n:gn[i],role:'guard',type:gt[i],trust:5,known:0,td:-9})).concat([{n:inn[0],role:'inmate',type:'dealer',trust:5,known:0,td:-9},{n:inn[1],role:'inmate',type:'gang',gang,trust:5,known:0,td:-9},{n:inn[2],role:'inmate',type:'snitch',trust:5,known:0,td:-9},{n:inn[3],role:'inmate',type:'cell',trust:15,known:1,td:-9}]);
+  S.pr={start:S.day,len,until:S.day+len,place:len>=15?'state prison':'county jail',charge:gun?'Firearm and drug charges':pick(['Possession with intent','Distribution','Probation violation','Receiving stolen property']),bal:0,inv:{},dr:{},heat:rnd(10,20),job:null,jobD:-9,npc,g:null,order:null,lock:0,hole:0,infr:0,fronts:[],inc:[],sold:{},acts:{},hear:0,reads:0,lawN:0,lawD:-9,px:{},visD:-9,safe:-9,intro:1,dep:0};
+  GOODS.forEach(g=>S.pr.px[g.id]=4+Math.random()*4);S.inJail=1;S.lastStrikeLen=len}
+function prLabel(n){return S.cal?`${Math.max(1,Math.round(n/2))} week${Math.round(n/2)===1?'':'s'}`:`${n} day${n===1?'':'s'}`}
+function prEnd(early){const R=S.pr;if(!R)return;const served=S.day-R.start,place=R.place;
+  S.cash+=R.bal;S.pr=null;S.inJail=0;
+  S.lockPop={n:S.strikes,place,label:prLabel(Math.max(1,served)),life:false};
+  say(`Released from ${place} after ${prLabel(Math.max(1,served))}. Strike ${S.strikes} of ${maxStrikes()}.${R.bal?` Your commissary balance (${money(R.bal)}) came back to you.`:''}`);
+  if(S.par){const P=S.par;P.trust=Math.max(0,P.trust-12);say(`${P.name} heard you got locked up. "I raised you better than this."`)}
+  S.heat=Math.max(0,S.heat-10);tab='block';startParole()}
+function startParole(){if(!window.noParole&&S.age>=18){const sp=S.cal?4:3;S.po={until:S.day+(S.cal?16:12),sp,due:S.day+sp,did:0,vio:0};say(`You are on parole. Check in with your officer before day ${S.po.due}. Miss it or catch a violation and you go back.`)}}
+function prisonDay(){const R=S.pr;if(!R)return;R.acts={};R.sold={};GOODS.forEach(g=>R.px[g.id]=4+Math.random()*4);
+  const lock0=prNow();
+  if(R.job&&!prHole()){R.bal+=PJOBS[R.job].pay}
+  if(R.g){const rk=R.g.r;if(rk>=1)R.bal+=rk*40;if(rk>=3)R.bal+=150}
+  // gang orders
+  if(R.g&&R.order&&S.day>R.order.due){R.g.resp=Math.max(0,R.g.resp-15);say(`You ignored the ${R.g.name} order. Respect dropped.`);if(R.g.r===0){const d=vcut(rnd(8,16));S.hp-=d;say(`They put hands on you for it. −${d} health.`)}R.order=null}
+  if(R.g&&!R.order&&!lock0&&Math.random()<.3){const t=pick(['fight','move','dues']);R.order={t,due:S.day+2};say(`The ${R.g.name} sent word: ${t==='fight'?'handle somebody who disrespected them':t==='move'?'move a package for them':'bring your dues'}.`)}
+  // deliveries
+  R.inc=R.inc.filter(d=>{if(d.day>S.day)return true;if(lock0){d.day=S.day+1;return true}
+    const icp=d.k==='drone'?Math.max(.06,.14+R.heat*.003-(R.job==='maint'?.08:0)):.15;
+    if(Math.random()<icp){say(d.k==='drone'?'The drone got spotted and the package was lost.':'The package got caught at the gate.');prHeat(15);return false}
+    Object.keys(d.items).forEach(k=>R.dr[k]=(R.dr[k]||0)+d.items[k]);say(`The ${d.k==='drone'?'drone drop':'package'} landed. It is in your stash.`);prHeat(d.k==='drone'?8:5);return false});
+  // heat
+  const hold=((R.inv.phone?1.5:0)+Math.min(5,prDrugN()*.25)+(R.inv.shank?1:0))*(R.job==='laundry'?.5:1);
+  prHeat(Math.round(hold-2));
+  // fronts
+  let modalUsed=false;
+  for(const f of R.fronts){if(S.day>f.due&&!modalUsed&&!lock0){modalUsed=true;f.owe=Math.round(f.owe*1.15);f.due=S.day+2;const str=rnd(20,34);
+    modal(`<h2 style="color:var(--blood)">${esc(f.who)} wants his money</h2><p>You owe ${money(f.owe)} for the ${G(f.gid).name.toLowerCase()} he fronted you. He brought two people to collect.</p><div class="btns"><button class="btn go" id="pay" ${prWorth()>=f.owe?'':'disabled'}>Pay ${money(f.owe)}</button><button class="btn red" id="fg">Fight them</button></div>`);
