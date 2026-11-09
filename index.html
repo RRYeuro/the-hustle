@@ -135,7 +135,7 @@ h1{font-family:var(--display);font-weight:400;font-size:34px;letter-spacing:.02e
     <div class="stat"><div class="k">Stress</div><div class="v" id="stress"></div><div class="bar"><i id="stressb" style="background:var(--blood)"></i></div></div>
     <div class="stat"><div class="k">Stash</div><div class="v" id="stash"></div></div>
     <div class="stat"><div class="k">Health</div><div class="v" id="hp"></div><div class="bar"><i id="hpb" style="background:var(--money)"></i></div></div>
-    <div class="stat"><div class="k">Heat</div><div class="v" id="heat"></div><div class="bar"><i id="heatb" style="background:var(--heat)"></i></div></div>
+    <div class="stat"><div class="k">Heat</div><div class="v" id="heat"></div><div class="bar"><i id="heatb" style="background:var(--heat)"></i></div><div id="heatwhy" style="font-size:10px;color:var(--dim);margin-top:2px;line-height:1.2"></div></div>
     <div class="stat"><div class="k">Rep</div><div class="v" id="rep" style="color:var(--accent)"></div></div>
     <div class="stat" style="grid-column:1/-1"><div class="k">Energy <span id="en" style="margin-left:6px"></span><span style="float:right;text-transform:none;opacity:.6">buy 6 · sell 7 · serve 11 · hit up 8 · Js 13</span></div><div class="bar"><i id="enb" style="background:var(--heat)"></i></div></div>
   </div>
@@ -373,7 +373,16 @@ function load(n){const raw=readSlot(n||curSlot());if(!raw)return null;let s=null
 
 /* ---------- render ---------- */
 function groundSend(){if(S&&S.par&&S.home==='family'&&S.grounded>S.day&&S.sneakOK!==S.day&&S.at!==homeBlock()){S.at=homeBlock();say(`${S.par.name} came and got you. You're grounded, so you're back at the house on ${BLOCKS[S.at]}.`)}}
-function render(){try{wTabBtns()}catch(e){}setTimeout(alertFlush,350);flowTick();if(S&&S.pr)tab='prison';else if(S&&tab==='prison')tab='block';if(S&&S.home&&S.home!=='family'&&S.grounded)S.grounded=0;
+/*F2 heat tells you why*/
+const HEATWHY=[[/shipment|package|just dropped|landing|load of|drop/i,'drops'],[/chop|strip|flip/i,'the chop shop'],[/shoot|shot|fight|ambush|jumped|robbed/i,'violence'],[/posted|social|post\b/i,'posting'],[/lick|heist|stole|robbery|broke into/i,'licks'],[/trap/i,'the trap house'],[/sold|served|pulled up for|moved|weight/i,'selling'],[/cops|raid|warrant|officer|patrol/i,'police']];
+function heatSync(){try{if(!S||S.over||S.heat==null)return;if(S.hbase==null){S.hbase=S.heat;S.hsT=(S.log&&S.log[0]||{}).t;S.hsD=(S.log&&S.log[0]||{}).d;return}
+  const h=S.heat;if(h>S.hbase){const up=h-S.hbase,cnt={};for(const l of (S.log||[])){if(l.d===S.hsD&&l.t===S.hsT)break;for(const [rx,nm] of HEATWHY){if(rx.test(l.t)){cnt[nm]=(cnt[nm]||0)+1;break}}}
+    let why='other',mx=0;for(const k in cnt)if(cnt[k]>mx){mx=cnt[k];why=k}
+    S.hlog=S.hlog||[];let e=S.hlog[S.hlog.length-1];if(!e||e.d!==S.day){e={d:S.day,m:{}};S.hlog.push(e);if(S.hlog.length>8)S.hlog.shift()}e.m[why]=(e.m[why]||0)+up}
+  S.hbase=h;S.hsT=(S.log&&S.log[0]||{}).t;S.hsD=(S.log&&S.log[0]||{}).d}catch(e){}}
+function heatWhyTxt(){const e=(S.hlog||[])[(S.hlog||[]).length-1];if(!e||S.day-e.d>2)return '';const a=Object.entries(e.m).filter(x=>x[1]>=1).sort((a,b)=>b[1]-a[1]).slice(0,3);return a.length?'From '+a.map(x=>x[0]+' +'+Math.round(x[1])).join(', '):''}
+function heatIn7(){if(!(S.hlog||[]).length)return null;let t=0;S.hlog.forEach(e=>{if(e.d>S.day-7)for(const k in e.m)t+=e.m[k]});return t/7}
+function render(){try{heatSync()}catch(e){}try{wTabBtns()}catch(e){}setTimeout(alertFlush,350);flowTick();if(S&&S.pr)tab='prison';else if(S&&tab==='prison')tab='block';if(S&&S.home&&S.home!=='family'&&S.grounded)S.grounded=0;
   groundSend();
   if(S&&S.char==='life')setLifeChar();
   const free=freeMode();$('dlab').hidden=!!S.cal;$('day').textContent=S.cal?'':free?S.day:Math.min(S.day,maxDay());$('dmax').textContent=S.cal?`${calLabel()} · Age ${S.age}${inHS()&&GRADEN[S.grade]?' · '+GRADEN[S.grade]:''}`:S.mode==='life'?` · Age ${S.age}`:free?' · Kingpin mode':` / ${maxDay()}`;$('dmax').textContent+=checkDay()?' · Checks hit':` · Checks in ${daysToCheck()}d`;if(S.strikes){const mx=typeof maxStrikes==='function'?maxStrikes():3;$('dmax').insertAdjacentHTML('beforeend',` · <span style="${S.strikes>=mx-1?'color:var(--blood);font-weight:700':''}">Strikes ${S.strikes}/${mx}</span>`)}$('retire').hidden=!!S.over;
@@ -383,7 +392,7 @@ function render(){try{wTabBtns()}catch(e){}setTimeout(alertFlush,350);flowTick()
   $('me').innerHTML=`${PORTRAITS[C.id]?`<img src="${PORTRAITS[C.id]}" alt="${C.name}" style="width:56px;height:56px;border-radius:6px;object-fit:cover;flex:none">`:`<div style="width:56px;height:56px;border-radius:6px;background:#2a2430;display:flex;align-items:center;justify-content:center;font-family:var(--display);font-size:26px;color:var(--accent);flex:none">${C.name[0]}</div>`}<div class="info"><div class="t" style="font-family:var(--display);font-size:20px;font-weight:400">${C.name}</div><div class="s">${roleOf(C)}</div></div>`;$('rk').textContent=identity();{const ballOn=!!(S.age&&S.age<18&&is('tank')&&!(S.fate||{}).knee),inS=S.school==='in'||S.college==='in'||ballOn,todo=(S.school==='in'||S.college==='in')&&S.classDay!==S.day&&(S.cal?schoolWeek():true);$('stab').hidden=!inS;$('stab').innerHTML='🏫 School'+(todo?' <span style="color:var(--blood)">●</span>':'');if(!inS&&tab==='sch')tab='block'}$('rtab').hidden=!S.rapOn;$('htab').hidden=!S.robOn;$('sptab').hidden=!(S.sp&&S.sp.kind);if((tab==='rap'&&!S.rapOn)||(tab==='rob'&&!S.robOn))tab='block';
   $('stash').textContent=Math.round(used())+'/'+S.cap;safeFix();{const sp=$('stash').parentElement;if(!sp._inv){sp._inv=1;sp.style.cursor='pointer';sp.onclick=invModal;sp.querySelector('.k').textContent='Stash ›'}}
   $('hp').textContent=S.hp<=35?S.hp+' · hospital':S.hp;$('hp').style.color=S.hp<=35?'var(--blood)':'';$('hpb').style.width=S.hp+'%';$('hpb').style.background=S.hp<=35?'var(--blood)':'var(--money)';
-  $('heat').textContent=S.heat;$('heatb').style.width=S.heat+'%';
+  $('heat').textContent=S.heat;$('heatb').style.width=S.heat+'%';{const hw=$('heatwhy');if(hw)hw.textContent=heatWhyTxt()}
   $('rep').textContent=S.rep;{const M=enMax(),e=S.en==null?M:S.en;$('en').textContent=e<=0?'· wiped, advance the day':e<M*.25?'· low':`${Math.round(e)}/${M}`;$('enb').style.width=Math.max(0,Math.min(100,e/M*100))+'%'}
   $('here').textContent=BLOCKS[S.at]+(droughtAt(S.at)?' · 🏜️ Drought szn':'');{const w=document.querySelector('.where'),art=BLOCKART[S.at];w.style.backgroundImage=art?`linear-gradient(90deg,rgba(20,17,24,.92) 30%,rgba(20,17,24,.45)),url(${art})`:'';w.style.backgroundSize=art?'cover':'';w.style.backgroundPosition=art?'center 60%':''}
   const o=S.owner[S.at];
@@ -2129,7 +2138,7 @@ function rivalDay(){if(window.noRival||(gAge()&&gAge()<16))return;const mine=x8T
 function caseDay(){const X=X8();
   if(!X.case){if(S.heat>=55&&Math.random()<(S.heat-45)/900&&(X.caseD||-99)+25<S.day){X.case={p:14,open:S.day,act:-1,law:-9};x8Pop('board','A detective opened a file on you','Your heat got too high. A detective is building a case. Check your phone to bribe, flip a witness, destroy evidence or call your lawyer before it is airtight.',[{l:'Understood',c:'go',f:()=>{}}])}return}
   const C=X.case,sn=crewList().filter(m=>m.snitch).length;
-  C.p+=S.heat/40+(dirtyCash()>30000?1.5:0)+sn*1.5-(S.lawPay?1.5:0)-(S.fx&&S.fx.lawyer?.5:0)-(S.heat<25?1.2:0);
+  C.p+=(heatIn7()==null?S.heat/40:Math.min(2.5,heatIn7()*.2))+(dirtyCash()>30000?1.5:0)+sn*1.5-(S.lawPay?1.5:0)-(S.fx&&S.fx.lawyer?.5:0)-(S.heat<25?1.2:0);
   if(C.p<=0){X.case=null;X.caseD=S.day;X.beat=1;say('The detective closed your case. Nothing stuck.');return}
   if(C.p>=100){X.case=null;X.caseD=S.day;say('You were indicted. The detective finished the case.');x8Pop('release','Indicted','The detective brought it all to the DA. Twelve is at your door.',[{l:'Here we go',c:'red',f:()=>busted()}])}}
 function caseHTML(){const C=X8().case;if(!C)return '';const used=C.act===S.day;
@@ -5175,7 +5184,7 @@ function wkRecap(force){
   modal(`${ARTX('summary')?a2i('summary',64):''}<h2>${away?'While you were away':'Your week'}</h2><p style="font-size:20px;margin:4px 0;color:${cash>=0?'var(--money)':'var(--blood)'}"><b>${cash>=0?'+':'-'}${money(Math.abs(cash))}</b> <span class="s" style="color:var(--dim)">${away?'since you went in':'this week'}</span></p><p class="s" style="margin:0">Heat ${dh>0?'went up':dh<0?'cooled off':'held steady'}${dh?' by '+Math.abs(Math.round(dh)):''}. Rep ${dr>0?'up '+Math.round(dr):dr<0?'down '+Math.abs(Math.round(dr)):'held'}.</p>${top.length?'<div class="s" style="margin:6px 0">'+top.map(t=>'• '+t).join('<br>')+'</div>':'<p class="s">A quiet one.</p>'}${goal}<div class="btns"><button class="btn go" id="wkok">Keep hustling</button><button class="btn" id="wkoff">Turn recap off</button></div>`);
   $('wkok').onclick=close;$('wkoff').onclick=()=>{S.recapOff=1;close()};
 }
-{const _ndB=nextDay;nextDay=function(){const r=_ndB.apply(this,arguments);try{if(S&&!S.over&&!S.recapOff&&!window.FF){if(!S.wk0){S.wk0=wkSnap()}
+{const _ndB=nextDay;nextDay=function(){heatSync();const r=_ndB.apply(this,arguments);heatSync();try{if(S&&!S.over&&!S.recapOff&&!window.FF){if(!S.wk0){S.wk0=wkSnap()}
   else if(S.pr||S.inJail){if(weekTick()&&S.wk0.day<S.day)S.recapPend=1}
   else if(($('modal').hidden)&&((weekTick()&&S.wk0.day<S.day)||(S.recapPend&&S.day-S.wk0.day>=3)))wkRecap();
   else if(weekTick()&&S.wk0.day<S.day)S.recapPend=1}}catch(e){console.error('recap',e)}return r}}
