@@ -639,11 +639,11 @@ function paneBiz(){let h=`<div class="s wspan" style="padding:0 2px">Everything 
   h+=sfn('legitHTML');return h}
 function paneBag(){const G2=GOODS.filter(g=>S.inv[g.id]>0);let h=`<div class="sec">On you</div>`+(G2.length?G2.map(g=>`<div class="row">${drugPic(g.id,30)}<div class="info"><div class="t">${g.name}</div><div class="s">${amt(S.inv[g.id],g)} (${grade(S.q[g.id],g)})</div></div></div>`).join(''):`<div class="row"><div class="info"><div class="s">Nothing on you right now.</div></div></div>`);
   h+=`<div class="row"><div class="info"><div class="t">Stash space</div><div class="s">${Math.round(used())} of ${S.cap} used</div></div><button class="btn" data-a="inv">Open inventory</button></div>`;
-  h+=`<div class="sec">Ride and home</div><div class="row"><div class="info"><div class="t">${S.car?CARS[S.car].name:'No car'}</div><div class="s">${S.car?`+${CARS[S.car].trunk} stash space`:'Visit the car lot in Spots.'}</div></div></div><div class="row"><div class="info"><div class="t">Home: ${HOMES[S.home]?HOMES[S.home].name||S.home:S.home}</div><div class="s">${BLOCKS[homeBlock()]}</div></div></div>`;
+  h+=`<div class="sec">Ride and home</div><div class="row"><div class="info"><div class="t">${S.car?CARS[S.car].name:'No car'}</div><div class="s">${S.car?`+${CARS[S.car].trunk} stash space`:'Visit the car lot in Spots.'}</div></div></div>`+sfn('paneHome');
   const fits=Object.keys(S.fits||{street:1}).filter(k=>(S.fits||{street:1})[k]&&FITS[k]);h+=`<div class="sec">Clothes and jewelry</div><div class="row"><div class="info"><div class="t">Wearing: ${(FITS[S.fit||'street']||{}).n||'Street'}</div><div class="s">${fits.length} fit${fits.length===1?'':'s'} owned. Change at the mall.</div></div></div>`;
   const jw=Object.keys(JEWEL).filter(k=>(S.jew||{})[k]);h+=`<div class="row"><div class="info"><div class="t">Jewelry</div><div class="s">${jw.length?jw.map(k=>JEWEL[k].n).join(', '):'None yet.'}</div></div></div>`;
   return h}
-function paneMoney(){return sfn('cashSplitHTML')+sfn('loanHTML')+sfn('launHTML')}
+function paneMoney(){return sfn('cashSplitHTML')+sfn('loanHTML')+sfn('w5bBacker')+sfn('launHTML')}
 WACT.push(waveAct2);
 function waveAct2(a,el){
   const w=W();w.use=w.use||{};if(a in {adv:1,lay:1,nap:1,skipn:1,lay7:1})w.use[a]=(w.use[a]||0)+1;
@@ -817,12 +817,16 @@ function w4Mission(idx){const M=w4Mem(),m=M[idx];if(!m)return;
 function w4Circle(){const M=w4Mem();if(!M.length)return '';
   return `<div class="sec">Your soldiers</div><div class="s wspan" style="padding:0 2px">Send a soldier on a mission to build his loyalty. Ignore them and some will leave.</div>`+M.slice(0,5).map((m,i)=>{const rest=m.w4m!=null&&S.day-m.w4m<5;return `<div class="row" style="flex-wrap:wrap"><div class="info" style="flex:1 1 200px;min-width:0"><div class="t">${esc(m.name)}</div><div class="s">Loyalty ${Math.round(m.loy)} · Trust ${Math.round(m.trust)}${m.loy<30?' · <b style="color:var(--blood)">Thinking about leaving</b>':''}</div><div class="bar"><i style="width:${Math.round(m.loy)}%;background:var(--accent)"></i></div></div><button class="btn go" data-a="w4_mis" data-i="${i}" ${rest?'disabled':''}>${rest?'Resting':'Mission'}</button></div>`}).join('')}
 /* ---------- Spots: block reputation, dog, burner, informant, snitch, bounty ---------- */
+function w4Burners(){const X=w4();let h=`<div class="sec">Burners</div>`;
+  h+=w4row('📱 Burner phone',X.burn>0?`${X.burn} burner${X.burn>1?'s':''} ready. One covers your tracks when cops start sniffing.`:'$60 for a pair. Covers your tracks when the cops start sniffing around.','w4_burn','$60',S.cash<60||X.burn>=5);
+  h+=w4row('📱 Swap phones',X.burn>0?'Use a burner to start fresh. Heat −10, but the plugs have to learn your number again.':'You need a burner phone first.','w4_swap',X.sw>S.day-5?'Wait':'Swap',X.burn<=0||X.sw>S.day-5);
+  return h}
 function w4Spots(){const X=w4();let h=`<div class="sec">Street business</div>${ARTX('blockrep')?a2i('blockrep',300):''}`;
   h+=`<div class="row"><div class="info"><div class="t">Block reputation ${Math.round(X.br)}/100</div><div class="s">${X.br>=70?'The block has your back. Heat cools faster and neighbors look out for you.':X.br<=25?'The block does not trust you. Snitches talk and heat sticks.':'The block is watching what you do.'}${X.snitch?' <b style="color:var(--blood)">Marked as a snitch.</b>':''}</div><div class="bar"><i style="width:${X.br}%;background:var(--accent)"></i></div></div></div>`;
   h+=w4row('🍗 Block cookout','$300. Feed the neighborhood. Block reputation up, heat down.','w4_cook',X.cook===S.day?'Done today':'$300',X.cook===S.day||S.cash<300);
   h+=w4row('🐕 Guard dog',X.dog?`Your dog ${esc(X.dog.n)} guards the stash house. Raids are less likely. Costs $8 a day.`:'$400. A dog on the stash. Cuts the raid chance on your stash house.',X.dog?'w4_dogx':'w4_dog',X.dog?'Own':'$400',!!X.dog||S.cash<400);
-  h+=w4row('📱 Burner phone',X.burn>0?`${X.burn} burner${X.burn>1?'s':''} ready. One covers your tracks when cops start sniffing.`:'$60 for a pair. Covers your tracks when the cops start sniffing around.','w4_burn','$60',S.cash<60||X.burn>=5);
-  h+=w4row('📱 Swap phones',X.burn>0?'Use a burner to start fresh. Heat −10, but the plugs have to learn your number again.':'You need a burner phone first.','w4_swap',X.sw>S.day-5?'Wait':'Swap',X.burn<=0||X.sw>S.day-5);
+  h+=w4row('🚗 Chop shop',X.chop?'Strip a stolen car for parts. Good dirty money, but cops watch chop shops.':'$8,000 clean. A garage where nobody asks where the cars come from.',X.chop?'w4_strip':'w4_chopb',X.chop?(X.strip===S.day?'Done today':'Strip a car'):'$8,000',X.chop?X.strip===S.day:(S.cash<8000||(S.age&&S.age<18)));
+  if(X.chop)h+=w4row('🚗 Flip a whole car','Respray it and sell it, or ship it out of state. Better money than parts, but riskier. Once a day.','w4_flip',X.flip===S.day?'Done today':'Flip',X.flip===S.day);
   h+=w4row('🕵️ Informant on the force',X.inf?'Your informant tips you every week and slows any detective case on you. He wants $400 a week.':'$1,500 to put somebody on the payroll. Warns you about raids. Risky.',X.inf?'w4_infx':'w4_inf',X.inf?'Fire':'$1,500',!X.inf&&S.cash<1500,X.inf?'red':'');
   h+=w4row('🎯 Bounty board','Take a contract on somebody who owes the wrong people. Pays dirty cash. Fights are rough.','w4_bnt',X.bnt===S.day?'Done today':'Take one',X.bnt===S.day||S.hp<30);
   if(X.snitch){if(!X.snD)X.snD=S.day;const left=Math.max(0,90-(S.day-X.snD)),prot=X.prot>S.day;
@@ -833,8 +837,6 @@ function w4Biz(){const X=w4();let h=`<div class="sec">Side work</div>${ARTX('sid
   if(S.age&&S.age<16)h+=w4row('🛵 Delivery run','You have to be 16 to deliver. Come back when you can ride legit.','w4_dv','Too young',true);else h+=w4row('🛵 Delivery run','Drop off orders around town. $60 to $140 clean. Once a day.','w4_dv',X.dv===S.day?'Done today':'Ride',X.dv===S.day);
   if(S.age&&S.age<18)h+=w4row('🚚 Tow truck night shift','The yard only hires drivers 18 and up with a license.','w4_tow','18+',true);else h+=w4row('🚚 Tow truck night shift','Hook cars up for the yard. $90 to $180 clean. Once a day.','w4_tow',X.tow===S.day?'Done today':'Work',X.tow===S.day);
   h+=X.barb?w4row('💈 Barber chair','Your license is paid for. Cut hair for clean money.','w4_chair',X.bd===S.day?'Done today':'Cut',X.bd===S.day):w4row('💈 Barber license',(S.age&&S.age<18)?'You have to be 18 to get licensed.':'$1,200. Rent a chair at a shop and make clean money every day.','w4_barb','$1,200',S.cash<1200||(S.age&&S.age<18));
-  h+=w4row('🚗 Chop shop',X.chop?'Strip a stolen car for parts. Good dirty money, but cops watch chop shops.':'$8,000 clean. A garage where nobody asks where the cars come from.',X.chop?'w4_strip':'w4_chopb',X.chop?(X.strip===S.day?'Done today':'Strip a car'):'$8,000',X.chop?X.strip===S.day:(S.cash<8000||(S.age&&S.age<18)));
-  if(X.chop)h+=w4row('🚗 Flip a whole car','Respray it and sell it, or ship it out of state. Better money than parts, but riskier. Once a day.','w4_flip',X.flip===S.day?'Done today':'Flip',X.flip===S.day);
   return h}
 /* ---------- court, bail and trial ---------- */
 function w4Snap(){try{const inv=GOODS.reduce((a,g)=>a+(S.inv[g.id]||0)*(g.unit==='g'?1:g.unit==='pills'?.25:2),0);w4().snap={d:S.day,gun:Object.keys(S.guns||{}).length>0,car:S.car==='stolen',inv}}catch(e){}}
@@ -904,8 +906,8 @@ function w4Day(){const X=w4();if(S.pr){X.br=Math.max(0,X.br-.1);return}
 /* ---------- wiring ---------- */
 const _w4Bi=paneBiz;paneBiz=function(){return _w4Bi()+sfn('w4Biz')};
 const _w4Sp=paneSpots;paneSpots=function(){return _w4Sp()+sfn('w4Spots')};
-const _w4Ph=panePhone;panePhone=function(){return _w4Ph()+sfn('w4Phone')};
-const _w4Be=paneBeef;paneBeef=function(){return _w4Be()+sfn('w4Circle')};
+const _w4Ph=panePhone;panePhone=function(){return _w4Ph()};
+const _w4Be=paneBeef;paneBeef=function(){return _w4Be()};
 const _w4Bu=busted;busted=function(){w4Snap();const r=_w4Bu.apply(this,arguments);if(!S.pr)w4().snap=null;return r};
 const _w4Pr=prStart;prStart=function(){_w4Pr.apply(this,arguments);const R=S.pr;if(!R)return;const X=w4();
   if(!X.noCourt){try{w4Charge(R)}catch(e){console.error(e)}
@@ -1114,7 +1116,7 @@ function paneFight(){const f=fsState(),l=fsLvl(),x=f.xp[f.style]||0,nx=FSLV[l];
    <div class="btns" style="margin-top:4px">${Object.keys(FSN).map(k=>`<button class="btn ${k===f.style?'go':''}" data-a="fstyle" data-k="${k}" ${k===f.style?'disabled':''}>${FSN[k]} L${fsLvl(k)}</button>`).join('')}</div><div class="s" style="color:var(--dim)">Pick the style you fight with. Each one levels up separately when you win fights.</div>`}
 function paneBeef(){
   const jb=['Trap','Family','Homies','Girl','Crews'].map(k=>`<button class="btn" style="padding:6px 10px;font-size:12px" data-jump="${k}">${k}</button>`).join('');
-  return `<div class="jump" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:4px">${jb}</div>`+paneFight()+paneTraps()+paneFamily()+paneHome()+paneFriends()+paneGF()+crewBlock()+paneBeefCore()+sf(ctHTML);
+  return `<div class="jump" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:4px">${jb}</div>`+paneFight()+paneTraps()+paneFamily()+paneFriends()+paneGF()+crewBlock()+paneBeefCore()+sf(ctHTML);
 }
 function crewBlock(){return `<div class="sec">Your crew</div><div class="row"><div class="info"><div class="t">Soldiers: ${S.soldiers}</div><div class="s">+6 strength each · cost ${S.myGang?'$100':'$150'}/day each</div></div><button class="btn green" data-a="hire" ${S.cash>=hireCost()?'':'disabled'}>Hire ${money(hireCost())}</button></div>${sf(crewHTML)}${sf(paneArm)}${(()=>{try{return x8On()?rankHTML():''}catch(e){return ''}})()}`}
 function paneBeefCore(){
@@ -1573,18 +1575,24 @@ function w5bBiz(){if(!adult())return teenLock('Real estate and house flipping');
   B.re.forEach((p,i)=>{if(!p.up)h+=w5bRow(`Upgrade the ${esc(p.n.toLowerCase())}`,`${money(Math.round(p.cost*.1))} clean. Rent goes up and the value rises.`,'w5b_pup',money(Math.round(p.cost*.1)),S.cash<Math.round(p.cost*.1),'',`data-i="${i}"`)});
   if(S.biz&&S.biz.club){h+=`<div class="sec">Club staff and brands</div>`;['p','h','d'].forEach(k=>{const s=W5BST[k];h+=w5bRow(s[0],B.club[k]?'On your payroll. The club earns more and can wash more money.':`${money(s[1])}. Adds about ${money(s[2])} a week and raises what the club can wash.`,'w5b_staff',B.club[k]?'Hired':money(s[1]),!!B.club[k]||S.cash<s[1],'',`data-k="${k}"`)});
     if(!B.brand)h+=w5bRow('🎤 Manage a brand',(S.gf||(S.friends||[]).length)?'Take on your partner or a friend as an act. You get a cut as they grow.':'You need a partner or a friend to manage.','w5b_brand','Sign them',!(S.gf||(S.friends||[]).length));else h+=`<div class="row"><div class="info"><div class="t">Managing ${esc(B.brand.n)}</div><div class="s">You take a cut every week.</div></div></div>`}
+  return h}
+function w5bOrders(){if(!adult())return '';const B=b5();let h='';
   const dl=w5bDealers();h+=`<div class="sec">Dealer orders</div>`;
   if(!B.ord.length)h+=`<div class="row"><div class="info"><div class="t">No orders right now</div><div class="s">${(S.known||[]).length?'Local dealers send orders on the weekend.':'Meet a plug and the dealers will come to you.'}</div></div></div>`;
   B.ord.forEach((o,i)=>{const g=G(o.g),d=dl[o.d],have=(S.inv[o.g]||0)>=o.n,price=Math.round(o.n*street(g)*(.85+d.loy/500));h+=w5bRow(`${esc(d.n)} wants ${o.n}${w5bUN(g)} of ${g.name.toLowerCase()}`,`Pays ${money(price)} by ${dayTxt?dayTxt(o.by):'next week'}.${have?'':' You do not have enough.'}`,'w5b_ord',have?'Deliver':'Short',!have,'',`data-i="${i}"`)});
   return h}
+function w5bBacker(){const B=b5();if(!adult()&&!(B.gdebt>0))return '';let h=`<div class="sec">Backer</div>`;
+  if(B.gdebt>0)h+=w5bRow('📒 Backer debt',`You owe ${money(B.gdebt)}, due ${dayTxt?dayTxt(B.gdue):'soon'}.`,'w5b_gpay','Pay it',S.cash<B.gdebt);else h+=w5bRow('📒 Borrow from a backer','$1,000 now, $1,250 back in a week. Do not be late.','w5b_gborrow','Borrow','',  'red');
+  return h}
 function w5bSpots(){const B=b5();let h=`<div class="sec">Gambling</div>`;
   h+=w5bRow('🎰 Casino trip',adult()?'$1,000 minimum. Slots, blackjack and roulette, up to 8 rounds. Once every 5 days.':'You have to be 18.','w5b_casino',B.casino>S.day-5?'Wait':'Go',B.casino>S.day-5||S.cash<1000||!adult());
-  if(B.gdebt>0)h+=w5bRow('📒 Backer debt',`You owe ${money(B.gdebt)}, due ${dayTxt?dayTxt(B.gdue):'soon'}.`,'w5b_gpay','Pay it',S.cash<B.gdebt);else h+=w5bRow('📒 Borrow from a backer','$1,000 now, $1,250 back in a week. Do not be late.','w5b_gborrow','Borrow','',  'red');
   if(B.gam>=6)h+=`<div class="s" style="padding:2px 4px;color:var(--blood)">You think about gambling more than you should.</div>`;return h}
 function w5bCircle(){const B=b5(),X=S.gf||{};let h=`<div class="sec">Family</div>`;
   const fl=B.fl>=75?'Close':B.fl>=40?'Okay':B.fl>=20?'Distant':'Cut off';
   h+=`<div class="row"><div class="info"><div class="t">Family: ${fl}</div><div class="s">${B.fl>=75?'They look out for you.':B.fl<20?'They are done answering.':'Show up when they need you.'}</div></div></div>`;
   h+=w5bRow('☎️ Call home','Free. Check in on everybody. Every 3 days.','w5b_call',B.fcall>S.day-3?'Wait':'Call',B.fcall>S.day-3);
+  return h}
+function w5bGF(){const B=b5(),X=S.gf||{};let h='';
   if(S.gf){h+=w5bRow('🌹 Date night','$150. Dinner and a movie. Once every 3 days.','w5b_date',B.dateD>S.day-3?'Wait':'$150',B.dateD>S.day-3||S.cash<150);{const atM=S.at===placeAt('mall');h+=w5bRow('🎁 Gift',atM?'$300. Something nice.':'$300. Buy it at the mall on '+BLOCKS[placeAt('mall')]+'. Head there first.','w5b_gift',B.giftD>S.day-7?'Wait':atM?'$300':'At the mall',B.giftD>S.day-7||S.cash<300||!atM)}if(B.mar){h+=w5bRow('💍 Married',`${esc(S.gf.name)} is your wife.`,'w5b_divorce','Divorce $2,000',S.cash<2000,'red')}else h+=w5bRow('💍 Propose',X.rel>=85&&adult()&&S.age>=20?'$4,000 clean for the ring.':'Needs a strong relationship and being at least 20.','w5b_marry','$4,000',!(X.rel>=85&&adult()&&S.age>=20)||S.cash<4000)}
   return h}
 function w5bMove(){const B=b5();let h=`<div class="sec">Out of town</div>`;
@@ -1592,7 +1600,7 @@ function w5bMove(){const B=b5();let h=`<div class="sec">Out of town</div>`;
   h+=`<div class="s" style="padding:2px 4px">${best&&best.v>0?`You would take your ${best.g.name.toLowerCase()}. Up to ${w5bUnit(best.g)*3}${w5bUN(best.g)}.`:'Get something to carry first.'} One run every 4 days.</div>`;
   W5BCITY.forEach((c,i)=>{const ct=(B.city[c.n]||{}).contact;h+=w5bRow(`🚗 ${c.n}`,`${money(c.cost)} for gas and a room. Better prices than home.${ct?' You have a contact there.':''}`,'w5b_run',B.ctrip>S.day-4?'Wait':'Go',B.ctrip>S.day-4||S.cash<c.cost||!best||best.v<=0,'',`data-i="${i}"`)});return h}
 const _pb5b=paneBiz,_ps5b=paneSpots,_pc5b=paneBeef,_pm5b=paneMove;
-paneBiz=function(){return _pb5b()+sfn('w5bBiz')};paneSpots=function(){return _ps5b()+sfn('w5bSpots')};paneBeef=function(){let f='';try{f=guardianLine()}catch(e){}return _pc5b()+sfn('twHTML')+(f?`<div class="sec">Your people</div>${f}`:'')+sfn('w5bCircle')};paneMove=function(){return _pm5b()+sfn('w5bMove')};
+paneBiz=function(){return _pb5b()+sfn('w5bBiz')};paneSpots=function(){return _ps5b()+sfn('w5bSpots')};paneBeef=function(){let f='';try{f=guardianLine()+parRows()}catch(e){}return _pc5b()+sfn('twHTML')+(f?`<div class="sec">Your people</div>${f}`:'')+sfn('w5bCircle')};paneMove=function(){return _pm5b()+sfn('w5bMove')};
 /* ---- actions ---- */
 function w5bAct(a,el){if(a.slice(0,4)!=='w5b_')return false;const B=b5(),X=B,k=el&&el.dataset||{};if(a==='w5b_x')return true;
   if(a==='w5b_front'){w5bFront(k.k);return true}
@@ -1924,7 +1932,7 @@ function crewHTML(){const M=crewList();if(!M.length)return `<div class="row"><di
   let h=`${M.some(m=>m.busy&&m.busy.r==='rob')?a2i('carcrew',320):M.length>=8?a2i('cookout',320):M.length>=4?a2i('meal',320):M.length>=2?a2i('meeting',320):''}<div class="row" style="flex-wrap:wrap"><div class="info"><div class="t">Your crew · ${M.length}</div><div class="s">Right Hand Man: ${rh?rh.name:'none'} · Enforcer: ${enf?enf.name:'none'} · Stash House: ${(M.find(m=>m.rank==='stash')||{name:'none'}).name} · Block Captain: ${(M.find(m=>m.rank==='cap')||{name:'none'}).name}. Build loyalty and trust, then promote. Send them out on routes that fit their skills.</div></div><button class="btn" data-a="cmleak" ${S.cash<400||S.leakD===S.day?'disabled':''}>Find the leak $400</button></div>`;
   h+=M.map((m,i)=>{const R=CRANK[m.rank],sp=crewBest(m),hurt=m.hurt>=S.day,on=m.busy;
     const col=m.rank==='rh'?'var(--accent)':m.rank==='enf'?'var(--blood)':m.rank!=='sol'?'var(--money)':'var(--line)';
-    const needTxt=m.need?`<div class="s" style="color:var(--blood);width:100%"><b>${m.name} ${CNEED[m.need.t]}</b> Help ${mHe(m,'him')} by ${dayTxt(m.need.exp)}.</div><div class="btns" style="width:100%"><button class="btn go" data-a="cmback" data-i="${i}" ${m.need.c&&S.cash<m.need.c?'disabled':''}>${m.need.t==='fight'?'Show up and back him up':'Handle it '+money(m.need.c)}</button><button class="btn" data-a="cmleave" data-i="${i}">Let ${mHe(m,'him')} handle it</button></div>`:'';
+    const needTxt=m.need?`<div class="s" style="color:var(--blood);width:100%"><b>${m.name} ${CNEED[m.need.t]}</b> Help ${mHe(m,'him')} by ${dayTxt(m.need.exp)}.</div><div class="btns" style="width:100%"><button class="btn go" data-a="cmback" data-i="${i}" ${m.need.c&&S.cash<m.need.c?'disabled':''}>${m.need.t==='fight'?'Show up and back '+mHe(m,'him')+' up':'Handle it '+money(m.need.c)}</button><button class="btn" data-a="cmleave" data-i="${i}">Let ${mHe(m,'him')} handle it</button></div>`:'';
     const st=on?`Out on ${CROUTE[on.r].n.toLowerCase()} until ${dayTxt(on.until)}`:hurt?`Laid up until ${dayTxt(m.hurt)}`:'Ready';
     const can=!on&&!hurt;
     const pt=m.rank==='rh'?'rh':m.rank==='enf'?'enf':m.rank==='stash'?'stashlead':m.rank==='cap'?'blockcap':({trap:'trap',rob:'rob',shoot:'shoot',look:'look',scam:'fraud'})[sp]||'trap';
@@ -1935,7 +1943,7 @@ function crewHTML(){const M=crewList();if(!M.length)return `<div class="row"><di
       <div class="s">${Object.keys(CMSPEC).map(k=>`${CMSPEC[k].n} ${m.sk[k]}`).join(' · ')}</div>
       <div class="s" style="color:${hurt?'var(--blood)':'var(--dim)'}">${st}${m.loy<25?' · <b style="color:var(--blood)">might skim or walk</b>':''}</div></div>
       ${needTxt}
-      <div class="btns" style="width:100%"><button class="btn green" data-a="cmchill" data-i="${i}">Chill</button><button class="btn green" data-a="cmpay" data-i="${i}" ${S.cash>=300?'':'disabled'}>Pay him $300</button><button class="btn" data-a="cmtalk" data-i="${i}">Talk</button></div>
+      <div class="btns" style="width:100%"><button class="btn green" data-a="cmchill" data-i="${i}">Chill</button><button class="btn green" data-a="cmpay" data-i="${i}" ${S.cash>=300?'':'disabled'}>Pay ${mHe(m,'him')} $300</button><button class="btn" data-a="cmtalk" data-i="${i}">Talk</button>${(()=>{const wi=w4Mem().indexOf(m),rest=m.w4m!=null&&S.day-m.w4m<5;return `<button class="btn go" data-a="w4_mis" data-i="${wi}" ${wi<0||rest?'disabled':''}>${rest?'Resting':'Mission'}</button>`})()}</div>
       <div class="btns" style="width:100%">${Object.keys(CROUTE).map(k=>`<button class="btn" data-a="cmsend" data-i="${i}" data-k="${k}" ${can?'':'disabled'}>${CROUTE[k].n} · ${crewFit(m,k)}</button>`).join('')}</div>
       <div class="btns" style="width:100%">${m.rank!=='rh'?`<button class="btn" data-a="cmrank" data-i="${i}" data-k="rh">Make Right Hand</button>`:''}${m.rank!=='enf'?`<button class="btn" data-a="cmrank" data-i="${i}" data-k="enf">Make Enforcer</button>`:''}${m.rank!=='stash'?`<button class="btn" data-a="cmrank" data-i="${i}" data-k="stash">Make Stash Leader</button>`:''}${m.rank!=='cap'?`<button class="btn" data-a="cmrank" data-i="${i}" data-k="cap">Make Block Captain</button>`:''}${m.rank!=='sol'?`<button class="btn" data-a="cmrank" data-i="${i}" data-k="sol">Demote</button>`:''}${m.snitch&&m.known?`<button class="btn go" data-a="cmlie" data-i="${i}">Feed him lies</button>`:''}<button class="btn red" data-a="cmfire" data-i="${i}">Cut loose</button></div></div>`}).join('');
   return h}
@@ -2257,13 +2265,13 @@ function paneCrew(){
    ${BLOCKS.map((bl,i)=>`<div class="row" style="padding:8px 12px">${avatar(i,36)}<div class="info"><div class="t">${plugName(i)} ${S.known.includes(i)?'<span class="chip mine">Knows you</span>':'<span class="chip">Stranger</span>'}</div>
     <div class="s">${bl} · <span style="color:${LVL[PINFO[i].lvl].col}">${PINFO[i].lvl} plug</span> · ${S.known.includes(i)?`Trust ${S.trust[i]}/100`:`${3-(S.deals[i]||0)} more deals to get known`}</div></div></div>`).join('')}
    ${sf(paneSafe)}
-   ${sf(paneLife)}
-   ${sf(paneFakes)}
-   ${sf(paneCut)}
    ${sf(shHTML)}
    <div class="sec">Turf and space</div>
    <div class="row"><div class="info"><div class="t">More stash space</div><div class="s">On foot you carry 250 max. More room comes from cars, safes and a stash house.</div></div></div>
-   <div class="row"><div class="info"><div class="t">Your turf: ${turf} block${turf===1?'':'s'}</div><div class="s">Each block pays $${300} a day and sells 12% higher</div></div></div>`;
+   <div class="row"><div class="info"><div class="t">Your turf: ${turf} block${turf===1?'':'s'}</div><div class="s">Each block pays $${300} a day and sells 12% higher</div></div></div>
+   ${sf(paneLife)}
+   ${sf(paneFakes)}
+   ${sf(paneCut)}`;
 }
 
 
@@ -3117,7 +3125,6 @@ function paneHome(){const H={...HOMES[S.home]};if(S.home==='family')H.name=is('l
   let h=`<div class="sec">Where you stay</div>
    <div class="row" style="border-color:var(--accent)">${homePic(S.home,64)}<div class="info"><div class="t">${H.name} <span class="chip here">Home</span></div>
     <div class="s">${H.sub}</div>${S.home==='couch'&&S.cousinDeal?'<div class="s" style="color:var(--money)">Paying your cousin $250 a week. The plays at your auntie\'s are yours.</div>':''}${true?`<div class="s">Community love ${Math.round(S.comm??30)}/100. ${(S.comm??30)>=60?'The neighbors got your back, so raids are rare.':'Nosy neighbors call the cops. Bless them to win them over.'}</div><div class="bar"><i style="width:${S.comm??30}%;background:var(--money)"></i></div>`:''}<div class="s">${H.rent?`${money(H.rent)} rent a week · next due ${dayTxt(S.rentDay)}`:'No rent'} · +${H.stash} stash · ${H.stress>0?'stress up a little every day':H.stress<0?'stress down every day':'no stress change'} · raid risk ${H.raid>=.08?'high':H.raid>=.04?'medium':'low'} when your heat is up</div></div></div>`;
-  if(S.par)h+=`<div class="row" style="padding:8px 12px;flex-wrap:wrap"><div class="info" style="flex:1 1 180px;min-width:0"><div class="s">${S.home==='family'?'Help out at home.':'Swing by and help '+S.par.name+' out.'}${S.par.strict>=60&&S.age<18?` Strict parents notice bands: over ${money(bandLimit())} on you and they get suspicious. A job helps and raises trust, and cash in the safe stays hidden.`:''} ${S.par.strict>=70&&S.age<18?'Careful: '+S.par.name+' is strict and will ask where it came from.':''}</div></div><div class="btns"><button class="btn green" data-a="pargive" data-k="100" ${cashAvail()>=100&&S.parGive!==S.day?'':'disabled'}>Give ${S.par.who} $100</button><button class="btn green" data-a="pargive" data-k="500" ${cashAvail()>=500&&S.parGive!==S.day?'':'disabled'}>$500</button><button class="btn green" data-a="parcustom" ${S.parGive!==S.day&&cashAvail()>=1?'':'disabled'}>Other amount</button></div></div><div class="row" style="padding:8px 12px;flex-wrap:wrap"><div class="info" style="flex:1 1 180px;min-width:0"><div class="t">Chores</div><div class="s">Earn back ${S.par.name}'s trust (now ${S.par.trust}/100). One chore a day. Doing one while grounded knocks a day off.${atParents()?'':` <b>You gotta be at the house on ${BLOCKS[S.home==='family'?homeBlock():famBlk()]}.</b>`}</div></div><div class="btns">${Object.entries(CHORES).map(([k,c])=>`<button class="btn green" data-a="chore" data-k="${k}" ${S.choreDay===S.day||!atParents()?'disabled':''}>${c.n} +${c.t}</button>`).join('')}</div></div>`;
   if(S.age&&S.age<18&&S.home==='family')return h+`<div class="row" style="flex-wrap:wrap"><div class="info" style="flex:1 1 200px;min-width:0"><div class="s">You can move out when you turn 18. Get grounded three times in about a month with low trust and ${S.par?S.par.name:'they'} will put you out. Talk 8 or higher can talk them out of it.${S.par&&S.par.strict>=60&&S.age>=16?' Strict people at home? You can run away.':''}</div></div>${S.par&&S.par.strict>=60&&S.age>=16?'<div class="btns"><button class="btn red" data-a="runaway">Run away</button></div>':''}</div>`;
   if(S.home!=='family'&&S.par&&!S.grannyLost){const need=S.par.strict>=70?60:40,ok=S.par.trust>=need&&!(S.kicked&&S.day-S.kicked<10);
     h+=`<div class="row" style="padding:8px 12px">${parPic(44)}<div class="info"><div class="t">Move back in with ${S.par.name}</div><div class="s">Free, +20 stash, but they watching what you bring in and nosy neighbors call the cops.${ok?'':` <span style="color:var(--blood)">${S.par.name} needs ${need}+ trust to let you back in (now ${S.par.trust})${S.kicked&&S.day-S.kicked<10?' and a little time to cool off':''}. Do chores and give them money to win them back.</span>`}</div></div><button class="btn green" data-a="moveback" ${ok?'':'disabled'}>Move back</button></div>`}
@@ -3962,7 +3969,7 @@ function paneGF0(){const p=PR(),g=S.gf;
   h+=live?`<div class="row" style="padding:8px 12px"><div class="info"><div class="t">Living together <span class="chip mine">Home</span></div><div class="s">$300 a week for your half. Stress drops every day. If y'all fall out, you're back on the couch.${g.plug!==undefined?` ${g.name} still runs ${BLOCKS[g.plug]}: 15% off and ${p.he} always tells you if it's fake.`:''}</div></div><button class="btn" data-a="gfdo" data-k="moveout">Move out</button></div>`
     :g.rel>=80?`<div class="row" style="padding:8px 12px"><div class="info"><div class="t">Move in with ${g.name}</div><div class="s">Y'all are ride or die. Split the bills, get a stash spot at home, and less stress every day.</div></div><button class="btn green" data-a="gfdo" data-k="movein" ${S.cash>=300?'':'disabled'}>Move in $300</button></div>`
     :`<div class="row" style="padding:8px 12px"><div class="info"><div class="s">Get to 80 and you can move in together.</div></div></div>`;
-  h+=`<div class="sec">Stash at ${g.name}'s · ${Math.round(gUsed())}/${GCAP}</div>`;
+  h+=sfn('w5bGF')+`<div class="s" style="padding:10px 2px 2px;font-weight:700">Stash at ${g.name}'s · ${Math.round(gUsed())}/${GCAP}</div>`;
   if(!ok)return h+`<div class="row"><div class="info"><div class="s">Get your relationship to 60 and ${p.he}'ll let you keep stuff at ${p.his} place. Cops and crews can't touch it there.</div></div></div>`;
   h+=`<div class="row"><div class="info"><div class="s">Safe from busts and robberies. If things go bad between y'all, ${p.he} might help ${p.him}self to it.</div></div></div>`;
   h+=GOODS.filter(x=>S.inv[x.id]-S.fake[x.id]>0||(S.gst[x.id]?.n>0)).map(x=>{const st=S.gst[x.id]?.n||0;
@@ -4622,7 +4629,8 @@ function wFront(i){const w=(S.workers||[])[i];if(!w||!w.req)return;const r=w.req
   const each=Math.round(street(g)*gmult(S.q[r.gid])*1.12),owe=Math.round(each*r.n);S.inv[r.gid]-=r.n;if(S.inv[r.gid]<=0){S.inv[r.gid]=0;S.paid[r.gid]=0;S.fake[r.gid]=0}
   w.fr={due:S.day+3,owe,txt:amt(r.n,g)+' of '+g.name};w.req=null;w.loyal=Math.min(10,w.loyal+1);say(`Fronted ${w.name} ${w.fr.txt}. Owes ${money(owe)} in 3 days. Loyalty +1.`)}
 const tBan=t=>`<div style="width:100%;background:rgba(245,183,42,.12);border-left:3px solid var(--accent);padding:3px 8px;border-radius:4px;font-size:12px;letter-spacing:.04em;text-transform:uppercase">${t}</div>`;
-function panePhone(){return panePhone0()+sfn('socHTML')}
+function panePhone(){return `<div class="sec">Trap phone</div>`+(sfn('w4Phone')+panePhone0()).replace(/<div class="sec">/g,'<div class="sec sub">')+sfn('w5bOrders')+sfn('w4Burners')+sfn('socHTML')}
+(()=>{try{const st=document.createElement('style');st.textContent='.sec.sub{font-size:.82em;opacity:.8;margin-top:10px;border:0}';document.head.appendChild(st)}catch(e){}})();
 function panePhone0(){const C=S.custos||[],T=S.texts||[];
   let h=paneConnect()+phonePlugs()+workersPhoneHTML()+``+x8Phone()+`<div class="row" style="flex-wrap:wrap;border-color:var(--accent)"><div class="info"><div class="t" style="font-family:var(--display);font-size:20px;font-weight:400">Trap phone</div><div class="s">${C.length} plays saved · plays pay more than the Js, and more the longer they've been buying from you. They come to you, wherever you at.</div></div>
     <div class="btns" style="width:100%"><button class="btn go" style="white-space:normal" data-a="ptext" ${S.texted===S.day||!C.length?'disabled':''}>${S.texted===S.day?'Already texted today':"Text everybody \"I'm open\""}</button><button class="btn" style="white-space:normal" data-a="pcard" ${S.passed===S.day?'disabled':''}>${S.passed===S.day?'Passed it out today':`Pass out your number on ${BLOCKS[S.at]}`}</button></div></div>`;
@@ -5493,6 +5501,7 @@ function teenStart(ch,age){age=age||14;S.cal=1;S.age=age;S.grade=Math.min(12,9+(
   const g=GUARD[ch]||pick(GUARDPOOL);S.par={...g,trust:60};
   const m=rnd(9,18),mo=((m-1)%12)+1,yr=2026+(m>12?1:0);S.nextBday=Date.UTC(yr+(age-14),mo-1,rnd(1,28));
   if(age<18){S.home='family';S.cap+=20;S.at=homeBlock()}}
+function parRows(){if(!S.par)return '';return `<div class="row" style="padding:8px 12px;flex-wrap:wrap"><div class="info" style="flex:1 1 180px;min-width:0"><div class="s">${S.home==='family'?'Help out at home.':'Swing by and help '+S.par.name+' out.'}${S.par.strict>=60&&S.age<18?` Strict parents notice bands: over ${money(bandLimit())} on you and they get suspicious. A job helps and raises trust, and cash in the safe stays hidden.`:''} ${S.par.strict>=70&&S.age<18?'Careful: '+S.par.name+' is strict and will ask where it came from.':''}</div></div></div><div class="row" style="padding:8px 12px;flex-wrap:wrap"><div class="info" style="flex:1 1 180px;min-width:0"><div class="t">Chores</div><div class="s">Earn back ${S.par.name}'s trust (now ${S.par.trust}/100). One chore a day. Doing one while grounded knocks a day off.${atParents()?'':` <b>You gotta be at the house on ${BLOCKS[S.home==='family'?homeBlock():famBlk()]}.</b>`}</div></div><div class="btns">${Object.entries(CHORES).map(([k,c])=>`<button class="btn green" data-a="chore" data-k="${k}" ${S.choreDay===S.day||!atParents()?'disabled':''}>${c.n} +${c.t}</button>`).join('')}</div></div>`;}
 function guardianLine(){const P=S.par;if(!P)return '';
   if(S.home!=='family')return `<div class="row" style="flex-wrap:wrap">${parPic(52)}<div class="info" style="flex:1 1 200px;min-width:0"><div class="t">Your people: ${P.name}</div><div class="s">${parRich()?`${P.who} already has money. No reason to move them.`:S.parOut?'You moved them out the hood. They are straight.':'You moved out, but you still look out for them.'}${S.parCar&&CARS[S.parCar]?` Drives a ${CARS[S.parCar].name} you bought.`:''}</div><div class="s">Trust ${P.trust}/100</div></div>
     <div class="btns"><button class="btn green" data-a="pargive" data-k="100" ${cashAvail()>=100&&S.parGive!==S.day?'':'disabled'}>Give ${P.who} $100</button><button class="btn green" data-a="pargive" data-k="500" ${cashAvail()>=500&&S.parGive!==S.day?'':'disabled'}>Give $500</button><button class="btn green" data-a="parcustom" ${S.parGive!==S.day&&cashAvail()>=1?'':'disabled'}>Other amount</button><button class="btn green" data-a="parcar">Bless with a car</button>${S.parOut||parRich()?'':`<button class="btn" data-a="parmove" ${cashAvail()>=15000?'':'disabled'}>Move them out the hood $15,000</button>`}</div></div>`;const st=P.strict>=70?'Strict':P.strict>=45?'Keeps an eye on you':'Lets you slide';
