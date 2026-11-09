@@ -616,7 +616,7 @@ function waveTop(){let h='';try{h+=waveGoal()}catch(e){}try{h+=waveSummary()}cat
 function waveDecor(){try{
   const st=(id,on)=>{const e=$(id);if(e&&e.closest('.stat'))e.closest('.stat').classList.toggle('wd',!!on)};
   st('heatb',S.heat>=75);st('stressb',S.stress>=80);st('hpb',S.hp<=25);
-  const t=$('wtint');if(t){const ph=S.day%4,col=['rgba(255,170,90,.025)','rgba(0,0,0,0)','rgba(255,110,40,.035)','rgba(20,40,110,.07)'][ph];t.style.background=col;t.hidden=false;const lab=$('dmax');if(lab&&!/ · (Dawn|Day|Dusk|Night)/.test(lab.textContent))lab.textContent+=' · '+['Dawn','Day','Dusk','Night'][ph]}
+  const t=$('wtint');if(t){const ph=S.day%4,col=['rgba(255,170,90,.025)','rgba(0,0,0,0)','rgba(255,110,40,.035)','rgba(20,40,110,.07)'][ph];t.style.background='transparent';t.hidden=true;const lab=$('dmax');if(lab&&!/ · (Dawn|Day|Dusk|Night)/.test(lab.textContent))lab.textContent+=' · '+['Dawn','Day','Dusk','Night'][ph]}
   let winter=false;try{if(S.cal){const m=calDate().getUTCMonth();winter=m===11||m<=1}else winter=(S.day%90)>=60}catch(e){}
   if(W().fw)winter=W().fw===1;const sn=$('wsnow');if(sn)sn.hidden=!winter;const rn=$('wrain');if(rn)rn.hidden=!(W().rain===S.day);
   const dots={phone:((S.texts||[]).length>0),crew:(S.pts||0)>0,rap:!!(S.rapReq||((S.rap||{}).lab||{}).req),exp:!!(S.ls&&S.ls.owe&&S.ls.due-S.day<=2),beef:false};
