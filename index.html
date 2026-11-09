@@ -397,7 +397,7 @@ function render(){try{wTabBtns()}catch(e){}setTimeout(alertFlush,350);flowTick()
   try{$('cardtab').textContent=(S.hand||[]).length?`🃏 Cards ${S.hand.length}`:'🃏 Cards'}catch(e){console.error('cardtab',e)}
   const FXN={discount:'Plug Love',hype:'Hype Day',ride:'Ride or Die',lawyer:'Lawyer'};
   $('fx').innerHTML=Object.keys(S.fx||{}).filter(k=>S.fx[k]).map(k=>`<span class="chip here">Active: ${FXN[k]}</span>`).join('');
-  let _ph;try{_ph={sch:paneSchool,rap:paneRap,rob:paneRob,sp:paneSports,phone:panePhone,block:()=>sf(haHTML)+paneBlock()+paneGuns()+(()=>{try{return x8On()?goalHTML():''}catch(e){return ''}})(),move:paneMove,beef:paneBeef,crew:paneCrew,cards:paneCards,exp:paneExp,prison:panePrison,spots:paneSpots,biz:paneBiz,bag:paneBag,money:paneMoney}[tab]()}catch(e){console.error('tab',tab,e);_ph=`<div class="row"><div class="info"><div class="t" style="color:var(--blood)">This tab hit an error</div><div class="s">${esc(e.message||'')} (tell Euro: ${esc(tab)})</div></div></div>`}
+  let _ph;try{_ph={sch:paneSchool,rap:paneRap,rob:paneRob,sp:paneSports,phone:panePhone,block:()=>sf(haHTML)+sf(poHTML)+paneBlock()+paneGuns()+(()=>{try{return x8On()?goalHTML():''}catch(e){return ''}})(),move:paneMove,beef:paneBeef,crew:paneCrew,cards:paneCards,exp:paneExp,prison:panePrison,spots:paneSpots,biz:paneBiz,bag:paneBag,money:paneMoney}[tab]()}catch(e){console.error('tab',tab,e);_ph=`<div class="row"><div class="info"><div class="t" style="color:var(--blood)">This tab hit an error</div><div class="s">${esc(e.message||'')} (tell Euro: ${esc(tab)})</div></div></div>`}
   $('pane').innerHTML=waveTop()+_ph;
   $('log').innerHTML=S.log.map(l=>`<p><span class="d">D${l.d}</span>${l.t}</p>`).join('');
   if(S.pr){$('here').textContent='Locked up · '+S.pr.place}
@@ -1197,7 +1197,7 @@ function prEnd(early){const R=S.pr;if(!R)return;const served=S.day-R.start,place
   say(`Released from ${place} after ${prLabel(Math.max(1,served))}. Strike ${S.strikes} of ${maxStrikes()}.${R.bal?` Your commissary balance (${money(R.bal)}) came back to you.`:''}`);
   if(S.par){const P=S.par;P.trust=Math.max(0,P.trust-12);say(`${P.name} heard you got locked up. "I raised you better than this."`)}
   S.heat=Math.max(0,S.heat-10);tab='block';startParole()}
-function startParole(){if(!window.noParole&&S.age>=18){const sp=S.cal?4:3;S.po={until:S.day+(S.cal?16:12),sp,due:S.day+sp,did:0,vio:0};say(`You are on parole. Check in with your officer before day ${S.po.due}. Miss it or catch a violation and you go back.`)}}
+function startParole(){if(!window.noParole&&S.age>=18){const sp=S.cal?4:3;S.po={until:S.day+(S.cal?16:12),sp,due:S.day+sp,did:0,vio:0};say(`You are on parole. Check in with your officer ${BLOCKS[5]} by day ${S.po.due} (top of the Block tab). Miss it or catch a violation and you go back.`)}}
 function prisonDay(){const R=S.pr;if(!R)return;R.acts={};R.sold={};GOODS.forEach(g=>R.px[g.id]=4+Math.random()*4);
   const lock0=prNow();
   if(R.job&&!prHole()){R.bal+=PJOBS[R.job].pay}
@@ -2028,10 +2028,11 @@ function shDay(){const H=S.stashH;if(!H||!H.own||S.pr)return;const has=H.cash>0|
   const lead=crewRank('stash'),r=(.01+S.heat/100*.03)*(lead?.5:1)*(S.lawPay?.7:1)*(1-.25*(H.up||0))*w4DogMul();
   if(Math.random()<r){const cash=H.cash,list=GOODS.filter(g=>(H.inv[g.id]||0)>0).map(g=>g.name);H.cash=0;GOODS.forEach(g=>{H.inv[g.id]=0;H.fake[g.id]=0});H.own=0;S.heat=Math.min(100,S.heat+12);say(`Twelve raided the stash house. You lost ${money(cash)}${list.length?' and the '+list.join(', '):''}. The house is gone.`);setTimeout(()=>{if(!$('modal').hidden||S.over)return;modal(`${a2('shraid',340)}<h2 style="color:var(--blood)">Stash house raided</h2><p>Twelve kicked the door in. You lost ${money(cash)}${list.length?' and the '+list.join(', '):''}. The house is gone.</p><div class="btns"><button class="btn go" id="ok">Damn</button></div>`);$('ok').onclick=close},400)}}
 /* ---------- parole ---------- */
-function poHTML(){const P=S.po;if(!P||S.pr)return '';return `<div class="sec">Parole officer</div>${a2i('parolo',300)}<div class="row" style="flex-wrap:wrap"><div class="info"><div class="t">On parole until ${dayTxt(P.until)}</div><div class="s">Check in by ${dayTxt(P.due)}. ${P.vio?`<b style="color:var(--blood)">${P.vio} violation${P.vio>1?'s':''}.</b> One more and you go back. `:''}Keep your heat down and stay clean.</div></div><button class="btn go" data-a="pocheck" ${P.did===P.due?'disabled':''}>${P.did===P.due?'Checked in':'Check in'}</button></div>`}
-function poAct(a){const P=S.po;if(!P||a!=='pocheck'||P.did===P.due)return;if(!spendEn(5))return;P.did=P.due;addStress(4);
+function poHTML(){const P=S.po;if(!P||S.pr)return '';return `<div class="sec">Parole officer</div>${a2i('parolo',300)}<div class="row" style="flex-wrap:wrap"><div class="info"><div class="t">On parole until ${dayTxt(P.until)}</div><div class="s">Check in by ${dayTxt(P.due)}. ${P.vio?`<b style="color:var(--blood)">${P.vio} violation${P.vio>1?'s':''}.</b> One more and you go back. `:''}Keep your heat down and stay clean. Your officer's office is ${BLOCKS[PO_BI]}.${S.at!==PO_BI&&P.did!==P.due?` You're on ${BLOCKS[S.at]}, so going there takes the day.`:''}</div></div>${P.did===P.due?'<button class="btn go" disabled>Checked in</button>':S.at===PO_BI?'<button class="btn go" data-a="pocheck">Check in</button>':`<button class="btn go" data-a="pogo">Head ${BLOCKS[PO_BI]} and check in</button>`}</div>`}
+const PO_BI=5;
+function poAct(a){const P=S.po;if(!P||(a!=='pocheck'&&a!=='pogo')||P.did===P.due)return;if(a==='pocheck'&&S.at!==PO_BI)return;if(!spendEn(5))return;const trip=a==='pogo';if(trip){S.at=PO_BI;say(`Went ${BLOCKS[PO_BI]} to see your parole officer.`)}P.did=P.due;addStress(4);
   if(S.heat>=70&&Math.random()<.35){return poViol('Your officer did not like how things looked at the check-in.')}
-  say('Checked in with your parole officer. All good.');modal(`${a2('checkin',340)}<h2>Parole check-in</h2><p>You sat across from your officer and kept it short. All good this time.</p><div class="btns"><button class="btn go" id="ok">Continue</button></div>`);$('ok').onclick=()=>{close();render()}}
+  say('Checked in with your parole officer. All good.');modal(`${a2('checkin',340)}<h2>Parole check-in</h2><p>You sat across from your officer and kept it short. All good this time.${trip?' The trip took the rest of your day.':''}</p><div class="btns"><button class="btn go" id="ok">Continue</button></div>`);$('ok').onclick=()=>{close();if(trip){nextDay();checkEnd()}render()}}
 function poViol(t){const P=S.po;if(!P)return;P.vio++;S.heat=Math.min(100,S.heat+8);say(`Parole violation. ${t}`);
   if(P.vio>=2){S.po=null;S.strikes=Math.min(maxStrikes()-1,S.strikes);window.FF=false;prStart();S.pr.len=Math.max(3,Math.round(S.pr.len*.5));S.pr.until=S.day+S.pr.len;S.pr.charge='Parole violation';say(`Parole revoked. Back in for ${prLabel(S.pr.len)}.`);return}
   render()}
@@ -2258,8 +2259,6 @@ function paneCrew(){
    ${sf(paneFakes)}
    ${sf(paneCut)}
    ${sf(shHTML)}
-   ${sf(poHTML)}
-   
    <div class="sec">Turf and space</div>
    <div class="row"><div class="info"><div class="t">More stash space</div><div class="s">On foot you carry 250 max. More room comes from cars, safes and a stash house.</div></div></div>
    <div class="row"><div class="info"><div class="t">Your turf: ${turf} block${turf===1?'':'s'}</div><div class="s">Each block pays $${300} a day and sells 12% higher</div></div></div>`;
@@ -5190,7 +5189,7 @@ function act(a,el){
   if(a.slice(0,2)==='zs')return spAct(a,el);
   if(a.slice(0,2)==='ct')return ctAct(a,el);
   if(a.slice(0,2)==='sz')return szAct(a,el);
-  if(a==='pocheck')return poAct(a);
+  if(a==='pocheck'||a==='pogo')return poAct(a);
   if(a==='twgo')return twAct(el);
   if(a==='lwash')return launAct(el);
   if(a.slice(0,2)==='pz')return prAct(a,el);
