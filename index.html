@@ -5021,15 +5021,15 @@ function footRun(done){
 }
 function chase(done){
   const _fl=window.__laneChase;window.__laneChase=0;if(!S.car&&!_fl)return footRun(done);
-  mgOn=true;const W=300,H=380,L=[50,150,250];let lane=1,lives=2,t0=performance.now(),cars=[],spawn=0,inv=0,last=t0,prevOpen=[0,1,2],hunt=3200;
+  mgOn=true;const W=300,H=380,L=[50,150,250];const drv5=(()=>{try{return crewOk().some(m=>(m.sk.drive||0)>=5)?1:0}catch(e){return 0}})(),lkOn=(()=>{try{return crewOk().some(m=>(m.sk.look||0)>=1)}catch(e){return false}})();let lane=1,lives=2+drv5,t0=performance.now(),cars=[],spawn=0,inv=0,last=t0,prevOpen=[0,1,2],hunt=3200;
   const spd=Math.max(.6,(is('shade')?.8:badKnee()?1.15:1)*(1-(S.sk.smarts-3)*.03)*(stressed()?1.1:1)*(S.rob&&S.rob.car?.85:1)*(buf('snow')?.88:1)*(buf('phones')||buf('bars')?1.12:1)*(hasT('runner')?.9:1)*carSpd()*((()=>{try{if(!S.car)return 1;const D=crewOk().sort((a,b)=>(b.sk.drive||0)-(a.sk.drive||0))[0];return D?Math.max(.8,1-.03*(D.sk.drive||0)):1}catch(e){return 1}})())*(window.__lkHead?(window.__lkHead=0,.9):1)*copSpd), DUR=20000;
-  const CHW=window.chaseWho||null;window.chaseWho=null;modal(`<h2>${CHW?CHW+' on your tail':'Twelve on your tail'}</h2><p>Survive 20 seconds. Some ${CHW?'of them':'cops'} cut over into your lane (watch the flashing outline), some come in fast, and the last 5 seconds they floor it. Tap left or right, or use the arrow keys.</p>
+  const CHW=window.chaseWho||null;window.chaseWho=null;modal(`<h2>${CHW?CHW+' on your tail':'Twelve on your tail'}</h2><p>Survive 20 seconds. Some ${CHW?'of them':'cops'} cut over into your lane (watch the flashing outline), some come in fast, and the last 5 seconds they floor it. ${lkOn?'Your lookout flags the lane a cop is about to cut into. ':''}${drv5?'Your driver takes one hit for you. ':''}Tap left or right, or use the arrow keys (A and D work too).</p>
     <canvas id="cv" width="${W}" height="${H}" style="width:100%;max-width:${W}px;align-self:center;background:#1a1720;border-radius:6px;touch-action:none"></canvas>
     <div class="btns" style="justify-content:center"><button class="btn go" id="lt" style="padding:14px 34px;font-size:20px">◀</button><button class="btn go" id="rt" style="padding:14px 34px;font-size:20px">▶</button></div><p id="cs" style="text-align:center"></p>`);
   const cv=$('cv'),x=cv.getContext('2d');
   const mv=d=>{lane=Math.max(0,Math.min(2,lane+d))};$('lt').onclick=()=>mv(-1);$('rt').onclick=()=>mv(1);
   cv.onpointerdown=e=>{const r=cv.getBoundingClientRect();mv(e.clientX-r.left<r.width/2?-1:1)};
-  const key=e=>{if(e.key==='ArrowLeft'){mv(-1);e.preventDefault()}if(e.key==='ArrowRight'){mv(1);e.preventDefault()}};document.addEventListener('keydown',key);
+  const key=e=>{if(e.key==='ArrowLeft'||e.key==='a'||e.key==='A'){mv(-1);e.preventDefault()}if(e.key==='ArrowRight'||e.key==='d'||e.key==='D'){mv(1);e.preventDefault()}};document.addEventListener('keydown',key);
   const car=(cx,cy,c,cop)=>{x.fillStyle=c;x.fillRect(cx-22,cy-36,44,72);x.fillStyle='#0d0b10';x.fillRect(cx-16,cy-24,32,14);x.fillRect(cx-16,cy+12,32,12);
     if(cop){const f=Math.floor(performance.now()/150)%2;x.fillStyle=f?'#e8504a':'#4aa3ff';x.fillRect(cx-14,cy-6,12,6);x.fillStyle=f?'#4aa3ff':'#e8504a';x.fillRect(cx+2,cy-6,12,6)}};
   const fin=ok=>{mgOn=false;document.removeEventListener('keydown',key);
@@ -5042,6 +5042,7 @@ function chase(done){
     x.fillStyle='#1a1720';x.fillRect(0,0,W,H);x.strokeStyle='#3a3440';x.lineWidth=3;x.setLineDash([22,18]);x.lineDashOffset=-el/6;
     [100,200].forEach(lx=>{x.beginPath();x.moveTo(lx,0);x.lineTo(lx,H);x.stroke()});x.setLineDash([]);
     cars.forEach(c=>{car(L[c.l],c.y,c.h?'#c9ccd8':(c.sp>1?'#f0e6c8':'#e9e9ef'),true);if(c.h&&!c.sw&&Math.floor(t/120)%2){x.strokeStyle='#e8504a';x.lineWidth=3;x.strokeRect(L[c.l]-25,c.y-39,50,78)}});
+    if(lkOn&&hunt>0&&hunt<750&&el>2500&&el<DUR-1500){x.fillStyle='rgba(232,80,74,.22)';x.fillRect(L[lane]-28,0,56,H);x.fillStyle='#f5b72a';x.font='bold 22px sans-serif';x.fillText('!',L[lane]-4,28)}
     if(!(inv>0&&Math.floor(t/100)%2))car(L[lane],H-60,'#f5b72a',false);
     $('cs').textContent=`${boost>1?'🚨 They flooring it! ':''}${Math.max(0,Math.ceil((DUR-el)/1000))}s left · ${lives} hit${lives===1?'':'s'} left`;
     if(el>=DUR)return fin(true);requestAnimationFrame(loop)};
