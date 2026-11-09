@@ -1,4 +1,4 @@
-/* The Hustle v196 code, part 2 of 6. Pictures removed (shown as ART). */
+/* The Hustle v196 code, part 2 of 6. Pictures removed (shown as ART); every key in review/art-keys.txt has a real picture. */
     $('pay').onclick=()=>{prPay(f.owe);R.fronts=R.fronts.filter(x=>x!==f);say(`Paid off ${f.who}.`);close();render()};
     $('fg').onclick=()=>{close();fightGame(myStr()+(R.inv.shank?4:0),str,`${f.who}'s people`,win=>{prHeat(10);if(win){R.fronts=R.fronts.filter(x=>x!==f);S.rep+=2;say(`You beat ${f.who}'s people and the debt is dead.`)}else{const d=vcut(rnd(12,28));S.hp-=d;say(`${f.who}'s people beat you down. −${d} health. The debt is still there.`)}checkEnd();render()})}}}
   // lockdown, tests

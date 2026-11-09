@@ -1,4 +1,4 @@
-/* The Hustle v196 code, part 4 of 6. Pictures removed (shown as ART). */
+/* The Hustle v196 code, part 4 of 6. Pictures removed (shown as ART); every key in review/art-keys.txt has a real picture. */
   else{const d=rnd(4,12);S.hp-=d;S.trust[bi]=Math.max(0,S.trust[bi]-15);S.heat=Math.min(100,S.heat+8);say(`You pushed ${nm} too hard and ${he} shoved back. −${d} health.`)}render()}
 function plugAskGo(bi,gid,mode){const nm=plugName(bi),he=plugFem(bi)?'she':'he',him=plugFem(bi)?'her':'him',g=G(gid),pk=S.pk[bi]=S.pk[bi]||{};if(pk.ask===S.day)return;pk.ask=S.day;close();
   const p=mode==='talk'?Math.min(.65,.08+S.trust[bi]/250+((S.sk&&S.sk.talk)||3)*.03):Math.min(.6,.2+S.rep/300+(S.hp>60?.1:0));

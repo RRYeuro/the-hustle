@@ -1,4 +1,4 @@
-/* The Hustle v196 code, part 6 of 6. Pictures removed (shown as ART). */
+/* The Hustle v196 code, part 6 of 6. Pictures removed (shown as ART); every key in review/art-keys.txt has a real picture. */
   if(a==='clip'){if(S.cash<400)return;S.cash-=400;delete S.noClip[el.dataset.k];say(`Unc got you a clip for the ${GUNS[el.dataset.k].name.toLowerCase()}. It's live now.`)}
   if(a==='autogun'){const k=el.dataset.k,f=autoFee(k);if(S.cash<f)return;S.cash-=f;S.auto=S.auto||{};S.auto[k]=1;S.heat=Math.min(100,S.heat+5);say(`Unc made your ${GUNS[k].name} full auto for ${money(f)}. "Don't tell nobody I did that."`)}
   if(a==='givegun'){const k=el.dataset.k;delete S.guns[k];armed().push(k);say(`Passed the ${GUNS[k].name.toLowerCase()} to one of your soldiers. He's strapped now.`)}
@@ -429,7 +429,7 @@ function kidDay(){(S.kids||[]).forEach((c,i)=>{if(c.bond==null)c.bond=60;c.ms=c.
   [5,10,13,16,18].forEach(m=>{if(a>=m&&!c.ms.includes(m)){c.ms.push(m);S.kidQ=S.kidQ||[];S.kidQ.push({i,m})}})});
   if(weekTick()&&(S.kids||[]).length){const c=S.kids.reduce((t,k)=>t+kidCost(k),0);if(c){S.cash-=c;say(`Spent ${money(c)} on the kids this week.`);if(S.cash<0)S.cash=0}
     S.kids.forEach(k=>{if(kidAge(k)>=18)return;let d=0;if(S.heat>=60)d-=3;if(S.hp<40)d-=2;if(['condo','house'].includes(S.home))d+=1;if(Object.keys(S.biz||{}).length)d+=1;if(k.t&&S.day-k.t>10)d-=2;k.bond=Math.max(0,Math.min(100,k.bond+d))})}}
-function kidEvent(){const q=S.kidQ.shift(),c=S.kids[q.i];if(!c)return false;const nm=c.name,o=(h,t,opts)=>{modal(`<h2>${h}</h2><p>${t}</p><div class="btns">${opts.map((x,j)=>`<button class="btn ${j?'':'go'}" data-ko="${j}" ${x[2]===false?'disabled':''}>${x[0]}</button>`).join('')}</div>`);$('mcard').querySelectorAll('[data-ko]').forEach(b=>b.onclick=()=>{opts[+b.dataset.ko][1]();render();if(!$('modal').dataset.keep)close()})};
+function kidEvent(){const q=S.kidQ.shift(),c=S.kids[q.i];if(!c)return false;const nm=c.name,o=(h,t,opts)=>{modal(`<h2>${h}</h2><p>${t}</p><div class="btns">${opts.map((x,j)=>`<button class="btn ${j?'':'go'}" data-ko="${j}" ${x[2]===false?'disabled':''}>${x[0]}</button>`).join('')}</div>`);$('mcard').querySelectorAll('[data-ko]').forEach(b=>b.onclick=()=>{opts[+b.dataset.ko][1]();render();if(!$('modal').dataset.keep&&document.body.contains(b))close()})};
   const B=n=>{c.bond=Math.max(0,Math.min(100,c.bond+n))};
   if(q.m===5)o(`${nm} turned 5`,`First day of school is coming up. ${nm} needs clothes and supplies.`,[[`Get everything $300`,()=>{S.cash-=300;B(5);say(`Got ${nm} ready for school.`)},S.cash>=300],['They good how they are',()=>{B(-5)}]]);
   else if(q.m===10)o(`${nm} asked you something`,`${nm} saw a news story about the block. "Are you in the streets?"`,[['Tell the truth',()=>{c.truth=1;B(5);say(`Told ${nm} the truth.`)}],['Lie',()=>{c.lied=1;say(`Lied to ${nm}.`)}]]);

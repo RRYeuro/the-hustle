@@ -1,4 +1,4 @@
-/* The Hustle v196 code, part 3 of 6. Pictures removed (shown as ART). */
+/* The Hustle v196 code, part 3 of 6. Pictures removed (shown as ART); every key in review/art-keys.txt has a real picture. */
 function paneSports(){return paneSports0()+sfn('sp3HTML')}
 function paneSports0(){const P=spSt();if(!P.kind)return `<div class="row"><div class="info"><div class="t">No sport yet</div><div class="s">Tap the rec center or the stadium on the Move tab to join a team.</div></div></div>`;
   const D=SPORTS[P.kind],nx=D.st[P.stage+1],need=SP_NEED[P.stage+1],hurt=P.inj>S.day,wNeed=(P.stage+1)*3;

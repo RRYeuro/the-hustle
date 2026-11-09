@@ -1,4 +1,4 @@
-/* The Hustle v196 code, part 5 of 6. Pictures removed (shown as ART). */
+/* The Hustle v196 code, part 5 of 6. Pictures removed (shown as ART); every key in review/art-keys.txt has a real picture. */
     if(Math.random()<odds){const m=Math.round(n*S.paid[g.id]*1.5);dropFakes(g);S.cash+=m;S.known=S.known.filter(i=>i!==bi);S.trust[bi]=0;S.rep+=4;
       say(`Pressed ${nm} over the fake ${g.name}. Got ${money(m)}. ${P.He}'s done with you.`);return done(`${nm} paid up`,`You pulled up with your people and ${P.he} paid ${money(m)} to make it go away. That's more than you paid. Rep +4, but ${P.he}'s done dealing with you.`,true)}
     const dmg=vcut(rnd(15,30));S.hp-=dmg;S.trust[bi]=Math.max(0,S.trust[bi]-20);say(`Pressed ${nm} and it went bad. −${dmg} health.`);return done('It went bad',`${nm} had people waiting. −${dmg} health and trust −20.`,false)}
