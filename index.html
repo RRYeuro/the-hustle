@@ -5074,7 +5074,7 @@ function cops(){
   modal(`<div class="sec" style="margin:0;color:${C.col}">${C.name}</div><h2 style="color:${C.col}">Twelve pulled up</h2><p>${C.txt} Your heat is ${S.heat}.</p>
     <div class="btns"><button class="btn" id="r">Run</button><button class="btn" id="s">Stay cool</button>${k==='dirty'?`<button class="btn go" id="b" ${S.cash>=bribe?'':'disabled'}>Pay him ${money(bribe)}</button>`:''}</div>`);
   $('r').onclick=()=>{copSpd=C.spd;chase(ok=>{copSpd=1;addStress(8);if(ok){S.st.cops++;addXP(3);say(`You dipped on the ${C.name.toLowerCase()}.`);S.heat=Math.min(100,S.heat+5)}else{close();busted()}})};
-  $('s').onclick=()=>{const odds=C.cool+(is('country')?.2:0)+(S.sk.talk-3)*.03+(S.sk.smarts-3)*.02;if(used()===0||Math.random()<odds){S.st.cops++;say(`The ${C.name.toLowerCase()} let you go.`);S.heat=Math.max(0,S.heat-10)}else{close();busted()}};
+  $('s').onclick=()=>{const odds=C.cool+(is('country')?.2:0)+(S.sk.talk-3)*.03+(S.sk.smarts-3)*.02;if(used()===0||Math.random()<odds){S.st.cops++;say(`The ${C.name.toLowerCase()} let you go.`);S.heat=Math.max(0,S.heat-10);close();render()}else{close();busted()}};
   if($('b'))$('b').onclick=()=>{if(S.cash<bribe)return;S.cash-=bribe;S.heat=Math.max(0,S.heat-15);say(`Paid the dirty cop ${money(bribe)}. He said he'll see you next week.`);close()};
 }
 function busted(){addStress(20);if(canNewConnect()&&!S.cellCon&&Math.random()<.3){S.cellCon=1;S.pconn='cell'}if(S.fx.lawyer||S.lawPay){if(Object.keys(S.guns||{}).length)say('Lawyer got the gun charge thrown out too.');if(!S.lawPay)S.fx.lawyer=0;relUp('law',4);S.heat=Math.max(0,S.heat-20);say('Got jammed up, but your lawyer had you out in an hour. Lost nothing.');return}
@@ -5084,7 +5084,7 @@ function busted(){addStress(20);if(canNewConnect()&&!S.cellCon&&Math.random()<.3
   say(`Got jammed up. Lost your whole stash and ${money(fine)}.`);
   if(lawFree()&&Math.random()<(S.lawPay?.7:.5)){S.cash+=Math.round(fine*.5);say(S.lawPay?'Attorney Cole got the case thrown out. No strike, and he got half your fine back.':'Your lawyer got the case thrown out. No strike, and half your fine back.');if(!S.lawPay)S.fx.lawyer=0;return}
   S.strikes=(S.strikes||0)+1;const teen=S.age&&S.age<18,place=teen?'juvie':'county';if(teen)S.juv=(S.juv||0)+1;cut('bust','LOCKED UP');
-  if(S.strikes>=maxStrikes()&&!teen){S.over=true;S.prison=1;say('Final strike. They gave you life.');return}
+  if(S.strikes>=maxStrikes()&&!teen){S.over=true;S.prison=1;say('Final strike. They gave you life.');setTimeout(()=>{try{render();checkEnd()}catch(e){}},60);return}
   const life=S.strikes>=maxStrikes()&&teen,turns=life?0:S.cal?(S.strikes===1?4:26):(S.strikes===1?2:5),label=life?'until you turned 18':S.cal?(S.strikes===1?'2 weeks':'3 months'):(S.strikes===1?'2 days':'5 days');
   if(!teen&&!life&&!window.FF&&!window.noPrison&&S.strikes===1&&!S.ha&&!S.pr&&Math.random()<.55)return houseArrest();
   if(!teen&&!life&&!window.FF&&!window.noPrison){prStart();say(`Locked up in ${S.pr.place}. ${S.pr.charge}. ${prLabel(S.pr.len)} to do.`);return}
@@ -5100,7 +5100,7 @@ function lockPopUI(){const L=S.lockPop;if(!L||!$('modal').hidden||S.over)return 
 /* ---------- actions ---------- */
 function act(a,el){
   if(a==='pic'){modal(`${a2(el.dataset.k,340)}<div class="btns"><button class="btn go" id="pcx">Close</button></div>`);$('pcx').onclick=close;return}
-  if(S.over)return;
+  if(S.over){try{checkEnd()}catch(e){}return}
   try{if(waveAct(a,el))return}catch(e){console.error('waveAct',e)}
   if(a.slice(0,2)==='cm')return crewAct(a,el);
   if(a.slice(0,2)==='x8')return x8Act(a,el);
