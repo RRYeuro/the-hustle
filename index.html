@@ -1587,7 +1587,7 @@ function w5bMove(){const B=b5();let h=`<div class="sec">Out of town</div>`;
   h+=`<div class="s" style="padding:2px 4px">${best&&best.v>0?`You would take your ${best.g.name.toLowerCase()}. Up to ${w5bUnit(best.g)*3}${w5bUN(best.g)}.`:'Get something to carry first.'} One run every 4 days.</div>`;
   W5BCITY.forEach((c,i)=>{const ct=(B.city[c.n]||{}).contact;h+=w5bRow(`🚗 ${c.n}`,`${money(c.cost)} for gas and a room. Better prices than home.${ct?' You have a contact there.':''}`,'w5b_run',B.ctrip>S.day-4?'Wait':'Go',B.ctrip>S.day-4||S.cash<c.cost||!best||best.v<=0,'',`data-i="${i}"`)});return h}
 const _pb5b=paneBiz,_ps5b=paneSpots,_pc5b=paneBeef,_pm5b=paneMove;
-paneBiz=function(){return _pb5b()+sfn('w5bBiz')};paneSpots=function(){return _ps5b()+sfn('w5bSpots')};paneBeef=function(){return _pc5b()};const _pl5b=paneLife;paneLife=function(){let f='';try{f=guardianLine()}catch(e){}return _pl5b()+(f?`<div class="sec">Your people</div>${f}`:'')+sfn('w5bCircle')};paneMove=function(){return _pm5b()+sfn('w5bMove')};
+paneBiz=function(){return _pb5b()+sfn('w5bBiz')};paneSpots=function(){return _ps5b()+sfn('w5bSpots')};paneBeef=function(){return _pc5b()};const _pl5b=paneLife;paneLife=function(){let f='';try{f=guardianLine()}catch(e){}return _pl5b()+(f?`<div class="sec">Your people</div>${f}`:'')+sfn('w5bCircle')};paneMove=function(){return _pm5b()+sfn('w5bMove')+sfn('twHTML')};
 /* ---- actions ---- */
 function w5bAct(a,el){if(a.slice(0,4)!=='w5b_')return false;const B=b5(),X=B,k=el&&el.dataset||{};if(a==='w5b_x')return true;
   if(a==='w5b_front'){w5bFront(k.k);return true}
@@ -2192,7 +2192,7 @@ function paneCrew(){
    <div class="sec">Stash and more</div>
    ${sf(shHTML)}
    ${sf(haHTML)}${sf(poHTML)}
-   ${sf(twHTML)}
+   
    ${sf(launHTML)}
    <div class="sec">Turf and space</div>
    <div class="row"><div class="info"><div class="t">More stash space</div><div class="s">On foot you carry 250 max. More room comes from cars, safes and a stash house.</div></div></div>
