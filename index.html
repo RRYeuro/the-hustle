@@ -1555,14 +1555,14 @@ function w5bEvDay(){const B=b5();if(window.FF||!$('modal').hidden||S.pr||S.inJai
 function w5bSeason(){const se=w5bSeasonOf();if(se==='winter'&&S.en!=null)S.en=Math.max(0,S.en-3)}
 /* ---- rentals, club manager, distribution, dating extras ---- */
 function w5bPropDay(){const B=b5();if(weekTick()){B.re.forEach(p=>{p.v*=1+(Math.random()-.4)*.01;if(p.vac>S.day)return;const r=Math.random();if(r<.06){p.vac=S.day+14;say(`Tenants skipped out on the ${p.n.toLowerCase()}. It will be empty a couple of weeks.`);return}if(r<.14&&S.cash>=400){S.cash-=400;say(`Repairs at the ${p.n.toLowerCase()} cost $400.`)}{const rr=Math.round(p.rent*bizMul());S.cash+=rr;legit(rr)}});
-    if(B.dist&&S.soldiers>0){const r=Math.random();if(r<.08){S.heat=Math.min(100,S.heat+12);say('Cops caught the distribution truck. Heat spiked and the load was lost.')}else if(r<.14){say('Another crew hit your distribution truck. Nothing made it.')}else{const p=Math.round(S.soldiers*rnd(150,260));S.cash+=p;S.heat=Math.min(100,S.heat+2);say(`Distribution route paid ${money(p)}.`)}}}
+    if(B.dist&&S.soldiers>0&&!S.car){say('Your distribution route sat idle. Nobody had a ride to move weight.')}else if(B.dist&&S.soldiers>0){const r=Math.random();if(r<.08){S.heat=Math.min(100,S.heat+12);say('Cops caught the distribution truck. Heat spiked and the load was lost.')}else if(r<.14){say('Another crew hit your distribution truck. Nothing made it.')}else{const p=Math.round(S.soldiers*rnd(150,260));S.cash+=p;S.heat=Math.min(100,S.heat+2);say(`Distribution route paid ${money(p)}.`)}}}
   if(B.mgr&&S.biz&&S.biz.club){S.cash+=120;legit(120)}}
 function w5bProp(){const B=b5();let h=`<div class="sec">Real estate</div>`;
   B.re.forEach((p,i)=>{h+=w5bRow(esc(p.n),`Worth ${money(Math.round(p.v))} · rent ${money(p.rent)} a week${p.vac>S.day?' · empty, no tenants':''}`,'w5b_sell','Sell',false,'red',`data-i="${i}"`)});
   W5BRE.forEach(d=>{if(!B.re.find(p=>p.id===d.id))h+=w5bRow(`Buy: ${d.n}`,`${money(d.cost)} clean cash. Rent comes in every week. Tenants can be trouble.`,'w5b_buy',money(d.cost),S.cash<d.cost||cleanCash()<d.cost,'',`data-k="${d.id}"`)});
   if(S.biz&&S.biz.club){h+=w5bRow('🧑‍💼 Club manager',B.mgr?'Your manager runs the floor. The club earns more.':'$5,000. Runs the club day to day and brings in more clean money.',B.mgr?'w5b_x':'w5b_mgr',B.mgr?'Hired':'$5,000',!!B.mgr||S.cash<5000);
     h+=w5bRow('🎉 Big club night','$800. Book a name and pack the house. Once a week. Might get shut down.','w5b_night',B.nightD>S.day-7?'Wait':'$800',B.nightD>S.day-7||S.cash<800)}
-  h+=w5bRow('🚚 Distribution route',B.dist?'Your crew moves product across town every week. Cops sometimes catch the truck.':'$10,000. Your soldiers move product every week. Needs soldiers.',B.dist?'w5b_x':'w5b_dist',B.dist?'Running':'$10,000',!!B.dist||S.cash<10000||!(S.soldiers>0));return h}
+  h+=w5bRow('🚚 Distribution route',B.dist?'Your crew moves product across town every week. Cops sometimes catch the truck.':'$10,000. Your soldiers move product every week. Needs soldiers and a car.',B.dist?'w5b_x':'w5b_dist',B.dist?'Running':'$10,000',!!B.dist||S.cash<10000||!(S.soldiers>0)||!S.car);return h}
 /* ---- panels ---- */
 const teenLock=t=>`<div class="sec">${t}</div><div class="row"><div class="info"><div class="s">Opens up when you turn 18.</div></div><span class="chip">18+</span></div>`;
 function w5bBiz(){if(!adult())return teenLock('Real estate and house flipping');const B=b5();let h=sfn('w5bProp');
@@ -1623,7 +1623,7 @@ function w5bAct(a,el){if(a.slice(0,4)!=='w5b_')return false;const B=b5(),X=B,k=e
   if(a==='w5b_sell'){const p=B.re[+k.i];if(!p)return true;const v=Math.round(p.v*.95);S.cash+=v;legit(v);B.re.splice(+k.i,1);say(`Sold the ${p.n.toLowerCase()} for ${money(v)}.`);render();return true}
   if(a==='w5b_mgr'){if(S.cash<5000||B.mgr)return true;if(needClean(5000,'A club manager'))return true;{const c0=cleanCash();S.cash-=5000;S.clean=Math.max(0,c0-5000)}B.mgr=1;say('Hired a manager for the club.');render();return true}
   if(a==='w5b_night'){if(S.cash<800||B.nightD>S.day-7)return true;S.cash-=800;B.nightD=S.day;const p=rnd(1500,4500);if(Math.random()<.12){S.heat=Math.min(100,S.heat+10);say('The club night got shut down by the fire marshal. No money, more heat.')}else{S.cash+=p;legit(p);S.rep+=1;say(`Big club night. The house cleared ${money(p)}.`)}render();return true}
-  if(a==='w5b_dist'){if(S.cash<10000||B.dist||!(S.soldiers>0))return true;if(needClean(10000,'A distribution route'))return true;{const c0=cleanCash();S.cash-=10000;S.clean=Math.max(0,c0-10000)}B.dist=1;say('Your distribution route is up.');render();return true}
+  if(a==='w5b_dist'){if(S.cash<10000||B.dist||!(S.soldiers>0))return true;if(!S.car){say('You need a ride to move weight. Get a car first.');render();return true}if(needClean(10000,'A distribution route'))return true;{const c0=cleanCash();S.cash-=10000;S.clean=Math.max(0,c0-10000)}B.dist=1;say('Your distribution route is up.');render();return true}
   if(a==='w5b_date'){if(B.dateD>S.day-3||S.cash<150||!S.gf)return true;S.cash-=150;B.dateD=S.day;S.gf.rel=Math.min(100,S.gf.rel+Math.round(8*charmMul()));addStress(-8);say('Had a good date night.');render();return true}
   if(a==='w5b_gift'){if(B.giftD>S.day-7||S.cash<300||!S.gf||S.at!==placeAt('mall'))return true;S.cash-=300;B.giftD=S.day;S.gf.rel=Math.min(100,S.gf.rel+Math.round(12*charmMul()));say('Bought her a gift. She loved it.');render();return true}
   if(a==='w5b_run'){w5bRun(+k.i);return true}
@@ -4895,9 +4895,11 @@ function dice(){if(stuckHome())return;if(!spendEn('dice'))return;
     show(0,0,'Blow on em and roll.');
   });
 }
+const CARSPD={beater:1,corolla:.97,civic:.95,minivan:1.05,pickup:1.02,sprinter:1.08,stolen:.93,accord:.95,charger:.9,jeep:.95,mustang:.9,challenger:.9,tahoe:1,escalade:1,rover:.93,bmw:.88,benz:.9};
+const carSpd=()=>S&&S.car?(CARSPD[S.car]||.97):1;
 function chase(done){
   mgOn=true;const W=300,H=380,L=[50,150,250];let lane=1,lives=2,t0=performance.now(),cars=[],spawn=0,inv=0,last=t0,prevOpen=[0,1,2],hunt=3200;
-  const spd=(is('shade')?.8:badKnee()?1.15:1)*(1-(S.sk.smarts-3)*.03)*(stressed()?1.1:1)*(S.rob&&S.rob.car?.85:1)*(buf('snow')?.88:1)*(buf('phones')||buf('bars')?1.12:1)*(hasT('runner')?.9:1)*copSpd, DUR=20000;
+  const spd=(is('shade')?.8:badKnee()?1.15:1)*(1-(S.sk.smarts-3)*.03)*(stressed()?1.1:1)*(S.rob&&S.rob.car?.85:1)*(buf('snow')?.88:1)*(buf('phones')||buf('bars')?1.12:1)*(hasT('runner')?.9:1)*carSpd()*copSpd, DUR=20000;
   const CHW=window.chaseWho||null;window.chaseWho=null;modal(`<h2>${CHW?CHW+' on your tail':'Twelve on your tail'}</h2><p>Survive 20 seconds. Some ${CHW?'of them':'cops'} cut over into your lane (watch the flashing outline), some come in fast, and the last 5 seconds they floor it. Tap left or right, or use the arrow keys.</p>
     <canvas id="cv" width="${W}" height="${H}" style="width:100%;max-width:${W}px;align-self:center;background:#1a1720;border-radius:6px;touch-action:none"></canvas>
     <div class="btns" style="justify-content:center"><button class="btn go" id="lt" style="padding:14px 34px;font-size:20px">◀</button><button class="btn go" id="rt" style="padding:14px 34px;font-size:20px">▶</button></div><p id="cs" style="text-align:center"></p>`);
