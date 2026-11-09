@@ -4389,7 +4389,7 @@ const TUT=[
  ['Welcome to the streets','You start at 14, freshman year. Each turn is a school week or a weekend. Weekdays are for school, weekends are for the streets. Follow your story missions in the yellow box up top. Chapter 1 is high school, Chapter 2 starts at 18.'],
  ['Block tab: the money','Buy from the plug, sell it back for a profit. Sell to the plug for safe money and respect, or serve the Js for 40% more but way more heat and beef. Some blocks have way more money than others, so check the tag on the block. Always check the grade, test for fakes, and talk price once a day.'],
  ['School tab','Going to class takes the whole school week, so do your hustles first. You get 3 moves a week: steal phones, serve classmates, fight, hack your grades, or rap at the lunch table. Get caught and it is a strike: suspended, then alt school, then expelled. Keep your grades at 70 or higher and teachers give you the benefit of the doubt. School hustles only show on school days, and only when you are at the school on Northline.'],
- ['Move tab: the city','Tap a block on the map to go there. Each block has its own plug, prices and crew. The Move tab also has hoops, dice and licks like the pharmacy and stores. The Time section lets you lay low, take a nap, skip to the next event or lay low for a whole week when things get hot.'],
+ ['Move tab: the city','Tap a block on the map to go there. Each block has its own plug, prices and crew. The Move tab also has hoops, dice and licks like the pharmacy and stores. On foot a chase is a run: jump the low stuff, hold to clear tall fences, slide under the lines (Space/Up/W jump, Down/S slide on PC). With a car you drive. The Time section lets you lay low, take a nap, skip to the next event or lay low for a whole week when things get hot.'],
  ['Spots tab: every place','The gym, rec center, stadium, stores, mall, car lot, barber, pharmacy, hospital, lawyer, school, park and studio are all listed here. Tap one to go in. If it is on another block it takes a day to get there. Tip the barber and the rumors get real: a plug tip for tomorrow.'],
  ['Circle tab: your people','Your fight style, trap houses, family and where you stay, homies, your girl and the crews all live here. Your fight style levels up every time you win a fight. After 18 your girl texts you, and how you answer matters. If a plug turns on you, go to their block and settle it. A worker who has put in enough days can be made a trap house manager: he sells out of your stash house, keeps 15%, and you can have two. What you do comes back: slide on a crew\'s opps and they may hit you or your trap later, giving up a name gets out, and your girl remembers how you treated her.'],
  ['Plugs','Every block has a plug. Do 3 deals with one and they know you: better prices, and at Talk 4 you can haggle (that is the talk rhythm game). Rob a plug and they disappear until somebody new takes over the block. With enough rep and trust you can recruit a plug to work for you: they sell whatever you front them on their block, and a trap house sells more with less heat.'],
@@ -4429,7 +4429,7 @@ function devPanel(){if(!S||S.ph)return;
     <div class="btns">${B('econn','Meet the connect')}${B('dateplug','Date the plug here')}${B('crewok','Crews 75 respect')}${B('crewmad','Crews want smoke')}${B('nogang','Reset gang stuff')}${B('gcall','Gang call')}${B('gally','Ally event')}${B('bizev','Business event')}${B('strap','Gun + 2 soldiers')}${B('swstock','Unc has switches')}${B('bodies','+19 bodies')}${B('jail','Get locked up')}${B('sstrike','School strike')}${B('kid','Have a kid')}${B('kidage','Kid +5 years')}</div>
     <div class="sec">v193 to v194 tests</div><div class="btns">${B('cclean','+$100K clean','green')}${B('cdirty','+$100K dirty','green')}${B('wdry','Workers idle +3 days')}${B('prdeal','Prison: dealer trust 60 + 2 packs')}${B('lvl30','Level 30')}${B('bills','Bills due now')}${B('lcdr','Reset lookouts')}${B('ha','House arrest')}${B('run','Cut monitor (on the run)')}${B('bizall','Own every business')}${B('bizmax','Max upgrades')}${B('szall','Stash house lvl 3')}${B('tmgr','Trap manager test')}${B('f9','Slide + snitch window open')}${B('f8','Prison rep + parole + gun')}${B('btip','Barber trusts you (3 tips)')}${B('f12','Connect lays low')}${B('party','Reset block party')}</div>
     <div class="btns">${B('f5k','Rap: 5K fans')}${B('f20k','Rap: 20K fans')}${B('fnew','Rap: free agent')}${B('labopen','Open own label')}${B('labart','+3 artists')}${B('labday','Label +7 days')}${B('jew','All jewelry')}${B('jack','Get jumped')}${B('fitold','Fits wear out')}${B('bfate','Big plug decision')}${B('wait0','Clear Big plug wait')}</div>
-    <div class="sec">Mini games</div><div class="btns">${B('mchase','Police chase')}${B('mshoot','Shootout')}${B('mhoop','Hoops')}${B('mdice','Dice')}${B('mcar','Steal a car')}${B('mstore','Rob store')}${B('mpharm','Rob pharmacy')}${B('mhouse','Hit a house')}${B('mscam','Fake gun sale')}</div>
+    <div class="sec">Mini games</div><div class="btns">${B('mchase','Police chase (car)')}${B('mfoot','Foot run')}${B('mshoot','Shootout')}${B('mhoop','Hoops')}${B('mdice','Dice')}${B('mcar','Steal a car')}${B('mstore','Rob store')}${B('mpharm','Rob pharmacy')}${B('mhouse','Hit a house')}${B('mscam','Fake gun sale')}</div>
     <div class="sec">Wave 3 tests (sports and social)</div><div class="btns">${B('w3_sport','Join MMA stage 3')}${B('w3_hurt','Injure 8 days')}${B('w3_endo','Endorsement offer')}${B('w3_mob','Mob offer')}${B('w3_meet','Track meet')}${B('w3_agency','Agency and bar')}${B('w3_social','60K followers')}${B('w3_dm','Test DM')}${B('w3_drama','Social drama')}</div>
     <div class="sec">Go to (free, no day)</div><div class="btns">${BLOCKS.map((b,i)=>B('go'+i,b)).join('')}</div>
     <p class="s" style="color:var(--dim);font-size:13px">Time skips stop when something big happens, like a birthday event.</p>
@@ -4546,7 +4546,9 @@ function devDo(k){
   if(k==='gally'){let c=S.crews.find(c=>c.alive&&c.ally);if(!c){c=S.crews.find(c=>c.alive&&c.id!==S.gang);c.ally=1;c.respect=80}return Math.random()<.5?allyNervous(c):allyHelp(c)}
   if(k==='bizev'){if(!Object.keys(S.biz||{}).length){S.biz=S.biz||{};S.biz.wash=1}const R=Math.random;Math.random=()=>0.01;let fired;try{fired=bizEvent()}finally{Math.random=R}if(!fired)return done('no business event');return}
   if(k==='mshoot'){S.guns=S.guns||{};if(!gunBonus())S.guns.pistol=1;return shootoutGame(myStr(),18,'The opps',w=>{say(`Dev: shootout ${w?'won':'lost'}.`);devPanel()})}
-  if(k==='mchase')return chase(ok=>{say(`Dev: chase ${ok?'escaped':'caught'}.`);devPanel()});
+  if(k==='mfoot')return footRun(ok=>{say(`Dev: foot run ${ok?'escaped':'caught'}.`);devPanel()});
+  if(k==='mchase'){window.__laneChase=1;return chase(ok=>{say(`Dev: car chase ${ok?'escaped':'caught'}.`);devPanel()})}
+  if(k==='mchaseX')return chase(ok=>{say(`Dev: chase ${ok?'escaped':'caught'}.`);devPanel()});
   if(k==='mhoop'){if(S.cash<1000)S.cash+=1000;S.park=0;return hoops()}
   if(k==='mdice'){if(S.cash<1000)S.cash+=1000;return dice()}
   if(k==='mcar'){S.pad=1;return lick('car')}
@@ -4972,7 +4974,53 @@ function dice(){if(stuckHome())return;if(!spendEn('dice'))return;
 }
 const CARSPD={beater:1,corolla:.97,civic:.95,minivan:1.05,pickup:1.02,sprinter:1.08,stolen:.93,accord:.95,charger:.9,jeep:.95,mustang:.9,challenger:.9,tahoe:1,escalade:1,rover:.93,bmw:.88,benz:.9};
 const carSpd=()=>S&&S.car?(CARSPD[S.car]||.97):1;
+function footRun(done){
+  mgOn=true;const W=320,H=210,GY=170,RX=72,DUR=20000;
+  const CHW=window.chaseWho||null;window.chaseWho=null;
+  let lives=2,inv=0,gap=55,vy=0,y=0,slide=0,held=0,jh=0,obs=[],spawn=60,t0=performance.now(),last=t0,over=false,flash=0,cleared=0;
+  const heavy=(()=>{try{return S.cap>0&&used()/S.cap>.75}catch(e){return false}})();
+  const lowEn=(()=>{try{return S.en!=null&&S.en<enMax()*.25}catch(e){return false}})();
+  const lk=(()=>{try{return crewOk().some(m=>(m.sk.look||0)>=1)}catch(e){return false}})();
+  const sp=Math.max(.75,Math.min(1.35,(is('shade')?.85:badKnee()?1.15:1)*(1-(S.sk.smarts-3)*.03)*(stressed()?1.1:1)*(hasT('runner')?.9:1)*copSpd*(heavy?1.12:1)*(lowEn?1.12:1)));
+  const JV=8.8*(badKnee()?.92:1)*(heavy?.94:1);
+  modal(`<h2>${CHW?CHW+' on your tail':'Twelve on your tail'}</h2><p>You are on foot. Jump the low stuff (hold to jump higher over tall fences) and slide under the lines. Two stumbles and they got you. ${heavy?'The heavy bag slows you down. ':''}${lk?'Your lookout is calling out what is ahead. ':'It is dark, so you only see things late. '}</p>
+    <canvas id="cv" width="${W}" height="${H}" style="width:100%;max-width:${W}px;align-self:center;background:#14121a;border-radius:6px;touch-action:none"></canvas>
+    <div class="btns" style="justify-content:center"><button class="btn go" id="slb" style="padding:14px 26px;font-size:18px">▼ Slide</button><button class="btn go" id="jpb" style="padding:14px 26px;font-size:18px">▲ Jump</button></div><p id="cs" style="text-align:center"></p><p class="s" style="text-align:center;color:var(--dim)">Keys: Space, Up or W to jump (hold for higher), Down or S to slide.</p>`);
+  const cv=$('cv'),x=cv.getContext('2d');
+  const jumpDown=()=>{if(over||y>0||slide>0)return;vy=JV;jh=0;held=1};const jumpUp=()=>{held=0};const slideDown=()=>{if(over||y>0)return;slide=34};
+  const isJ=k=>k===' '||k==='ArrowUp'||k==='w'||k==='W',isS=k=>k==='ArrowDown'||k==='s'||k==='S';
+  const kd=e=>{if(e.repeat)return;if(isJ(e.key)){jumpDown();e.preventDefault()}else if(isS(e.key)){slideDown();e.preventDefault()}};
+  const ku=e=>{if(isJ(e.key))jumpUp()};document.addEventListener('keydown',kd);document.addEventListener('keyup',ku);
+  const jb=$('jpb'),sb=$('slb');[jb,sb].forEach(b=>b.onmousedown=e=>e.preventDefault());
+  jb.onpointerdown=e=>{e.preventDefault();jumpDown()};jb.onpointerup=jb.onpointerleave=jb.onpointercancel=jumpUp;sb.onpointerdown=e=>{e.preventDefault();slideDown()};
+  cv.onpointerdown=e=>{const r=cv.getBoundingClientRect();if(e.clientX-r.left<r.width/2)slideDown();else jumpDown()};cv.onpointerup=cv.onpointerleave=cv.onpointercancel=jumpUp;
+  window.__frDbg=()=>({obs:obs.map(o=>({...o})),y,slide,lives,gap,RX,over});
+  const fin=ok=>{if(over)return;over=true;mgOn=false;document.removeEventListener('keydown',kd);document.removeEventListener('keyup',ku);
+    modal(`<h2>${ok?'You lost em':'They caught you'}</h2><p>${ok?'Cut through a yard and got lost in the dark. You good.':CHW?'They got a hand on you.':'Twelve got a hand on you.'}</p><div class="btns"><button class="btn go" id="ok">Continue</button></div>`);let _cd=0;$('ok').onclick=()=>{if(_cd)return;_cd=1;$('modal').hidden=true;done(ok)}};
+  const man=(px,py,col,sl)=>{x.fillStyle=col;if(sl){x.fillRect(px-14,py-14,28,12);x.beginPath();x.arc(px+12,py-12,6,0,7);x.fill()}else{x.fillRect(px-7,py-30,14,22);x.fillRect(px-7,py-8,6,8);x.fillRect(px+1,py-8,6,8);x.beginPath();x.arc(px,py-36,7,0,7);x.fill()}};
+  const loop=t=>{if(over||!mgOn||!cv.isConnected)return;const dt=Math.min(3,(t-last)/16.7);last=t;const el=t-t0,v=(4.6+el/9000)*sp;
+    spawn-=v*dt;if(spawn<=0){const r=Math.random(),k=r<.4?'low':r<.7?'high':'tall';obs.push({k,x:W+30});spawn=rnd(60,84)*v+(k==='tall'?22*v:0)}
+    if(y>0||vy>0){const g=(held&&vy>0&&jh<12)?.28:.58;if(held&&vy>0)jh+=dt;y+=vy*dt;vy-=g*dt;if(y<=0){y=0;vy=0}}
+    if(slide>0)slide-=dt;if(inv>0)inv-=dt;
+    obs.forEach(o=>{o.x-=v*dt});
+    const top=GY-y-(slide>0?16:38),bot=GY-y;
+    obs.forEach(o=>{if(o.done)return;const hw=o.k==='tall'?14:12;if(Math.abs(o.x-RX)<hw+7){const oT=o.k==='high'?0:GY-(o.k==='tall'?54:28),oB=o.k==='high'?GY-30:GY;if(inv<=0&&bot>oT&&top<oB){o.done=1;lives--;inv=50;gap-=24;flash=12}}if(o.x<RX-30&&!o.done){o.done=1;cleared++;gap=Math.min(100,gap+4)}});
+    obs=obs.filter(o=>o.x>-40);gap=Math.min(100,gap+.01*dt);
+    x.fillStyle='#14121a';x.fillRect(0,0,W,H);
+    if(S.heat>=70){x.fillStyle='rgba(255,255,255,.07)';x.beginPath();x.ellipse(130+Math.sin(el/700)*90,GY,64,12,0,0,7);x.fill()}
+    x.fillStyle='#2a2630';x.fillRect(0,GY,W,H-GY);x.fillStyle='#3a3440';for(let i=0;i<9;i++)x.fillRect(((i*44-el*v/16)%W+W)%W,GY+14,22,3);
+    const reveal=lk?W+30:236;
+    obs.forEach(o=>{if(o.x>reveal)return;if(o.k==='low'){x.fillStyle='#8a6a3a';x.fillRect(o.x-12,GY-28,24,28)}else if(o.k==='tall'){x.fillStyle='#6a7a8a';x.fillRect(o.x-14,GY-54,28,54);x.strokeStyle='#4a5a6a';x.lineWidth=2;for(let i=0;i<4;i++){x.beginPath();x.moveTo(o.x-14,GY-54+i*14);x.lineTo(o.x+14,GY-54+i*14);x.stroke()}}else{x.fillStyle='#7a4a5a';x.fillRect(o.x-12,0,24,GY-30);x.fillStyle='#c98aa0';x.fillRect(o.x-12,GY-34,24,5)}
+      if(lk&&o.x>W-120&&Math.floor(t/150)%2){x.fillStyle='#f5b72a';x.font='bold 18px sans-serif';x.fillText('!',o.x-4,24)}});
+    const cx=RX-26-gap*.62;[0,1].forEach(i=>man(cx-i*20,GY,Math.floor(t/150)%2?'#4aa3ff':'#e8504a',false));
+    if(!(inv>0&&Math.floor(t/90)%2))man(RX,GY-y,'#f5b72a',slide>0);
+    if(flash>0){flash-=dt;x.fillStyle='rgba(232,80,74,.18)';x.fillRect(0,0,W,H)}
+    $('cs').textContent=`${Math.max(0,Math.ceil((DUR-el)/1000))}s left · ${lives} stumble${lives===1?'':'s'} left · ${gap<25?'🚨 They are right on you':gap<50?'They are closing':'You got room'}`;
+    if(lives<=0||gap<=0)return fin(false);if(el>=DUR)return fin(true);requestAnimationFrame(loop)};
+  requestAnimationFrame(loop);
+}
 function chase(done){
+  const _fl=window.__laneChase;window.__laneChase=0;if(!S.car&&!_fl)return footRun(done);
   mgOn=true;const W=300,H=380,L=[50,150,250];let lane=1,lives=2,t0=performance.now(),cars=[],spawn=0,inv=0,last=t0,prevOpen=[0,1,2],hunt=3200;
   const spd=Math.max(.6,(is('shade')?.8:badKnee()?1.15:1)*(1-(S.sk.smarts-3)*.03)*(stressed()?1.1:1)*(S.rob&&S.rob.car?.85:1)*(buf('snow')?.88:1)*(buf('phones')||buf('bars')?1.12:1)*(hasT('runner')?.9:1)*carSpd()*((()=>{try{if(!S.car)return 1;const D=crewOk().sort((a,b)=>(b.sk.drive||0)-(a.sk.drive||0))[0];return D?Math.max(.8,1-.03*(D.sk.drive||0)):1}catch(e){return 1}})())*(window.__lkHead?(window.__lkHead=0,.9):1)*copSpd), DUR=20000;
   const CHW=window.chaseWho||null;window.chaseWho=null;modal(`<h2>${CHW?CHW+' on your tail':'Twelve on your tail'}</h2><p>Survive 20 seconds. Some ${CHW?'of them':'cops'} cut over into your lane (watch the flashing outline), some come in fast, and the last 5 seconds they floor it. Tap left or right, or use the arrow keys.</p>
@@ -6051,7 +6099,7 @@ function gateGame(title,txt,go){modal(`<h2>${title}</h2><p>${txt}</p><p class="s
   seqGame:()=>['Stick up the register','Watch the moves and memorize them, then hit them in the same order before the clerk reacts. On a keyboard, use the arrow keys.'],
   sneakGame:()=>['Sneak through the house','Only step when the marker is in the quiet zone (tap Step or press Space). It forgives a little drift past the edge, but two loud steps and they wake up. Beat the clock.'],
   padGame:()=>['Program the key','Lock it in when the marker hits the green (tap Lock in or press Space). Get 2 of 3 before the clock runs out. Higher Street Smarts makes the green wider.'],
-  chase:()=>[(window.chaseWho?window.chaseWho+' on your tail':'Twelve on your tail'),'Survive 20 seconds. Some '+(window.chaseWho?'of them':'cops')+' cut over into your lane (watch the flashing outline), some come in fast, and the last 5 seconds they floor it. Tap left or right, or use the arrow keys.'],
+  chase:()=>(!S.car&&!window.__laneChase)?[(window.chaseWho?window.chaseWho+' on your tail':'Twelve on your tail'),'You are on foot. Jump the low stuff (hold to go higher over tall fences) and slide under the lines. Two stumbles and they got you. PC: Space, Up or W to jump, Down or S to slide. Phone: tap the Jump and Slide buttons.']:[(window.chaseWho?window.chaseWho+' on your tail':'Twelve on your tail'),'Survive 20 seconds. Some '+(window.chaseWho?'of them':'cops')+' cut over into your lane (watch the flashing outline), some come in fast, and the last 5 seconds they floor it. Tap left or right, or use the arrow keys.'],
   shootoutGame:a=>['Shootout vs '+a[2],'Do the math. Each round shows their cover number and a hand of cards. Tap cards that add up to the number, then hit FIRE before the timer ends. Wrong number or too slow and they shoot you.'],
   talkGame:()=>['Talk your way through','You get a few lines. Pick the answer that fits the moment: confident and calm usually works, mouthing off or sounding unsure can cost you. Read each choice before you tap.'],
   hoopsG:()=>['Shooting contest','A marker slides back and forth. Tap Shoot (or press Space) when it is inside the zone. Bigger bets mean more on the line, so do not rush it.'],
