@@ -632,17 +632,17 @@ const WTABS=[['spots','🏬 Spots','move'],['biz','💼 Business','spots'],['bag
 const sfn=(n,...a)=>{try{return typeof window[n]==='function'?window[n](...a):''}catch(e){console.error('sfn',n,e);return ''}};
 function paneSpots(){const G=[['Fitness and sports',['gym','rec','stadium']],['Shops',['store','mall','pawn','tire','carlot','barber']],['Services',['pharm','hosp','lawyer','school']],['Out and about',['park','studio']]];
   return `<div class="s wspan" style="padding:0 2px">Tap a place to go in. If it is on another block it takes a day to get there.</div>`+G.map(([t,ids])=>`<div class="sec">${t}</div>`+ids.map(id=>{const P=PLACES.find(p=>p.id===id);if(!P||(id==='studio'&&!S.rapOn))return '';return `<div class="row mapp" data-p="${id}" style="cursor:pointer"><div style="font-size:24px">${P.ic}</div><div class="info"><div class="t">${P.name}</div><div class="s">${BLOCKS[P.bi]}${P.bi===S.at?' · you are here':''}</div></div><span class="chip ${P.bi===S.at?'here':''}">${P.bi===S.at?'Here':'Go'}</span></div>`}).join('')).join('')}
-function paneBiz(){let h=`<div class="s wspan" style="padding:0 2px">Everything that makes you money outside the street: businesses, your label, the stash houses and laundering.</div>`;
+function paneBiz(){let h=`<div class="s wspan" style="padding:0 2px">Everything that makes you money outside the street: jobs, businesses, your label and going legit.</div>`;
   h+=sfn('paneCareer');if((S.rap||{}).lab||(S.rapOn&&(S.rap.fans||0)>=5000))h+=sfn('labHTML');
   if(typeof sportsAgencyHTML==='function')h+=sfn('sportsAgencyHTML');if(typeof socialBizHTML==='function')h+=sfn('socialBizHTML');
-  h+=sfn('launHTML');h+=sfn('legitHTML');return h}
+  h+=sfn('legitHTML');return h}
 function paneBag(){const G2=GOODS.filter(g=>S.inv[g.id]>0);let h=`<div class="sec">On you</div>`+(G2.length?G2.map(g=>`<div class="row">${drugPic(g.id,30)}<div class="info"><div class="t">${g.name}</div><div class="s">${amt(S.inv[g.id],g)} (${grade(S.q[g.id],g)})</div></div></div>`).join(''):`<div class="row"><div class="info"><div class="s">Nothing on you right now.</div></div></div>`);
   h+=`<div class="row"><div class="info"><div class="t">Stash space</div><div class="s">${Math.round(used())} of ${S.cap} used</div></div><button class="btn" data-a="inv">Open inventory</button></div>`;
   h+=`<div class="sec">Ride and home</div><div class="row"><div class="info"><div class="t">${S.car?CARS[S.car].name:'No car'}</div><div class="s">${S.car?`+${CARS[S.car].trunk} stash space`:'Visit the car lot in Spots.'}</div></div></div><div class="row"><div class="info"><div class="t">Home: ${HOMES[S.home]?HOMES[S.home].name||S.home:S.home}</div><div class="s">${BLOCKS[homeBlock()]}</div></div></div>`;
   const fits=Object.keys(S.fits||{street:1}).filter(k=>(S.fits||{street:1})[k]&&FITS[k]);h+=`<div class="sec">Clothes and jewelry</div><div class="row"><div class="info"><div class="t">Wearing: ${(FITS[S.fit||'street']||{}).n||'Street'}</div><div class="s">${fits.length} fit${fits.length===1?'':'s'} owned. Change at the mall.</div></div></div>`;
   const jw=Object.keys(JEWEL).filter(k=>(S.jew||{})[k]);h+=`<div class="row"><div class="info"><div class="t">Jewelry</div><div class="s">${jw.length?jw.map(k=>JEWEL[k].n).join(', '):'None yet.'}</div></div></div>`;
   h+=sfn('paneGuns');return h}
-function paneMoney(){return sfn('cashSplitHTML')+sfn('paneExp')+sfn('loanHTML')+sfn('launHTML')}
+function paneMoney(){return sfn('cashSplitHTML')+sfn('loanHTML')+sfn('launHTML')}
 WACT.push(waveAct2);
 function waveAct2(a,el){
   const w=W();w.use=w.use||{};if(a in {adv:1,lay:1,nap:1,skipn:1,lay7:1})w.use[a]=(w.use[a]||0)+1;
@@ -2178,24 +2178,22 @@ function spDay(){const P=S.sp;if(!P||S.over||S.pr||S.inJail)return;
   const before=(P.cl||[]).length;P.cl=(P.cl||[]).filter(c=>!(c.o<60&&Math.random()<.006));if(P.cl.length<before)say('A prospect you signed quit and went home.')}
 function paneCrew(){
   const turf=S.owner.filter(o=>o==='me').length, need=S.lvl*20;
-  return `<div class="jump" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:4px">${['Skills','Plugs','Stash','Life','School','Jobs'].map(k=>`<button class="btn" style="padding:6px 10px;font-size:12px" data-jump="${k}">${k}</button>`).join('')}</div>${(S.traits||[]).length?`<div class="row" style="flex-wrap:wrap"><div class="info"><div class="t">Traits</div><div class="s">${S.traits.map(id=>{const t=TRAITS.find(x=>x.id===id);return t?`<b>${t.name}</b> · <i>${t.story}</i><br>${t.sub.replace(' Can\'t be undone.','')}`:''}).join('<br>')}</div></div></div>`:''}<div class="row" style="flex-wrap:wrap"><div class="info"><div class="t">Level ${S.lvl} · ${S.pts} skill point${S.pts===1?'':'s'} to spend</div>
+  return `<div class="jump" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:4px">${['Skills','Plugs','Stash','Life'].map(k=>`<button class="btn" style="padding:6px 10px;font-size:12px" data-jump="${k}">${k}</button>`).join('')}</div>${(S.traits||[]).length?`<div class="row" style="flex-wrap:wrap"><div class="info"><div class="t">Traits</div><div class="s">${S.traits.map(id=>{const t=TRAITS.find(x=>x.id===id);return t?`<b>${t.name}</b> · <i>${t.story}</i><br>${t.sub.replace(' Can\'t be undone.','')}`:''}).join('<br>')}</div></div></div>`:''}<div class="row" style="flex-wrap:wrap"><div class="info"><div class="t">Level ${S.lvl} · ${S.pts} skill point${S.pts===1?'':'s'} to spend</div>
     <div class="s">XP ${S.xp} / ${need}. Earn XP from profit, fights, taking blocks, missions and mini games.</div><div class="bar"><i style="width:${S.xp/need*100}%;background:var(--accent)"></i></div></div></div>
    ${Object.keys(SKN).map(k=>`<div class="row" style="padding:8px 12px"><div class="info"><div class="t">${SKN[k]} <span style="font-family:var(--label);font-weight:700;color:var(--accent)">${S.sk[k]}</span>/10</div><div class="s">${SKD[k]}</div>
     <div class="bar"><i style="width:${S.sk[k]*10}%;background:var(--accent)"></i></div></div><button class="btn green" data-a="sk" data-k="${k}" ${S.pts>0&&S.sk[k]<10?'':'disabled'}>+1</button></div>`).join('')}
-   ${(()=>{try{return x8On()?legitHTML()+badgesHTML():''}catch(e){return ''}})()}
+   ${(()=>{try{return x8On()?badgesHTML():''}catch(e){return ''}})()}
    <div class="sec">Your plugs (${S.known.length} of 6 know you)</div>
    ${BLOCKS.map((bl,i)=>`<div class="row" style="padding:8px 12px">${avatar(i,36)}<div class="info"><div class="t">${plugName(i)} ${S.known.includes(i)?'<span class="chip mine">Knows you</span>':'<span class="chip">Stranger</span>'}</div>
     <div class="s">${bl} · <span style="color:${LVL[PINFO[i].lvl].col}">${PINFO[i].lvl} plug</span> · ${S.known.includes(i)?`Trust ${S.trust[i]}/100`:`${3-(S.deals[i]||0)} more deals to get known`}</div></div></div>`).join('')}
    ${sf(paneSafe)}
    ${sf(paneLife)}
-   ${sf(paneCareer)}
    ${sf(paneFakes)}
    ${sf(paneCut)}
    <div class="sec">Stash and more</div>
    ${sf(shHTML)}
    ${sf(haHTML)}${sf(poHTML)}
    
-   ${sf(launHTML)}
    <div class="sec">Turf and space</div>
    <div class="row"><div class="info"><div class="t">More stash space</div><div class="s">On foot you carry 250 max. More room comes from cars, safes and a stash house.</div></div></div>
    <div class="row"><div class="info"><div class="t">Your turf: ${turf} block${turf===1?'':'s'}</div><div class="s">Each block pays $${300} a day and sells 12% higher</div></div></div>`;
@@ -4528,7 +4526,7 @@ function wFront(i){const w=(S.workers||[])[i];if(!w||!w.req)return;const r=w.req
 const tBan=t=>`<div style="width:100%;background:rgba(245,183,42,.12);border-left:3px solid var(--accent);padding:3px 8px;border-radius:4px;font-size:12px;letter-spacing:.04em;text-transform:uppercase">${t}</div>`;
 function panePhone(){return panePhone0()+sfn('socHTML')}
 function panePhone0(){const C=S.custos||[],T=S.texts||[];
-  let h=loanHTML()+paneConnect()+phonePlugs()+workersPhoneHTML()+`<div class="sec">Social media</div>${a2i('socialsale',300)}<div class="row" style="flex-wrap:wrap"><div class="info"><div class="t">Fake gun sale</div><div class="s">${LICKS.scam.sub}</div></div><button class="btn red" data-a="lick" data-k="scam">Post it</button></div>`+x8Phone()+`<div class="row" style="flex-wrap:wrap;border-color:var(--accent)"><div class="info"><div class="t" style="font-family:var(--display);font-size:20px;font-weight:400">Trap phone</div><div class="s">${C.length} plays saved · plays pay more than the Js, and more the longer they've been buying from you. They come to you, wherever you at.</div></div>
+  let h=paneConnect()+phonePlugs()+workersPhoneHTML()+`<div class="sec">Social media</div>${a2i('socialsale',300)}<div class="row" style="flex-wrap:wrap"><div class="info"><div class="t">Fake gun sale</div><div class="s">${LICKS.scam.sub}</div></div><button class="btn red" data-a="lick" data-k="scam">Post it</button></div>`+x8Phone()+`<div class="row" style="flex-wrap:wrap;border-color:var(--accent)"><div class="info"><div class="t" style="font-family:var(--display);font-size:20px;font-weight:400">Trap phone</div><div class="s">${C.length} plays saved · plays pay more than the Js, and more the longer they've been buying from you. They come to you, wherever you at.</div></div>
     <div class="btns" style="width:100%"><button class="btn go" style="white-space:normal" data-a="ptext" ${S.texted===S.day||!C.length?'disabled':''}>${S.texted===S.day?'Already texted today':"Text everybody \"I'm open\""}</button><button class="btn" style="white-space:normal" data-a="pcard" ${S.passed===S.day?'disabled':''}>${S.passed===S.day?'Passed it out today':`Pass out your number on ${BLOCKS[S.at]}`}</button></div></div>`;
   {const ib=(S.inbox||[]).filter(m=>S.day-m.d<=3).slice(0,4);if(ib.length)h+=`<div class="sec">Messages</div>${a2i(ib.some(m=>/package|dropped/i.test(m.t))?'package':'texts',260)}`+ib.map(m=>`<div class="row" style="padding:8px 12px;flex-wrap:wrap">${tBan(`Received ${m.d===S.day?'today':dayTxt(m.d)}`)}<div class="info"><div class="t">📱 ${esc(m.f)}</div><div class="s">${esc(m.t)}</div></div></div>`).join('')}
   h+=`<div class="sec">Texts (${T.length})</div>`;
