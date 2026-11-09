@@ -4372,8 +4372,8 @@ function devPanel(){if(!S||S.ph)return;
     <div class="sec">Wave 3 tests (sports and social)</div><div class="btns">${B('w3_sport','Join MMA stage 3')}${B('w3_hurt','Injure 8 days')}${B('w3_endo','Endorsement offer')}${B('w3_mob','Mob offer')}${B('w3_meet','Track meet')}${B('w3_agency','Agency and bar')}${B('w3_social','60K followers')}${B('w3_dm','Test DM')}${B('w3_drama','Social drama')}</div>
     <div class="sec">Go to (free, no day)</div><div class="btns">${BLOCKS.map((b,i)=>B('go'+i,b)).join('')}</div>
     <p class="s" style="color:var(--dim);font-size:13px">Time skips stop when something big happens, like a birthday event.</p>
-    <div class="btns"><button class="btn green" id="dvr">Playtest report</button><button class="btn go" id="dvx">Close</button></div>`);
-  $('dvr').onclick=ckReport;
+    <div class="btns"><button class="btn green" id="dvr">Playtest report</button><button class="btn" id="dvwk">Show weekly recap</button><button class="btn go" id="dvx">Close</button></div>`);
+  $('dvr').onclick=ckReport;$('dvwk').onclick=()=>{S.wk0=S.wk0||wkSnap();wkRecap()};
   $('dvx').onclick=close;
   $('mcard').querySelectorAll('[data-dv]').forEach(b=>b.onclick=()=>devDo(b.dataset.dv));
 }
@@ -5151,6 +5151,23 @@ function alertFlush(){try{if(!S||S.over||!S.alq||!S.alq.length)return;if(!$('mod
 {const _ndA=nextDay;nextDay=function(){const top=S&&S.log&&S.log[0];const r=_ndA.apply(this,arguments);try{if(S&&!S.over){const nw=[];for(const l of S.log){if(l===top)break;if(IMPRX.test(l.t))nw.push(l.t.replace(/^📱 /,''))}
   if(S.po&&!S.pr&&S.po.did!==S.po.due&&S.po.due-S.day<=1&&S.po.due>=S.day)nw.push(`Parole check-in is due ${S.po.due===S.day?'today':'tomorrow'}. Check in with your officer or you go back.`);
   if(nw.length)S.alq=(S.alq||[]).concat(nw.reverse()).slice(-6)}}catch(e){}return r}}
+/*F10 weekly recap*/
+function wkSnap(){return {day:S.day,cash:Math.round(S.cash+(S.clean||0)),heat:S.heat||0,rep:S.rep||0}}
+function wkRecap(force){
+  if(!S||S.over)return;const w=S.wk0;if(!w)return;const away=S.day-w.day>14;
+  const cash=Math.round(S.cash+(S.clean||0))-w.cash,dh=(S.heat||0)-w.heat,dr=(S.rep||0)-w.rep;
+  const L=(S.log||[]).filter(l=>l.d>w.day),imp=[],big=[];
+  L.forEach(l=>{const t=l.t.replace(/^📱 /,'');if(IMPRX.test(t)){if(!imp.includes(t))imp.push(t)}else{const m=t.match(/\$([\d,]+)/);if(m)big.push([+m[1].replace(/,/g,''),t])}});
+  big.sort((a,b)=>b[0]-a[0]);const top=imp.slice(0,3);for(const b of big){if(top.length>=3)break;if(!top.includes(b[1]))top.push(b[1])}
+  let goal='';try{const X=w6();if(X.wk&&!X.wk.done){const f=W6WK.find(x=>x[0]===X.wk.k);if(f)goal=`<p class="s" style="margin:0">🎯 This week's goal: ${X.wk.t}, ${Math.min(X.wk.need,w6WkProg(X.wk))} / ${X.wk.need}.</p>`}}catch(e){}
+  S.wk0=wkSnap();S.recapPend=0;
+  modal(`${ARTX('summary')?a2i('summary',64):''}<h2>${away?'While you were away':'Your week'}</h2><p style="font-size:20px;margin:4px 0;color:${cash>=0?'var(--money)':'var(--blood)'}"><b>${cash>=0?'+':'-'}${money(Math.abs(cash))}</b> <span class="s" style="color:var(--dim)">${away?'since you went in':'this week'}</span></p><p class="s" style="margin:0">Heat ${dh>0?'went up':dh<0?'cooled off':'held steady'}${dh?' by '+Math.abs(Math.round(dh)):''}. Rep ${dr>0?'up '+Math.round(dr):dr<0?'down '+Math.abs(Math.round(dr)):'held'}.</p>${top.length?'<div class="s" style="margin:6px 0">'+top.map(t=>'• '+t).join('<br>')+'</div>':'<p class="s">A quiet one.</p>'}${goal}<div class="btns"><button class="btn go" id="wkok">Keep hustling</button><button class="btn" id="wkoff">Turn recap off</button></div>`);
+  $('wkok').onclick=close;$('wkoff').onclick=()=>{S.recapOff=1;close()};
+}
+{const _ndB=nextDay;nextDay=function(){const r=_ndB.apply(this,arguments);try{if(S&&!S.over&&!S.recapOff&&!window.FF){if(!S.wk0){S.wk0=wkSnap()}
+  else if(S.pr||S.inJail){if(weekTick()&&S.wk0.day<S.day)S.recapPend=1}
+  else if(($('modal').hidden)&&((weekTick()&&S.wk0.day<S.day)||(S.recapPend&&S.day-S.wk0.day>=3)))wkRecap();
+  else if(weekTick()&&S.wk0.day<S.day)S.recapPend=1}}catch(e){console.error('recap',e)}return r}}
 function event(){
   if(window.FF||S.pr)return;
   if(!$('modal').hidden)return;
