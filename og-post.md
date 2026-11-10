@@ -1,6 +1,6 @@
-🚨 **THE HUSTLE: MEGA UPDATE IS LIVE (v198)** 🚨
+🚨 **THE HUSTLE: MEGA UPDATE IS LIVE (v199)** 🚨
 **Revamp progress: ~95%.** Phase F and Phase G are built. Only a street race and the laundering rework are held for later.
-📲 **Get it first:** PC **Ctrl+Shift+R** (Mac Cmd+Shift+R). iPhone: Safari **aA > Reload Page**; Home Screen app: swipe it closed and reopen (twice if still old). Check it says **v198**. Saves carry over.
+📲 **Get it first:** PC **Ctrl+Shift+R** (Mac Cmd+Shift+R). iPhone: Safari **aA > Reload Page**; Home Screen app: swipe it closed and reopen (twice if still old). Check it says **v199**. Saves carry over.
 
 **Mini-games replace the dice**
 - 🔐 **Dial the Safe:** quiet heists make you crack the safe. Turn slow, stop in the hot zone, hold still.
