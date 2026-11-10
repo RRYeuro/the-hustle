@@ -1,18 +1,19 @@
-🚨 **THE HUSTLE: UPDATE v206 IS LIVE** 🚨
-📲 **Get it first:** PC **Ctrl+Shift+R** (Mac Cmd+Shift+R). iPhone: Safari **aA > Reload Page**; Home Screen app: swipe it closed and reopen (twice if still old). Check it says **v206**. Saves carry over.
+🚨 **THE HUSTLE: UPDATE v207 IS LIVE** 🚨
+📲 **Get it first:** PC **Ctrl+Shift+R** (Mac Cmd+Shift+R). iPhone: Safari **aA > Reload Page**; Home Screen app: swipe it closed and reopen (twice if still old). Check it says **v207**. Saves carry over.
 
-**New look**
-- 🔘 **Bottom dock:** each tab has a code name on top (like [ TRP-MAP ]) and the plain word under it.
-- 📰 **Street news ticker** at the top scrolls what just happened.
-- 📸 **Your Circle:** crew, Hall and Gang Ladder are photos taped on a desk. Tap one to flip it for stats.
-- 🗺️ **Move** is a crime board. Tap **Go** on a block.
-- 📱 **Texts pop in** at the top like real messages. The **Phone** tab is an app grid with shortcuts and "text your Right Hand".
-- ⚡ Quick screen glitch when you switch tabs (off if your device has reduced motion on).
+**Real phone + cleaner layout**
+- 📱 **Phone** works like a real phone. 13 apps in 4 groups: People (Messages, Contacts, Crew, Family), Street (Trap house, Orders, Burners, Turf, News), Money (Wallet, Backer), Hustle (Side hustles, Social). Tap one, it opens inside the phone, **Back** gets you out.
+- 🗺️ **Move** is one crime board. Each block shows its plug. Go, Ride or Stay on the card. The places on your block are right under it. The ride picture pops up when you tap Ride.
+- 🧍 Tap your **character card** at the top for your fit, ride and gun. The Bag and Spots tabs are gone.
+- 👥 **Your Circle:** crew photos flip for stats. Rival lives here now.
+- 🧑 **Me:** fight style, jobs and school. **Business:** laundering joined real estate and flipping.
+- 📰 Street news ticker is readable, tap it for more. The dock no longer covers Menu.
 
 ---
 
 **WHAT TO TEST (dev menu, use your role)**
-- Dev menu, new group **Layout (new look)**: Test text pop-up, Add 3 crew photos, Add news line.
-- **Phone screen:** does the dock fit? Are labels readable? Any buttons covered by it?
-- **Tabs:** do all tabs still open? Any flicker that feels too much?
+- Dev menu, group **Layout (new look)**: Phone: Contacts, Trap house, Wallet, Side hustles, Open character card, Test text pop-up, Add 3 crew photos.
+- **Phone:** does every app open and Back work? Can you still hire, collect, text and buy loans from inside it?
+- **Move:** every Go, Ride and Stay. Anything from Spots missing?
 - **Old saves:** load one. Nothing should say "undefined".
+- **Phone screen:** is the dock readable?
