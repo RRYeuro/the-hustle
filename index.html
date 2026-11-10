@@ -1161,7 +1161,7 @@ const _clWeek0=clWeek;clWeek=function(){const L=CL(),c=L.city;_clWeek0();if(!S||
   if(P.exo)S.heat=Math.min(100,S.heat+1);
   if(P.vip){const fee=Math.round(1500*(CLUX[c]||1));if(S.cash>=fee){w5bPay(fee);S.rep+=1;if(Math.random()<.35){const v=rnd(2000,6000);S.cash+=v;phoneMsg('VIP host',`A big spender at the club wants to move weight. ${money(v)} made it to you.`)}}else{P.vip=0;say('You could not pay for your VIP table. Membership gone.')}}};
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-cl="perk"]');if(b){e.stopPropagation();clPerkBuy(b.dataset.k)}},true);
-const _render1=render;render=function(){try{if(typeof TUT!=='undefined'&&!TUT._cl){TUT._cl=1;TUT.push(['Living in other cities','Fly out from the airport in Downtown. Tap Move to live in a big city, or Fly for a day trip. Moving renames the blocks, raises prices and bills, and you can fly home any time. Buy a house there, then hit Rent out house when you are away and it pays clean cash every week. Rich cities (Miami, New York, Los Angeles, Chicago) have a penthouse, exotic car and VIP table. In the street lane you cannot start a gang in another city, but you can fly your soldiers out, recruit locals and take blocks, while your Right Hand Man holds Columbia. On the sports lane you only play games and matches out of town, no street work, and there is no travel cooldown.'])}}catch(e){}return _render1.apply(this,arguments)};
+const _render1=render;render=function(){try{if(typeof TUT!=='undefined'&&!TUT._cl){TUT._cl=1;TUT.push(['New look','The bottom bar is your dock: each button has a code name and a plain word. The thin line at the top is street news. Your Circle shows your crew as photos on a desk, tap one to flip it for stats. Move is a crime board, tap Go on a block. Texts pop in at the top, and the Phone tab is an app grid with shortcuts.']);TUT.push(['Living in other cities','Fly out from the airport in Downtown. Tap Move to live in a big city, or Fly for a day trip. Moving renames the blocks, raises prices and bills, and you can fly home any time. Buy a house there, then hit Rent out house when you are away and it pays clean cash every week. Rich cities (Miami, New York, Los Angeles, Chicago) have a penthouse, exotic car and VIP table. In the street lane you cannot start a gang in another city, but you can fly your soldiers out, recruit locals and take blocks, while your Right Hand Man holds Columbia. On the sports lane you only play games and matches out of town, no street work, and there is no travel cooldown.'])}}catch(e){}return _render1.apply(this,arguments)};
 const _launDay0=launDay;launDay=function(){const r=_launDay0.apply(this,arguments);try{if(S&&S.cl&&weekTick())clWeek();else if(S&&weekTick()&&Object.keys((S.cl||{}).homes||{}).length)clWeek()}catch(e){console.error('clWeek',e)}return r};
 const _render0=render;render=function(){try{clSync()}catch(e){}const r=_render0.apply(this,arguments);try{if(S&&!S.pr){const lb=document.querySelector('.where .sec');if(lb)lb.textContent=clLabel();const d=$('dmax');if(d&&clCity())d.textContent+=' · '+clLabel()}}catch(e){}return r};
 /* ---------- airport (Downtown spot) ---------- */
@@ -7045,7 +7045,7 @@ function ckReport(){try{ckState()}catch(e){}const done=CKL.filter(x=>{try{return
 $('mcard').addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(!b||b.disabled||b.onclick||!$('mcard').contains(b))return;sfx('tap');try{act(b.dataset.a,b)}catch(err){console.error(err)}});
 $('pane').onclick=e=>{sfx('tap');const pp=e.target.closest('.mapp');if(pp)return openPlace(pp.dataset.p);const m=e.target.closest('.mapb');if(m){if(m.dataset.a==='go')act('go',m);return}const b=e.target.closest('button[data-a]');if(b&&!b.disabled){let ak=null;try{ak=ACTART[b.dataset.a+(b.dataset.k?':'+b.dataset.k:'')]||ACTART[b.dataset.a]||null}catch(_){};const top=S&&S.log&&S.log[0];let pk=null;try{if(b.closest('#pane'))pk=artFor(b)}catch(_){}act(b.dataset.a,b);try{if(pk&&$('modal').hidden)setTimeout(()=>{try{if($('modal').hidden)artPop(pk)}catch(_){}},80)}catch(_){}const nw=S&&S.log&&S.log[0];if(nw&&nw!==top&&$('modal').hidden){if(ak&&ARTX(ak)&&!(ak===_apk&&Date.now()-_apt<2500)){_apk=ak;_apt=Date.now();modal(`${a2(ak,340)}<p>${esc(nw.t)}</p><div class="btns"><button class="btn go" id="apk">OK</button></div>`);$('apk').onclick=close}else toast(nw.t)}}};
 $('retire').onclick=()=>{modal(`${a2('retire',320)}<h2>Retire your career?</h2><p>This ends the run and shows your final score. You cannot undo it.</p><div class="btns"><button class="btn red" id="rok">Retire</button><button class="btn" id="rno">Keep playing</button></div>`);$('rok').onclick=()=>{$('modal').hidden=true;S.over=true;checkEnd()};$('rno').onclick=close};
-const BUILD='v205';
+const BUILD='v206';
 const DISCORD_INVITE='https://discord.gg/bVsvWzbGW';const OG_UNTIL=Infinity;
 const ogBox=()=>DISCORD_INVITE&&Date.now()<OG_UNTIL?`<a href="${DISCORD_INVITE}" target="_blank" rel="noopener" style="display:block;text-decoration:none;border:2px solid var(--accent);border-radius:10px;padding:10px 12px;background:rgba(0,0,0,.55);color:#fff;text-align:left"><div style="font-family:var(--label);font-weight:700;letter-spacing:.14em;color:var(--accent);font-size:12px">THE HUSTLE COMMUNITY</div><div style="font-size:13px;margin-top:3px">Join the Discord to pitch ideas, report bugs and back the game when it launches. Tap to join →</div></a>`:'';
 
@@ -7231,6 +7231,67 @@ const _pb=paneBeef;paneBeef=function(){return wall()+_pb.apply(this,arguments)};
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('.pol');if(!b)return;e.preventDefault();
  if(b.classList.contains('bk')){b.className='pol';b.innerHTML=b.dataset.keep;return}
  b.dataset.keep=b.innerHTML;const L=(b.dataset.back||'').split('|');b.className='pol bk';b.innerHTML='<b>'+L[0]+'</b>'+L.slice(1).join('<br>')},true);
+})();
+</script>
+<style id="skin3">
+.apgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px 8px;padding:12px;margin:4px 0 10px;border:1px solid var(--line);border-radius:14px;background:#0a0810}
+.apgrid button{display:flex;flex-direction:column;align-items:center;gap:5px;background:none;border:0;color:var(--dim);font-family:var(--label);font-size:12px;letter-spacing:.1em;cursor:pointer;padding:0}
+.apgrid i{width:54px;height:54px;border-radius:15px;border:1px solid var(--c);background:rgba(255,255,255,.04);box-shadow:0 0 14px var(--c);display:flex;align-items:center;justify-content:center;font-style:normal;font-size:24px;box-shadow:0 0 14px color-mix(in srgb,var(--c) 35%,transparent)}
+.aptxt{grid-column:1/-1;display:flex;gap:8px;flex-wrap:wrap;border-top:1px solid var(--line);padding-top:10px}
+.aptxt b{flex-basis:100%;font:500 11px ui-monospace,Menlo,monospace;color:var(--dim);letter-spacing:.06em}
+#sms{position:fixed;left:50%;top:10px;z-index:60;width:min(420px,calc(100vw - 24px));transform:translate(-50%,-140%);transition:transform .35s;background:#1b1626;border:1px solid #3fd0c9;border-radius:14px;padding:10px 12px;box-shadow:0 0 20px rgba(63,208,201,.3);color:#efe9e1;pointer-events:none}
+#sms.on{transform:translate(-50%,0)}
+#sms .f{font:500 11px ui-monospace,Menlo,monospace;color:#3fd0c9}#sms .t{font-size:15px;margin-top:3px}
+@media(prefers-reduced-motion:reduce){#sms{transition:none}}
+</style>
+<script id="skin3js">
+(function(){
+const APPS=[['👤','CONTACTS','beef','#3fd0c9'],['🧺','TRAP','beef','#f5a524'],['💵','BANK','money','#5fd38a'],['🗺️','MAP','move','#a98bff'],['🧍','CREW','beef','#3fd0c9'],['🏠','HOUSES','spots','#f5a524'],['🎒','STASH','bag','#e8504a'],['📰','NEWS','block','#a98bff']];
+let tm=0;
+function toast(f,t){try{let s=document.getElementById('sms');if(!s){s=document.createElement('div');s.id='sms';s.setAttribute('role','status');document.body.appendChild(s)}
+ s.innerHTML='<div class="f"></div><div class="t"></div>';s.firstChild.textContent='MESSAGES · '+String(f).toUpperCase();s.lastChild.textContent=t;s.classList.add('on');clearTimeout(tm);tm=setTimeout(()=>s.classList.remove('on'),4200)}catch(e){}}
+const _pm=phoneMsg;phoneMsg=function(f,t){const r=_pm.apply(this,arguments);toast(f,t);return r};
+function grid(){let tx='';try{if(typeof clCity==='function'&&clCity()&&typeof clStreetLane==='function'&&clStreetLane()&&typeof clRH==='function'&&clRH())tx='<div class="aptxt"><b>TEXT YOUR RIGHT HAND</b><button class="btn go" data-ap2="load">Pick up the load</button><button class="btn" data-ap2="drop">Make the drop</button></div>'}catch(e){}
+ return '<div class="apgrid">'+APPS.map(a=>`<button data-ap="${a[2]}" style="--c:${a[3]}"><i>${a[0]}</i>${a[1]}</button>`).join('')+tx+'</div>'}
+const _pp=panePhone;panePhone=function(){return grid()+_pp.apply(this,arguments)};
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-ap],[data-ap2]');if(!b)return;e.preventDefault();e.stopPropagation();
+ if(b.dataset.ap){tab=b.dataset.ap;render()}else clText(b.dataset.ap2)},true);
+})();
+</script>
+<style id="skin4">
+.cbd{position:relative;margin:4px 0 12px;padding:18px 12px;border:1px solid var(--line);border-radius:14px;background:radial-gradient(circle at 20% 10%,#3a2c1c,#241a12 70%);overflow:hidden}
+.cbd svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.cbd .gr{position:relative;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px 12px}
+.cbd .bp{background:#efe9e1;color:#14101a;padding:6px 6px 8px;box-shadow:0 8px 14px rgba(0,0,0,.6);position:relative;text-align:center}
+.cbd .bp:nth-child(odd){transform:rotate(-2deg)}.cbd .bp:nth-child(even){transform:rotate(2deg)}
+.cbd .bp::before{content:"";position:absolute;left:calc(50% - 22px);top:-8px;width:44px;height:15px;background:rgba(245,230,180,.6)}
+.cbd .bp .ph{height:52px;display:flex;align-items:center;justify-content:center;color:#fff;font-family:var(--label);font-size:12px;letter-spacing:.1em}
+.cbd .bp .nm{font-family:'Permanent Marker',var(--label),cursive;font-size:14px;margin:4px 0 2px}
+.cbd .bp .ow{font-size:11px;color:#4a4252;min-height:14px}
+.cbd .bp .btn{margin-top:4px;padding:5px 10px;font-size:12px;width:100%}
+.cbd .bp.here{outline:3px solid #f5a524}
+.cbd .sn{position:absolute;right:10px;top:6px;background:#f5e27a;color:#2a2410;font:12px 'Permanent Marker',cursive;padding:3px 8px;transform:rotate(3deg);z-index:2}
+</style>
+<script id="skin4js">
+(function(){
+const hue=n=>{let h=0;for(const c of String(n))h=(h*31+c.charCodeAt(0))%360;return h};
+function board(){try{if(typeof S==='undefined'||!S||!BLOCKS)return '';
+ const n=BLOCKS.length,cols=3,rows=Math.ceil(n/cols);let ps='',lines='';
+ BLOCKS.forEach((b,i)=>{const o=S.owner[i];let ow=o==='me'?'Yours':o==='none'?'Open':((typeof cdef==='function'?cdef(o).name:o)||'');const h=hue(b);
+  ps+=`<div class="bp${i===S.at?' here':''}"><div class="ph" style="background:linear-gradient(150deg,hsl(${h},40%,34%),hsl(${(h+50)%360},35%,16%))">${String(b).slice(0,14)}</div><div class="nm">${b}</div><div class="ow">${ow}${homeBlock()===i?' · home':''}</div>${i===S.at?'<div class="ow"><b>You are here</b></div>':`<button class="btn go" data-a="go" data-i="${i}">Go</button>`}</div>`;
+  const cx=((i%cols)+.5)/cols*100,cy=(Math.floor(i/cols)+.5)/rows*100;if(i<n-1){const j=i+1,ex=((j%cols)+.5)/cols*100,ey=(Math.floor(j/cols)+.5)/rows*100;lines+=`<line x1="${cx}" y1="${cy}" x2="${ex}" y2="${ey}"/>`}});
+ return `<div class="cbd"><div class="sn">Where to?</div><svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><g stroke="#e8504a" stroke-width=".7" vector-effect="non-scaling-stroke" opacity=".85">${lines}</g></svg><div class="gr">${ps}</div></div>`}catch(e){return ''}}
+const _pm=paneMove;paneMove=function(){return board()+_pm.apply(this,arguments)};
+})();
+</script>
+<script id="skin5js">
+(function(){
+const _dp=devPanel;devPanel=function(){_dp.apply(this,arguments);try{const mc=document.getElementById('mcard');if(!mc||mc.querySelector('#lkdev'))return;const d=document.createElement('div');d.id='lkdev';
+ d.innerHTML='<div class="sec">Layout (new look)</div><div class="btns"><button class="btn" data-lk="sms">Test text pop-up</button><button class="btn" data-lk="crew">Add 3 crew photos</button><button class="btn" data-lk="news">Add news line</button></div>';mc.appendChild(d)}catch(e){console.error('lkdev',e)}};
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-lk]');if(!b)return;e.stopPropagation();e.preventDefault();const k=b.dataset.lk;
+ if(k==='sms')phoneMsg('Dev Plug','Test text. New shipment landed, come through.');
+ else if(k==='crew'){S.crewM=S.crewM||[];['Mya','Zay','Kiki'].forEach(n=>{if(!S.crewM.some(m=>m.name===n))S.crewM.push(mkMember(n))});close();tab='beef';render()}
+ else if(k==='news'){say('Police chief spotted downtown. Plug low on stock.');close();render()}},true);
 })();
 </script>
 <script>if('serviceWorker' in navigator){addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}</script></body></html>
