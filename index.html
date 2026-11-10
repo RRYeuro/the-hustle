@@ -285,7 +285,7 @@ const SKSTART={life:{hustle:3,talk:3,muscle:3,smarts:3,luck:3},val:{hustle:6,tal
 function knownStart(ch){const k=[0];const rest=[1,2,3,4,5].sort(()=>Math.random()-.5);while(k.length<KNOWN[ch])k.push(rest.pop());return k}
 function plugName(bi){if(S.pname&&S.pname[bi])return S.pname[bi];return is('lucky')&&bi===S.ex?'Tre':PLUGS[bi]}
 const plugFem=bi=>S.pname&&S.pname[bi]?S.pfem[bi]:FEM[bi];
-const DIFF={easy:{st:5,name:'Easy',days:40,buy:.9,heat:.8,crew:.8,risk:.7,sub:'Cheaper plugs, chill crews, less heat.'},normal:{st:4,name:'Normal',days:35,buy:1,heat:1,crew:1,risk:1,sub:'The way it\'s meant to be played.'},hard:{st:3,name:'Hard',days:30,buy:1.12,heat:1.3,crew:1.3,risk:1.4,sub:'Pricey plugs, more heat, crews hit harder, jackboys everywhere.'}};
+const DIFF={easy:{st:5,name:'Easy',days:40,buy:.9,heat:.8,crew:.8,risk:.7,warn:1.3,sub:'Cheaper plugs, chill crews, less heat, more warnings and wider hot zones in mini-games.'},normal:{st:4,name:'Normal',days:35,buy:1,heat:1,crew:1,risk:1,warn:1,sub:'The way it\'s meant to be played.'},hard:{st:3,name:'Hard',days:30,buy:1.12,heat:1.3,crew:1.3,risk:1.4,warn:.55,sub:'Pricey plugs, more heat, crews hit harder, jackboys everywhere, fewer warnings and tighter hot zones.'}};
 const D=()=>DIFF[S.diff||'normal'];
 const maxStrikes=()=>(S&&DIFF[S.diff||'normal']?DIFF[S.diff||'normal'].st:3)||3;
 const maxDay=()=>S&&S.cal?1e9:D().days;
@@ -2371,6 +2371,7 @@ function paneExp(){
     h+=fr('Out today','Product you bought, bills, crew pay and anything else paid with street money. Overnight bills count here.','-'+money(Math.max(0,F.o-F.l)),B);
     if(F.l)h+=fr('Laundered today','Dirty money you washed into clean.',money(F.l),N);
     h+=fr(W7.length===1?'So far':`Last ${W7.length} days`,`${money(si)} came in, ${money(Math.max(0,so))} went out${sl?` and ${money(sl)} got laundered`:''}.`,(si-so-sl>=0?'+':'-')+money(Math.abs(si-so-sl)),si-so-sl>=0?G:B);
+    if(W7.length>=2){const mx=Math.max(1,...W7.map(x=>Math.max(x.i,x.o-x.l)));h+=`<div class="row" style="flex-direction:column;align-items:stretch"><div class="t">Dirty money, last ${W7.length} days</div><div style="display:flex;gap:6px;align-items:flex-end;height:64px">${W7.map(x=>`<div style="flex:1;display:flex;gap:2px;align-items:flex-end;height:100%"><i title="in" style="flex:1;background:var(--money);height:${Math.max(2,Math.round(x.i/mx*100))}%"></i><i title="out" style="flex:1;background:var(--blood);height:${Math.max(2,Math.round(Math.max(0,x.o-x.l)/mx*100))}%"></i></div>`).join('')}</div><div class="s" style="color:var(--dim)">Green is in, red is out. Oldest day on the left.</div></div>`}
     if(held)h+=fr('Waiting on your workers','Money your workers made that you have not collected. It comes in dirty.','+'+money(held),G)+`<div class="btns" style="margin:-4px 0 8px"><button class="btn green" data-a="wcollectall">Collect all</button></div>`;
     if(crewDay)h+=fr('Crew every day','Soldiers and worker pay. This comes out of your dirty money first.','-'+money(crewDay)+' / day',B);
   }catch(e){}
@@ -3012,7 +3013,7 @@ function markupGame(odds,done){mgOn=true;const T=Math.round(Math.max(30,Math.min
   const fin=ok=>{if(!mgOn)return;mgOn=false;document.removeEventListener('keydown',kd);document.removeEventListener('keyup',ku);$('modal').hidden=true;done(ok)};
   $('mk2').onclick=()=>fin(cut>=T);window.__mkDbg={set:(c,p)=>{cut=c;pat=p},T:T};
   const loop=t=>{if(!mgOn||!$('mc'))return;const dt=Math.min(.05,(t-last)/1000);last=t;if(hold){cut=Math.min(100,cut+34*dt);pat-=48*dt}else pat=Math.min(100,pat+10*dt);$('mc').style.width=cut+'%';$('mp').style.width=Math.max(0,pat)+'%';if(pat<=0)return fin(false);requestAnimationFrame(loop)};requestAnimationFrame(loop)}
-function pokerGame(odds,done){mgOn=true;const half=Math.round(11+odds*22+S.sk.talk),DUR=10;let m=50,v=0,inz=0,el=0,last=performance.now();
+function pokerGame(odds,done){mgOn=true;const half=Math.round((11+odds*22+S.sk.talk)*(D().warn?Math.pow(D().warn,.5):1)),DUR=10;let m=50,v=0,inz=0,el=0,last=performance.now();
   modal(`<h2>Poker face</h2><p class="s" style="text-align:center">Keep their mood inside the green for most of the talk. Smile pushes it up, Stare pushes it down. It drifts on its own.</p>
    <div class="bar" style="height:22px;position:relative"><div style="position:absolute;left:${50-half}%;width:${half*2}%;top:0;bottom:0;background:var(--money);opacity:.35"></div><i id="pm" style="position:absolute;left:50%;top:0;bottom:0;width:6px;background:#fff"></i></div>
    <div class="bar" style="height:6px;margin-top:8px"><i id="pt" style="width:0;background:var(--heat)"></i></div><p id="pq" class="s" style="text-align:center">Calm</p>
@@ -3104,7 +3105,7 @@ function overwatchGame(done){mgOn=true;let hit=0,bad=0,ev=0,N=12;
   const step=()=>{if(!mgOn||!$('ow'))return;if(cur.i>=0&&$('ow'+cur.i))$('ow'+cur.i).textContent='';if(ev>=N){mgOn=false;$('modal').hidden=true;return done(hit>=4&&bad<=1)}ev++;cur.i=rnd(0,8);cur.k=Math.random()<.55?1:0;cur.o=0;$('ow'+cur.i).textContent=cur.k?'🔫':'🧍';setTimeout(()=>{if(cur.i>=0&&!cur.o&&$('ow'+cur.i)){cur.o=1}step()},Math.max(650,1000-S.sk.smarts*30))};
   setTimeout(step,500)}
 function safeGame(o,done){mgOn=true;o=o||{};const NT=o.tumblers||2,TL=(o.sec||16)+S.sk.smarts*.8+(o.help?4:0)-(stressed()?2:0)*1;
-  let ti=0,a=50,tg=rnd(12,88),half=Math.max(3.2,5+S.sk.smarts*.5)+(o.help?1.5:0),dir=0,still=0,tleft=TL,last=performance.now(),locked=[],msg='Turn the dial slowly. Hotter means closer.';
+  let ti=0,a=50,tg=rnd(12,88),half=Math.max(3,(Math.max(3.2,5+S.sk.smarts*.5)+(o.help?1.5:0))*(D().warn?Math.pow(D().warn,.5):1)),dir=0,still=0,tleft=TL,last=performance.now(),locked=[],msg='Turn the dial slowly. Hotter means closer.';
   modal(`<h2>${o.title||'Dial the safe'}</h2><div class="s">Alarm</div><div class="bar" style="height:8px"><i id="sal" style="width:100%;background:var(--blood)"></i></div>
    <div style="text-align:center;margin:10px 0"><div id="sdl" style="display:inline-block;width:120px;height:120px;border-radius:50%;border:4px solid var(--line);position:relative;background:#1b1a20"><div id="sneedle" style="position:absolute;left:50%;top:6px;width:4px;height:50px;margin-left:-2px;background:var(--heat);transform-origin:2px 54px"></div></div></div>
    <div class="s">Heat</div><div class="bar" style="height:10px"><i id="shot" style="width:0;background:var(--money)"></i></div>
@@ -3334,7 +3335,7 @@ function homeDay(){const H=HOMES[S.home];addStress(H.stress);
       if(S.missed>=3){S.grannyLost=1;S.cap-=H.stash;S.home='couch';addStress(25);say("Three weeks of bills unpaid. The city took Grandma's house for back taxes. You're on your cousin's couch now.")}
       else say(`Couldn't pay the bills at Grandma's house. ${3-S.missed} more missed week${3-S.missed===1?'':'s'} and you lose it.`)}
     else{say(`Couldn't make rent. You got evicted from the ${H.name.toLowerCase()} and you're back on your cousin's couch.`);S.cap-=H.stash;S.home='couch';addStress(15)}}}
-function lookWarn(kind){try{if(window.FF||S.lkDay===S.day||S.pr||S.inJail)return false;const L=crewOk().filter(m=>(m.sk.look||0)>=1).sort((a,b)=>b.sk.look-a.sk.look)[0];if(!L)return false;if(Math.random()>=Math.min(.75,.30+.05*L.sk.look))return false;S.lkDay=S.day;crewGain(L,'look');
+function lookWarn(kind){try{if(window.FF||S.lkDay===S.day||S.pr||S.inJail)return false;const L=crewOk().filter(m=>(m.sk.look||0)>=1).sort((a,b)=>b.sk.look-a.sk.look)[0];if(!L)return false;if(Math.random()>=Math.min(.8,(.30+.05*L.sk.look)*(D().warn||1)))return false;S.lkDay=S.day;crewGain(L,'look');
   if(kind==='raid'){S.heat=Math.max(0,S.heat-5);modal(`<h2>${esc(L.name)} called it in</h2><p>${esc(L.name)} saw twelve circling your block and warned you in time. You moved everything before they got to the door. They found nothing.</p><div class="btns"><button class="btn go" id="ok">Good looking</button></div>`);$('ok').onclick=()=>{close();render()};return true}
   window.__lkHead=1;say(`${L.name} spotted twelve circling and gave you a head start.`);return false}catch(e){return false}}
 function raid(){if(lookWarn('raid'))return;const H=HOMES[S.home];
