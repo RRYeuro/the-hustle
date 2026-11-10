@@ -1,6 +1,6 @@
-🚨 **THE HUSTLE: MEGA UPDATE IS LIVE (v199)** 🚨
-**Revamp progress: ~95%.** Phase F and Phase G are built. Only a street race and the laundering rework are held for later.
-📲 **Get it first:** PC **Ctrl+Shift+R** (Mac Cmd+Shift+R). iPhone: Safari **aA > Reload Page**; Home Screen app: swipe it closed and reopen (twice if still old). Check it says **v199**. Saves carry over.
+🚨 **THE HUSTLE: MEGA UPDATE IS LIVE (v200)** 🚨
+**Revamp progress: 100%.** Phase F and Phase G are all built.
+📲 **Get it first:** PC **Ctrl+Shift+R** (Mac Cmd+Shift+R). iPhone: Safari **aA > Reload Page**; Home Screen app: swipe it closed and reopen (twice if still old). Check it says **v200**. Saves carry over.
 
 **Mini-games replace the dice**
 - 🔐 **Dial the Safe:** quiet heists make you crack the safe. Turn slow, stop in the hot zone, hold still.
@@ -14,6 +14,10 @@
 - 🥊 **Gym spar** is now a real fight. UFC and boxing matches never turn into shootouts.
 
 ---
+
+**Last two**
+- 🏁 **Apex Shift:** street race (16+, needs a car, Spots > Street business). Hit GO on green, shift in the green zone, beat the other driver for the pot.
+- 📄 **Clean Paper:** Wash max is now a deposit game. Watch the audit bar, bank it before it fills.
 
 **More new stuff**
 - 🏃 **Foot run** (no car) and 🚗 **car chase** roadblock forks: alley or road. Minivan, F-150 and Jeep soak a hit.
