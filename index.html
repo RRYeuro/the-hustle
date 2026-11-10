@@ -7178,26 +7178,28 @@ function devGroup(){const mc=$('mcard');if(!mc||mc.querySelector('.dvgrp')||!mc.
 :root{--skin-glow:rgba(245,165,36,.35)}
 .tabs{position:fixed!important;left:0;right:0;bottom:0;z-index:15;margin:0!important;background:linear-gradient(180deg,#0b0912ee,#08060d)!important;border-top:1px solid var(--line);
  padding:6px max(8px,env(safe-area-inset-right,0px)) calc(6px + env(safe-area-inset-bottom,0px)) max(8px,env(safe-area-inset-left,0px))!important;box-shadow:0 -8px 24px rgba(0,0,0,.55)}
-@media(min-width:900px){.tabs{display:flex!important;flex-wrap:nowrap!important;gap:6px}.tabs button{flex:1 1 0!important;padding:10px 2px!important;font-size:13px}body{padding-bottom:84px!important}}
-.tabs button{position:relative;border-radius:10px!important;padding-top:15px!important}
-.tabs button::before{content:attr(data-code);position:absolute;left:0;right:0;top:3px;text-align:center;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:8.5px;letter-spacing:.04em;font-weight:500;opacity:.7;text-transform:none;white-space:nowrap;overflow:hidden}
+@media(min-width:900px){.tabs{display:flex!important;flex-wrap:nowrap!important;gap:6px}.tabs button{flex:1 1 0!important;padding:10px 2px!important;font-size:13px}}
+body{padding-bottom:calc(var(--dockh,84px) + 14px)!important}
+.tabs button{position:relative;border-radius:10px!important}
 .tabs button[aria-selected="true"]{box-shadow:0 0 18px var(--skin-glow);animation:none}
 .stat .v,#cash,#day{font-family:ui-monospace,Menlo,Consolas,monospace}
-#tkr{grid-column:1/-1;overflow:hidden;white-space:nowrap;border:1px solid var(--line);border-radius:8px;background:#0b0912;color:#3fd0c9;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px;padding:5px 0;margin:2px 0}
-#tkr span{display:inline-block;padding-left:35%;animation:tkr 38s linear infinite}
+#tkr{grid-column:1/-1;overflow:hidden;white-space:normal;cursor:pointer;line-height:1.35;border:1px solid var(--line);border-radius:8px;background:#0b0912;color:#3fd0c9;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px;padding:6px 10px;margin:2px 0}
+#tkr span{display:block}#tkr:not(.open) span{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}#tkr.open span div{padding:2px 0}
+.sec.late,#log{display:none!important}
 @keyframes tkr{to{transform:translateX(-100%)}}
 @keyframes skgl{0%{transform:translate(0,0);filter:none}25%{transform:translate(-3px,1px);filter:hue-rotate(40deg)}50%{transform:translate(3px,-1px);opacity:.8}75%{transform:translate(-2px,0)}100%{transform:none;filter:none;opacity:1}}
 #pane.skgl{animation:skgl .22s steps(4)}
-@media(max-width:600px){.tabs button::before{display:none}.tabs button{padding-top:11px!important;font-size:11px!important}}
-@media(prefers-reduced-motion:reduce){#tkr span{animation:none;padding-left:8px}#pane.skgl{animation:none}}
+@media(max-width:600px){.tabs button{font-size:11px!important}}
+@media(prefers-reduced-motion:reduce){#pane.skgl{animation:none}}
 </style>
 <script id="skin1js">
 (function(){
 const CODE={block:'BLOCK-OPS',move:'TRP-MAP',beef:'ENCR-CHAT',crew:'ID-CARD',phone:'BURNER',cards:'DECKS',exp:'BILLS',spots:'SPOT-LOG',biz:'LAUNDRY',bag:'STASH',money:'LEDGER',sch:'CLASS',rap:'STUDIO',rob:'HEISTS',sp:'ARENA'};
-function codes(){document.querySelectorAll('.tabs button').forEach(b=>{const c=CODE[b.dataset.t];if(c)b.dataset.code='[ '+c+' ]'})}
-function tkr(){try{let t=document.getElementById('tkr');if(!t){const s=document.querySelector('.side');if(!s)return;t=document.createElement('div');t.id='tkr';t.setAttribute('aria-live','off');t.innerHTML='<span></span>';s.insertBefore(t,s.firstChild)}
- const L=(typeof S!=='undefined'&&S&&S.log)?S.log.slice(0,4).map(x=>x.t.replace(/<[^>]+>/g,'')):[];
- const txt='> '+(L.length?L.join('   > '):'STREET NEWS: quiet for now');const sp=t.firstChild;if(sp.textContent!==txt)sp.textContent=txt}catch(e){}}
+function codes(){const t=document.querySelector('.tabs');if(t)document.documentElement.style.setProperty('--dockh',t.offsetHeight+'px')}
+function tkr(){try{let t=document.getElementById('tkr');if(!t){const s=document.querySelector('.side');if(!s)return;t=document.createElement('div');t.id='tkr';t.setAttribute('role','button');t.setAttribute('aria-label','Street news, tap for more');t.innerHTML='<span></span>';s.insertBefore(t,s.firstChild)}
+ const L=(typeof S!=='undefined'&&S&&S.log)?S.log.slice(0,10).map(x=>x.t.replace(/<[^>]+>/g,'')):[];
+ const sp=t.firstChild;const html=t.classList.contains('open')?(L.length?L.map(x=>'<div>> '+x.replace(/[<>&]/g,'')+'</div>').join(''):'<div>> quiet for now</div>'):'> '+(L.length?L[0].replace(/[<>&]/g,''):'STREET NEWS: quiet for now')+(L.length>1?'  (tap for more)':'');if(sp.innerHTML!==html)sp.innerHTML=html}catch(e){}}
+document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('#tkr');if(!t)return;t.classList.toggle('open');tkr()},true);
 const _r=render;render=function(){const r=_r.apply(this,arguments);try{codes();tkr()}catch(e){}return r};
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('.tabs button');if(!b)return;const p=document.getElementById('pane');if(!p)return;p.classList.remove('skgl');void p.offsetWidth;p.classList.add('skgl');setTimeout(()=>p.classList.remove('skgl'),240)},true);
 })();
@@ -7209,28 +7211,28 @@ document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest
 .pol::before{content:"";position:absolute;left:34px;top:-9px;width:50px;height:17px;background:rgba(245,230,180,.6);transform:rotate(3deg)}
 .pol .ph{height:96px;display:flex;align-items:center;justify-content:center;font-family:var(--label);font-size:34px;color:#fff;text-shadow:0 2px 6px rgba(0,0,0,.6)}
 .pol .cp{position:absolute;left:0;right:0;bottom:6px;text-align:center;font-family:'Permanent Marker',var(--label),cursive;font-size:13px;line-height:1.1;padding:0 4px}
-.pol.bk{background:#f4ecd8 repeating-linear-gradient(#f4ecd8 0,#f4ecd8 17px,#cfc2a6 18px);height:150px;padding:8px;font-size:12px;line-height:18px;overflow:hidden}
-.pol.bk b{display:block;font-size:13px}
+.pol .bk2{display:none;font-size:12px;line-height:18px;min-height:132px}.pol .bk2 b{display:block;font-size:13px}.pol .bkb{margin-top:6px;font-size:11px;color:#6b5f4a}
+.pol.flip{background:#f4ecd8 repeating-linear-gradient(#f4ecd8 0,#f4ecd8 17px,#cfc2a6 18px);padding:8px}.pol.flip .fr{display:none}.pol.flip .bk2{display:block}
+.pol{touch-action:manipulation}
 .pwt{flex-basis:100%;font-family:var(--label);font-size:12px;letter-spacing:.14em;color:#c9b8a4;text-transform:uppercase;margin-bottom:-6px}
 </style>
 <script id="skin2js">
 (function(){
 const hue=n=>{let h=0;for(const c of String(n))h=(h*31+c.charCodeAt(0))%360;return h};
 const esc=t=>String(t).replace(/[<>&"]/g,'');
-function card(id,name,cap,front,back){const h=hue(name);return `<button class="pol" data-pf="${id}" data-front="${esc(front).replace(/"/g,'')}" aria-label="${esc(name)}, tap to flip"><div class="ph" style="background:linear-gradient(160deg,hsl(${h},45%,32%),hsl(${(h+60)%360},40%,18%))">${esc(name).slice(0,1).toUpperCase()}</div><div class="cp">${esc(cap)}</div></button>`}
+function card(id,name,cap,back){const h=hue(name);const L=String(back||'').split('|');
+ return `<div class="pol" data-pf="${id}" role="button" tabindex="0" aria-label="${esc(name)}, tap to flip"><div class="fr"><div class="ph" style="background:linear-gradient(160deg,hsl(${h},45%,32%),hsl(${(h+60)%360},40%,18%))">${esc(name).slice(0,1).toUpperCase()}</div><div class="cp">${esc(cap)}</div></div><div class="bk2"><b>${esc(L[0])}</b>${L.slice(1).map(x=>esc(x)).join('<br>')}<div class="bkb">↩ tap to flip back</div></div></div>`}
 function wall(){try{if(typeof S==='undefined'||!S)return '';
  const M=S.crewM||[];let h='';const RK={rh:'Right Hand',sol:'Soldier',lt:'Lieutenant'};
  M.forEach((m,i)=>{const sk=m.sk||{};const top=Object.keys(sk).sort((a,b)=>sk[b]-sk[a]).slice(0,3).map(k=>k+' '+sk[k]).join(' · ');
-  h+=card('m'+i,m.name,m.name+' · '+(RK[m.rank]||'Crew'),'',0).replace('<button class="pol"',`<button class="pol" data-back="${esc(m.name)}|Loyalty ${m.loy||0}|Trust ${m.trust||0}|${esc(top)}|${m.busy?'On a job':'Ready'}"`)});
+  h+=card('m'+i,m.name,m.name+' · '+(RK[m.rank]||'Crew'),m.name+'|Loyalty '+(m.loy||0)+'|Trust '+(m.trust||0)+'|'+top+'|'+(m.busy?'On a job':'Ready'))});
  const mine=(S.owner||[]).filter(o=>o==='me'||o===S.gang).length;
- h+=card('hall','Hall','Hall of the Block','','').replace('<button class="pol"',`<button class="pol" data-back="Hall of the Block|Blocks you hold: ${mine}|Rep ${S.rep||0}|Day ${S.day}"`);
+ h+=card('hall','Hall','Hall of the Block','Hall of the Block|Blocks you hold: '+mine+'|Rep '+(S.rep||0)+'|Day '+S.day);
  const cr=(S.crews||[]).filter(c=>c.alive).map(c=>{const d=(typeof cdef==='function'?cdef(c.id):{name:c.id});return d.name+' '+c.str}).slice(0,4).join('|');
- h+=card('lad','Ladder','Gang Ladder','','').replace('<button class="pol"',`<button class="pol" data-back="Gang Ladder|${cr||'No gangs yet'}"`);
+ h+=card('lad','Ladder','Gang Ladder','Gang Ladder|'+(cr||'No gangs yet'));
  return `<div class="pwall"><div class="pwt">Your crew · tap a photo to flip it</div>${h}</div>`}catch(e){return ''}}
 const _pb=paneBeef;paneBeef=function(){return wall()+_pb.apply(this,arguments)};
-document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('.pol');if(!b)return;e.preventDefault();
- if(b.classList.contains('bk')){b.className='pol';b.innerHTML=b.dataset.keep;return}
- b.dataset.keep=b.innerHTML;const L=(b.dataset.back||'').split('|');b.className='pol bk';b.innerHTML='<b>'+L[0]+'</b>'+L.slice(1).join('<br>')},true);
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('.pol');if(!b)return;b.classList.toggle('flip')});
 })();
 </script>
 <style id="skin3">
