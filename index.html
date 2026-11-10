@@ -3331,10 +3331,10 @@ function wTake(i,gid){const w=S.workers[i];if(!w||!w.stash||!w.stash[gid])return
 const wLv=w=>1+((w.sales||0)>=6?1:0)+((w.sales||0)>=18?1:0);
 function trapGoods(t){return [t.g,t.g2,t.g3].filter((x,i,a)=>x&&a.indexOf(x)===i)}
 function runTraps(){const did=new Set();
-  Object.entries(S.traps).forEach(([bi,t])=>{bi=+bi;const w=S.workers.find(w=>w.id===t.w);if(!w||!t.g)return;if(w.low>=S.day){did.add(w.id);return}
+  Object.entries(S.traps).forEach(([bi,t])=>{bi=+bi;const w=S.workers.find(w=>w.id===t.w);if(!w||(!t.g&&!(t.mgr&&t.mgr===t.w)))return;if(w.low>=S.day){did.add(w.id);return}
     if(!myBlock(bi)){say(`${w.name} couldn't work ${BLOCKS[bi]}. That's not your block no more.`);return}
     let worked=0;const Hm=(t.mgr&&t.mgr===t.w)?shSt():null,isM=!!(Hm&&Hm.own);if(isM&&S.day-(t.mgrL||S.day)>=14){t.mgrL=S.day;if(w.loyal<10)w.loyal++}
-    trapGoods(t).slice(0,wLv(w)).forEach(gid=>{const g=G(gid);
+    (isM?[...new Set([...GOODS.filter(g=>(Hm.inv[g.id]||0)>0).map(g=>g.id),...trapGoods(t)])]:trapGoods(t)).slice(0,wLv(w)).forEach(gid=>{const g=G(gid);
       w.stash=w.stash||{};w.sq=w.sq||{};const ws=(w.stash[gid]||0)>0,mg=isM&&!ws,have=ws?w.stash[gid]:(mg?(Hm.inv[g.id]||0):S.inv[g.id]);if(have<=0){say(`${w.name} ran out of ${g.name} at the ${BLOCKS[bi]} trap.`);return}
       let n=Math.min(have,Math.floor(w.hustle*(g.unit==='g'?5:g.unit==='pills'?8:1)*(.6+.4*(typeof demand==='function'?Math.min(1.2,Math.max(.4,demand(bi,g.id))):1))));if(g.step<1)n=Math.floor(n*2)/2;if(n<=0)return;
       const fkS=mg?Hm.fake:S.fake,fk=ws?0:Math.min(fkS[g.id]||0,Math.round(n*(fkS[g.id]||0)/have));if(!ws)fkS[g.id]=(fkS[g.id]||0)-fk;
@@ -7300,6 +7300,9 @@ document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest
 </script>
 <style id="skin6">
 .tabs button[data-t="spots"],.tabs button[data-t="bag"]{display:none!important}
+.jump{display:none!important}
+body[data-home="0"] .wq{display:none!important}
+#me{position:relative;cursor:pointer}#me::after{content:'tap for fit, ride, gun ›';position:absolute;right:10px;bottom:4px;font:500 10px ui-monospace,Menlo,monospace;color:var(--dim)}
 .rph{max-width:460px;margin:6px auto 12px;border:2px solid #3a3446;border-radius:34px;background:#0a0810;box-shadow:0 0 0 6px #14101c,0 14px 40px rgba(0,0,0,.6);padding:10px 12px 16px;overflow:hidden}
 .rph-bar{display:flex;justify-content:space-between;font:500 11px ui-monospace,Menlo,monospace;color:#9a93a8;padding:2px 10px 8px}
 .rph-g{font:700 11px var(--label);letter-spacing:.16em;color:#9a93a8;text-transform:uppercase;margin:12px 4px 8px}
@@ -7321,8 +7324,8 @@ document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest
 const RAW={beef:paneBeef,crew:paneCrew,money:paneMoney,biz:paneBiz,spots:paneSpots,phone:panePhone,move:paneMove};
 const R=[[/^Your fight style/,'tab:crew'],[/^(Trap houses|Your workers|Looking for work)/,'app:trap'],[/^(Your homies|Your girl)/,'app:contacts'],[/^Your crew$/,'app:crew'],[/^Family/,'app:family'],[/^Turf and space/,'app:turf'],[/^Stash and safe/,'drop'],
  [/^(Jobs|School, work and business)/,'tab:crew'],[/^(Side hustles online|Side work)/,'app:hustle'],[/^Clean and dirty cash/,'drop'],[/^Modern life/,'app:modern'],[/^Backer/,'app:backer'],[/^Laundering/,'tab:biz'],
- [/^(Trap phone|Texts)/,'app:messages'],[/^Contacts/,'app:contacts'],[/^Dealer orders/,'app:orders'],[/^Burners/,'app:burners'],[/^Social/,'app:social'],[/^The city/,'drop']];
-const dest=(src,t)=>{if(src==='spots')return /^Rival/.test(t)?'tab:beef':/^Street news/.test(t)?'app:news':'tab:move';for(const r of R)if(r[0].test(t))return r[1];return null};
+ [/^(Trap phone|Texts)/,'app:messages'],[/^Contacts/,'app:contacts'],[/^Dealer orders/,'app:orders'],[/^Burners/,'app:burners'],[/^Social/,'app:social'],[/^The city/,'drop'],[/^Your people/,'app:contacts'],[/^Licks/,'app:licks'],[/^The Last Big Deal/,'drop']];
+const dest=(src,t)=>{if(src==='spots')return /^Rival/.test(t)?'tab:beef':/^Street news/.test(t)?'app:news':/^Street business/.test(t)?'tab:block':/^(Where you stay|Living in)/.test(t)?'tab:biz':'tab:move';for(const r of R)if(r[0].test(t))return r[1];return null};
 const own={beef:'beef',crew:'crew',money:'money',biz:'biz',spots:'move',phone:'phone',move:'move'};
 function thin(n){if(n.querySelectorAll)n.querySelectorAll('img').forEach(i=>{if(i.closest('.cbd,.pol,.rph-grid'))return;const s=i.getAttribute('style')||'';const m=/(?:^|;)\s*width:\s*(\d+)px/.exec(s);if(!m||+m[1]>100)i.remove()})}
 function parse(src){let h='';try{h=RAW[src]()}catch(e){console.error('sr',src,e)}const t=document.createElement('template');t.innerHTML=h;const head=[],secs=[];let cur=null;
@@ -7331,19 +7334,19 @@ const ser=ns=>ns.map(n=>{if(n.nodeType===1){thin(n);return n.outerHTML}return n.
 const cache={};let ck='';
 function P(src){const k=(typeof S!=='undefined'&&S?S.day:0)+'|'+(window._rtick||0);if(ck!==k){for(const x in cache)delete cache[x];ck=k}return cache[src]||(cache[src]=parse(src))}
 window._rtick=0;
-const NEED={'tab:beef':['spots'],'tab:crew':['beef','biz'],'tab:biz':['money'],'tab:move':['spots']};
-function secsFor(d){let o=[];(NEED[d]||['beef','crew','money','biz','phone','spots']).forEach(s=>{P(s).secs.forEach(x=>{if(dest(s,x.t)===d)o.push(x)})});return o}
+const NEED={'tab:beef':['spots'],'tab:crew':['beef','biz'],'tab:biz':['money','spots'],'tab:move':['spots'],'tab:block':['spots']};
+function secsFor(d){let o=[];(NEED[d]||['beef','crew','money','biz','phone','spots','move']).forEach(s=>{P(s).secs.forEach(x=>{if(dest(s,x.t)===d)o.push(x)})});return o}
 function tabHTML(key){const p=P(key);let out=ser(p.head.filter(n=>!(n.nodeType===1&&n.classList.contains('jump'))));
  p.secs.forEach(x=>{const d=dest(key,x.t);if(d===null||d==='tab:'+own[key])out+=ser(x.nodes)});
  secsFor('tab:'+own[key]).forEach(x=>{if(x.src!==key)out+=ser(x.nodes)});return out}
 /* Move: board, here sections, rest */
-function moveHTML(){const p=P('move'),sp=P('spots');let head='';p.head.forEach(n=>{if(n.nodeType===1&&n.tagName==='IMG')return;if(n.nodeType===1&&n.querySelector&&n.querySelector('img')&&!n.classList.contains('cbd')&&!n.classList.contains('row'))return;head+=ser([n])});
- let here='';const hs=sp.secs.map(x=>ser(x.nodes)).join('');if(hs)here=`<div class="mvh">Here on ${BLOCKS[S.at]}</div>`+hs;
- let rest='';p.secs.forEach(x=>{if(dest('move',x.t)==='drop')return;let nodes=x.nodes;if(/^Mini games/.test(x.t))nodes=nodes.filter(n=>!(n.nodeType===1&&/Hoop at the park/.test(n.textContent)));rest+=ser(nodes)});
+function moveHTML(){const p=P('move'),sp=P('spots');let head='';const home=(()=>{try{return homeBlock()===S.at}catch(e){return true}})();p.head.forEach(n=>{if(n.nodeType===1&&n.tagName==='IMG')return;if(!home&&n.nodeType===1&&/Lay low/.test(n.textContent)&&n.classList.contains('row'))return;if(n.nodeType===1&&n.querySelector&&n.querySelector('img')&&!n.classList.contains('cbd')&&!n.classList.contains('row'))return;head+=ser([n])});
+ let here='';const hs=sp.secs.filter(x=>dest('spots',x.t)==='tab:move').map(x=>ser(x.nodes)).join('');if(hs)here=`<div class="mvh">Here on ${BLOCKS[S.at]}</div>`+hs;
+ let rest='';p.secs.forEach(x=>{const dd=dest('move',x.t);if(dd==='drop'||(dd&&dd.indexOf('app:')===0))return;if(/^Time/.test(x.t)&&!home)return;let nodes=x.nodes;if(/^Mini games/.test(x.t))nodes=nodes.filter(n=>!(n.nodeType===1&&/Hoop at the park/.test(n.textContent)));rest+=ser(nodes)});
  return head+here+rest}
 /* phone */
 const APPS=[['messages','Messages','💬','#3fd0c9','People'],['contacts','Contacts','👤','#3fd0c9','People'],['crew','Crew','🧍','#3fd0c9','People'],['family','Family','🏡','#3fd0c9','People'],
- ['trap','Trap house','🧺','#f5a524','Street'],['orders','Orders','📦','#f5a524','Street'],['burners','Burners','🔥','#f5a524','Street'],['turf','Turf','🗺️','#f5a524','Street'],['news','News','📰','#f5a524','Street'],
+ ['trap','Trap house','🧺','#f5a524','Street'],['orders','Orders','📦','#f5a524','Street'],['burners','Burners','🔥','#f5a524','Street'],['turf','Turf','🗺️','#f5a524','Street'],['news','News','📰','#f5a524','Street'],['licks','Licks','🎯','#f5a524','Street'],
  ['modern','Wallet','💳','#5fd38a','Money'],['backer','Backer','🤝','#5fd38a','Money'],['hustle','Side hustles','💻','#a98bff','Hustle'],['social','Social','📸','#a98bff','Hustle']];
 window._rph=window._rph||null;
 function rhBtns(){try{if(typeof clCity==='function'&&clCity()&&typeof clStreetLane==='function'&&clStreetLane()&&typeof clRH==='function'&&clRH())return '<div class="btns" style="margin:6px 0"><button class="btn go" data-ap2="load">Text: pick up the load</button><button class="btn" data-ap2="drop">Text: make the drop</button></div>'}catch(e){}return ''}
@@ -7351,6 +7354,7 @@ function phoneHTML(){const bar=`<div class="rph-bar"><span>BLOCK-WIRE 5G</span><
  if(!window._rph){const gs=[...new Set(APPS.map(a=>a[4]))];body=gs.map(g=>`<div class="rph-g">${g}</div><div class="rph-grid">${APPS.filter(a=>a[4]===g).map(a=>`<button data-rph="${a[0]}" style="--c:${a[3]}"><i>${a[2]}</i>${a[1]}</button>`).join('')}</div>`).join('')}
  else{const a=APPS.find(x=>x[0]===window._rph)||APPS[0];const c=secsFor('app:'+a[0]).map(x=>ser(x.nodes)).join('');body=`<div class="rph-top"><button class="btn" data-rph="">‹ Back</button><b>${a[2]} ${a[1]}</b></div>`+(a[0]==='crew'?rhBtns():'')+(c||'<div class="s" style="padding:14px 4px">Nothing here yet.</div>')}
  return `<div class="rph">${bar}${body}<div class="rph-home"></div></div>`}
+window._SR={secsFor,ser};
 paneMove=function(){window._rtick++;return moveHTML()};paneSpots=function(){window._rtick++;return moveHTML()};
 paneBeef=function(){window._rtick++;return tabHTML('beef')};paneCrew=function(){window._rtick++;return tabHTML('crew')};paneMoney=function(){window._rtick++;const h=tabHTML('money');return h.replace(/<[^>]*>/g,'').trim()?h:'<div class="s" style="padding:14px 4px">Your cash is at the top. Wallet and Backer are apps on your Phone. Laundering is in Business.</div>'};paneBiz=function(){window._rtick++;return tabHTML('biz')};
 panePhone=function(){window._rtick++;return phoneHTML()};
@@ -7372,6 +7376,22 @@ document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest
  modal(`<div class="sec">Calling a ride</div>${pic}<div class="btns" style="margin-top:8px"><button class="btn go" data-rideok="1">Get in</button><button class="btn" data-mclose="1">Cancel</button></div>`);
  window._rideI=b.dataset.i},true);
 document.addEventListener('click',e=>{const k=e.target.closest&&e.target.closest('[data-rideok]');if(!k)return;e.preventDefault();e.stopPropagation();const i=window._rideI;close();const b=document.querySelector('[data-a="goR"][data-i="'+i+'"]');if(b){ride=1;b.click()}},true);
+})();
+</script>
+<script id="skin8js">
+(function(){
+/* street news with a source + pop-up on new news */
+function srcName(i){const o=[];try{o.push(plugName(S.at))}catch(e){}try{if(S.friends&&S.friends[0])o.push(S.friends[0].name)}catch(e){}try{const m=clRH();if(m)o.push(m.name)}catch(e){}o.push('a kid on the corner','the Js on the block');return o[i%o.length]}
+const _np=newsPush;newsPush=function(t){const r=_np.apply(this,arguments);try{if(S.news&&S.news[0]&&!S.news[0].s){let h=0;for(const c of String(t))h=(h*31+c.charCodeAt(0))>>>0;S.news[0].s=srcName(h)}}catch(e){}return r};
+newsHTML=function(){const N=(S.news||[]).slice(0,5);if(!N.length)return '';return `<div class="sec">Street news</div>`+N.map(n=>`<div class="row"><div class="info"><div class="s" style="color:var(--dim)">Day ${n.d}${n.b?' · '+esc(n.b):''}${n.s?' · via '+esc(n.s):''}</div><div class="t" style="font-weight:600">${esc(n.t)}</div></div></div>`).join('')};
+let busy=0;
+function popups(){if(busy)return;try{if(!S||S.over||S.pr||(typeof mgOn!=='undefined'&&mgOn)||!document.getElementById('modal').hidden)return;
+ const n=S.news&&S.news[0];if(S._nwSeen===undefined)S._nwSeen=n?n.d+'|'+n.t:'';if(n){const k=n.d+'|'+n.t;if(S._nwSeen!==k){S._nwSeen=k;busy=1;modal(`<div class="sec">Word on the street</div>${a2((S.short&&S.short.u>S.day)?'g_short':'g_news',260)}<div class="s" style="color:var(--dim)">${n.s?'Heard from '+esc(n.s):'Heard around'}${n.b?' · '+esc(n.b):''}</div><p>${esc(n.t)}</p><div class="btns"><button class="btn" data-mclose="1">Got it</button></div>`);busy=0;return}}
+ if(!S.lbd&&typeof lbdReq==='function'&&lbdReq().every(r=>r[1])&&(S.day-(S._lbdAsk===undefined?-99:S._lbdAsk))>=7){S._lbdAsk=S.day;let nm='Your Right Hand';try{const m=clRH();if(m)nm=m.name}catch(e){}busy=1;modal(`<div class="sec">Text from ${esc(nm)}</div><p>"Boss, a buyer out of town wants one huge load and he has the cash. It is a one-time thing. You in?"</p><div class="btns"><button class="btn go" data-lbdgo="1">Hear him out</button><button class="btn" data-mclose="1">Not now</button></div>`);busy=0}}catch(e){busy=0}}
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-lbdgo]');if(!b)return;e.preventDefault();e.stopPropagation();close();lbdGo()},true);
+const _r8=render;render=function(){const r=_r8.apply(this,arguments);try{document.body.dataset.home=(homeBlock()===S.at)?'1':'0'}catch(e){}setTimeout(popups,450);return r};
+/* street business + stay on Block; appended after the block pane */
+const _pb8=paneBlock;paneBlock=function(){let h=_pb8.apply(this,arguments);try{window._rtick++;h+=_SR.secsFor('tab:block').map(x=>_SR.ser(x.nodes)).join('')}catch(e){console.error('blk',e)}return h};
 })();
 </script>
 <script>if('serviceWorker' in navigator){addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}</script></body></html>
