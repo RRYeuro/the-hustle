@@ -411,7 +411,7 @@ function render(){try{heatSync()}catch(e){}try{wTabBtns()}catch(e){}setTimeout(a
   let _ph;try{_ph={sch:paneSchool,rap:paneRap,rob:paneRob,sp:paneSports,phone:panePhone,block:()=>sf(haHTML)+sf(poHTML)+paneBlock()+paneGuns()+(()=>{try{return x8On()?goalHTML():''}catch(e){return ''}})(),move:paneMove,beef:paneBeef,crew:paneCrew,cards:paneCards,exp:paneExp,prison:panePrison,spots:paneSpots,biz:paneBiz,bag:paneBag,money:paneMoney}[tab]()}catch(e){console.error('tab',tab,e);_ph=`<div class="row"><div class="info"><div class="t" style="color:var(--blood)">This tab hit an error</div><div class="s">${esc(e.message||'')} (tell Euro: ${esc(tab)})</div></div></div>`}
   $('pane').innerHTML=waveTop()+_ph;
   $('log').innerHTML=S.log.map(l=>`<p><span class="d">D${l.d}</span>${l.t}</p>`).join('');
-  if(S.pr){$('here').textContent='Locked up · '+S.pr.place}
+  {const lb=document.querySelector('.where .sec');if(S.pr){$('here').textContent='Locked up · '+S.pr.place;$('owner').innerHTML='';const w=document.querySelector('.where');if(w)w.style.backgroundImage='';if(lb)lb.textContent='Inside'}else if(lb)lb.textContent="You're on"}
   missionUI();try{waveDecor()}catch(e){}save();sndWatch();
 }
 function paneBlock(){
@@ -1054,6 +1054,40 @@ function cnWalkFee(C){return Math.round(C.cost*.6)}
 function cnWalk(i,mode){const B=b5(),C=W5BCITY[i];if(!C||S.pr||S.inJail)return;const fly=mode==='fly'||!!C.fly;if(C.fly&&mode==='drive')return;if(fly&&(S.age||0)<18)return;if((B.cvt||-9)>S.day-2)return;const fee=cnFee2(C,fly);if(S.cash<fee)return;if(spendEn(fly?Math.round(C.e/2):C.e)===false)return;w5bPay(fee);B.cvt=S.day;CV={n:C.n,i,left:6,msg:'',place:null,fly:fly?1:0};say(fly?`You fly to ${C.n} and pick up a rental.`:`You drive to ${C.n} for the day.`);cnRender();if(fly){wCard('g_air',`Touched down in ${C.n}`,`Ticket and rental car ran ${money(fee)}. No product on the plane, so your local plug is how you get stock here. Build trust first.`,[{l:'Pick up the rental',f:()=>{}}],'Flight')}}
 function cnWalkRow(c,i){const B=b5(),wait=(B.cvt||-9)>S.day-2,cdn=wait||!!S.pr||!!S.inJail;let h='';if(!c.fly)h+=w5bRow(`🚗 Drive to ${c.n}`,`${money(cnWalkFee(c))} for gas, ${c.e} energy. You can carry product. A full-screen day with 6 actions.`,'cn_walk',wait?'Wait':'Drive',cdn||S.cash<cnWalkFee(c),'',`data-i="${i}" data-m="drive"`);
   h+=w5bRow(`✈️ Fly to ${c.n}`,`${money(cnAir(c))} for a ticket and rental, ${Math.round(c.e/2)} energy. 18 or older. No product on the plane: buy from the local plug.${c.fly?' Too far to drive.':''}`,'cn_walk',wait?'Wait':'Fly',cdn||S.cash<cnAir(c)||(S.age||0)<18,'',`data-i="${i}" data-m="fly"`);return h}
+/* ---------- prison phone rules + dev menu layout ---------- */
+function prNoPhone(){return !!(S&&S.pr&&!(S.pr.inv&&S.pr.inv.phone))}
+const _say0=say;say=function(t){if(prNoPhone()&&/^\s*📱/.test(String(t)))return;return _say0.apply(this,arguments)};
+const _phoneMsg0=phoneMsg;phoneMsg=function(f,t){if(prNoPhone())return;return _phoneMsg0(f,t)};
+if(typeof gfText==='function'){const _gf0=gfText;gfText=function(){if(prNoPhone())return;return _gf0.apply(this,arguments)}}
+if(typeof w4Text==='function'){const _w40=w4Text;w4Text=function(){if(prNoPhone())return;return _w40.apply(this,arguments)}}
+const _phoneDay0=phoneDay;phoneDay=function(){const r=_phoneDay0.apply(this,arguments);if(prNoPhone()){S.texts=[];S.inbox=[]}return r};
+const DVLAW=['mcrt','maud','mcourt','mrec','mnet','mcity','mfly'];
+var DVOPEN=window.DVOPEN=window.DVOPEN||{},DVQ='';
+function devOrganize(h){const d=document.createElement('div');d.innerHTML=h;const out=document.createElement('div'),groups=[];let cur=null,foot=null,note=null;
+  [...d.children].forEach((e,i)=>{
+    if(e.tagName==='H2'||(i===0&&e.classList.contains('sec'))){out.appendChild(e);return}
+    if(e.classList.contains('sec')){cur={t:e.textContent.trim(),btns:[]};groups.push(cur);return}
+    if(e.tagName==='P'){note=e;return}
+    if(e.classList.contains('btns')){if(e.querySelector('#dvx')){foot=e;return}if(!cur){cur={t:'Misc',btns:[]};groups.push(cur)}cur.btns.push(...e.querySelectorAll('button'));return}
+  });
+  const all=groups.reduce((a,g)=>a.concat(g.btns),[]),law={t:'Law, courts and cities',btns:[]};
+  all.forEach(b=>{if(DVLAW.indexOf(b.dataset.dv)>=0){law.btns.push(b);groups.forEach(g=>{const k=g.btns.indexOf(b);if(k>=0)g.btns.splice(k,1)})}});
+  const QK=['c100','cool','heal','chill','d1','d7','lvl','hot'],quick=document.createElement('div');quick.className='btns';
+  QK.forEach(k=>{const b=all.find(x=>x.dataset.dv===k);if(b){const c=b.cloneNode(true);quick.appendChild(c)}});
+  const q=document.createElement('input');q.id='dvq';q.className='dvq';q.placeholder='Search tools (heat, court, fly, rap...)';q.value=DVQ;q.setAttribute('autocomplete','off');
+  const top=document.createElement('div');top.className='dvtop';top.innerHTML='<div class="sec" style="margin:0">Quick</div>';top.appendChild(quick);
+  const hdr=document.createElement('div');hdr.className='dvhdr';hdr.appendChild(q);hdr.insertAdjacentHTML('beforeend','<button class="btn go" id="dvx2">Close</button>');
+  out.appendChild(hdr);out.appendChild(top);
+  const gl=document.createElement('div');gl.id='dvgl';
+  [law].concat(groups).forEach(g=>{if(!g.btns.length)return;const det=document.createElement('details');det.className='dvg';det.dataset.t=g.t;if(DVOPEN[g.t])det.open=true;const sm=document.createElement('summary');sm.textContent=`${g.t} (${g.btns.length})`;det.appendChild(sm);const bx=document.createElement('div');bx.className='btns';g.btns.forEach(b=>bx.appendChild(b));det.appendChild(bx);gl.appendChild(det)});
+  out.appendChild(gl);if(note)out.appendChild(note);if(foot)out.appendChild(foot);return out.innerHTML}
+function devFilter(q){DVQ=q;q=q.trim().toLowerCase();document.querySelectorAll('#dvgl .dvg').forEach(g=>{let any=false;g.querySelectorAll('button').forEach(b=>{const m=!q||b.textContent.toLowerCase().indexOf(q)>=0||(g.dataset.t||'').toLowerCase().indexOf(q)>=0;b.style.display=m?'':'none';if(m)any=true});g.style.display=any?'':'none';if(q)g.open=any;else g.open=!!DVOPEN[g.dataset.t]})}
+const _devPanel0=devPanel;devPanel=function(){if(!S||S.ph)return;if(!document.getElementById('dvcss')){const st=document.createElement('style');st.id='dvcss';st.textContent='.dvhdr{position:sticky;top:0;z-index:3;display:flex;gap:8px;padding:8px 0;background:var(--panel,#1b1720)}.dvq{flex:1;min-width:0;padding:10px 12px;border-radius:10px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.06);color:inherit;font:inherit}.dvg{margin:8px 0;border:1px solid rgba(255,255,255,.16);border-radius:10px;padding:0 10px}.dvg summary{padding:12px 2px;font-weight:700;cursor:pointer}.dvg[open] summary{color:var(--accent)}.dvg .btns{padding-bottom:10px}.dvtop{margin:6px 0 4px}';document.head.appendChild(st)}
+  const m0=modal;modal=function(h){modal=m0;m0(devOrganize(h))};try{_devPanel0()}finally{modal=m0}
+  const q=document.getElementById('dvq');if(q){q.oninput=()=>devFilter(q.value);if(DVQ)devFilter(DVQ)}
+  document.querySelectorAll('#dvgl .dvg').forEach(g=>g.addEventListener('toggle',()=>{if(!DVQ.trim())DVOPEN[g.dataset.t]=g.open}));
+  const x2=document.getElementById('dvx2');if(x2)x2.onclick=close;
+  const mc=document.getElementById('mcard');if(mc)mc.querySelectorAll('.dvtop [data-dv]').forEach(b=>b.onclick=()=>devDo(b.dataset.dv))}
 /* ---------- actions ---------- */
 function w4Act(a,el){if(a.slice(0,3)!=='w4_')return false;const X=w4(),hp=n=>{S.hp=Math.max(1,S.hp-n)};
   if(a==='w4_ty'){w4Reply(+el.dataset.i,true);return true}
