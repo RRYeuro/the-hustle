@@ -1,6 +1,6 @@
-🚨 **THE HUSTLE: MEGA UPDATE IS LIVE (v200)** 🚨
-**Revamp progress: 100%.** Phase F and Phase G are all built.
-📲 **Get it first:** PC **Ctrl+Shift+R** (Mac Cmd+Shift+R). iPhone: Safari **aA > Reload Page**; Home Screen app: swipe it closed and reopen (twice if still old). Check it says **v200**. Saves carry over.
+🚨 **THE HUSTLE: MEGA UPDATE IS LIVE (v201)** 🚨
+**Revamp done. ✅**
+📲 **Get it first:** PC **Ctrl+Shift+R** (Mac Cmd+Shift+R). iPhone: Safari **aA > Reload Page**; Home Screen app: swipe it closed and reopen (twice if still old). Check it says **v201**. Saves carry over.
 
 **Mini-games replace the dice**
 - 🔐 **Dial the Safe:** quiet heists make you crack the safe. Turn slow, stop in the hot zone, hold still.
@@ -15,7 +15,8 @@
 
 ---
 
-**Last two**
+**Last three**
+- 🏋️ **Iron Grip:** gym and yard workouts are a left/right rhythm lift. Tap as the weights hit the gold line. A clean set counts double toward Muscle.
 - 🏁 **Apex Shift:** street race (16+, needs a car, Spots > Street business). Hit GO on green, shift in the green zone, beat the other driver for the pot.
 - 📄 **Clean Paper:** Wash max is now a deposit game. Watch the audit bar, bank it before it fills.
 
