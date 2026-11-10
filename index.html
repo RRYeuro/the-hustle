@@ -1056,6 +1056,7 @@ function cnWalk(i,mode){const B=b5(),C=W5BCITY[i];if(!C||S.pr||S.inJail)return;c
 function cnWalkRow(c,i){const B=b5(),wait=(B.cvt||-9)>S.day-2,cdn=wait||!!S.pr||!!S.inJail;let h='';if(!c.fly)h+=w5bRow(`🚗 Drive to ${c.n}`,`${money(cnWalkFee(c))} for gas, ${c.e} energy. You can carry product. A full-screen day with 6 actions.`,'cn_walk',wait?'Wait':'Drive',cdn||S.cash<cnWalkFee(c),'',`data-i="${i}" data-m="drive"`);
 return h}
 
+(function(){try{const st=document.createElement('style');st.id='thinpics';st.textContent='#pane>img{width:100%!important;max-width:none!important;height:96px!important;max-height:96px!important;object-fit:cover!important;object-position:center 35%;border-radius:6px}';document.head.appendChild(st)}catch(e){}})();
 /* ---------- living in other cities ---------- */
 const COLBL=BLOCKS.slice();
 const CLUX={Charlotte:1,Atlanta:1.3,Houston:1.4,Miami:1.9,'New York':2.6,'Los Angeles':2.4,Chicago:2.0};
@@ -1126,7 +1127,7 @@ function clWeek(){const L=CL(),c=L.city;if(!S||S.pr)return;
     const m=clRH();if(!m&&Math.random()<.2){const l=Math.min(S.cash,rnd(500,1500));S.cash-=l;say(`Nobody was watching your stash at home. ${money(l)} got taken.`)}else if(m&&(m.loy||50)<35&&Math.random()<.3){const l=Math.min(S.cash,rnd(400,1000));S.cash-=l;m.loy=Math.max(0,(m.loy||50)-5);say(`${m.name} has been skimming from the stash. ${money(l)} short.`)}
   }else if(Math.random()<.6){const pay2=Math.round(300*(S.sp.stage||1)*clLux());modal(`<h2>${SPORTS[S.sp.kind].ic} Game in ${c}</h2><p>Your team texted: you are needed at a game in ${c} this weekend. Show up and it pays ${money(pay2)} and builds your name.</p><div class="btns"><button class="btn go" id="gm1">Show up</button><button class="btn" id="gm2">Skip it</button></div>`);$('gm1').onclick=()=>{close();S.cash+=pay2;legit(pay2);S.sp.fame=(S.sp.fame||0)+2;say(`You showed up in ${c} and got paid ${money(pay2)}. Fame up.`);render()};$('gm2').onclick=()=>{close();S.sp.fame=Math.max(0,(S.sp.fame||0)-1);say('You skipped the game. The team noticed.');render()}}}
 const _launDay0=launDay;launDay=function(){const r=_launDay0.apply(this,arguments);try{if(S&&S.cl&&weekTick())clWeek();else if(S&&weekTick()&&Object.keys((S.cl||{}).homes||{}).length)clWeek()}catch(e){console.error('clWeek',e)}return r};
-const _render0=render;render=function(){try{clSync()}catch(e){}const r=_render0.apply(this,arguments);try{if(S&&!S.pr){const lb=document.querySelector('.where .sec');if(lb)lb.textContent=clLabel()+' · You\'re on';const d=$('dmax');if(d&&clCity())d.textContent+=' · '+clLabel()}}catch(e){}return r};
+const _render0=render;render=function(){try{clSync()}catch(e){}const r=_render0.apply(this,arguments);try{if(S&&!S.pr){const lb=document.querySelector('.where .sec');if(lb)lb.textContent=clLabel();const d=$('dmax');if(d&&clCity())d.textContent+=' · '+clLabel()}}catch(e){}return r};
 /* ---------- airport (Downtown spot) ---------- */
 const _openPlace0=openPlace;
 openPlace=function(id){
