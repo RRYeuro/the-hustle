@@ -5212,7 +5212,7 @@ function bulk(n,g){const t=g.unit==='g'?[[1000,.78],[448,.84],[112,.9],[28,.95],
 function plugPrice(kind,g,raw){let p=plugPrice0(kind,g,raw);if(kind==='sell'&&!raw){const lb=(S.lb||{})[S.at+':'+g.id];if(lb&&S.day-lb.d<=4)p=Math.min(p,Math.max(1,Math.round(lb.u*.85)))}return p}
 function plugsHear(){if(!S.known||!S.trust||S.age&&S.age<14)return;BLOCKS.forEach((b,i)=>{if(S.known.includes(i)||S.burned&&S.burned[i]>S.day)return;const L=PINFO[i].lvl,need=L==='Low'?4:L==='Mid'?15:40;if((S.rep||0)>=need){S.known.push(i);S.trust[i]=Math.max(S.trust[i]||0,12);say(`${plugName(i)} on ${b} heard about you. They know your name now.`)}})}
 const PERS=['Greedy','Loyal','Paranoid','Flashy'],PERSX={Greedy:{m:1.04,h:-.05,t:'Charges a little extra and hates being pushed.'},Loyal:{m:1,h:.05,t:'Cuts you a break once the trust is there (3% off at trust 50+).'},Paranoid:{m:1,h:-.1,t:'Hard to haggle with. Gets spooked fast.'},Flashy:{m:1.02,h:.05,t:'Likes a smooth talker, a bit pricier.'}};
-function plugPers(bi){let h=0;const n=String(bi)+(PLUGS[bi]||'');for(const c of n)h=(h*31+c.charCodeAt(0))>>>0;return PERS[h%4]}
+function plugPers(bi){return PERS[((+bi||0)+((S&&S.day0)||0))%4]}
 const persMult=bi=>{const P=plugPers(bi);return P==='Loyal'?((S.trust[bi]||0)>=50?.97:1):PERSX[P].m};
 const persChip=bi=>S.known.includes(bi)?`<p class="s" style="color:var(--accent)"><b>${plugPers(bi)}.</b> ${PERSX[plugPers(bi)].t}</p>`:'';
 function plugPrice0(kind,g,raw){
