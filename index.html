@@ -1056,16 +1056,87 @@ function cnWalk(i,mode){const B=b5(),C=W5BCITY[i];if(!C||S.pr||S.inJail)return;c
 function cnWalkRow(c,i){const B=b5(),wait=(B.cvt||-9)>S.day-2,cdn=wait||!!S.pr||!!S.inJail;let h='';if(!c.fly)h+=w5bRow(`🚗 Drive to ${c.n}`,`${money(cnWalkFee(c))} for gas, ${c.e} energy. You can carry product. A full-screen day with 6 actions.`,'cn_walk',wait?'Wait':'Drive',cdn||S.cash<cnWalkFee(c),'',`data-i="${i}" data-m="drive"`);
 return h}
 
+/* ---------- living in other cities ---------- */
+const COLBL=BLOCKS.slice();
+const CLUX={Charlotte:1,Atlanta:1.3,Houston:1.4,Miami:1.9,'New York':2.6,'Los Angeles':2.4,Chicago:2.0};
+const CST={Charlotte:'NC',Atlanta:'GA',Houston:'TX',Miami:'FL','New York':'NY','Los Angeles':'CA',Chicago:'IL'};
+const CBL={Charlotte:['Plaza Midwood','South End','West Side','NoDa','Ballantyne','Uptown'],Atlanta:['Bankhead','Southside','Zone 6','Decatur','Buckhead','Midtown'],Houston:['Third Ward','Fifth Ward','Sunnyside','Alief','River Oaks','Downtown'],Miami:['Overtown','Little Haiti','Opa-locka','Liberty City','Coconut Grove','Brickell'],'New York':['Bed-Stuy','The Bronx','Harlem','Queens','Brooklyn Heights','Manhattan'],'Los Angeles':['Compton','Watts','Inglewood','Crenshaw','Hollywood','Beverly Hills'],Chicago:['Englewood','Roseland','Austin','Back of the Yards','Lincoln Park','The Loop']};
+function CL(){if(!S)return {};S.cl=S.cl||{city:null,homes:{},away:{},ctl:{},rt:-9};return S.cl}
+function clCity(){return(S&&S.cl&&S.cl.city)||null}
+function clLabel(){const c=clCity();return c?c+', '+CST[c]:'Columbia, South Carolina'}
+function clLux(){const c=clCity();return c?CLUX[c]||1:1}
+function clSync(){const c=clCity(),n=(c&&CBL[c])||COLBL;for(let i=0;i<6;i++)BLOCKS[i]=n[i]}
+function clStreet(){const c=clCity();return c?1+((CLUX[c]||1)-1)*.5:1}
+const _street0=street;street=function(g){return Math.round(_street0(g)*clStreet())};
+function clHouseCost(c){return Math.round(55000*(CLUX[c]||1))}
+function clRentOut(c){return Math.round(clHouseCost(c)*.011)}
+function clRentWk(){return Math.round(600*clLux())}
+function clCarry(){return GOODS.some(g=>(S.inv[g.id]||0)>0)}
+function clPer(){return S.myGang?100:150}
+function clAway(){return Object.values(CL().away).reduce((a,b)=>a+b,0)}
+function clRH(){return(S.crewM||[]).find(m=>m.rank==='rh')}
+function clStreetLane(){return !spOn()}
+function clMove(i){const C=W5BCITY[i];if(!C||S.pr||S.inJail)return;if((S.age||0)<18){say('You need to be 18 to move across the country.');return}
+  if(clCarry()){say('You cannot move with product on you. Stash it first.');return}
+  const fee=cnAir(C)+Math.round(700*(CLUX[C.n]||1));if(S.cash<fee){say(`Moving to ${C.n} costs ${money(fee)}: flight plus first and last week.`);return}
+  if(needClean(fee,'The move'))return;if(spendEn(Math.round(C.e/2))===false)return;w5bPay(fee);const L=CL();L.city=C.n;L.since=S.day;S.at=5;clSync();
+  say(`You moved to ${C.n}. ${money(fee)} for the flight and first and last week. Everything you own at home stays in Columbia.`);render();
+  wCard('g_air',`Welcome to ${C.n}`,`This is home for now. New blocks, new prices, bigger money and bigger bills. You can fly home any time.`,[{l:'Time to work',f:()=>{}}],'New city')}
+function clHome(){const L=CL();if(!L.city||S.pr||S.inJail)return;if((S.age||0)<18)return;const c=W5BCITY.find(x=>x.n===L.city),fee=c?cnAir(c):300;if(S.cash<fee){say(`Flying home costs ${money(fee)}.`);return}if(clCarry()){say('You cannot fly with product on you.');return}w5bPay(fee);L.city=null;S.at=typeof homeBlock==='function'?homeBlock():0;clSync();say(`You flew home to Columbia for ${money(fee)}.`);render()}
+function clBuy(){const c=clCity(),L=CL();if(!c||L.homes[c])return;const p=clHouseCost(c);if(S.cash<p){say(`A house in ${c} costs ${money(p)}.`);return}if(needClean(p,'The house'))return;w5bPay(p);L.homes[c]={out:0};say(`Bought a house in ${c} for ${money(p)}. No more weekly rent there.`);render()}
+function clToggleRent(c){const L=CL(),h=L.homes[c];if(!h)return;if(L.city===c&&!h.out){say('You live there. Move out before you rent it out.');return}h.out=h.out?0:1;say(h.out?`Your ${c} house is rented out. ${money(clRentOut(c))} a week, clean.`:`You stopped renting out your ${c} house.`);render()}
+function clSend(n){const c=clCity(),L=CL();n=Math.min(n,S.soldiers||0);if(!c||!n||!clStreetLane())return;const fee=n*200;if(S.cash<fee){say(`Flying ${n} soldier${n>1?'s':''} out costs ${money(fee)}.`);return}w5bPay(fee);S.soldiers-=n;L.away[c]=(L.away[c]||0)+n;say(`${n} soldier${n>1?'s':''} flew out to ${c}. Columbia is weaker without them.`);render()}
+function clRecall(n){const c=clCity(),L=CL();n=Math.min(n,L.away[c]||0);if(!n)return;L.away[c]-=n;S.soldiers=(S.soldiers||0)+n;say(`${n} soldier${n>1?'s':''} went back to Columbia.`);render()}
+function clRecruit(){const c=clCity(),L=CL();if(!c||!clStreetLane())return;const fee=Math.round(300*clLux());if(S.rep<15){say('Nobody here knows you yet. You need 15 rep to recruit.');return}if(S.cash<fee){say(`Recruiting costs ${money(fee)}.`);return}if(spendEn(8)===false)return;w5bPay(fee);L.away[c]=(L.away[c]||0)+1;say(`A local joined your crew in ${c}.`);render()}
+function clTake(){const c=clCity(),L=CL(),a=L.away[c]||0,k=L.ctl[c]||0;if(!c||!clStreetLane()||k>=5)return;if(a<3){say('You need at least 3 people here to take a block.');return}if(spendEn(15)===false)return;
+  const ch=Math.min(.85,.3+.06*a+.03*(S.sk.muscle||0)-.05*k);if(Math.random()<ch){L.ctl[c]=k+1;S.rep+=3;say(`Your crew took a block in ${c}. It pays ${money(350*clLux()*(k+1))} a week.`)}else{const lost=Math.min(a,rnd(1,2));L.away[c]=a-lost;S.heat=Math.min(100,S.heat+8);say(`The takeover failed. ${lost} of your people ran off or got hurt. Heat up.`)}render()}
+function clText(kind){const L=CL(),m=clRH();if(!clCity()||!clStreetLane())return;if(!m){say('You need a Right Hand Man at home first. Make one in Your Circle.');return}if(L.rt===S.day){say(`${m.name} already did a job today.`);return}L.rt=S.day;const loy=m.loy||50;
+  if(kind==='load'){const g=GOODS.map(x=>x).sort(()=>Math.random()-.5)[0],v=rnd(300,900);if(loy>=40&&Math.random()<.55+loy/250){S.cash+=v;phoneMsg(m.name,`Load picked up, boss. ${money(v)} made it to the stash.`)}else if(loy<40&&Math.random()<.5){const l=Math.min(S.cash,rnd(300,800));S.cash-=l;phoneMsg(m.name,'Something went wrong with the load...');say(`${m.name} came up short ${money(l)}. Maybe he is skimming.`);m.loy=Math.max(0,loy-8)}else phoneMsg(m.name,'Spot was hot, I waited it out. Nothing today.')}
+  else{const v=rnd(400,1100);if(loy>=35&&Math.random()<.5+loy/250){S.cash+=v;phoneMsg(m.name,`Drop made. ${money(v)} back to the stash.`)}else{S.heat=Math.min(100,S.heat+5);phoneMsg(m.name,'Cops rolled through, I aborted the drop.')}}render()}
+function clSec(){const c=clCity();if(!c)return '';const L=CL(),h=L.homes[c],a=L.away[c]||0,k=L.ctl[c]||0,m=clRH();let s='';
+  s+=`<div class="sec">Living in ${c}</div>`;
+  s+=`<div class="row" style="flex-wrap:wrap"><div class="info" style="flex:1 1 200px"><div class="t">📍 ${c}, ${CST[c]}</div><div class="s">${h?`You own a house here. Utilities ${money(Math.round(250*clLux()))} a week.`:`Rent ${money(clRentWk())} a week, luxury prices.`} Street prices are ${Math.round((clStreet()-1)*100)}% higher here.</div></div><button class="btn" data-cl="home">Fly home</button></div>`;
+  s+=`<div class="row" style="flex-wrap:wrap"><div class="info" style="flex:1 1 200px"><div class="t">🏠 ${h?'Your house':'Buy a house'}</div><div class="s">${h?(h.out?'Rented out. Move out first to live in it.':'Rent it out when you are away and it pays you.'):`${money(clHouseCost(c))}. No weekly rent. Pays ${money(clRentOut(c))} a week when rented out.`}</div></div>${h?`<button class="btn" data-cl="rent" data-c="${c}">${h.out?'Stop renting out':'Rent out house'}</button>`:`<button class="btn go" data-cl="buy">Buy</button>`}</div>`;
+  s+=`<div class="row" style="flex-wrap:wrap"><div class="info" style="flex:1 1 200px"><div class="t">🗺️ Work the city</div><div class="s">Local plug, gangs and contacts. Opens the city screen with 6 actions.</div></div><button class="btn go" data-cl="work">Go out</button></div>`;
+  if(clStreetLane()){
+  s+=`<div class="sec">Your crew in ${c}</div><div class="row" style="flex-wrap:wrap"><div class="info" style="flex:1 1 200px"><div class="t">${a} here · ${S.soldiers||0} home · ${k} block${k===1?'':'s'} held</div><div class="s">You cannot start a gang here. Bring people ($200 each) or recruit locals. 3 people take a block. Every one you send makes Columbia weaker.</div></div></div>
+  <div class="btns" style="padding:0 12px 8px"><button class="btn" data-cl="send" data-n="1">Fly 1 out</button><button class="btn" data-cl="send" data-n="3">Fly 3 out</button><button class="btn" data-cl="recall" data-n="1">Send 1 home</button><button class="btn" data-cl="recruit">Recruit local</button><button class="btn go" data-cl="take">Take a block</button></div>
+  <div class="row" style="flex-wrap:wrap"><div class="info" style="flex:1 1 200px"><div class="t">📱 ${m?m.name+' (Right Hand Man)':'No Right Hand Man'}</div><div class="s">${m?'He runs the stash house at home. Text him a job.':'Make someone your Right Hand Man in Your Circle.'}</div></div><button class="btn" data-cl="text" data-k="load" ${m?'':'disabled'}>Pick up the load</button><button class="btn" data-cl="text" data-k="drop" ${m?'':'disabled'}>Make the drop</button></div>`}
+  else s+=`<div class="s wspan" style="padding:4px 12px">You are on the sports lane. No crew, no stash house, no street work. Games and fights come to you.</div>`;
+  return s}
+function clMoneyHTML(){const L=CL(),ks=Object.keys(L.homes);if(!ks.length)return '';return `<div class="sec">Your houses</div>`+ks.map(c=>{const h=L.homes[c];return `<div class="row" style="flex-wrap:wrap"><div class="info" style="flex:1 1 200px"><div class="t">🏠 ${c}</div><div class="s">${h.out?`Rented out. Pays ${money(clRentOut(c))} a week.`:'Empty. Not earning.'}</div></div><button class="btn" data-cl="rent" data-c="${c}">${h.out?'Stop renting out':'Rent out house'}</button></div>`}).join('')}
+const _pSpots0=paneSpots;paneSpots=function(){return _pSpots0()+sfn('clSec')};
+const _pMoney0=paneMoney;paneMoney=function(){return _pMoney0()+sfn('clMoneyHTML')};
+const _pPhone0=panePhone;panePhone=function(){return _pPhone0()+(()=>{const L=CL(),ks=Object.keys(L.homes);return ks.length?sfn('clMoneyHTML'):''})()};
+function clWork(){const c=clCity();if(!c||S.pr||S.inJail)return;const i=W5BCITY.findIndex(x=>x.n===c);CV={n:c,i,left:6,msg:'',place:null,fly:0,live:1};cnRender()}
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-cl]');if(!b)return;e.stopPropagation();const k=b.dataset.cl;
+  if(k==='home')clHome();else if(k==='buy')clBuy();else if(k==='rent')clToggleRent(b.dataset.c);else if(k==='work')clWork();else if(k==='send')clSend(+b.dataset.n);else if(k==='recall')clRecall(+b.dataset.n);else if(k==='recruit')clRecruit();else if(k==='take')clTake();else if(k==='text')clText(b.dataset.k)},true);
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-dv^="cl_"]');if(!b)return;e.stopPropagation();e.preventDefault();const k=b.dataset.dv;close();
+  const prep=()=>{S.age=Math.max(S.age||0,19);S.cash=Math.max(S.cash,200000);S.clean=Math.max(S.clean||0,200000);S.en=enMax();S.inv={};S.pr=null;(S.cl=S.cl||{city:null,homes:{},away:{},ctl:{},rt:-9})};
+  prep();if(k==='cl_miami')clMove(W5BCITY.findIndex(x=>x.n==='Miami'));else if(k==='cl_nyc')clMove(W5BCITY.findIndex(x=>x.n==='New York'));else if(k==='cl_home')clHome();
+  else if(k==='cl_house'){if(!clCity())clMove(3);clBuy();clToggleRent(clCity()||'Miami')}
+  else if(k==='cl_crew'){if(!clCity())clMove(3);S.rep=Math.max(S.rep,40);S.soldiers=Math.max(S.soldiers||0,6);S.crewM=S.crewM||[];if(!clRH())S.crewM.push({name:'Dev RHM',sk:{drive:3,look:3,trap:3,rob:3,scam:3,shoot:3},loy:80,rank:'rh'});clSend(3)}
+  else if(k==='cl_week')clWeek();render()},true);
+/* weekly: rent, rent-out income, block income, stash risk, sports texts */
+function clWeek(){const L=CL(),c=L.city;if(!S||S.pr)return;
+  Object.keys(L.homes).forEach(x=>{if(L.homes[x].out&&L.city!==x){const v=clRentOut(x);S.cash+=v;legit(v);say(`🏠 Rent from your ${x} house: ${money(v)}, clean.`)}});
+  if(!c)return;const h=L.homes[c],bill=h?Math.round(250*clLux()):clRentWk(),away=clAway()*clPer();
+  const pay=bill+away;if(S.cash>=pay){w5bPay(pay);say(`${h?'Utilities':'Rent'} in ${c}: ${money(bill)}${away?` and ${money(away)} for your crew away from home`:''}.`)}else{const sh=pay-S.cash;S.cash=0;S.clean=0;L.city=null;S.at=typeof homeBlock==='function'?homeBlock():0;clSync();say(`You could not cover ${money(pay)} in ${c}. Evicted and sent back to Columbia. Short by ${money(sh)}.`)}
+  if(!L.city)return;if(clStreetLane()){const k=L.ctl[c]||0;if(k){const v=Math.round(350*clLux()*k*(L.away[c]>=3?1:.4));S.cash+=v;say(`Your ${k} block${k>1?'s':''} in ${c} paid ${money(v)}.`)}
+    const m=clRH();if(!m&&Math.random()<.2){const l=Math.min(S.cash,rnd(500,1500));S.cash-=l;say(`Nobody was watching your stash at home. ${money(l)} got taken.`)}else if(m&&(m.loy||50)<35&&Math.random()<.3){const l=Math.min(S.cash,rnd(400,1000));S.cash-=l;m.loy=Math.max(0,(m.loy||50)-5);say(`${m.name} has been skimming from the stash. ${money(l)} short.`)}
+  }else if(Math.random()<.6){const pay2=Math.round(300*(S.sp.stage||1)*clLux());modal(`<h2>${SPORTS[S.sp.kind].ic} Game in ${c}</h2><p>Your team texted: you are needed at a game in ${c} this weekend. Show up and it pays ${money(pay2)} and builds your name.</p><div class="btns"><button class="btn go" id="gm1">Show up</button><button class="btn" id="gm2">Skip it</button></div>`);$('gm1').onclick=()=>{close();S.cash+=pay2;legit(pay2);S.sp.fame=(S.sp.fame||0)+2;say(`You showed up in ${c} and got paid ${money(pay2)}. Fame up.`);render()};$('gm2').onclick=()=>{close();S.sp.fame=Math.max(0,(S.sp.fame||0)-1);say('You skipped the game. The team noticed.');render()}}}
+const _launDay0=launDay;launDay=function(){const r=_launDay0.apply(this,arguments);try{if(S&&S.cl&&weekTick())clWeek();else if(S&&weekTick()&&Object.keys((S.cl||{}).homes||{}).length)clWeek()}catch(e){console.error('clWeek',e)}return r};
+const _render0=render;render=function(){try{clSync()}catch(e){}const r=_render0.apply(this,arguments);try{if(S&&!S.pr){const lb=document.querySelector('.where .sec');if(lb)lb.textContent=clLabel()+' · You\'re on';const d=$('dmax');if(d&&clCity())d.textContent+=' · '+clLabel()}}catch(e){}return r};
 /* ---------- airport (Downtown spot) ---------- */
 const _openPlace0=openPlace;
 openPlace=function(id){
   if(id!=='airport'||placeAt('airport')!==S.at)return _openPlace0.apply(this,arguments);
   const B=b5(),wait=(B.cvt||-9)>S.day-2,young=(S.age||0)<18,lock=!!S.pr||!!S.inJail;
   let h=`<h2>✈️ The airport</h2><p>${young?'You need to be 18 to buy a ticket.':wait?'You just got back. Wait a couple days before another trip.':'Pick a city. Ticket and rental car, no product on the plane.'}</p>`;
-  W5BCITY.forEach((c,i)=>{const fee=cnAir(c),dis=wait||young||lock||S.cash<fee;h+=`<div class="row" style="padding:8px 12px;flex-wrap:wrap"><div class="info" style="flex:1 1 160px"><div class="t">${c.n}</div><div class="s">${money(fee)} · ${Math.round(c.e/2)} energy</div></div><button class="btn go" data-fl="${i}" ${dis?'disabled':''}>Fly</button></div>`});
+  W5BCITY.forEach((c,i)=>{const fee=cnAir(c),dis=wait||young||lock||S.cash<fee;h+=`<div class="row" style="padding:8px 12px;flex-wrap:wrap"><div class="info" style="flex:1 1 160px"><div class="t">${c.n}</div><div class="s">${money(fee)} · ${Math.round(c.e/2)} energy</div></div><button class="btn go" data-fl="${i}" ${dis?'disabled':''}>Fly</button><button class="btn" data-mv="${i}" ${(young||lock||clCity()===c.n)?'disabled':''}>Move</button></div>`});if(clCity())h+=`<div class="row" style="padding:8px 12px"><div class="info"><div class="t">🏠 Columbia, South Carolina</div><div class="s">Fly home</div></div><button class="btn" id="afh">Go home</button></div>`;
   h+=`<div class="btns"><button class="btn" id="afx">Leave</button></div>`;
   modal(h);$('afx').onclick=close;
-  document.querySelectorAll('[data-fl]').forEach(b=>b.onclick=()=>{const i=+b.dataset.fl;close();cnWalk(i,'fly')})};
+  document.querySelectorAll('[data-fl]').forEach(b=>b.onclick=()=>{const i=+b.dataset.fl;close();cnWalk(i,'fly')});document.querySelectorAll('[data-mv]').forEach(b=>b.onclick=()=>{close();clMove(+b.dataset.mv)});if($('afh'))$('afh').onclick=()=>{close();clHome()}};
 /* ---------- prison phone rules + dev menu layout ---------- */
 function prNoPhone(){return !!(S&&S.pr&&!(S.pr.inv&&S.pr.inv.phone))}
 const _say0=say;say=function(t){if(prNoPhone()&&/^\s*📱/.test(String(t)))return;return _say0.apply(this,arguments)};
@@ -1073,9 +1144,9 @@ const _phoneMsg0=phoneMsg;phoneMsg=function(f,t){if(prNoPhone())return;return _p
 if(typeof gfText==='function'){const _gf0=gfText;gfText=function(){if(prNoPhone())return;return _gf0.apply(this,arguments)}}
 if(typeof w4Text==='function'){const _w40=w4Text;w4Text=function(){if(prNoPhone())return;return _w40.apply(this,arguments)}}
 const _phoneDay0=phoneDay;phoneDay=function(){const r=_phoneDay0.apply(this,arguments);if(prNoPhone()){S.texts=[];S.inbox=[]}return r};
-const DVLAW=['mcrt','maud','mcourt','mrec','mnet','mcity','mfly'];
+const DVLAW=['cl_miami','cl_nyc','cl_home','cl_house','cl_crew','cl_week','mcrt','maud','mcourt','mrec','mnet','mcity','mfly'];
 var DVOPEN=window.DVOPEN=window.DVOPEN||{},DVQ='';
-function devOrganize(h){const d=document.createElement('div');d.innerHTML=h;const out=document.createElement('div'),groups=[];let cur=null,foot=null,note=null;
+function devOrganize(h){h+=`<div class="sec">Cities (living)</div><div class="btns"><button class="btn" data-dv="cl_miami">Move to Miami</button><button class="btn" data-dv="cl_nyc">Move to New York</button><button class="btn" data-dv="cl_home">Back to Columbia</button><button class="btn" data-dv="cl_house">House here + rent out</button><button class="btn" data-dv="cl_crew">Crew + RHM here</button><button class="btn" data-dv="cl_week">Run a week now</button></div>`;const d=document.createElement('div');d.innerHTML=h;const out=document.createElement('div'),groups=[];let cur=null,foot=null,note=null;
   [...d.children].forEach((e,i)=>{
     if(e.tagName==='H2'||(i===0&&e.classList.contains('sec'))){out.appendChild(e);return}
     if(e.classList.contains('sec')){cur={t:e.textContent.trim(),btns:[]};groups.push(cur);return}
@@ -1228,7 +1299,7 @@ const PLACES=[
  {id:'school',bi:4,x:212,y:226,ic:'🏫',name:'School'},
  {id:'mall',bi:5,x:282,y:226,ic:'🛍️',name:'The mall'},
  {id:'lawyer',bi:5,x:326,y:226,ic:'⚖️',name:'Lawyer\'s office'},
- {id:'airport',bi:5,x:300,y:262,ic:'✈️',name:'The airport'},
+ {id:'airport',bi:5,x:326,y:184,ic:'✈️',name:'The airport'},
 ];
 const CARS={beater:{name:'Old Buick',cost:2500,trunk:20,sub:'Cheapest way to carry more. A beat-up car gets a second look.'},
  corolla:{name:'Toyota Corolla',cost:4500,trunk:30,sub:'Boring and reliable. Nobody looks twice.'},
