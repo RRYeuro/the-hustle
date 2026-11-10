@@ -1,48 +1,35 @@
-🚨 **THE HUSTLE: MEGA UPDATE IS LIVE (v201)** 🚨
-**Revamp done. ✅**
-📲 **Get it first:** PC **Ctrl+Shift+R** (Mac Cmd+Shift+R). iPhone: Safari **aA > Reload Page**; Home Screen app: swipe it closed and reopen (twice if still old). Check it says **v201**. Saves carry over.
+🚨 **THE HUSTLE: UPDATE v202 IS LIVE** 🚨
+📲 **Get it first:** PC **Ctrl+Shift+R** (Mac Cmd+Shift+R). iPhone: Safari **aA > Reload Page**; Home Screen app: swipe it closed and reopen (twice if still old). Check it says **v202**. Saves carry over.
 
-**Mini-games replace the dice**
-- 🔐 **Dial the Safe:** quiet heists make you crack the safe. Turn slow, stop in the hot zone, hold still.
-- 🔌 **Hotwire:** steal a car by finding the live wire after the shuffle.
-- 🔧 **Strip it fast:** tap each part before it disappears. More parts = more money.
-- ⚖️ **Weigh it:** cutting product has a scale game. Better bags, less quality lost.
-- 🤝 **Work the price:** haggling a plug is push-the-price. 🃏 **Poker face:** haggling a connect.
-- 👀 **Watch the block:** a leaked snitch paper lets you spot who is talking.
-- 🔭 **Scope it out:** spot a crew first before an ambush fight.
-- 🧮 **Count it:** optional +3% on worker cash.
-- 🥊 **Gym spar** is now a real fight. UFC and boxing matches never turn into shootouts.
+**Crew and street**
+- 🪜 **Gang ladder:** get respect with a crew (30+), stand on their block and meet their **Enforcer**. Kick it, slide on his opps (real fight) or buy product. He vouches to the **Underboss**, then the **Boss**, who can put you on with a connect.
+- 💼 **The Last Big Deal:** late game, once. Needs 18+, $250K net, $50K clean, a car, a driver and a lookout. Haggle, spot the setup, get away.
+- 📍 **Corner cred:** New face, Regular, Trusted on each block. Serve and Post up (Street business) to build it. Js pay up to 8% more.
+- 💵 **Debtors:** people on the block ask to borrow. Collect in Money: ask calm, lean on him, give more time, or forgive.
+- 🏆 **Hall of the block:** every ended run hangs a plaque, on the title screen.
+- 📰 **Street news** in Spots reacts to what you do.
 
----
+**Cops and cars**
+- 🚔 **Impound:** a bust can tow your car. Pay the fee or sneak it out (hotwire, then run).
+- 🚨 **Traffic stops:** carry 20K+ dirty while hot and you can get pulled over. Play it cool, drive off, or slip him cash.
 
-**Last three**
-- 🏋️ **Iron Grip:** gym and yard workouts are a left/right rhythm lift. Tap as the weights hit the gold line. A clean set counts double toward Muscle.
-- 🏁 **Apex Shift:** street race (16+, needs a car, Spots > Street business). Hit GO on green, shift in the green zone, beat the other driver for the pot.
-- 📄 **Clean Paper:** Wash max is now a deposit game. Watch the audit bar, bank it before it fills.
+**Contacts**
+- 🩺 **Doc** (hospital): patching half price at 40 favors, free at 70.
+- 🔧 **Mechanic** (car lot): new plates and respray cut heat, and a hidden compartment at 70.
+- 📄 **Forger** (pawn shop): new papers cut heat.
+- 🔫 **Unc's wanted board:** he pays extra for one gun.
+- Do favors at each spot once a day to earn them.
 
-**More new stuff**
-- 🏃 **Foot run** (no car) and 🚗 **car chase** roadblock forks: alley or road. Minivan, F-150 and Jeep soak a hit.
-- ⛓️ **Prison:** Walk the yard, Dead drop for package orders.
-- 🛡️ **Defend it:** when a crew hits your trap you can fight for it.
-- 🚔 **Lose the tail:** with a car and heat, an unmarked car may follow you.
-- 🧠 **Plug personalities:** Greedy, Loyal, Paranoid, Flashy change prices and haggling.
-- 📍 **Block identity:** The Bottom cheap and risky, Northline quiet, Downtown pays more with more cops.
-- 🎚️ **Difficulty dials:** Easy gives more warnings and wider zones, Hard fewer.
-- 🏀 **All sports:** training has bad, mid and great rolls, gains slow down as you get better, "stay humble" can bore the podcast.
-- 🎒 **Inventory:** Active / Storage / Recent shipments tabs, Smart Buy, Fast sell, stash bars.
-- ✨ Toast after actions (+$, heat, energy), Risk word on licks, skill numbers, Collect all on Expenses, 7-day dirty money chart, a story epilogue on your ending, Where you stay moved to Spots.
-- 🧰 **Fixes:** a cut ankle monitor stays off, "1 day / 2 days" wording.
+**Fixes**
+- 🏁 Street race pays right (win nets your stake), early shifting no longer cheats, plug haggling can't be stalled out, no tail events on house arrest, buy/sell amounts are checked.
 
 ---
 
 **WHAT TO TEST (dev menu, use your role)**
-- Every mini-game has a dev button: Dial the safe, Hotwire, Strip a car, Weigh and bag, Overwatch, Work the price, Poker face, Hawk Eye, Count it, Yard rules, Dead drop, Defend trap, Lose the tail, Foot run, Car chase.
-- **Can you get stuck?** Close each game mid-way, mash keys, switch tabs. Does the screen ever freeze or a popup stay open?
-- **Keyboard and touch:** A/D or arrows, Space, hold buttons on phone. Do they all work?
-- **Fair or too hard?** Safe, poker face and tail: is the hot zone fair? Tell us the difficulty you played.
-- **Money checks:** after a heist, strip, cut or collect, does your cash match the text? Any free money or negative numbers?
-- **Plugs:** do personalities show once you know a plug, and do prices feel right on The Bottom / Downtown / Northline?
-- **Sports:** train 10 days in a row. Bad rolls should show up and overall should slow near 80.
+- Dev buttons: Ladder: unlock, Last Big Deal, Debtor, Impound, Traffic stop, Contacts max, Iron Grip, Street race, Clean Paper.
+- **Ladder:** can you climb Enforcer to Boss? Does anything lock wrong, or can you spam it?
+- **Money checks:** debtors, race pots, Last Big Deal, impound fee. Any free money or negative cash?
+- **Stuck?** Close the new popups mid-way. Does a screen ever freeze?
+- **Fair?** Traffic stops and the Last Big Deal: too common or too harsh?
 - **Old saves:** load one. Nothing should say "undefined".
-- **Inventory:** switch tabs, toggle Smart Buy, Fast sell something.
 Post bugs in #hustle-bugs with: what you did, what you saw, device. @OG testers
