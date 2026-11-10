@@ -3,6 +3,11 @@ on:
   push:
     branches: [main]
     paths: [index.html]
+  workflow_dispatch:
+    inputs:
+      msg:
+        description: Patch notes text
+        required: false
 jobs:
   ping:
     runs-on: ubuntu-latest
@@ -14,7 +19,8 @@ jobs:
         env:
           HOOK: ${{ secrets.DISCORD_WEBHOOK }}
           ROLE: ${{ secrets.DISCORD_ROLE_ID }}
-          MSG: ${{ github.event.head_commit.message }}
+          MSG: ${{ github.event.head_commit.message || github.event.inputs.msg }}
+          MANUAL: ${{ github.event_name == 'workflow_dispatch' }}
         run: |
           [ -z "$HOOK" ] && echo "No DISCORD_WEBHOOK secret set, skipping" && exit 0
           case "$MSG" in *"[silent]"*) echo "Silent bump, no ping"; exit 0;; esac
@@ -29,7 +35,7 @@ jobs:
               prev = b(subprocess.run(['git', 'show', 'HEAD~1:index.html'], capture_output=True, text=True).stdout)
           except Exception:
               prev = None
-          if build and build == prev:
+          if build and build == prev and os.environ.get('MANUAL') != 'true':
               print('Build number unchanged, no ping')
               raise SystemExit(0)
           build = build or 'new build'
