@@ -2370,7 +2370,7 @@ function paneExp(){
     h+=fr('Out today','Product you bought, bills, crew pay and anything else paid with street money. Overnight bills count here.','-'+money(Math.max(0,F.o-F.l)),B);
     if(F.l)h+=fr('Laundered today','Dirty money you washed into clean.',money(F.l),N);
     h+=fr(W7.length===1?'So far':`Last ${W7.length} days`,`${money(si)} came in, ${money(Math.max(0,so))} went out${sl?` and ${money(sl)} got laundered`:''}.`,(si-so-sl>=0?'+':'-')+money(Math.abs(si-so-sl)),si-so-sl>=0?G:B);
-    if(held)h+=fr('Waiting on your workers','Money your workers made that you have not collected. It comes in dirty.','+'+money(held),G);
+    if(held)h+=fr('Waiting on your workers','Money your workers made that you have not collected. It comes in dirty.','+'+money(held),G)+`<div class="btns" style="margin:-4px 0 8px"><button class="btn green" data-a="wcollectall">Collect all</button></div>`;
     if(crewDay)h+=fr('Crew every day','Soldiers and worker pay. This comes out of your dirty money first.','-'+money(crewDay)+' / day',B);
   }catch(e){}
   h+=`<div class="sec">Debt</div>`+(loan?row('Mr. Vince',`You owe ${money(loan.owe)}. Due day ${loan.due}${S.day>loan.due?'. You are late and the interest is growing.':'.'}`,money(loan.owe)):'')+(()=>{try{const B=b5();return B.gdebt>0?row('Backer',`You owe ${money(B.gdebt)}, due ${dayTxt?dayTxt(B.gdue):'soon'}. Pay it in the Money tab.`,money(B.gdebt)):''}catch(e){return ''}})()+(!loan&&!(()=>{try{return b5().gdebt>0}catch(e){return false}})()?row('Loans','You do not owe anybody.','$0'):'');
@@ -4185,7 +4185,7 @@ function paneLicks(){
   S.lt=S.lt||{};
   let h=`<div class="sec">Licks · each one takes the day</div>${(S.lt.house>=S.day||S.lt.strap>=S.day)?a2i(S.lt.house>=S.day&&S.lt.strap>=S.day?'tip':S.lt.house>=S.day?'emptyhouse':'strapflash',300):''}<div class="row"><div class="info"><div class="s" style="color:var(--dim)">Houses and straps come through tips on your phone. The more rep and customers you have, the more people tell you. The corner store and pharmacy only show when you are on that block.</div></div></div>`;
   h+=Object.entries(LICKS).filter(([k])=>{if(k==='scam')return false;if(k==='house'||k==='strap')return S.lt[k]>=S.day;if(k==='store')return S.at===1;if(k==='pharm')return S.at===4;return true}).map(([k,L])=>{const ok=!L.need||L.need();
-    return `<div class="row"><div class="info"><div class="t">${L.name}</div><div class="s">${L.sub}</div></div>
+    return `<div class="row"><div class="info"><div class="t">${L.name} <span class="chip" style="${({High:'color:var(--blood)',Medium:'color:var(--heat)',Low:'color:var(--money)'})[({car:'High',pharm:'High',strap:'High',scam:'High',store:'Medium',house:'Medium'})[k]||'Medium']}">Risk: ${({car:'High',pharm:'High',strap:'High',scam:'High',store:'Medium',house:'Medium'})[k]||'Medium'}</span></div><div class="s">${L.sub}</div></div>
       ${ok?`<button class="btn red" data-a="lick" data-k="${k}" ${LCD[k]&&lkLeft(k)?'disabled':''}>${LCD[k]&&lkLeft(k)?`Lookout ${lkLeft(k)}d`:'Go'}</button>`:`<button class="btn green" data-a="pad" ${S.cash>=1500?'':'disabled'}>Pro Pad $1,500</button>`}</div>`}).join('');
   return h;
 }
@@ -6258,6 +6258,12 @@ function gateGame(title,txt,go){modal(`<h2>${title}</h2><p>${txt}</p><p class="s
 (()=>{let last=null;
  document.addEventListener('pointerdown',e=>{if(!mgOn||!e.target||!e.target.closest)return;const b=e.target.closest('#mcard button');if(!b||b.disabled||b.id==='ok'||b.classList.contains('xbtn'))return;e.preventDefault();last=b;b.click();setTimeout(()=>{if(last===b)last=null},700)},true);
  document.addEventListener('click',e=>{if(!e.isTrusted||!e.target||!e.target.closest)return;const b=e.target.closest('#mcard button');if(b&&b===last){last=null;e.stopPropagation();e.preventDefault()}},true)})();
+/* action feedback toast */
+{const _act=act;act=function(a,el){const S0=S,b=[S.cash,S.heat,S.en==null?enMax():S.en,S.rep,S.stress,S.hp];const r=_act.apply(this,arguments);
+  try{if(S!==S0||String(a).startsWith('dv')||String(a).startsWith('m')&&a!=='mission')return r;const n=[S.cash,S.heat,S.en==null?enMax():S.en,S.rep,S.stress,S.hp],L=[],f=(d,t)=>{d=Math.round(d);if(d)L.push((d>0?'+':'−')+t(Math.abs(d)))};
+    f(n[0]-b[0],x=>'$'+x.toLocaleString());f(n[1]-b[1],x=>x+' heat');f(n[2]-b[2],x=>x+' energy');f(n[3]-b[3],x=>x+' rep');f(n[4]-b[4],x=>x+' stress');f(n[5]-b[5],x=>x+' health');
+    if(L.length){let t=document.getElementById('hToast');if(!t){t=document.createElement('div');t.id='hToast';t.style.cssText='position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:#16151acc;border:1px solid var(--line,#444);padding:8px 14px;border-radius:10px;font-size:14px;z-index:9999;pointer-events:none;transition:opacity .4s;color:var(--fg,#fff);max-width:92vw;text-align:center';document.body.appendChild(t)}
+      t.textContent=L.join(' · ');t.style.opacity=1;clearTimeout(window.__hT);window.__hT=setTimeout(()=>{t.style.opacity=0},2400)}}catch(e){}return r}}
 start(false);render();if(S.over&&$('modal').hidden)checkEnd();
 
 /*DEVGROUP-START*/
