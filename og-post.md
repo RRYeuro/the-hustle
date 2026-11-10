@@ -1,35 +1,35 @@
-🚨 **THE HUSTLE: UPDATE v202 IS LIVE** 🚨
-📲 **Get it first:** PC **Ctrl+Shift+R** (Mac Cmd+Shift+R). iPhone: Safari **aA > Reload Page**; Home Screen app: swipe it closed and reopen (twice if still old). Check it says **v202**. Saves carry over.
+🚨 **THE HUSTLE: UPDATE v203 IS LIVE** 🚨
+📲 **Get it first:** PC **Ctrl+Shift+R** (Mac Cmd+Shift+R). iPhone: Safari **aA > Reload Page**; Home Screen app: swipe it closed and reopen (twice if still old). Check it says **v203**. Saves carry over.
+Revamp done. Big drop, all new art.
 
-**Crew and street**
-- 🪜 **Gang ladder:** get respect with a crew (30+), stand on their block and meet their **Enforcer**. Kick it, slide on his opps (real fight) or buy product. He vouches to the **Underboss**, then the **Boss**, who can put you on with a connect.
-- 💼 **The Last Big Deal:** late game, once. Needs 18+, $250K net, $50K clean, a car, a driver and a lookout. Haggle, spot the setup, get away.
-- 📍 **Corner cred:** New face, Regular, Trusted on each block. Serve and Post up (Street business) to build it. Js pay up to 8% more.
-- 💵 **Debtors:** people on the block ask to borrow. Collect in Money: ask calm, lean on him, give more time, or forgive.
-- 🏆 **Hall of the block:** every ended run hangs a plaque, on the title screen.
-- 📰 **Street news** in Spots reacts to what you do.
+**Crew and rivals**
+- 🧑‍🤝‍🧑 **Crew stories:** your people get family trouble, beef, tips, rides, theft and leaks. Your call changes loyalty, cash and evidence.
+- 🕴️ **Rival kingpin:** a rival crew scouts, moves on your blocks, and can be faced down.
+- 👑 **Dynasty:** when a run ends you can pass it to your kid or a crew member.
 
-**Cops and cars**
-- 🚔 **Impound:** a bust can tow your car. Pay the fee or sneak it out (hotwire, then run).
-- 🚨 **Traffic stops:** carry 20K+ dirty while hot and you can get pulled over. Play it cool, drive off, or slip him cash.
+**Money and business**
+- 🏀 **NIL deals (college athletes 18+):** clean-money brand deals by fame. An agent takes 25%. Lose them on arrest or high heat.
+- 📦 **Supply chain:** deeper sourcing, cutting and shortages. Prices jump ten days when a product runs short.
+- 💵 **Clean vs dirty cash everywhere:** legit income lands clean, street income lands dirty.
+- 🏦 **Bank flag:** wash too much too fast and your bank freezes washing.
 
-**Contacts**
-- 🩺 **Doc** (hospital): patching half price at 40 favors, free at 70.
-- 🔧 **Mechanic** (car lot): new plates and respray cut heat, and a hidden compartment at 70.
-- 📄 **Forger** (pawn shop): new papers cut heat.
-- 🔫 **Unc's wanted board:** he pays extra for one gun.
-- Do favors at each spot once a day to earn them.
+**2026 life**
+- 📱 **Burner phones ($40), privacy glasses, local heat, plate readers and cameras.**
+- 🚗 **Rideshare ($25)** to move around, **gig app** jobs, **cash app loans**, **crypto**, **encrypted chat**, **legal pool**, **taxes**.
 
-**Fixes**
-- 🏁 Street race pays right (win nets your stake), early shifting no longer cheats, plug haggling can't be stalled out, no tail events on house arrest, buy/sell amounts are checked.
+**Daily challenge**
+- 📅 Everybody gets the same luck for the day. Copy your score and post it here.
+
+**Other**
+- 🖥️ Wide-screen layout holes fixed. 28 new pictures. Dev menu and how-to-play updated.
 
 ---
 
 **WHAT TO TEST (dev menu, use your role)**
-- Dev buttons: Ladder: unlock, Last Big Deal, Debtor, Impound, Traffic stop, Contacts max, Iron Grip, Street race, Clean Paper.
-- **Ladder:** can you climb Enforcer to Boss? Does anything lock wrong, or can you spam it?
-- **Money checks:** debtors, race pots, Last Big Deal, impound fee. Any free money or negative cash?
-- **Stuck?** Close the new popups mid-way. Does a screen ever freeze?
-- **Fair?** Traffic stops and the Last Big Deal: too common or too harsh?
+- Dev buttons: Crew story, NIL, Rival, 2026 realism, Supply chain, Dynasty, Daily state, Modern life.
+- **Money:** loans, crypto, taxes, NIL, burner. Any free money, negative cash, or clean/dirty mix-up?
+- **Stuck?** Close new popups mid-way. Does a screen ever freeze?
+- **Fair?** Rival, shortages, bank flag, loan interest: too harsh?
+- **Daily:** same luck both times you start it?
 - **Old saves:** load one. Nothing should say "undefined".
 Post bugs in #hustle-bugs with: what you did, what you saw, device. @OG testers
