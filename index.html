@@ -7430,4 +7430,81 @@ window.shareRun=function(){const d=stats();const text=`I ended The Hustle as "${
 const _m=modal;modal=function(h){const r=_m.apply(this,arguments);try{const mc=document.getElementById('mcard');const ag=mc&&mc.querySelector('#again');if(ag&&!mc.querySelector('#shareRun')){const b=document.createElement('button');b.className='btn';b.id='shareRun';b.textContent='Share my run';ag.parentNode.insertBefore(b,ag);b.onclick=()=>shareRun()}}catch(e){}return r};
 })();
 </script>
+<script id="skin10js">
+(function(){
+const R=(k,lo,hi)=>({k,lo,hi});
+const JOBS={
+ scrap:{n:'Scrap run',sk:'scam',rk:null,lo:120,hi:350,h:2,cost:0,rk2:0,t:['Scrapped old copper and fence wire. Easy cash.','Yard paid cash, no questions.'],fail:'the yard owner called it in'},
+ papers:{n:'Fake papers drop',sk:'scam',rk:null,lo:250,hi:700,h:4,cost:50,rk2:.02,t:['Handed the paperwork over clean. Buyer did not blink.'],fail:'the buyer was a snitch'},
+ protect:{n:'Collect protection',sk:'shoot',rk:['enf','rh'],lo:300,hi:800,h:6,cost:0,rk2:.03,rep:2,t:['Old head tried to stall. Showed him the piece, he paid up.'],fail:'the owner fought back'},
+ poker:{n:'Guard the poker room',sk:'look',rk:['enf','rh'],lo:400,hi:1000,h:5,cost:0,rk2:.03,t:['Jackboys tried the back room. We cleared them out.'],fail:'jackboys rushed the room'},
+ debt:{n:'Collect a debt',sk:'shoot',rk:['enf'],h:4,cost:0,rk2:.02,need:'dtr',t:['Found him behind the laundromat. He coughed up the bread.'],fail:'the debtor had friends'},
+ restock:{n:'Hit a rival restock',sk:'shoot',rk:['enf','stash'],lo:600,hi:1500,h:10,cost:0,rk2:.06,day:20,t:['Caught their runner sleeping at the light. We got it all.'],fail:'it was an ambush'},
+ move:{n:'Move the stash early',sk:'look',rk:['stash'],h:0,cost:200,rk2:0,t:['Moved every brick and scale to the backup spot. If warrants come, we clean.']},
+ bribe:{n:'Bribe drop',sk:'scam',rk:['rh'],h:0,cost:1000,rk2:.08,t:['Left the envelope in the detective glovebox. Your name is off the board.'],fail:'it was a sting'},
+ truck:{n:'Truck hijack',sk:'shoot',rk:['rh','cap'],lo:2000,hi:5000,h:15,cost:0,rk2:.08,day:40,t:['Got the truck backed up to the loading bay. We loaded up clean.'],fail:'a guard fired back'},
+ race:{n:'Fix a street race',sk:'scam',rk:['enf','sol'],lo:800,hi:2000,h:6,cost:300,rk2:.04,day:25,t:['Our driver took the dive on the third turn like we planned.'],fail:'the bettors figured it out'},
+ flip:{n:'Flip a rival soldier',sk:'scam',rk:['rh'],h:5,cost:1000,rk2:.04,day:30,loy:70,t:['Had a long talk with their guy. He is ready to ride with us.'],fail:'it was a double-agent trap'},
+ ghost:{n:'Ghost run',sk:'drive',rk:['stash','rh'],lo:3000,hi:7000,h:0,cost:500,rk2:.05,day:45,age:18,t:['Crossed the state line and dropped the whole load. Money is clean.'],fail:'troopers lit up the car'},
+ scout:{n:'Scout a rival crew',sk:'look',rk:null,h:1,cost:100,rk2:0,t:[]}
+};
+const ORDER=['scrap','papers','scout','protect','poker','debt','restock','move','bribe','race','truck','flip','ghost'];
+const RN={sol:'Soldier',rh:'Right Hand',enf:'Enforcer',stash:'Stash Leader',cap:'Block Captain'};
+Object.keys(JOBS).forEach(id=>Object.defineProperty(CROUTE,'job:'+id,{value:{n:JOBS[id].n,sk:JOBS[id].sk,t:'did a job'},enumerable:false,configurable:true}));
+function dtrOk(){return (S.dtr||[]).some(d=>S.day>=d.due)}
+function why(m,id){const j=JOBS[id];if(j.rk&&j.rk.indexOf(m.rank||'sol')<0)return 'Needs '+j.rk.map(x=>RN[x]).join(' or ');if(j.day&&S.day<j.day)return 'Opens day '+j.day;if(j.age&&S.age&&S.age<j.age)return 'Opens at '+j.age;if(j.loy&&m.loy<j.loy)return 'Needs loyalty '+j.loy;if(j.need==='dtr'&&!dtrOk())return 'Needs a debtor who is late';if(id==='scout'&&!(S.crews||[]).some(c=>c.alive))return 'No rivals';if(S.cash<j.cost)return 'Need '+money(j.cost);return ''}
+function fit(m,j){const s=m.sk[j.sk]||0;return s>=7?'Great fit':s>=5?'Good fit':s>=3?'Okay fit':'Bad fit'}
+function range(id){const j=JOBS[id];if(id==='debt')return 'Their debt, you keep 85%';if(id==='move')return 'Saves the stash if a raid hits';if(id==='bribe')return 'Heat -15';if(id==='flip')return 'New crew member';if(id==='scout')return 'Learn a rival crew';return money(j.lo)+' to '+money(j.hi)}
+window.crewJobs=function(i){const M=crewList(),m=M[i];if(!m)return;
+ const rows=ORDER.map(id=>{const j=JOBS[id],w=why(m,id);if(w&&/^(Opens|Needs (Enforcer|Right|Stash|Block))/.test(w)&&j.rk&&j.rk.indexOf(m.rank||'sol')<0&&id!=='race')return '';
+  return `<div class="row" style="flex-wrap:wrap;padding:8px 12px"><div class="info" style="flex:1 1 180px;min-width:0"><div class="t">${j.n}</div><div class="s">${range(id)}${j.cost?' · costs '+money(j.cost):''} · heat ${id==='bribe'?'-15':'+'+j.h} · ${fit(m,j)}</div>${w?`<div class="s" style="color:var(--blood)">${w}</div>`:''}</div><button class="btn go" data-jgo="${id}" data-i="${i}" ${w?'disabled':''}>Send</button></div>`}).join('');
+ modal(`<h2>${esc(m.name)}: jobs</h2><p class="s" style="color:var(--dim)">${RN[m.rank||'sol']} · loyalty ${m.loy}. Back in 2 days. Low loyalty means more risk of skimming.</p>${rows||'<div class="row"><div class="info"><div class="s">No jobs for this rank yet.</div></div></div>'}<div class="btns" style="margin-top:8px"><button class="btn" data-mclose="1">Close</button></div>`)};
+function send(i,id){const m=crewList()[i],j=JOBS[id];if(!m||m.busy||m.hurt>=S.day||why(m,id))return;S.cash-=j.cost;m.busy={r:'job:'+id,until:S.day+2};m.last=S.day;say(`Sent ${m.name} on: ${j.n.toLowerCase()}. Back in 2 days.`)}
+function txt(m,t){try{phoneMsg(m.name,t)}catch(e){say(`📱 ${m.name}: "${t}"`)}}
+function resolve(m){const id=String(m.busy.r).slice(4),j=JOBS[id];m.busy=null;m.last=S.day;if(!j)return;
+ const s=m.sk[j.sk]||0,lv=1+Math.min(10,S.lvl||1)*.06,rhm=crewRank('rh'),rh=rhm&&rhm!==m?1.12:1,loyF=m.loy>=60?1:m.loy>=30?.85:.6;
+ const lowLoy=m.loy<30?.2:0;
+ if(id==='move'){S.jobShield=S.day+5;m.trust=Math.min(100,m.trust+2);crewGain(m,j.sk);return txt(m,j.t[0])}
+ if(id==='scout'){const cs=(S.crews||[]).filter(c=>c.alive);const c=cs.length?pick(cs):null;crewGain(m,j.sk);m.trust=Math.min(100,m.trust+2);if(!c)return;const d=cdef(c.id);const me=(typeof myStr==='function')?myStr():20;return txt(m,`Watched the ${d.name}. Strength ${c.str}, beef ${Math.round(c.beef)}/100. ${c.str>me*1.2?'They are stronger than you right now.':c.str<me*.8?'You could take them.':'About even with you.'}`)}
+ const risk=Math.max(.05,.30-s*.025)+j.rk2+lowLoy*.2;
+ if(Math.random()<risk){S.heat=Math.min(100,S.heat+(id==='bribe'?15:8));
+  if(id==='flip'){S.heat=Math.min(100,S.heat+6);m.loy=Math.max(0,m.loy-3);return txt(m,'It was a trap. They fed me bad info and now they know our spots.')}
+  if(Math.random()<.55){m.hurt=S.day+rnd(2,4);m.loy=Math.max(0,m.loy-2);say(`${m.name} got hurt on the ${j.n.toLowerCase()}: ${j.fail}. ${mHe(m,'He')} is laid up a few days.`)}
+  else{m.hurt=S.day+rnd(4,7);say(`${m.name} got picked up on the ${j.n.toLowerCase()}: ${j.fail}. ${mHe(m,'He')} comes home in about a week.`)}return}
+ const skim=m.loy<30&&Math.random()<.35;
+ if(id==='bribe'){S.heat=Math.max(0,S.heat-15);m.trust=Math.min(100,m.trust+2);crewGain(m,j.sk);return txt(m,j.t[0]+(skim?' (Something felt off about the count.)':''))}
+ if(id==='flip'){S.soldiers=(S.soldiers||0)+1;S.heat=Math.min(100,S.heat+j.h);m.trust=Math.min(100,m.trust+3);crewGain(m,j.sk);return txt(m,j.t[0]+' +1 soldier.')}
+ let pay;
+ if(id==='debt'){const d=(S.dtr||[]).filter(x=>S.day>=x.due).sort((a,b)=>b.owe-a.owe)[0];if(!d)return txt(m,'Nobody to collect from.');S.dtr=S.dtr.filter(x=>x!==d);pay=Math.round(d.owe*.85*loyF)}
+ else pay=Math.round(rnd(j.lo,j.hi)*(.55+s*.1)*lv*rh*loyF);
+ if(skim){pay=Math.round(pay*.5);say(`${m.name} came up short. You think ${mHe(m,'he')} skimmed.`)}
+ S.cash+=pay;if(id==='ghost'){S.clean=Math.min(S.cash,(S.clean||0)+pay)}
+ S.heat=Math.min(100,S.heat+j.h);if(id==='restock'){try{const c=pick((S.crews||[]).filter(x=>x.alive));if(c)c.beef=Math.min(100,c.beef+20)}catch(e){}}
+ if(j.rep)S.rep+=j.rep;m.trust=Math.min(100,m.trust+2);crewGain(m,j.sk);txt(m,pick(j.t)+` (${money(pay)})`)}
+const _cr=cmResolve;cmResolve=function(m){if(m&&m.busy&&String(m.busy.r).indexOf('job:')===0)return resolve(m);return _cr.apply(this,arguments)};
+const _ch=crewHTML;crewHTML=function(){let h=_ch.apply(this,arguments);try{h=h.replace(/data-a="cmchill" data-i="(\d+)">Chill<\/button>/g,(a,i)=>a+`<button class="btn go" data-jobs="${i}">Jobs</button>`)}catch(e){}return h};
+const _raid=raid;raid=function(){try{if(S.jobShield>=S.day){S.jobShield=0;say('A raid hit the old spot, but your stash was already moved. You lost nothing.');return}}catch(e){}return _raid.apply(this,arguments)};
+document.addEventListener('click',e=>{const a=e.target.closest&&e.target.closest('[data-jobs]');if(a){e.preventDefault();e.stopPropagation();crewJobs(+a.dataset.jobs);return}
+ const g=e.target.closest&&e.target.closest('[data-jgo]');if(g){e.preventDefault();e.stopPropagation();send(+g.dataset.i,g.dataset.jgo);close();render()}},true);
+try{TUT.push(['Crew jobs','Open the Phone, then Crew, then tap Jobs on a member. Each rank gets different jobs: Soldiers do small scams and scrap runs, Enforcers collect debts and protection, Stash Leaders move the stash before a raid, Right Hands do bribes and flips. Jobs take 2 days and low loyalty means more risk of skimming. Random street events can pop up too.'])}catch(e){}
+/* random street events */
+const EV=[
+ {t:'A stranger offers a tip',p:'A guy at the bus stop says he saw the cops setting up on the next block. He wants $100 for it.',o:[['Pay $100',()=>{if(S.cash<100)return say('You do not have it.');S.cash-=100;S.heat=Math.max(0,S.heat-6);say('The tip was good. Heat -6.')}],['Walk away',()=>{say('You kept walking.')}]]},
+ {t:'Cop pulls up',p:'A patrol car slows down next to you. The cop looks you up and down.',o:[['Be cool',()=>{if(Math.random()<.65)say('He drove off. Nothing happened.');else{S.heat=Math.min(100,S.heat+8);say('He took your name. Heat +8.')}}],['Walk off fast',()=>{S.heat=Math.min(100,S.heat+4);say('You walked off. That looked a little shady. Heat +4.')}]]},
+ {t:'A friend needs help',p:'A friend from the block hits you up. He is short on rent and asks for $150.',o:[['Give $150',()=>{if(S.cash<150)return say('You do not have it.');S.cash-=150;S.rep+=2;say('He will not forget it. Rep +2.')}],['Say no',()=>{say('He said he understands. It was a little awkward.')}]]},
+ {t:'Found a wallet',p:'You find a wallet on the sidewalk. There is $120 in it and an ID.',o:[['Keep the cash',()=>{S.cash+=120;S.rep=Math.max(0,S.rep-1);say('+$120. Rep -1.')}],['Return it',()=>{S.rep+=3;S.comm=Math.min(100,(S.comm??30)+3);say('The owner was grateful. Rep +3, community love up.')}]]},
+ {t:'Street fight breaks out',p:'Two guys start swinging right in front of you. A crowd is forming.',o:[['Break it up',()=>{S.rep+=2;S.stress=Math.min(100,(S.stress||0)+4);say('You stepped in. Rep +2, a little stress.')}],['Stay out of it',()=>{say('You stayed out of it.')}]]},
+ {t:'Block party',p:'Somebody is grilling and playing music. They tell you to come through.',o:[['Pull up',()=>{try{addStress(-8)}catch(e){}S.rep+=1;say('Good time. Stress down, rep +1.')}],['Skip it',()=>{say('You skipped it.')}]]},
+ {t:'Somebody asks for a favor',p:'An older neighbor wants help moving a couch. She says she will pay $60.',o:[['Help her',()=>{S.cash+=60;S.comm=Math.min(100,(S.comm??30)+4);say('+$60 and the block loves it.')}],['No time',()=>{say('You told her another day.')}]]}
+];
+window.streetEvent=function(i){const e=EV[i==null?rnd(0,EV.length-1):i];modal(`<h2>${e.t}</h2><p>${e.p}</p><div class="btns">${e.o.map((o,k)=>`<button class="btn ${k?'':'go'}" data-evo="${k}" data-evi="${EV.indexOf(e)}">${o[0]}</button>`).join('')}</div>`)};
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-evo]');if(!b)return;e.preventDefault();e.stopPropagation();const ev=EV[+b.dataset.evi];close();try{ev.o[+b.dataset.evo][1]()}catch(er){console.error(er)}render()},true);
+const _rn=render;render=function(){const r=_rn.apply(this,arguments);try{if(S&&!S.over&&S.cash!=null&&S._evDay!==S.day){S._evDay=S.day;if(S.day>3&&!S.prison&&!S.inJail&&!S.pr&&!window.FF&&Math.random()<.1&&document.getElementById('modal').hidden)setTimeout(()=>{if(document.getElementById('modal').hidden&&!S.over)streetEvent()},700)}}catch(e){}return r};
+const _dp=devPanel;devPanel=function(){_dp.apply(this,arguments);try{const mc=document.getElementById('mcard');if(!mc||mc.querySelector('#jbdev'))return;const d=document.createElement('div');d.id='jbdev';d.innerHTML='<div class="sec">Crew jobs and events</div><div class="btns"><button class="btn" data-jb="setup">Set up crew for jobs</button><button class="btn" data-jb="ev">Street event now</button><button class="btn" data-jb="done">Finish all jobs now</button></div>';mc.appendChild(d)}catch(e){console.error('jbdev',e)}};
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-jb]');if(!b)return;e.stopPropagation();e.preventDefault();const k=b.dataset.jb;
+ if(k==='setup'){S.cash=Math.max(S.cash,20000);S.day=Math.max(S.day,50);S.soldiers=Math.max(S.soldiers||0,5);const M=crewList();['rh','enf','stash','cap'].forEach((r,i)=>{if(M[i]){M[i].rank=r;M[i].loy=Math.max(M[i].loy,75)}});say('Dev: crew set up. Rank, loyalty and cash raised.');close();tab='beef';render()}
+ else if(k==='ev'){close();streetEvent()}
+ else if(k==='done'){crewList().forEach(m=>{if(m.busy)m.busy.until=S.day});close();render()}},true);
+})();
+</script>
 <script>if('serviceWorker' in navigator){addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}</script></body></html>
