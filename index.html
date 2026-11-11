@@ -8030,4 +8030,62 @@ window.addEventListener('keydown',e=>{
 window.addEventListener('keyup',e=>{const b=held[e.key];if(!b)return;delete held[e.key];ev(b,'pointerup')});
 })();
 </script>
+<style id="skin16">
+@media (max-width:899px){
+ .stats{grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:6px!important}
+ .stats .stat{padding:6px 7px!important;min-width:0}
+ .stats .stat .k{font-size:9px!important}.stats .stat .v{font-size:15px!important}
+ .stats .stat:nth-child(1){grid-column:1/-1;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+ .stats .stat:nth-child(1) .v{font-size:20px!important}
+ #cashsplit{display:flex!important;gap:10px;margin:0!important;font-size:12px!important}
+ #heatwhy{display:none}
+ .stats .stat span[style*="float:right"]{display:none}
+ .tabs{grid-template-columns:repeat(6,minmax(0,1fr))!important;gap:4px}
+ .tabs button[data-more="1"]{display:none!important}
+ .tabs button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;padding:7px 0!important;font-size:10px!important;line-height:1.1;white-space:nowrap;overflow:hidden}
+ .tabs button i{font-style:normal;font-size:19px;line-height:1}
+ .tabs button span{max-width:100%;overflow:hidden;text-overflow:ellipsis}
+}
+@media (min-width:900px){.tabs .moretab{display:none!important}}
+#moreSheet{position:fixed;inset:0;z-index:40;background:rgba(0,0,0,.55);display:flex;align-items:flex-end}
+#moreSheet .mbox{width:100%;background:var(--bg);border-top:1px solid var(--line);border-radius:18px 18px 0 0;padding:14px 14px calc(18px + env(safe-area-inset-bottom,0px));display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+#moreSheet button{display:flex;flex-direction:column;align-items:center;gap:4px;min-height:74px;border-radius:14px;border:1px solid var(--line);background:rgba(255,255,255,.04);color:var(--fg);font:600 13px var(--label,inherit);padding:10px 4px}
+#moreSheet button i{font-style:normal;font-size:26px}
+.plugcard{cursor:pointer}.plugcard img{width:44px!important;height:44px!important;border-radius:10px;object-fit:cover}
+.plugcard .s,.plugcard i{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.plugcard.open .s,.plugcard.open i{-webkit-line-clamp:unset;overflow:visible}
+.bizgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:6px 0}
+.bizgrid .row{flex-direction:column;align-items:stretch!important;gap:8px;margin:0!important;border-radius:14px}
+.bizgrid .row .btn{width:100%}
+#mcard>img,#mcard>div>img.art,#mcard>.art{max-height:120px;width:100%;object-fit:cover;border-radius:10px;margin-bottom:8px}
+#mcard h2{font-size:22px;line-height:1.15}
+button.needc{box-shadow:inset 0 0 0 2px #5fd68a}button.needc.no{box-shadow:inset 0 0 0 2px #e8a33a}
+
+</style>
+<script id="skin16js">
+(function(){
+const MORE=['beef','crew','cards','exp','sch','rap','rob','sp'];
+function tidy(){
+ try{const m=document.getElementById('mission'),g=document.querySelector('#pane .wgoal');if(g)g.style.display=(m&&m.innerText.trim())?'none':''}catch(e){}
+ try{const tabs=document.querySelector('.tabs');if(tabs){
+   tabs.querySelectorAll('button[role="tab"]').forEach(b=>{if(b.querySelector('span'))return;const t=b.textContent.trim(),mm=/^(\S+)\s+(.+)$/.exec(t);if(!mm)return;b.innerHTML='<i>'+mm[1]+'</i><span>'+mm[2].replace(/^Your /,'')+'</span>'});
+   tabs.querySelectorAll('button[role="tab"]').forEach(b=>{if(MORE.indexOf(b.dataset.t)>=0)b.dataset.more='1'});
+   let mb=tabs.querySelector('.moretab');if(!mb){mb=document.createElement('button');mb.type='button';mb.className='moretab';mb.innerHTML='<i>☰</i><span>More</span>';tabs.appendChild(mb)}
+   const cur=tabs.querySelector('button[aria-selected="true"]');mb.style.outline=cur&&cur.dataset.more==='1'?'2px solid var(--accent)':''}}catch(e){}
+ try{const pc=[...document.querySelectorAll('#pane > .row')].find(r=>r.querySelector('img')&&/Carries /.test(r.textContent));if(pc)pc.classList.add('plugcard')}catch(e){}
+ try{const p=document.getElementById('pane');if(p&&!p.querySelector('.bizgrid')){const secs=[...p.children].filter(c=>c.classList&&c.classList.contains('sec')&&/^own a business/i.test(c.textContent.trim()));secs.forEach(sec=>{const rows=[];let n=sec.nextElementSibling;if(n&&n.classList.contains('row')&&!n.querySelector('button'))n=n.nextElementSibling;while(n&&n.classList.contains('row')&&n.querySelector('button')){rows.push(n);n=n.nextElementSibling}if(rows.length>1){const w=document.createElement('div');w.className='bizgrid';rows[0].before(w);rows.forEach(r=>w.appendChild(r))}})}}catch(e){}
+}
+function tagClean(root){if(!root)return;const cc=(()=>{try{return cleanCash()}catch(e){return 0}})();root.querySelectorAll('button').forEach(b=>{const m=/^\$([\d,]+)$/.exec(b.textContent.trim());if(!m)return;const amt=+m[1].replace(/,/g,'');if(amt<5000){b.classList.remove('needc','no');return}b.classList.add('needc');const no=cc<amt;b.classList.toggle('no',no);b.title=no?'Needs clean cash. You have $'+Math.round(cc).toLocaleString()+' clean.':'Paid from your clean cash.'})}
+const _r=render;render=function(){const r=_r.apply(this,arguments);tidy();tagClean(document.getElementById('pane'));return r};
+const _md=modal;modal=function(){const r=_md.apply(this,arguments);try{tagClean(document.getElementById('mcard'))}catch(e){}return r};
+document.addEventListener('click',e=>{const t=e.target;if(!t||!t.closest)return;
+ const mb=t.closest('.moretab');if(mb){e.preventDefault();e.stopPropagation();openMore();return}
+ const pc=t.closest('.plugcard');if(pc&&!t.closest('button'))pc.classList.toggle('open');
+ const ms=t.closest('#moreSheet');if(ms){const b=t.closest('button[data-go]');e.stopPropagation();const sh=document.getElementById('moreSheet');if(sh)sh.remove();if(b){const real=document.querySelector('.tabs button[data-t="'+b.dataset.go+'"]');if(real)real.click()}}},true);
+function openMore(){const old=document.getElementById('moreSheet');if(old){old.remove();return}
+ const items=[...document.querySelectorAll('.tabs button[data-more="1"]')].filter(b=>!b.hidden);
+ const d=document.createElement('div');d.id='moreSheet';d.innerHTML='<div class="mbox">'+items.map(b=>{const i=b.querySelector('i'),s=b.querySelector('span');return '<button type="button" data-go="'+b.dataset.t+'"><i>'+(i?i.textContent:'')+'</i>'+(s?s.textContent:b.textContent)+'</button>'}).join('')+'</div>';document.body.appendChild(d)}
+render();
+})();
+</script>
 <script>if('serviceWorker' in navigator){addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}</script></body></html>
