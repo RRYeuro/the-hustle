@@ -1225,7 +1225,7 @@ function w4Act(a,el){if(a.slice(0,3)!=='w4_')return false;const X=w4(),hp=n=>{S.
   if(a==='w4_dog'){if(S.cash<400||X.dog)return true;S.cash-=400;X.dog={n:pick(['Rex','Tank','Bruno','Duke','Diesel'])};say(`Got a dog. ${X.dog.n} is on the stash.`);if(ARTX('dog'))wNote('dog','New dog',`${X.dog.n} will watch your stash house.`);render();return true}
   if(a==='w4_dogx'){return true}
   if(a==='w4_burn'){if(S.cash<60||X.burn>=5)return true;S.cash-=60;X.burn=Math.min(5,X.burn+2);say('Picked up some burner phones.');if(ARTX('burner')&&X.burn<=2)wNote('burner','Burners','Cheap phones you can throw away.');render();return true}
-  if(a==='w4_swap'){if(X.burn<=0||X.sw>S.day-5)return true;X.burn--;X.sw=S.day;S.heat=Math.max(0,S.heat-10);try{(S.known||[]).forEach(bi=>{S.trust[bi]=Math.max(0,(S.trust[bi]||0)-5)})}catch(e){}say('New phone, new number. Heat down, but the plugs lost some trust.');render();return true}
+  if(a==='w4_swap'){if(X.burn<=0||X.sw>S.day-5)return true;X.burn--;X.sw=S.day;S.heat=Math.max(0,S.heat-10);try{S.lh=S.lh||{};Object.keys(S.lh).forEach(k=>S.lh[k]=0)}catch(e){}try{(S.known||[]).forEach(bi=>{S.trust[bi]=Math.max(0,(S.trust[bi]||0)-5)})}catch(e){}say('New phone, new number. Heat down, but the plugs lost some trust.');render();return true}
   if(a==='w4_inf'){if(S.cash<1500||X.inf)return true;S.cash-=1500;X.inf=1;say('You have a source inside the department now.');if(ARTX('informant'))wNote('informant','Source on the force','A tired detective who likes cash. He will warn you when something is coming.');render();return true}
   if(a==='w4_infx'){X.inf=0;say('Cut off your informant.');render();return true}
   if(a==='w4_prot'){if(S.cash<4000||X.prot>S.day)return true;S.cash-=4000;X.prot=S.day+30;say('You paid for protection. Nobody touches you for a month.');render();return true}
@@ -2021,7 +2021,7 @@ function w5bAct(a,el){if(a.slice(0,4)!=='w5b_')return false;const B=b5(),X=B,k=e
   if(a==='w5b_pup'){const p=B.re[+k.i];if(!p||p.up)return true;const c=Math.round(p.cost*.1);if(S.cash<c||needClean(c,'The upgrade'))return true;w5bPay(c);p.up=1;p.rent=Math.round(p.rent*1.2);p.v=p.v*1.15;say(`Upgraded the ${p.n.toLowerCase()}. Rent and value both went up.`);render();return true}
   if(a==='w5b_staff'){const s=W5BST[k.k];if(!s||B.club[k.k]||S.cash<s[1])return true;S.cash-=s[1];B.club[k.k]=1;say(`Hired a ${s[0].toLowerCase()} for the club.`);render();return true}
   if(a==='w5b_brand'){const src=S.gf||(S.friends||[])[0];if(!src||B.brand)return true;const nm=src.name;B.brand={n:nm,f:rnd(100,400)};say(`You signed ${nm} as an act.`);render();return true}
-  if(a==='w5b_ord'){const o=B.ord[+k.i];if(!o||(S.inv[o.g]||0)<o.n)return true;const g=G(o.g),d=w5bDealers()[o.d],price=Math.round(o.n*street(g)*(.85+d.loy/500));S.inv[o.g]-=o.n;if(S.inv[o.g]<=0){S.inv[o.g]=0;S.paid[o.g]=0;S.q[o.g]=50;S.fake[o.g]=0}S.cash+=price;d.loy=Math.min(100,d.loy+6);S.heat=Math.min(100,S.heat+2);B.ord.splice(+k.i,1);say(`Delivered to ${d.n}. Paid ${money(price)}.`);render();return true}
+  if(a==='w5b_ord'){const o=B.ord[+k.i];if(!o||(S.inv[o.g]||0)<o.n)return true;const g=G(o.g),d=w5bDealers()[o.d],price=Math.round(o.n*street(g)*(.85+d.loy/500)*(o.up||1));try{plRec(price-(S.paid[o.g]||0)*o.n)}catch(e){}S.inv[o.g]-=o.n;if(S.inv[o.g]<=0){S.inv[o.g]=0;S.paid[o.g]=0;S.q[o.g]=50;S.fake[o.g]=0}S.cash+=price;d.loy=Math.min(100,d.loy+6);S.heat=Math.min(100,S.heat+2);B.ord.splice(+k.i,1);say(`Delivered to ${d.n}. Paid ${money(price)}.`);render();return true}
   if(a==='w5b_casino'){w5bCasino();return true}
   if(a==='w5b_gborrow'){w5bBorrow();render();return true}
   if(a==='w5b_gpay'){if(B.gdebt>0&&S.cash>=B.gdebt){S.cash-=B.gdebt;B.gdebt=0;say('Paid off the backer.')}render();return true}
@@ -5343,6 +5343,7 @@ const TUT=[
  ['Move: every place','The gym, rec center, stadium, stores, mall, car lot, barber, pharmacy, hospital, lawyer, school, park and studio are all listed here. Tap one to go in. If it is on another block it takes a day to get there. Tip the barber and the rumors get real: a plug tip for tomorrow.'],
  ['Circle tab: your people','Your fight style, trap houses, family and where you stay, homies, your girl and the crews all live here. Your fight style levels up every time you win a fight. After 18 your girl texts you, and how you answer matters. If a plug turns on you, go to their block and settle it. A worker who has put in enough days can be made a trap house manager: he sells out of your stash house, keeps 15%, and you can have two. What you do comes back: slide on a crew\'s opps and they may hit you or your trap later, giving up a name gets out, and your girl remembers how you treated her.'],
  ['Plugs','Every block has a plug and each one has a personality (Greedy, Loyal, Paranoid or Flashy) that shows once you know them and changes prices and haggling. Do 3 deals with one and they know you: better prices, and at Talk 4 you can haggle (that is the talk rhythm game). Rob a plug and they disappear until somebody new takes over the block. With enough rep and trust you can recruit a plug to work for you: they sell whatever you front them on their block, and a trap house sells more with less heat.'],
+ ['Phone: Messages','Open Phone, then Messages. Tap Text everybody to blast your plays: your text goes out, typing dots show, and each one answers. A blast costs 3 energy, once a day, and adds local heat on your block. A Burner swap clears it. Dealer orders now arrive here as chat bubbles with a timer bar: Fill it, Price is up (they might say yes or walk) or Not today.'],
  ['Phone tab: plays and connects','Plays text you for product. If you are out on you but it is in your safe, they go in the safe. You can see the grade of what you carry before you meet up. A connect can go dark for weeks after a caught shipment or a raid on your people, so keep your plugs. Once you earn a connect you can order up to 3 times a day, and you can drop one to get a shot at a better one.'],
  ['Me tab: your life','Spend skill points, handle your stash and safe, jobs and life choices. There are nine skills: Hustle, Talk, Muscle, Street Smarts and Luck, plus Stamina (energy), Charm (music and shows), Business (what your businesses pay) and Discipline (stress and grades). The traits you pick at the start are locked in for the whole run. Cash in the safe stays hidden from strict parents and can pay for things your family or remote connects ask for.'],
  ['Energy and time','Most moves cost energy. When you run out you are wiped and have to end the day, and it fills back up in the morning. Stamina, Muscle and your traits change how much you have. A nap gives a little back once a day. Time can also skip: next event, a week of laying low, or your next birthday in story mode. Bills still hit while you skip, and time stops when something big comes up.'],
@@ -7339,7 +7340,7 @@ body[data-home="0"] .wq{display:none!important}
 const RAW={beef:paneBeef,crew:paneCrew,money:paneMoney,biz:paneBiz,spots:paneSpots,phone:panePhone,move:paneMove};
 const R=[[/^Your fight style/,'tab:crew'],[/^(Trap houses|Your workers|Looking for work)/,'app:trap'],[/^(Your homies|Your girl)/,'app:contacts'],[/^Your crew$/,'app:crew'],[/^Family/,'app:family'],[/^Turf and space/,'app:turf'],[/^Stash and safe/,'drop'],
  [/^(Jobs|School, work and business)/,'tab:crew'],[/^(Side hustles online|Side work)/,'app:hustle'],[/^Clean and dirty cash/,'drop'],[/^Modern life/,'app:modern'],[/^Backer/,'app:backer'],[/^Laundering/,'tab:biz'],
- [/^(Trap phone|Texts)/,'app:messages'],[/^Contacts/,'app:contacts'],[/^Phone, apps and cameras/,'app:modern'],[/^Dealer orders/,'app:orders'],[/^Debtors/,'app:contacts'],[/^Burners/,'app:burners'],[/^Social/,'app:social'],[/^The city/,'drop'],[/^Your people/,'app:contacts'],[/^Licks/,'app:licks'],[/^The Last Big Deal/,'drop']];
+ [/^(Trap phone|Texts)/,'app:messages'],[/^Contacts/,'app:contacts'],[/^Phone, apps and cameras/,'app:modern'],[/^Dealer orders/,'drop'],[/^Debtors/,'app:contacts'],[/^Burners/,'app:burners'],[/^Social/,'app:social'],[/^The city/,'drop'],[/^Your people/,'app:contacts'],[/^Licks/,'app:licks'],[/^The Last Big Deal/,'drop']];
 const dest=(src,t)=>{if(src==='spots')return /^Rival/.test(t)?'tab:beef':/^Street news/.test(t)?'app:news':/^Street business/.test(t)?'tab:block':/^(Where you stay|Living in)/.test(t)?'tab:biz':'tab:move';for(const r of R)if(r[0].test(t))return r[1];return null};
 const own={beef:'beef',crew:'crew',money:'money',biz:'biz',spots:'move',phone:'phone',move:'move'};
 function thin(n){if(n.querySelectorAll)n.querySelectorAll('img').forEach(i=>{if(i.closest('.cbd,.pol,.rph-grid'))return;const s=i.getAttribute('style')||'';const m=/(?:^|;)\s*width:\s*(\d+)px/.exec(s);if(!m||+m[1]>100)i.remove()})}
@@ -7597,12 +7598,12 @@ document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest
 <script id="skin11js">
 (function(){
 const APPS=[['messages','Messages','💬','#3fd0c9'],['contacts','Contacts','👤','#3fd0c9'],['crew','Crew','🧍','#3fd0c9'],['family','Family','🏡','#3fd0c9'],
- ['trap','Trap house','🧺','#f5a524'],['orders','Orders','📦','#f5a524'],['burners','Burners','🔥','#f5a524'],['turf','Turf & prices','🗺️','#f5a524'],['news','News','📰','#e8504a'],['licks','Licks','🎯','#f5a524'],
+ ['trap','Trap house','🧺','#f5a524'],['burners','Burners','🔥','#f5a524'],['turf','Turf & prices','🗺️','#f5a524'],['news','News','📰','#e8504a'],['licks','Licks','🎯','#f5a524'],
  ['modern','Wallet','💳','#5fd38a'],['backer','Backer','🤝','#5fd38a'],['hustle','Side hustles','💻','#a98bff'],['social','Social','📸','#d46bd0']];
 const DOCK=['messages','modern','turf','contacts'];
 const ap=id=>APPS.find(a=>a[0]===id);
 const clock=()=>{const d=new Date();let h=d.getHours()%12||12;return h+':'+String(d.getMinutes()).padStart(2,'0')};
-function badge(id){try{if(id==='messages'){const n=(S.texts||[]).length+(S.inbox||[]).filter(m=>m&&m.d===S.day).length;return n}if(id==='crew')return (S.pts||0)>0?1:0;if(id==='modern')return (S.ls&&S.ls.owe&&S.ls.due-S.day<=2)?1:0;if(id==='news')return (S.news||[]).filter(n=>n.d===S.day).length}catch(e){}return 0}
+function badge(id){try{if(id==='messages'){const n=(S.texts||[]).length+(S.inbox||[]).filter(m=>m&&m.d===S.day&&m.f!=='You').length+(((b5()||{}).ord)||[]).length;return n}if(id==='crew')return (S.pts||0)>0?1:0;if(id==='modern')return (S.ls&&S.ls.owe&&S.ls.due-S.day<=2)?1:0;if(id==='news')return (S.news||[]).filter(n=>n.d===S.day).length}catch(e){}return 0}
 const btn=(id,dock)=>{const a=ap(id),n=badge(id);return `<button data-rph="${id}" style="--c:${a[3]}"><i>${a[2]}</i>${dock?'':a[1]}${n?`<span class="ph-bd">${n>9?'9+':n}</span>`:''}</button>`};
 const sb=()=>`<div class="ph-sb"><span>${clock()}</span><span class="isl"></span><span class="r">5G <span class="ph-bat"><i></i></span></span></div>`;
 function lock(){const n=[];(S.inbox||[]).slice(0,2).forEach(m=>n.push(['💬',m.f,m.t]));const nw=(S.news||[])[0];if(nw)n.push(['📰','Street news',nw.t]);
@@ -7610,7 +7611,7 @@ function lock(){const n=[];(S.inbox||[]).slice(0,2).forEach(m=>n.push(['💬',m.
 function home(anim){const last=(S.inbox||[])[0];
  const w=`<div class="ph-w"><span>DAY ${S.day} · ${esc((BLOCKS[S.at]||'').toUpperCase())}</span><b>${money(S.cash)}</b><p>${last?`💬 <strong>${esc(last.f)}:</strong> ${esc(last.t)}`:'No new texts.'}</p></div>`;
  return `<div class="phx ph-home${anim?' ph-hin':''}">${sb()}<div class="ph-scr">${w}<div class="ph-ic">${APPS.filter(a=>DOCK.indexOf(a[0])<0).map(a=>btn(a[0])).join('')}</div></div><div class="ph-dock">${DOCK.map(id=>btn(id,1)).join('')}</div><button class="ph-hb" data-unlock="lock" aria-label="Lock"></button></div>`}
-function chat(){const L=(S.inbox||[]).slice().reverse();if(!L.length)return '';let d=null,h='<div class="ph-chat">';L.forEach(m=>{if(m.d!==d){d=m.d;h+=`<div class="day">Day ${d}</div>`}h+=`<div class="who">${esc(m.f)}</div><div class="bub">${esc(m.t)}</div>`});return h+'</div>'}
+function chat(){const L=(S.inbox||[]).slice().reverse();if(!L.length)return '';let d=null,h='<div class="ph-chat">';L.forEach(m=>{if(m.d!==d){d=m.d;h+=`<div class="day">Day ${d}</div>`}h+=m.f==='You'?`<div class="bub me">${esc(m.t)}</div>`:`<div class="who">${esc(m.f)}</div><div class="bub">${esc(m.t)}</div>`});return h+'</div>'}
 function news(){const N=(S.news||[]).slice(0,12);if(!N.length)return '<div class="s" style="padding:14px 4px">Nothing on the street yet.</div>';return '<div class="ph-feed">'+N.map(n=>{const src=n.s||'the block';return `<div class="post"><div class="av">${esc(src.replace(/^(a |the )/i,'').charAt(0).toUpperCase())}</div><div><div class="nm">${esc(src)}<span>day ${n.d}${n.b?' · '+esc(n.b):''}</span></div><div class="tx">${esc(n.t)}</div></div></div>`}).join('')+'</div>'}
 function wallet(){return `<div class="ph-card"><div class="l">ALL-IN BALANCE</div><div class="n">${money(S.cash)}</div><div class="d"><span class="cl">Clean ${money(Math.min(S.cash,S.clean||0))}</span><span class="dr">Dirty ${money(Math.max(0,S.cash-(S.clean||0)))}</span></div></div>`}
 let lastApp=undefined;
@@ -7618,9 +7619,70 @@ window._phLock=window._phLock||0;
 panePhone=function(){window._rtick++;const cur=window._rph||null,anim=lastApp!==cur;lastApp=cur;
  if(!cur){if(window._phLock!==S.day)return lock();return home(anim)}
  const a=ap(cur)||APPS[0];let c='';try{c=window._SR.secsFor('app:'+a[0]).map(x=>window._SR.ser(x.nodes)).join('')}catch(e){console.error(e)}
- let top='';if(a[0]==='messages')top=chat();else if(a[0]==='news'){top=news();c=''}else if(a[0]==='modern')top=wallet();else if(a[0]==='crew'){try{top=window._SR.rh?window._SR.rh():''}catch(e){}}else if(a[0]==='turf'){try{top=window._SR.pb()}catch(e){}}
+ let top='';if(a[0]==='messages'){top=window._MS?window._MS(chat):chat();if(window._MS)c=window._MS.rest(c)}else if(a[0]==='news'){top=news();c=''}else if(a[0]==='modern')top=wallet();else if(a[0]==='crew'){try{top=window._SR.rh?window._SR.rh():''}catch(e){}}else if(a[0]==='turf'){try{top=window._SR.pb()}catch(e){}}
  return `<div class="phx ph-app${anim?' ph-in':''}" data-app="${a[0]}" style="--ac:${a[3]}">${sb()}<div class="ph-scr"><div class="ph-hd"><button class="bk" data-rph="">‹ Home</button><h2><i>${a[2]}</i>${a[1]}</h2></div>${top}${c||(top?'':'<div class="s" style="padding:14px 4px">Nothing here yet.</div>')}</div><button class="ph-hb" data-rph="" aria-label="Home"></button></div>`};
 document.addEventListener('click',e=>{const u=e.target.closest&&e.target.closest('[data-unlock]');if(!u)return;e.preventDefault();e.stopPropagation();window._phLock=u.dataset.unlock==='lock'?0:S.day;window._rph=null;lastApp=undefined;render()},true);
+})();
+</script>
+<style id="skin12">
+.phx .msx-act{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:2px 0 6px}
+.phx .msx-act button{min-height:46px;border-radius:14px;border:1px solid rgba(255,255,255,.14);background:#25202f;color:var(--fg);font:600 14px var(--label,inherit);padding:8px 10px}
+.phx .msx-act button.go{background:var(--ac);color:#1a1205;border-color:transparent}
+.phx .msx-act button:disabled{opacity:.45}
+.phx .msx-sub{font-size:12px;color:#8d86a0;padding:0 4px 8px}
+.phx .ph-chat .bub.dots{display:flex;gap:5px;padding:12px 15px}
+.phx .ph-chat .bub.dots i{width:7px;height:7px;border-radius:50%;background:#8d86a0;animation:msxd 1s infinite}
+.phx .ph-chat .bub.dots i:nth-child(2){animation-delay:.15s}.phx .ph-chat .bub.dots i:nth-child(3){animation-delay:.3s}
+@keyframes msxd{0%,60%,100%{opacity:.25;transform:translateY(0)}30%{opacity:1;transform:translateY(-3px)}}
+.phx .ph-chat .tick{align-self:flex-end;font:500 11px ui-monospace,Menlo,monospace;color:#8d86a0;margin:-4px 4px 0}
+.phx .ph-chat .bub.ord{max-width:92%;font-size:14px}
+.phx .msx-bar{height:5px;border-radius:3px;background:#14111c;margin:8px 0 4px}.phx .msx-bar i{display:block;height:5px;border-radius:3px}
+.phx .msx-due{font-size:12px;color:#a59ebb}
+.phx .msx-chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.phx .msx-chips button{min-height:36px;border-radius:18px;border:1px solid rgba(255,255,255,.16);background:#1b1724;color:var(--fg);font:600 12px var(--label,inherit);padding:6px 12px}
+.phx .msx-chips button.go{background:var(--ac);color:#1a1205;border-color:transparent}
+.phx .msx-chips button:disabled{opacity:.4}
+</style>
+<script id="skin12js">
+(function(){
+const pk=a=>a[Math.floor(Math.random()*a.length)];
+window._MS=function(chat){let h='';const C=S.custos||[],done=S.textAll===S.day,passed=S.passed===S.day;
+ h+=`<div class="msx-act"><button class="go" data-a="ptext" ${done||!C.length?'disabled':''}>${done?'Blasted today':'Text everybody'}</button><button data-a="pcard" ${passed?'disabled':''}>${passed?'Passed out today':'Pass out your number'}</button></div><div class="msx-sub">${C.length} plays on your phone · a blast costs 3 energy, once a day, and adds local heat.</div>`;
+ try{h+=chat()}catch(e){}
+ h+='<div id="msxFeed" class="ph-chat"></div>';
+ try{const B=b5(),dl=w5bDealers();if(B.ord&&B.ord.length){h+='<div class="ph-chat">'+B.ord.map((o,i)=>{const g=G(o.g),d=dl[o.d],have=(S.inv[o.g]||0)>=o.n,price=Math.round(o.n*street(g)*(.85+d.loy/500)*(o.up||1)),left=o.by-S.day;
+  return `<div class="who">${esc(d.n)} · order</div><div class="bub ord"><b>Wants ${o.n}${w5bUN(g)} of ${esc(g.name.toLowerCase())}</b><br>Pays ${money(price)}${o.up?' (your price)':''}<div class="msx-bar"><i style="width:${Math.max(6,Math.min(100,left/7*100))}%;background:${left<=1?'#e8504a':'#5fd68a'}"></i></div><span class="msx-due">${left<=0?'Due today':left+' day'+(left===1?'':'s')+' left'}${have?'':' · you are short'}</span><div class="msx-chips"><button class="go" data-a="w5b_ord" data-i="${i}" ${have?'':'disabled'}>Fill it</button><button data-mo="up" data-i="${i}" ${o.up?'disabled':''}>Price is up</button><button data-mo="no" data-i="${i}">Not today</button></div></div>`}).join('')+'</div>'}}catch(e){}
+ return h};
+window._MS.rest=function(c){try{const t=document.createElement('template');t.innerHTML=c;t.content.querySelectorAll('[data-a="ptext"],[data-a="pcard"]').forEach(b=>{const w=b.parentElement;b.remove();if(w&&w.classList.contains('btns')&&!w.children.length)w.remove()});t.content.querySelectorAll('.sec').forEach(x=>{if(/^Trap phone$/i.test(x.textContent.trim()))x.remove()});return t.innerHTML}catch(e){return c}};
+function blast(){const C=S.custos||[];if(S.textAll===S.day||!C.length){try{textAll()}catch(e){}return}
+ if(spendEn(3)===false)return;
+ const was=C.map(c=>c.buys||0),cash0=S.cash;S.texted=S.day;textAll();
+ try{const m=document.getElementById('mcard');if(m&&/I'm open/.test(m.innerText))$('modal').hidden=true}catch(e){}
+ const rows=[];let came=0;C.forEach((c,i)=>{const bought=(c.buys||0)>was[i];if(bought)came++;let t;
+  if(bought)t=pk(['On my way.','Pulling up now.','Bet, save me some.','Already outside.']);
+  else if((c.hook||0)>=80)t=pk(['Bro I need it. Hit me.','Please. Whenever you can.']);
+  else if(typeof custoMood==='function'&&custoMood(c)<0)t=pk(['Broke till Friday.','Not today, money tight.']);
+  else if(S.inv[c.gid]<G(c.gid).step)t='You got any '+G(c.gid).name.toLowerCase()+'?';
+  else t=pk(['Not today.','Maybe later.','Seen.']);
+  rows.push({f:c.name,t,b:bought})});
+ const shown=rows.slice().sort((a,b)=>b.b-a.b).slice(0,6),more=rows.length-shown.length;
+ let hot=3+came*2;try{S.lh=S.lh||{};S.lh[S.at]=Math.min(100,(S.lh[S.at]||0)+hot)}catch(e){}
+ const sum=`${came} pulled up${came?`, +${money(S.cash-cash0)}`:''}${more>0?`. ${more} more left you on seen`:''}. Local heat +${hot}.`;
+ const me='I\'m open. Pull up.',feed=document.getElementById('msxFeed');
+ S.inbox=S.inbox||[];S.inbox.unshift({d:S.day,f:'You',t:me});shown.forEach(r=>S.inbox.unshift({d:S.day,f:r.f,t:r.t}));S.inbox.unshift({d:S.day,f:'Blast',t:sum});S.inbox=S.inbox.slice(0,16);
+ if(!feed){render();return}
+ const esc2=x=>String(x).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+ feed.insertAdjacentHTML('beforeend',`<div class="bub me">${esc2(me)}</div><div class="tick">Delivered</div>`);
+ let t=0;const add=(html,after)=>{setTimeout(()=>{feed.insertAdjacentHTML('beforeend',html);after&&after()},t)};
+ shown.forEach((r,i)=>{t+=650;const id='msxd'+i;add(`<div class="who" id="${id}w">${esc2(r.f)}</div><div class="bub dots" id="${id}"><i></i><i></i><i></i></div>`);t+=700;setTimeout(()=>{const d=document.getElementById(id);if(d){d.className='bub';d.textContent=r.t}},t)});
+ t+=700;add(`<div class="who">Result</div><div class="bub">${esc2(sum)}</div>`);
+ setTimeout(()=>{try{render()}catch(e){}},t+1400)}
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('.phx [data-a="ptext"]');if(!b||b.disabled)return;e.preventDefault();e.stopImmediatePropagation();blast()},true);
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('.phx [data-mo]');if(!b)return;e.preventDefault();e.stopPropagation();const B=b5(),i=+b.dataset.i,o=B.ord&&B.ord[i];if(!o)return;const d=w5bDealers()[o.d];
+ if(b.dataset.mo==='no'){B.ord.splice(i,1);d.loy=Math.max(0,d.loy-2);say(`Told ${d.n} not today. They noticed.`)}
+ else if(Math.random()<.4+d.loy/250){o.up=1.15;say(`${d.n} agreed to 15% more.`)}
+ else{B.ord.splice(i,1);d.loy=Math.max(0,d.loy-4);say(`${d.n} walked: "Too much. I will go somewhere else."`)}
+ render()},true);
 })();
 </script>
 <script>if('serviceWorker' in navigator){addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}</script></body></html>
