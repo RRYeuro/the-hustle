@@ -3331,10 +3331,10 @@ function wTake(i,gid){const w=S.workers[i];if(!w||!w.stash||!w.stash[gid])return
 const wLv=w=>1+((w.sales||0)>=6?1:0)+((w.sales||0)>=18?1:0);
 function trapGoods(t){return [t.g,t.g2,t.g3].filter((x,i,a)=>x&&a.indexOf(x)===i)}
 function runTraps(){const did=new Set();
-  Object.entries(S.traps).forEach(([bi,t])=>{bi=+bi;const w=S.workers.find(w=>w.id===t.w);if(!w||(!t.g&&!(t.mgr&&t.mgr===t.w)))return;if(w.low>=S.day){did.add(w.id);return}
+  Object.entries(S.traps).forEach(([bi,t])=>{bi=+bi;const w=S.workers.find(w=>w.id===t.w);if(!w||!t.g)return;if(w.low>=S.day){did.add(w.id);return}
     if(!myBlock(bi)){say(`${w.name} couldn't work ${BLOCKS[bi]}. That's not your block no more.`);return}
     let worked=0;const Hm=(t.mgr&&t.mgr===t.w)?shSt():null,isM=!!(Hm&&Hm.own);if(isM&&S.day-(t.mgrL||S.day)>=14){t.mgrL=S.day;if(w.loyal<10)w.loyal++}
-    (isM?[...new Set([...GOODS.filter(g=>(Hm.inv[g.id]||0)>0).map(g=>g.id),...trapGoods(t)])]:trapGoods(t)).slice(0,wLv(w)).forEach(gid=>{const g=G(gid);
+    trapGoods(t).slice(0,wLv(w)).forEach(gid=>{const g=G(gid);
       w.stash=w.stash||{};w.sq=w.sq||{};const ws=(w.stash[gid]||0)>0,mg=isM&&!ws,have=ws?w.stash[gid]:(mg?(Hm.inv[g.id]||0):S.inv[g.id]);if(have<=0){say(`${w.name} ran out of ${g.name} at the ${BLOCKS[bi]} trap.`);return}
       let n=Math.min(have,Math.floor(w.hustle*(g.unit==='g'?5:g.unit==='pills'?8:1)*(.6+.4*(typeof demand==='function'?Math.min(1.2,Math.max(.4,demand(bi,g.id))):1))));if(g.step<1)n=Math.floor(n*2)/2;if(n<=0)return;
       const fkS=mg?Hm.fake:S.fake,fk=ws?0:Math.min(fkS[g.id]||0,Math.round(n*(fkS[g.id]||0)/have));if(!ws)fkS[g.id]=(fkS[g.id]||0)-fk;
