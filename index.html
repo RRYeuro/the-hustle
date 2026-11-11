@@ -7514,7 +7514,7 @@ window.custoMood=function(c){const r=hsh((c&&c.name||'')+':'+S.day)%10;let m=r<2
 const _cp=custoPrice;custoPrice=function(c,gid){return _cp.apply(this,arguments)*(1+.15*custoMood(c)*(custoMood(c)>0?1:.8))};
 const _sc=serveCusto;serveCusto=function(ci,fromText,o){let c=null,md=0,c0=0;try{c=S.custos[ci];md=c?custoMood(c):0;c0=S.cash}catch(e){}const r=_sc.apply(this,arguments);try{if(c&&md&&S.cash>c0)say(md>0?`${c.name} was flush today and paid extra.`:`${c.name} was tight on cash and talked the price down.`)}catch(e){}return r};
 /* real estate office */
-PLACES.push({id:'realty',bi:5,x:304,y:205,ic:'🏢',name:'Real estate office'});
+PLACES.push({id:'realty',bi:5,x:304,y:205,ic:'🏢',name:'Real estate office'});try{if(PL0)PL0[PLACES.length-1]='Real estate office'}catch(e){}
 const _md=mdBody;mdBody=function(id,row,b){let h=_md.apply(this,arguments)||'';if(id!=='realty')return h;
  if(!adult())return h+row('Real estate','Opens up when you turn 18.','<span class="chip">18+</span>');
  const B=b5(),re=B.re||[];
