@@ -7358,7 +7358,8 @@ function tabHTML(key){const p=P(key);let out=ser(p.head.filter(n=>!(n.nodeType==
 function moveHTML(){const p=P('move'),sp=P('spots');let head='';const home=(()=>{try{return homeBlock()===S.at}catch(e){return true}})();p.head.forEach(n=>{if(n.nodeType===1&&n.tagName==='IMG')return;if(!home&&n.nodeType===1&&/Lay low/.test(n.textContent)&&n.classList.contains('row'))return;if(n.nodeType===1&&n.querySelector&&n.querySelector('img')&&!n.classList.contains('cbd')&&!n.classList.contains('row'))return;head+=ser([n])});
  let here='';const hs=sp.secs.filter(x=>dest('spots',x.t)==='tab:move').map(x=>ser(x.nodes)).join('');if(hs)here=`<div class="mvh">Here on ${BLOCKS[S.at]}</div>`+hs;
  let rest='';p.secs.forEach(x=>{const dd=dest('move',x.t);if(dd==='drop'||(dd&&dd.indexOf('app:')===0))return;if(/^Time/.test(x.t)&&!home)return;let nodes=x.nodes;if(/^Mini games/.test(x.t))nodes=nodes.filter(n=>!(n.nodeType===1&&/Hoop at the park/.test(n.textContent)));rest+=ser(nodes)});
- return head+here+rest}
+ let dm='';try{dm=`<div class="sec">Prices by block</div>`+demandList()}catch(e){}
+ return head+here+dm+rest}
 /* phone */
 const APPS=[['messages','Messages','💬','#3fd0c9','People'],['contacts','Contacts','👤','#3fd0c9','People'],['crew','Crew','🧍','#3fd0c9','People'],['family','Family','🏡','#3fd0c9','People'],
  ['trap','Trap house','🧺','#f5a524','Street'],['orders','Orders','📦','#f5a524','Street'],['burners','Burners','🔥','#f5a524','Street'],['turf','Turf','🗺️','#f5a524','Street'],['news','News','📰','#f5a524','Street'],['licks','Licks','🎯','#f5a524','Street'],
