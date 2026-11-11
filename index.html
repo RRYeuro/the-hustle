@@ -7335,7 +7335,7 @@ body[data-home="0"] .wq{display:none!important}
 const RAW={beef:paneBeef,crew:paneCrew,money:paneMoney,biz:paneBiz,spots:paneSpots,phone:panePhone,move:paneMove};
 const R=[[/^Your fight style/,'tab:crew'],[/^(Trap houses|Your workers|Looking for work)/,'app:trap'],[/^(Your homies|Your girl)/,'app:contacts'],[/^Your crew$/,'app:crew'],[/^Family/,'app:family'],[/^Turf and space/,'app:turf'],[/^Stash and safe/,'drop'],
  [/^(Jobs|School, work and business)/,'tab:crew'],[/^(Side hustles online|Side work)/,'app:hustle'],[/^Clean and dirty cash/,'drop'],[/^Modern life/,'app:modern'],[/^Backer/,'app:backer'],[/^Laundering/,'tab:biz'],
- [/^(Trap phone|Texts)/,'app:messages'],[/^Contacts/,'app:contacts'],[/^Dealer orders/,'app:orders'],[/^Burners/,'app:burners'],[/^Social/,'app:social'],[/^The city/,'drop'],[/^Your people/,'app:contacts'],[/^Licks/,'app:licks'],[/^The Last Big Deal/,'drop']];
+ [/^(Trap phone|Texts)/,'app:messages'],[/^Contacts/,'app:contacts'],[/^Phone, apps and cameras/,'app:modern'],[/^Dealer orders/,'app:orders'],[/^Burners/,'app:burners'],[/^Social/,'app:social'],[/^The city/,'drop'],[/^Your people/,'app:contacts'],[/^Licks/,'app:licks'],[/^The Last Big Deal/,'drop']];
 const dest=(src,t)=>{if(src==='spots')return /^Rival/.test(t)?'tab:beef':/^Street news/.test(t)?'app:news':/^Street business/.test(t)?'tab:block':/^(Where you stay|Living in)/.test(t)?'tab:biz':'tab:move';for(const r of R)if(r[0].test(t))return r[1];return null};
 const own={beef:'beef',crew:'crew',money:'money',biz:'biz',spots:'move',phone:'phone',move:'move'};
 function thin(n){if(n.querySelectorAll)n.querySelectorAll('img').forEach(i=>{if(i.closest('.cbd,.pol,.rph-grid'))return;const s=i.getAttribute('style')||'';const m=/(?:^|;)\s*width:\s*(\d+)px/.exec(s);if(!m||+m[1]>100)i.remove()})}
@@ -7365,7 +7365,7 @@ function phoneHTML(){const bar=`<div class="rph-bar"><span>BLOCK-WIRE 5G</span><
  if(!window._rph){const gs=[...new Set(APPS.map(a=>a[4]))];body=gs.map(g=>`<div class="rph-g">${g}</div><div class="rph-grid">${APPS.filter(a=>a[4]===g).map(a=>`<button data-rph="${a[0]}" style="--c:${a[3]}"><i>${a[2]}</i>${a[1]}</button>`).join('')}</div>`).join('')}
  else{const a=APPS.find(x=>x[0]===window._rph)||APPS[0];const c=secsFor('app:'+a[0]).map(x=>ser(x.nodes)).join('');body=`<div class="rph-top"><button class="btn" data-rph="">‹ Back</button><b>${a[2]} ${a[1]}</b></div>`+(a[0]==='crew'?rhBtns():'')+(c||'<div class="s" style="padding:14px 4px">Nothing here yet.</div>')}
  return `<div class="rph">${bar}${body}<div class="rph-home"></div></div>`}
-window._SR={secsFor,ser};
+window._SR={secsFor,ser,rh:rhBtns};
 paneMove=function(){window._rtick++;return moveHTML()};paneSpots=function(){window._rtick++;return moveHTML()};
 paneBeef=function(){window._rtick++;return tabHTML('beef')};paneCrew=function(){window._rtick++;return tabHTML('crew')};paneMoney=function(){window._rtick++;const h=tabHTML('money');return h.replace(/<[^>]*>/g,'').trim()?h:'<div class="s" style="padding:14px 4px">Your cash is at the top. Wallet and Backer are apps on your Phone. Laundering is in Business.</div>'};paneBiz=function(){window._rtick++;return tabHTML('biz')};
 panePhone=function(){window._rtick++;return phoneHTML()};
@@ -7532,6 +7532,79 @@ document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest
  else if(k==='realty'){close();S.at=PLACES.find(p=>p.id==='realty').bi;render();openPlace('realty')}
  else if(k==='mood'){say('Moods today: '+((S.custos||[]).length?S.custos.map(c=>c.name+' '+(custoMood(c)>0?'flush':custoMood(c)<0?'tight':'normal')).join(', '):'no customers yet'));close();render()}
  else if(k==='done'){crewList().forEach(m=>{if(m.busy)m.busy.until=S.day});close();render()}},true);
+})();
+</script>
+<style id="skin11">
+.rph{display:none!important}
+#pane img[style*='align-self:center']{display:none!important}
+.phx{--ac:#f5a524;width:390px;max-width:100%;margin:6px auto 12px;border-radius:46px;border:3px solid #2a2438;background:#06050b;box-shadow:0 0 0 7px #14101c,0 24px 60px rgba(0,0,0,.7);overflow:hidden;position:relative;height:min(740px,calc(100vh - var(--dockh,84px) - 230px));min-height:560px;display:flex;flex-direction:column;font-family:var(--body,inherit)}
+.ph-sb{display:flex;align-items:center;justify-content:space-between;padding:12px 26px 6px;font:600 13px ui-monospace,Menlo,monospace;color:#efe9e1;flex:none;position:relative;z-index:3}
+.ph-sb .isl{position:absolute;left:50%;top:9px;transform:translateX(-50%);width:92px;height:24px;border-radius:14px;background:#000;border:1px solid #1d1927}
+.ph-sb .r{display:flex;gap:6px;align-items:center}.ph-bat{width:24px;height:11px;border:1.5px solid #9a93a8;border-radius:3px;position:relative;padding:1px}.ph-bat::after{content:'';position:absolute;right:-4px;top:2px;width:2px;height:5px;background:#9a93a8;border-radius:1px}.ph-bat i{display:block;height:100%;width:78%;background:#5fd38a;border-radius:1px}
+.ph-scr{flex:1;min-height:0;overflow-y:auto;position:relative;scrollbar-width:none}.ph-scr::-webkit-scrollbar{display:none}
+.ph-home .ph-scr{background:radial-gradient(120% 60% at 20% 0%,#2a1b4a 0%,transparent 60%),radial-gradient(90% 50% at 90% 100%,#16384a 0%,transparent 60%),#0a0812;padding:6px 16px 6px}
+.ph-w{margin:6px 2px 14px;padding:14px 16px;border-radius:22px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);backdrop-filter:blur(8px)}
+.ph-w b{display:block;font:700 34px var(--label);letter-spacing:.04em}.ph-w span{font:500 12px ui-monospace,Menlo,monospace;color:#9a93a8}.ph-w p{margin:8px 0 0;font-size:13px;color:#d6cfe0;line-height:1.35}
+.ph-ic{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px 6px}
+.ph-ic button,.ph-dock button{display:flex;flex-direction:column;align-items:center;gap:5px;background:none;border:0;color:#efe9e1;font:600 10.5px var(--label);letter-spacing:.06em;cursor:pointer;padding:0;text-transform:uppercase;position:relative}
+.ph-ic i,.ph-dock i{width:58px;height:58px;border-radius:17px;background:linear-gradient(145deg,color-mix(in srgb,var(--c) 38%,#15121d),#0e0c15);border:1px solid color-mix(in srgb,var(--c) 70%,transparent);display:flex;align-items:center;justify-content:center;font-style:normal;font-size:27px;box-shadow:0 6px 14px rgba(0,0,0,.5),0 0 14px color-mix(in srgb,var(--c) 28%,transparent);transition:transform .12s}
+.ph-ic button:active i,.ph-dock button:active i{transform:scale(.92)}
+.ph-bd{position:absolute;top:-5px;right:calc(50% - 36px);min-width:19px;height:19px;border-radius:10px;background:#e8504a;color:#fff;font:700 11px var(--label);display:flex;align-items:center;justify-content:center;padding:0 5px;border:2px solid #0a0812}
+.ph-dock{flex:none;margin:6px 14px 4px;padding:10px 12px;border-radius:30px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);display:flex;justify-content:space-around}
+.ph-hb{flex:none;display:block;width:120px;height:5px;border-radius:3px;background:#4a4258;margin:8px auto 10px;border:0;padding:0;cursor:pointer}
+.ph-lock .ph-scr{background:radial-gradient(100% 50% at 50% 0%,#33205a 0%,transparent 70%),#08060d;display:flex;flex-direction:column;align-items:center;padding:30px 18px;cursor:pointer}
+.ph-lock .tm{font:700 76px var(--label);letter-spacing:.02em;line-height:1}.ph-lock .dt{font:500 13px ui-monospace,Menlo,monospace;color:#9a93a8;margin:6px 0 22px;letter-spacing:.1em;text-transform:uppercase}
+.ph-nt{width:100%;display:flex;gap:10px;padding:10px 12px;margin-bottom:8px;border-radius:16px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.08);text-align:left}.ph-nt i{font-style:normal;font-size:22px}.ph-nt b{display:block;font:700 12px var(--label);letter-spacing:.08em;text-transform:uppercase;color:#cfc7dc}.ph-nt span{font-size:13px;line-height:1.3}
+.ph-lock .hint{margin-top:auto;font:500 12px ui-monospace,Menlo,monospace;color:#6f6880;letter-spacing:.14em}
+.ph-app .ph-scr{padding:0 14px 8px;background:#0b0912}
+.ph-hd{position:sticky;top:0;z-index:2;background:linear-gradient(#0b0912 80%,transparent);padding:4px 0 8px}
+.ph-hd .bk{background:none;border:0;color:var(--ac);font:600 15px var(--body,inherit);cursor:pointer;padding:2px 0;display:flex;align-items:center;gap:2px}
+.ph-hd h2{margin:2px 0 0;font:700 30px var(--label);letter-spacing:.03em;display:flex;align-items:center;gap:10px}.ph-hd h2 i{font-style:normal;width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;background:color-mix(in srgb,var(--ac) 25%,#14111c);border:1px solid var(--ac)}
+.ph-in{animation:phin .22s ease-out}@keyframes phin{from{transform:translateX(26px) scale(.98);opacity:0}to{transform:none;opacity:1}}
+.ph-hin{animation:phhin .2s ease-out}@keyframes phhin{from{transform:scale(1.06);opacity:0}to{transform:none;opacity:1}}
+@media(prefers-reduced-motion:reduce){.ph-in,.ph-hin{animation:none}}
+.ph-app .row{border-radius:16px;background:#14111c;border:1px solid #221d2e;margin:8px 0;padding:10px 12px}
+.ph-app .sec{font:700 12px var(--label);letter-spacing:.16em;color:var(--ac);margin:16px 2px 4px}
+.ph-app .btn{border-radius:999px}
+.ph-chat{display:flex;flex-direction:column;gap:8px;padding:4px 0 10px}
+.ph-chat .who{font:600 11px var(--label);letter-spacing:.1em;color:#7f7890;text-transform:uppercase;margin:6px 4px 0}
+.ph-chat .bub{max-width:82%;padding:9px 13px;border-radius:19px 19px 19px 5px;background:#25202f;font-size:14px;line-height:1.35;align-self:flex-start;animation:phin .25s ease-out}
+.ph-chat .bub.me{align-self:flex-end;background:var(--ac);color:#1a1205;border-radius:19px 19px 5px 19px}
+.ph-chat .day{align-self:center;font:500 11px ui-monospace,Menlo,monospace;color:#6f6880;margin:6px 0 0}
+.ph-card{border-radius:20px;padding:16px 18px;margin:6px 0 12px;background:linear-gradient(135deg,#1c6a56,#12304a 55%,#2a1b4a);border:1px solid rgba(255,255,255,.14);box-shadow:0 10px 24px rgba(0,0,0,.5)}
+.ph-card .l{font:600 11px ui-monospace,Menlo,monospace;letter-spacing:.14em;color:#b7e7d6}.ph-card .n{font:700 38px var(--label);letter-spacing:.02em}.ph-card .d{display:flex;justify-content:space-between;margin-top:8px;font:600 13px ui-monospace,Menlo,monospace}.ph-card .d .cl{color:#7ee8ab}.ph-card .d .dr{color:#ff9a8f}
+.ph-feed .post{display:flex;gap:10px;padding:12px 2px;border-bottom:1px solid #1d1927}.ph-feed .av{flex:none;width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font:700 16px var(--label);background:linear-gradient(135deg,var(--ac),#6a3fd0);color:#12090f}
+.ph-feed .nm{font:700 13px var(--label);letter-spacing:.06em;text-transform:uppercase}.ph-feed .nm span{font-weight:500;color:#7f7890;margin-left:6px;letter-spacing:.02em;text-transform:none;font-family:ui-monospace,Menlo,monospace;font-size:11px}.ph-feed .tx{font-size:14px;line-height:1.35;margin-top:2px}
+.ph-app .rph-top{display:none}
+@media(max-width:500px){.phx{border-radius:34px;box-shadow:0 0 0 4px #14101c;height:calc(100vh - var(--dockh,84px) - 150px)}}
+</style>
+<script id="skin11js">
+(function(){
+const APPS=[['messages','Messages','💬','#3fd0c9'],['contacts','Contacts','👤','#3fd0c9'],['crew','Crew','🧍','#3fd0c9'],['family','Family','🏡','#3fd0c9'],
+ ['trap','Trap house','🧺','#f5a524'],['orders','Orders','📦','#f5a524'],['burners','Burners','🔥','#f5a524'],['turf','Turf','🗺️','#f5a524'],['news','News','📰','#e8504a'],['licks','Licks','🎯','#f5a524'],
+ ['modern','Wallet','💳','#5fd38a'],['backer','Backer','🤝','#5fd38a'],['hustle','Side hustles','💻','#a98bff'],['social','Social','📸','#d46bd0']];
+const DOCK=['messages','modern','turf','contacts'];
+const ap=id=>APPS.find(a=>a[0]===id);
+const clock=()=>{const d=new Date();let h=d.getHours()%12||12;return h+':'+String(d.getMinutes()).padStart(2,'0')};
+function badge(id){try{if(id==='messages'){const n=(S.texts||[]).length+(S.inbox||[]).filter(m=>m&&m.d===S.day).length;return n}if(id==='crew')return (S.pts||0)>0?1:0;if(id==='modern')return (S.ls&&S.ls.owe&&S.ls.due-S.day<=2)?1:0;if(id==='news')return (S.news||[]).filter(n=>n.d===S.day).length}catch(e){}return 0}
+const btn=(id,dock)=>{const a=ap(id),n=badge(id);return `<button data-rph="${id}" style="--c:${a[3]}"><i>${a[2]}</i>${dock?'':a[1]}${n?`<span class="ph-bd">${n>9?'9+':n}</span>`:''}</button>`};
+const sb=()=>`<div class="ph-sb"><span>${clock()}</span><span class="isl"></span><span class="r">5G <span class="ph-bat"><i></i></span></span></div>`;
+function lock(){const n=[];(S.inbox||[]).slice(0,2).forEach(m=>n.push(['💬',m.f,m.t]));const nw=(S.news||[])[0];if(nw)n.push(['📰','Street news',nw.t]);
+ return `<div class="phx ph-lock ph-hin" data-unlock="1">${sb()}<div class="ph-scr"><div class="tm">${clock()}</div><div class="dt">Day ${S.day} · ${esc(BLOCKS[S.at]||'')}</div>${n.length?n.map(x=>`<div class="ph-nt"><i>${x[0]}</i><div><b>${esc(x[1])}</b><span>${esc(x[2])}</span></div></div>`).join(''):'<div class="ph-nt"><i>🔕</i><div><b>No notifications</b><span>It is quiet right now.</span></div></div>'}<div class="hint">TAP TO UNLOCK</div></div></div>`}
+function home(anim){const last=(S.inbox||[])[0];
+ const w=`<div class="ph-w"><span>DAY ${S.day} · ${esc((BLOCKS[S.at]||'').toUpperCase())}</span><b>${money(S.cash)}</b><p>${last?`💬 <strong>${esc(last.f)}:</strong> ${esc(last.t)}`:'No new texts.'}</p></div>`;
+ return `<div class="phx ph-home${anim?' ph-hin':''}">${sb()}<div class="ph-scr">${w}<div class="ph-ic">${APPS.filter(a=>DOCK.indexOf(a[0])<0).map(a=>btn(a[0])).join('')}</div></div><div class="ph-dock">${DOCK.map(id=>btn(id,1)).join('')}</div><button class="ph-hb" data-unlock="lock" aria-label="Lock"></button></div>`}
+function chat(){const L=(S.inbox||[]).slice().reverse();if(!L.length)return '';let d=null,h='<div class="ph-chat">';L.forEach(m=>{if(m.d!==d){d=m.d;h+=`<div class="day">Day ${d}</div>`}h+=`<div class="who">${esc(m.f)}</div><div class="bub">${esc(m.t)}</div>`});return h+'</div>'}
+function news(){const N=(S.news||[]).slice(0,12);if(!N.length)return '<div class="s" style="padding:14px 4px">Nothing on the street yet.</div>';return '<div class="ph-feed">'+N.map(n=>{const src=n.s||'the block';return `<div class="post"><div class="av">${esc(src.replace(/^(a |the )/i,'').charAt(0).toUpperCase())}</div><div><div class="nm">${esc(src)}<span>day ${n.d}${n.b?' · '+esc(n.b):''}</span></div><div class="tx">${esc(n.t)}</div></div></div>`}).join('')+'</div>'}
+function wallet(){return `<div class="ph-card"><div class="l">ALL-IN BALANCE</div><div class="n">${money(S.cash)}</div><div class="d"><span class="cl">Clean ${money(Math.min(S.cash,S.clean||0))}</span><span class="dr">Dirty ${money(Math.max(0,S.cash-(S.clean||0)))}</span></div></div>`}
+let lastApp=undefined;
+window._phLock=window._phLock||0;
+panePhone=function(){window._rtick++;const cur=window._rph||null,anim=lastApp!==cur;lastApp=cur;
+ if(!cur){if(window._phLock!==S.day)return lock();return home(anim)}
+ const a=ap(cur)||APPS[0];let c='';try{c=window._SR.secsFor('app:'+a[0]).map(x=>window._SR.ser(x.nodes)).join('')}catch(e){console.error(e)}
+ let top='';if(a[0]==='messages')top=chat();else if(a[0]==='news'){top=news();c=''}else if(a[0]==='modern')top=wallet();else if(a[0]==='crew'){try{top=window._SR.rh?window._SR.rh():''}catch(e){}}
+ return `<div class="phx ph-app${anim?' ph-in':''}" data-app="${a[0]}" style="--ac:${a[3]}">${sb()}<div class="ph-scr"><div class="ph-hd"><button class="bk" data-rph="">‹ Home</button><h2><i>${a[2]}</i>${a[1]}</h2></div>${top}${c||(top?'':'<div class="s" style="padding:14px 4px">Nothing here yet.</div>')}</div><button class="ph-hb" data-rph="" aria-label="Home"></button></div>`};
+document.addEventListener('click',e=>{const u=e.target.closest&&e.target.closest('[data-unlock]');if(!u)return;e.preventDefault();e.stopPropagation();window._phLock=u.dataset.unlock==='lock'?0:S.day;window._rph=null;lastApp=undefined;render()},true);
 })();
 </script>
 <script>if('serviceWorker' in navigator){addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}</script></body></html>
