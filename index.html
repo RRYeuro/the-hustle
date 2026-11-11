@@ -392,7 +392,7 @@ function heatSync(){try{if(!S||S.over||S.heat==null)return;if(S.hbase==null){S.h
   S.hbase=h;S.hsT=(S.log&&S.log[0]||{}).t;S.hsD=(S.log&&S.log[0]||{}).d}catch(e){}}
 function heatWhyTxt(){const e=(S.hlog||[])[(S.hlog||[]).length-1];if(!e||S.day-e.d>2)return '';const a=Object.entries(e.m).filter(x=>x[1]>=1).sort((a,b)=>b[1]-a[1]).slice(0,3);return a.length?'From '+a.map(x=>x[0]+' +'+Math.round(x[1])).join(', '):''}
 function heatIn7(){if(!(S.hlog||[]).length)return null;let t=0;S.hlog.forEach(e=>{if(e.d>S.day-7)for(const k in e.m)t+=e.m[k]});return t/7}
-function render(){try{heatSync()}catch(e){}try{wTabBtns()}catch(e){}setTimeout(alertFlush,350);flowTick();if(S&&S.pr)tab='prison';else if(S&&tab==='prison')tab='block';if(S&&S.home&&S.home!=='family'&&S.grounded)S.grounded=0;
+function render(){try{heatSync()}catch(e){}try{wTabBtns()}catch(e){}setTimeout(alertFlush,350);flowTick();if(S&&S.pr)tab='prison';else if(S&&tab==='prison')tab='block';if(S&&tab==='money')tab='move';if(S&&S.home&&S.home!=='family'&&S.grounded)S.grounded=0;
   groundSend();
   if(S&&S.char==='life')setLifeChar();
   const free=freeMode();$('dlab').hidden=!!S.cal;$('day').textContent=S.cal?'':free?S.day:Math.min(S.day,maxDay());$('dmax').textContent=S.cal?`${calLabel()} · Age ${S.age}${inHS()&&GRADEN[S.grade]?' · '+GRADEN[S.grade]:''}`:S.mode==='life'?` · Age ${S.age}`:free?' · Kingpin mode':` / ${maxDay()}`;$('dmax').textContent+=checkDay()?' · Checks hit':` · Checks in ${daysToCheck()}d`;if(S.strikes){const mx=typeof maxStrikes==='function'?maxStrikes():3;$('dmax').insertAdjacentHTML('beforeend',` · <span style="${S.strikes>=mx-1?'color:var(--blood);font-weight:700':''}">Strikes ${S.strikes}/${mx}</span>`)}$('retire').hidden=!!S.over;
@@ -1323,7 +1323,7 @@ function devPA(k){if(String(k).slice(0,3)!=='pa_')return false;
   if(k==='pa_sk1'){['stamina','charm','biz','discipline'].forEach(x=>S.sk[x]=1);return done('new skills at 1. Max energy '+enMax())}
   if(k==='pa_split'){S.cash=40000;S.clean=25000;S.safe=0;S.safeClean=0;holdIn(S,'safe','safeClean',30000);const a=`after put 30K: cash ${S.cash}, clean ${S.clean}, safe ${S.safe}, safeClean ${S.safeClean}`;holdOut(S,'safe','safeClean',S.safe);return done(a+` | after take all: cash ${S.cash}, clean ${S.clean}`)}
   if(k==='pa_needclean'){S.cash=20000;S.clean=1000;S.safe=0;S.safeClean=0;render();needClean(8000,'The test business');return true}
-  if(k==='pa_money'){tab='money';$('modal').hidden=true;render();devPanel();return true}
+  if(k==='pa_money'){tab='move';$('modal').hidden=true;render();devPanel();return true}
   return false}
 /*PA-END*/
 
@@ -7317,7 +7317,7 @@ document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest
 })();
 </script>
 <style id="skin6">
-.tabs button[data-t="spots"],.tabs button[data-t="bag"]{display:none!important}
+.tabs button[data-t="spots"],.tabs button[data-t="bag"],.tabs button[data-t="money"]{display:none!important}
 .jump{display:none!important}
 body[data-home="0"] .wq{display:none!important}
 #me{position:relative;cursor:pointer}#me::after{content:'tap for fit, ride, gun ›';position:absolute;right:10px;bottom:4px;font:500 10px ui-monospace,Menlo,monospace;color:var(--dim)}
@@ -7342,7 +7342,7 @@ body[data-home="0"] .wq{display:none!important}
 const RAW={beef:paneBeef,crew:paneCrew,money:paneMoney,biz:paneBiz,spots:paneSpots,phone:panePhone,move:paneMove};
 const R=[[/^Your fight style/,'tab:crew'],[/^(Trap houses|Your workers|Looking for work)/,'app:trap'],[/^(Your homies|Your girl)/,'app:contacts'],[/^Your crew$/,'app:crew'],[/^Family/,'app:family'],[/^Turf and space/,'app:turf'],[/^Stash and safe/,'drop'],
  [/^(Jobs|School, work and business)/,'tab:crew'],[/^(Side hustles online|Side work)/,'app:hustle'],[/^Clean and dirty cash/,'drop'],[/^Modern life/,'app:modern'],[/^Backer/,'app:backer'],[/^Laundering/,'tab:biz'],
- [/^(Trap phone|Texts)/,'app:messages'],[/^Contacts/,'app:contacts'],[/^Phone, apps and cameras/,'app:modern'],[/^Dealer orders/,'app:orders'],[/^Burners/,'app:burners'],[/^Social/,'app:social'],[/^The city/,'drop'],[/^Your people/,'app:contacts'],[/^Licks/,'app:licks'],[/^The Last Big Deal/,'drop']];
+ [/^(Trap phone|Texts)/,'app:messages'],[/^Contacts/,'app:contacts'],[/^Phone, apps and cameras/,'app:modern'],[/^Dealer orders/,'app:orders'],[/^Debtors/,'app:contacts'],[/^Burners/,'app:burners'],[/^Social/,'app:social'],[/^The city/,'drop'],[/^Your people/,'app:contacts'],[/^Licks/,'app:licks'],[/^The Last Big Deal/,'drop']];
 const dest=(src,t)=>{if(src==='spots')return /^Rival/.test(t)?'tab:beef':/^Street news/.test(t)?'app:news':/^Street business/.test(t)?'tab:block':/^(Where you stay|Living in)/.test(t)?'tab:biz':'tab:move';for(const r of R)if(r[0].test(t))return r[1];return null};
 const own={beef:'beef',crew:'crew',money:'money',biz:'biz',spots:'move',phone:'phone',move:'move'};
 function thin(n){if(n.querySelectorAll)n.querySelectorAll('img').forEach(i=>{if(i.closest('.cbd,.pol,.rph-grid'))return;const s=i.getAttribute('style')||'';const m=/(?:^|;)\s*width:\s*(\d+)px/.exec(s);if(!m||+m[1]>100)i.remove()})}
@@ -7374,7 +7374,7 @@ function phoneHTML(){const bar=`<div class="rph-bar"><span>BLOCK-WIRE 5G</span><
  return `<div class="rph">${bar}${body}<div class="rph-home"></div></div>`}
 window._SR={secsFor,ser,rh:rhBtns};
 paneMove=function(){window._rtick++;return moveHTML()};paneSpots=function(){window._rtick++;return moveHTML()};
-paneBeef=function(){window._rtick++;return tabHTML('beef')};paneCrew=function(){window._rtick++;return tabHTML('crew')};paneMoney=function(){window._rtick++;const h=tabHTML('money');return h.replace(/<[^>]*>/g,'').trim()?h:'<div class="s" style="padding:14px 4px">Your cash is at the top. Wallet and Backer are apps on your Phone. Laundering is in Business.</div>'};paneBiz=function(){window._rtick++;return tabHTML('biz')};
+paneBeef=function(){window._rtick++;return tabHTML('beef')};paneCrew=function(){window._rtick++;return tabHTML('crew')};paneMoney=function(){window._rtick++;try{if(tab==='money')tab='move'}catch(e){}const h=tabHTML('money');return h.replace(/<[^>]*>/g,'').trim()?h:'<div class="s" style="padding:14px 4px">Your cash is at the top. Wallet and Backer are apps on your Phone. Laundering is in Business.</div>'};paneBiz=function(){window._rtick++;return tabHTML('biz')};
 panePhone=function(){window._rtick++;return phoneHTML()};
 document.addEventListener('click',e=>{let b=e.target.closest&&e.target.closest('[data-rph]');if(b){e.preventDefault();e.stopPropagation();window._rph=b.dataset.rph||null;render();return}
  b=e.target.closest&&e.target.closest('.tabs button[data-t="phone"]');if(b)window._rph=null},true);
