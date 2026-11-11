@@ -1,19 +1,22 @@
-🚨 **THE HUSTLE: UPDATE v208 IS LIVE** 🚨
-📲 **Get it first:** PC **Ctrl+Shift+R** (Mac Cmd+Shift+R). iPhone: Safari **aA > Reload Page**; Home Screen app: swipe it closed and reopen (twice if still old). Check it says **v208**. Saves carry over.
+🚨 **THE HUSTLE: v209 IS LIVE** 🚨
+Thanks for the bug reports, DonMojo (Your Circle scroll, boxing trades) and everybody.
+📲 **Get it first:** PC **Ctrl+Shift+R** (Mac Cmd+Shift+R). iPhone: Safari **aA > Reload Page**; Home Screen app: swipe it closed and reopen (twice if still old). Check it says **v209**. Saves carry over.
 
-**Fixes and cleanup**
-- 📰 **Street news** says who told you (your plug, a friend, your Right Hand, a kid on the corner, the Js). A picture pops up when something new happens.
-- 🧺 **Dealers sell whatever you give them.** No more picking a drug per trap, and no limit on kinds. Managers sell what is in the stash house. If a dealer has nothing, he texts you.
-- 🏀 **Sports:** moving up a level costs 20% of your overall (100 becomes 80). Tougher competition.
-- 📍 **Street business** is on the Block tab. **Where you stay** is in Business with real estate. **Licks** is a Phone app. **Your people** are in Contacts.
-- 📱 **Last Big Deal** is now a surprise text from your Right Hand when you qualify.
-- 🏠 **Next day, Lay low and Nap** only show when you are at home.
-- Tap your character card for your fit, ride and gun. Jump bars at the top of screens are gone.
+**New**
+- 🧑‍🤝‍🧑 **Crew jobs:** Phone > Crew > **Jobs** on any member. 13 jobs locked by rank. They take 2 days and text you back. Low loyalty = they might skim.
+- 🔭 **Scout a rival crew** to see their strength.
+- 🏙️ **Random street events** (tips, cops, wallets, block parties).
+- 💵 **Customer moods:** flush customers pay more, tight ones haggle.
+- 🏢 **Real estate office** in Move > Services: houses are bought, sold and moved only there.
+- 🪪 Tap your portrait: fit, ride, gun and where you stay.
+- 📤 **Share my run** on the end screen makes a card you can post.
 
----
+**Fixes**
+- Your Circle scrolls all the way down on PC.
+- Boxing and MMA: no grade benching, no trade offers.
 
-**WHAT TO TEST (dev menu, use your role)**
-- Dev menu, group **Layout (new look)**: Test text pop-up, Add news line (shows the news pop-up), Phone apps, character card.
-- **Dealers:** hire one, give him two drugs (Your workers, stash). Does he sell both? Try a manager with product in the stash house.
-- **Sports:** get a team, move up a level. Is the overall drop fair?
-- **Old saves:** load one. Nothing should say "undefined".
+**Test this:** Menu > Dev has buttons for it.
+- Crew testers: "Set up crew for jobs" then Phone > Crew > Jobs. Try every rank.
+- Story and sports testers: "Street event now" and boxing from the Sports tab.
+- Money testers: "Open Real estate office", "Customer moods today".
+Found a bug? Drop it in #hustle-bugs with what you tapped.
