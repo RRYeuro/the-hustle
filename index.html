@@ -5876,7 +5876,99 @@ function shootoutGame0(mine,theirs,who,done){mgOn=true;
   deal();requestAnimationFrame(loop)}
 const FSTYLES={boxer:{nm:'Boxer',tip:'Quick jabs, little warning.',w:.85,f:.1,d:.9,g:.75},brawler:{nm:'Brawler',tip:'Slow, but he hits like a truck.',w:1.2,f:.05,d:1.35,g:1.25},street:{nm:'Street fighter',tip:'He fakes a lot. Do not bite.',w:1,f:.3,d:1,g:1}};
 function fightStyle(who){if(window.fgStyle)return FSTYLES[window.fgStyle];const ks=Object.keys(FSTYLES);let h=0;for(const c of String(who))h=(h*31+c.charCodeAt(0))>>>0;return FSTYLES[ks[h%ks.length]]}
-function fightGame0(mine,theirs,who,done){const gun=!!window.fgGun;window.fgGun=0;if(gun)return shootoutGame(mine,theirs,who,done);const L=gun?{d:'Take cover',h:'Shoot',tip:'When they shoot, take cover. When they peek out, shoot. Keys: ← cover, → or space shoot.',sw:'THEY SHOOTING',op:'THEY PEEKED OUT',slip:'Ducked behind the car.',walk:'You stood up into it.',nothing:'You shot at nothing.',landed:'Hit him.',back:'You stayed down. They reset.',caught:'Took one.',miss:'Missed your shot.',time:'Sirens. Everybody scattered.',won:'They fell back',lost:'You had to fall back'}:{d:'Dodge',h:'Hit',tip:'When it says THEY SWING (red), hit Dodge. When it says OPENING (green), hit Hit. Be quick. Keys: ← dodge, → or space hit.',sw:'THEY SWING',op:'OPENING',slip:'Slipped it.',walk:'You walked right into it.',nothing:'You swung at nothing.',landed:'Landed clean.',back:'You backed off. They reset.',caught:'Caught you.',miss:'Missed the opening.',time:'Time. Somebody broke it up.',won:'You won the fight',lost:'You lost the fight'};
+/* ---------- fight ring (rework) ---------- */
+function fightRing(mine,theirs,who,done){
+  const MS=fsState().style,ML=fsLvl(),ST=fightStyle(who),share=mine/(mine+theirs),sh2=share*share/(share*share+(1-share)*(1-share)),
+    myDmg=Math.round(5+sh2*30),opDmg=Math.round(Math.round(5+(1-sh2)*30)*ST.d),wScale=Math.max(.45,Math.min(1.15,.3+share*1.4)),
+    win0=Math.max(300,.74*(650+(buf('bars')?80:0)+(buf('percs')?50:0)-(buf('phones')?60:0)+S.sk.smarts*30-(stressed()?120:0)-(is('tank')&&(S.fate||{}).knee===1?60:0))),
+    WIN=Math.round((win0+70)*wScale*1.4*(MS==='street'?1+.05*ML:1)),R=20000,GMAX=100+(MS==='brawler'?6*ML:0),isB=ST.nm==='Brawler';
+  mgOn=true;
+  const Z={me:100,op:100,sta:100,grd:GMAX,round:1,rt:R,cmb:0,finT:0,ctr:0,gasp:0,stun:0,dcd:0,pause:0,msg:'Get ready...',guard:false,held:0,over:false,e:{s:'rest',u:performance.now()+1100,k:null,dl:0,len:0,f:0,force:0}};
+  window._frs=Z;
+  const dirty=MS==='street';
+  start();
+  function start(){
+    const bs='min-height:64px;font-size:16px;touch-action:manipulation;user-select:none;-webkit-user-select:none';
+    modal(`<div style="display:flex;justify-content:space-between;align-items:center"><div class="sec" style="margin:0;color:var(--blood)">Fight</div><div class="s" id="frRd"></div></div>
+     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:6px 0">
+      <div><div class="s">You</div><div class="bar" style="height:10px"><i id="frMe" style="width:100%;background:var(--money)"></i></div><div class="bar" style="height:5px;margin-top:3px"><i id="frSt" style="width:100%;background:var(--heat)"></i></div><div class="bar" style="height:5px;margin-top:3px"><i id="frGd" style="width:100%;background:#5aa9ff"></i></div></div>
+      <div><div class="s" style="text-align:right">${who}</div><div class="bar" style="height:10px"><i id="frOp" style="width:100%;background:var(--blood);margin-left:auto"></i></div></div></div>
+     <div id="frTell" style="height:86px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:var(--display);font-size:28px;letter-spacing:.03em;background:#221e27;text-align:center;transition:background .08s"></div>
+     <div style="display:flex;justify-content:space-between;align-items:center;min-height:30px"><span id="frCmb" class="s" style="letter-spacing:3px"></span><span id="frMsg" class="s" style="text-align:right"></span></div>
+     <div id="frX" style="display:flex;gap:8px;margin-bottom:8px"></div>
+     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      <button class="btn" id="frDl" style="${bs}">◀ Dodge L</button><button class="btn" id="frDr" style="${bs}">Dodge R ▶</button>
+      <button class="btn" id="frG" style="${bs};background:#1d2b3f;border-color:#5aa9ff">Guard (hold)</button><button class="btn red" id="frS" style="${bs}">Strike<br><span style="font-size:11px;opacity:.75">tap light · hold heavy</span></button></div>`);
+    const T=()=>performance.now(),gap=()=>rnd(500,1300)*ST.g*Math.max(.65,1-.08*(Z.round-1));
+    const draw=()=>{const t=T(),e=Z.e;$('frMe').style.width=Math.max(0,Z.me)+'%';$('frOp').style.width=Math.max(0,Z.op)+'%';$('frSt').style.width=Math.max(0,Z.sta)+'%';$('frSt').style.background=Z.sta<12?'var(--blood)':'var(--heat)';$('frGd').style.width=Math.max(0,Z.grd/GMAX*100)+'%';
+      $('frRd').textContent=Math.max(0,Math.ceil(Z.rt/1000))+'s left';$('frCmb').textContent='●'.repeat(Z.cmb)+'○'.repeat(Math.max(0,3-Z.cmb));$('frMsg').textContent=t<Z.gasp?'GASPING':Z.msg;
+      const tl=$('frTell');let tx='Watch him',bg='#221e27';
+      if(t<Z.pause){tx='Round '+Z.round;bg='#2a2535'}
+      else if(e.s==='tell'){if(e.k==='L'){tx='◀ LEFT HOOK';bg='#5a1d24'}else if(e.k==='R'){tx='RIGHT CROSS ▶';bg='#5a1d24'}else if(e.k==='H'){tx='HEAVY!';bg='#5a4a14'}else{tx='OPENING: HOLD STRIKE';bg='#1d3a66'}}
+      else if(e.s==='cover'){tx='COVERED UP';bg='#2e2c33'}else if(e.s==='stunned'){tx='STUNNED';bg='#1d3a26'}else if(e.s==='open'){tx='HE STUMBLED: HIT HIM';bg='#1d3a26'}
+      tl.textContent=tx;tl.style.background=bg;
+      const fin=t<Z.finT,dr=dirty&&t>=Z.dcd;$('frX').innerHTML=(fin?'<button class="btn go" id="frF" style="flex:1;min-height:48px;font-size:17px">FINISHER!</button>':'')+(dirty?`<button class="btn" id="frD" style="flex:1;min-height:44px" ${dr&&Z.sta>=15?'':'disabled'}>Dirty: low kick</button>`:'');
+      const f=$('frF');if(f)f.onpointerdown=finisher;const d=$('frD');if(d)d.onpointerdown=dirtyMove;
+      $('frS').style.boxShadow=Z.held&&t-Z.held>=300?'0 0 0 3px #f5c43a':'none'};
+    const ko=()=>{if(Z.me<=0||Z.op<=0)end()};
+    const can=()=>!Z.over&&T()>=Z.pause&&T()>=Z.gasp;
+    const spend=c=>{Z.sta=Math.max(0,Z.sta-c);if(Z.sta<=0){Z.gasp=T()+1500;Z.msg='Gasping! Catch your breath.'}};
+    const dodge=dir=>{if(!can())return;const t=T(),e=Z.e,c=10*(MS==='boxer'?1-.07*ML:1);spend(c);
+      if(e.s==='tell'&&e.f){Z.msg='You bit on the fake. Here it comes.';e.s='rest';e.u=t+200;e.force=1;return}
+      if(e.s==='tell'&&e.k!=='O'){const ok=e.k==='H'||(e.k==='L'&&dir==='r')||(e.k==='R'&&dir==='l');
+        if(ok){const perfect=t>e.dl-e.len*.45;Z.msg=perfect?'PERFECT dodge':'Slipped it.';if(perfect)Z.ctr=MS==='boxer'?1.2+.03*ML:1.1;e.s='rest';e.u=t+rnd(500,900)*ST.g}else Z.msg='Wrong way!'}
+      else Z.msg='Nothing to dodge.'};
+    const strike=heavy=>{if(!can())return;const t=T(),e=Z.e,gassed=Z.sta<12;spend(heavy?16:8);let dm=myDmg*(heavy?1.5:.5)*(gassed?.5:1)*(MS==='brawler'?1+.08*ML:1),clean=true;
+      if(e.s==='cover'){if(heavy){Z.msg='Guard broken!';e.s='rest';e.u=t+500}else{dm*=.2;clean=false;Z.msg='He covered up. Use a heavy.'}}
+      else if(e.s==='tell'&&e.k==='O'){Z.msg=heavy?'Opening punished!':'Hit the opening.';e.s='rest';e.u=t+rnd(500,900);if(!heavy)dm*=1.2}
+      else if(e.s==='open'||e.s==='stunned'){dm*=1.3;Z.msg='Free shot.'}
+      else if(e.s==='tell'&&!e.f){dm*=.6;Z.msg='You traded blows. Dodge next time.'}
+      else Z.msg=gassed?'Weak hit, you are gassed.':heavy?'Heavy landed.':'Landed clean.';
+      if(Z.ctr&&clean){dm*=Z.ctr;Z.ctr=0;Z.msg+=' Counter!'}
+      dm=Math.round(dm);Z.op-=dm;if(clean){Z.cmb++;if(Z.cmb>=3){Z.finT=t+1500;Z.cmb=0;Z.msg='FINISHER ready!'}}else Z.cmb=0;ko()};
+    function finisher(ev){if(ev&&ev.preventDefault)ev.preventDefault();if(!can()||T()>=Z.finT)return;Z.finT=0;Z.op-=30;Z.msg='FINISHER! He is rocked.';Z.e.s='rest';Z.e.u=T()+900;ko()}
+    function dirtyMove(ev){if(ev&&ev.preventDefault)ev.preventDefault();if(!dirty||!can()||T()<Z.dcd||Z.sta<15)return;spend(15);Z.dcd=T()+6000;Z.stun=T()+1800;Z.e.s='stunned';Z.msg='Low kick! He cannot swing.'}
+    const press=(id,f)=>{const b=$(id);b.onpointerdown=ev=>{ev.preventDefault();f()}};
+    press('frDl',()=>dodge('l'));press('frDr',()=>dodge('r'));
+    const g=$('frG');g.onpointerdown=ev=>{ev.preventDefault();Z.guard=true};['pointerup','pointerleave','pointercancel'].forEach(n=>g.addEventListener(n,()=>{Z.guard=false}));
+    const s=$('frS');s.onpointerdown=ev=>{ev.preventDefault();Z.held=T()};['pointerup','pointercancel'].forEach(n=>s.addEventListener(n,()=>{if(!Z.held)return;const h=T()-Z.held>=300;Z.held=0;strike(h)}));s.addEventListener('pointerleave',()=>{Z.held=0});
+    [$('frDl'),$('frDr'),g,s].forEach(b=>{b.oncontextmenu=e=>e.preventDefault()});
+    let ks=0;const kd=e=>{const k=(e.key||'').toLowerCase();if(k==='arrowleft'||k==='a'){e.preventDefault();dodge('l')}else if(k==='arrowright'||k==='d'){e.preventDefault();dodge('r')}else if(k==='arrowdown'||k==='s'){e.preventDefault();Z.guard=true}else if(k===' '||k==='w'){e.preventDefault();if(!e.repeat&&!Z.held)Z.held=T()}else if(k==='e'||k==='f')finisher();else if(k==='q'&&dirty)dirtyMove()};
+    const ku=e=>{const k=(e.key||'').toLowerCase();if(k==='arrowdown'||k==='s')Z.guard=false;else if(k===' '||k==='w'){if(!Z.held)return;const h=T()-Z.held>=300;Z.held=0;strike(h)}};
+    document.addEventListener('keydown',kd);document.addEventListener('keyup',ku);
+    const stop=()=>{document.removeEventListener('keydown',kd);document.removeEventListener('keyup',ku)};
+    function end(){if(Z.over)return;Z.over=true;mgOn=false;stop();const w=Z.op<=0||(Z.me>0&&Z.op<Z.me);if(w)fsWin();
+      setTimeout(()=>{modal(`<h2 style="color:${w?'var(--money)':'var(--blood)'}">${w?'You won the fight':'You lost the fight'}</h2><p>${w?`${who} ain't want it no more.`:`${who} got the best of you.`}</p><div class="btns"><button class="btn go" id="ok">Continue</button></div>`);$('ok').onclick=()=>{$('modal').hidden=true;done(w)}},350)}
+    const pickAction=t=>{const e=Z.e;if(!e.force&&Math.random()<.16){e.s='cover';e.u=t+rnd(700,1100);return}
+      const u=Math.random(),pH=isB?.28:.12;let k,f=0;
+      if(e.force){k=Math.random()<.5?'L':'R'}else if(u<ST.f){k=Math.random()<.5?'L':'R';f=1}else if(u<ST.f+pH)k='H';else if(u<ST.f+pH+.1)k='O';else k=Math.random()<.5?'L':'R';
+      const len=WIN*ST.w*(e.force?.7:1)*(1-.07*(Z.round-1))*(.85+Math.random()*.3)*(k==='H'?1.15:1)*(k==='O'?1.1:1);
+      e.force=0;e.s='tell';e.k=k;e.f=f;e.len=len;e.dl=t+len};
+    const resolve=t=>{const e=Z.e;
+      if(e.f){Z.msg='Did not bite. He stumbled on the fake.';e.s='open';e.u=t+800;return}
+      if(e.k==='O'){Z.msg='Missed the opening.';e.s='rest';e.u=t+rnd(400,800);return}
+      let dm=opDmg;
+      if(e.k==='H'){dm=Math.round(dm*1.25);Z.msg='Heavy shot landed.'}
+      else if(Z.guard&&Z.grd>0){dm=Math.round(dm*.25);Z.grd=Math.max(0,Z.grd-25);Z.msg=Z.grd<=0?'Blocked, but your guard is broken.':'Blocked.'}
+      else Z.msg='Caught you.';
+      Z.me-=dm;Z.cmb=0;Z.ctr=0;e.s='rest';e.u=t+gap();ko()};
+    let last=T();
+    const loop=t=>{if(Z.over)return;if(!$('frTell')||!$('frTell').isConnected){Z.over=true;mgOn=false;stop();return}
+      const dt=Math.min(100,t-last);last=t;const e=Z.e;
+      if(t<Z.pause){draw();return requestAnimationFrame(loop)}
+      Z.rt-=dt;
+      if(t>=Z.gasp)Z.sta=Math.min(100,Z.sta+dt*(Z.guard?.011:.0075)*(MS==='boxer'&&ML>=4?1.25:1));
+      if(!Z.guard)Z.grd=Math.min(GMAX,Z.grd+dt*.004);
+      if(t<Z.stun)e.s='stunned';else if(e.s==='stunned'){e.s='rest';e.u=t+500}
+      if(e.s==='rest'&&t>=e.u)pickAction(t);
+      else if((e.s==='cover'||e.s==='open')&&t>=e.u&&!(e.s==='open'&&false)){e.s='rest';e.u=t+(e.s==='open'?400:rnd(500,900))}
+      else if(e.s==='tell'&&t>=e.dl)resolve(t);
+      if(!Z.over&&Z.rt<=0){if(Z.round>=1)end();else{Z.round++;Z.rt=R;Z.sta=Math.min(100,Z.sta+35);Z.pause=t+1400;Z.msg='Round '+Z.round;e.s='rest';e.u=t+1900;Z.cmb=0;Z.finT=0}}
+      draw();if(!Z.over)requestAnimationFrame(loop)};
+    draw();requestAnimationFrame(loop);
+  }
+}
+function fightGame0(mine,theirs,who,done){const gun=!!window.fgGun;window.fgGun=0;if(gun)return shootoutGame(mine,theirs,who,done);if(!window._oldFight)return fightRing(mine,theirs,who,done);const L=gun?{d:'Take cover',h:'Shoot',tip:'When they shoot, take cover. When they peek out, shoot. Keys: ← cover, → or space shoot.',sw:'THEY SHOOTING',op:'THEY PEEKED OUT',slip:'Ducked behind the car.',walk:'You stood up into it.',nothing:'You shot at nothing.',landed:'Hit him.',back:'You stayed down. They reset.',caught:'Took one.',miss:'Missed your shot.',time:'Sirens. Everybody scattered.',won:'They fell back',lost:'You had to fall back'}:{d:'Dodge',h:'Hit',tip:'When it says THEY SWING (red), hit Dodge. When it says OPENING (green), hit Hit. Be quick. Keys: ← dodge, → or space hit.',sw:'THEY SWING',op:'OPENING',slip:'Slipped it.',walk:'You walked right into it.',nothing:'You swung at nothing.',landed:'Landed clean.',back:'You backed off. They reset.',caught:'Caught you.',miss:'Missed the opening.',time:'Time. Somebody broke it up.',won:'You won the fight',lost:'You lost the fight'};
   mgOn=true;let cc=0,me=100,op=100,prompt=null,deadline=0,next=performance.now()+900,last=performance.now(),msg='Get ready...';const t0=performance.now(),DUR=20000;
   const share=mine/(mine+theirs),sh2=share*share/(share*share+(1-share)*(1-share)),myDmg=Math.round(5+sh2*30),opDmg0=Math.round(5+(1-sh2)*30),wScale=Math.max(.45,Math.min(1.15,.3+share*1.4));let dbl=false;const MS=fsState().style,ML=fsLvl(),ST=fightStyle(who),opDmg=Math.round(opDmg0*ST.d);let sta=100,lastT=performance.now(),lastRes=0;const gap=t=>Math.round(rnd(250,1500)*ST.g*Math.max(.6,1-(t-t0)/DUR*.4));
   const win0=Math.max(300,.74*(650+(buf('bars')?80:0)+(buf('percs')?50:0)-(buf('phones')?60:0)+S.sk.smarts*30-(stressed()?120:0)-(is('tank')&&(S.fate||{}).knee===1?60:0))),win=Math.round((win0+70)*wScale);
@@ -7155,7 +7247,7 @@ function gateGame(title,txt,go,art){modal(`${art?a2(art,340):''}<h2>${title}</h2
   shootoutGame:a=>['Shootout vs '+a[2],'Do the math. Each round shows their cover number and a hand of cards. Tap cards that add up to the number, then hit FIRE before the timer ends. Wrong number or too slow and they shoot you.'],
   talkGame:()=>['Talk your way through','You get a few lines. Pick the answer that fits the moment: confident and calm usually works, mouthing off or sounding unsure can cost you. Read each choice before you tap.'],
   hoopsG:()=>['Shooting contest','A marker slides back and forth. Tap Shoot (or press Space) when it is inside the zone. Bigger bets mean more on the line, so do not rush it.'],
-  fightGame0:a=>['Fight vs '+a[2],'THEY SWING (red): hit Dodge. OPENING (green): hit Hit. Yellow with a question mark is a fake, so do nothing. COMBO: tap Hit three times fast. Every swing and dodge costs stamina (bar under your health), so do not spam. Gassed means weak hits and no dodge. Keys: left arrow dodge, right arrow or space hit.']};
+  fightGame0:a=>['Fight vs '+a[2],'One 20 second round. Red flash: left hook means Dodge Right, right cross means Dodge Left. Yellow is unblockable, dodge either way. Blue means he is open: hold Strike for a heavy hit. Tap Strike for a light one. Hold Guard to take 75% less from hooks and crosses. Three clean hits unlock a Finisher. He fakes sometimes, so do not bite. Swinging and dodging cost stamina. Keys: A / D dodge, S guard, Space strike.']};
  const GART={safeGame:'g_safe',hotwireGame:'g_hotwire',stripGame:'g_strip',scaleGame:'g_scale',overwatchGame:'g_overwatch',markupGame:'g_markup',pokerGame:'g_poker',hawkGame:'g_hawk',countGame:'g_count',ironGame:'g_iron',apexGame:'g_apex',paperGame:'g_paper',yardGame:'g_yard',dropGame:'g_drop',turfGame:'g_turf',tailGame:'g_tail',chase:()=>(!S.car&&!window.__laneChase)?'g_runfoot':'g_roadblock',fightGame0:a=>a[2]==='your sparring partner'?'g_spar':null};
  const wrap=(name,fn)=>function(...a){if(window._ing||(name==='fightGame0'&&window.fgGun)||(name==='shootoutGame'&&noGun()))return fn.apply(this,a);const [t,x]=INFO[name](a);
    gateGame(t,x,()=>{window._ing=1;try{fn.apply(this,a)}finally{window._ing=0}},(()=>{const g=GART[name];return typeof g==='function'?g(a):g})())};
