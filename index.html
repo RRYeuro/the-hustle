@@ -5904,19 +5904,19 @@ function fightRing(mine,theirs,who,done){
      <div style="display:flex;justify-content:space-between;align-items:center;min-height:30px"><span id="frCmb" class="s" style="letter-spacing:3px"></span><span id="frMsg" class="s" style="text-align:right"></span></div>
      <div id="frX" style="display:flex;gap:8px;margin-bottom:8px"></div>
      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-      <button class="btn" id="frDl" style="${bs}">◀ Dodge L</button><button class="btn" id="frDr" style="${bs}">Dodge R ▶</button>
-      <button class="btn" id="frG" style="${bs};background:#1d2b3f;border-color:#5aa9ff">Guard (hold)</button><button class="btn red" id="frS" style="${bs}">Strike<br><span style="font-size:11px;opacity:.75">tap light · hold heavy</span></button></div>`);
+      <button class="btn" id="frDl" style="${bs}">◀ Dodge L</button><button class="btn" id="frDr" style="${bs}">Dodge R ▶</button></div>
+     <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:8px">
+      <button class="btn" id="frG" style="${bs};background:#1d2b3f;border-color:#5aa9ff">Guard<br><span style="font-size:11px;opacity:.75">hold</span></button><button class="btn red" id="frS" style="${bs}">Jab</button><button class="btn red" id="frH" style="${bs};background:#7a1d24">Heavy<br><span style="font-size:11px;opacity:.75">2x stamina</span></button></div>`);
     const T=()=>performance.now(),gap=()=>rnd(500,1300)*ST.g*Math.max(.65,1-.08*(Z.round-1));
     const draw=()=>{const t=T(),e=Z.e;$('frMe').style.width=Math.max(0,Z.me)+'%';$('frOp').style.width=Math.max(0,Z.op)+'%';$('frSt').style.width=Math.max(0,Z.sta)+'%';$('frSt').style.background=Z.sta<12?'var(--blood)':'var(--heat)';$('frGd').style.width=Math.max(0,Z.grd/GMAX*100)+'%';
       $('frRd').textContent=Math.max(0,Math.ceil(Z.rt/1000))+'s left';$('frCmb').textContent='●'.repeat(Z.cmb)+'○'.repeat(Math.max(0,3-Z.cmb));$('frMsg').textContent=t<Z.gasp?'GASPING':Z.msg;
       const tl=$('frTell');let tx='Watch him',bg='#221e27';
       if(t<Z.pause){tx='Round '+Z.round;bg='#2a2535'}
-      else if(e.s==='tell'){if(e.k==='L'){tx='◀ LEFT HOOK';bg='#5a1d24'}else if(e.k==='R'){tx='RIGHT CROSS ▶';bg='#5a1d24'}else if(e.k==='H'){tx='HEAVY!';bg='#5a4a14'}else{tx='OPENING: HOLD STRIKE';bg='#1d3a66'}}
+      else if(e.s==='tell'){if(e.k==='L'){tx='◀ LEFT HOOK';bg='#5a1d24'}else if(e.k==='R'){tx='RIGHT CROSS ▶';bg='#5a1d24'}else if(e.k==='H'){tx='HEAVY!';bg='#5a4a14'}else{tx='OPENING: HIT HEAVY';bg='#1d3a66'}}
       else if(e.s==='cover'){tx='COVERED UP';bg='#2e2c33'}else if(e.s==='stunned'){tx='STUNNED';bg='#1d3a26'}else if(e.s==='open'){tx='HE STUMBLED: HIT HIM';bg='#1d3a26'}
       tl.textContent=tx;tl.style.background=bg;
       const fin=t<Z.finT,dr=dirty&&t>=Z.dcd;$('frX').innerHTML=(fin?'<button class="btn go" id="frF" style="flex:1;min-height:48px;font-size:17px">FINISHER!</button>':'')+(dirty?`<button class="btn" id="frD" style="flex:1;min-height:44px" ${dr&&Z.sta>=15?'':'disabled'}>Dirty: low kick</button>`:'');
-      const f=$('frF');if(f)f.onpointerdown=finisher;const d=$('frD');if(d)d.onpointerdown=dirtyMove;
-      $('frS').style.boxShadow=Z.held&&t-Z.held>=300?'0 0 0 3px #f5c43a':'none'};
+      const f=$('frF');if(f)f.onpointerdown=finisher;const d=$('frD');if(d)d.onpointerdown=dirtyMove;};
     const ko=()=>{if(Z.me<=0||Z.op<=0)end()};
     const can=()=>!Z.over&&T()>=Z.pause&&T()>=Z.gasp;
     const spend=c=>{Z.sta=Math.max(0,Z.sta-c);if(Z.sta<=0){Z.gasp=T()+1500;Z.msg='Gasping! Catch your breath.'}};
@@ -5937,11 +5937,11 @@ function fightRing(mine,theirs,who,done){
     function dirtyMove(ev){if(ev&&ev.preventDefault)ev.preventDefault();if(!dirty||!can()||T()<Z.dcd||Z.sta<15)return;spend(15);Z.dcd=T()+6000;Z.stun=T()+1800;Z.e.s='stunned';Z.msg='Low kick! He cannot swing.'}
     const press=(id,f)=>{const b=$(id);b.onpointerdown=ev=>{ev.preventDefault();f()}};
     press('frDl',()=>dodge('l'));press('frDr',()=>dodge('r'));
-    const g=$('frG');g.onpointerdown=ev=>{ev.preventDefault();Z.guard=true};['pointerup','pointerleave','pointercancel'].forEach(n=>g.addEventListener(n,()=>{Z.guard=false}));
-    const s=$('frS');s.onpointerdown=ev=>{ev.preventDefault();Z.held=T()};['pointerup','pointercancel'].forEach(n=>s.addEventListener(n,()=>{if(!Z.held)return;const h=T()-Z.held>=300;Z.held=0;strike(h)}));s.addEventListener('pointerleave',()=>{Z.held=0});
-    [$('frDl'),$('frDr'),g,s].forEach(b=>{b.oncontextmenu=e=>e.preventDefault()});
-    let ks=0;const kd=e=>{const k=(e.key||'').toLowerCase();if(k==='arrowleft'||k==='a'){e.preventDefault();dodge('l')}else if(k==='arrowright'||k==='d'){e.preventDefault();dodge('r')}else if(k==='arrowdown'||k==='s'){e.preventDefault();Z.guard=true}else if(k===' '||k==='w'){e.preventDefault();if(!e.repeat&&!Z.held)Z.held=T()}else if(k==='e'||k==='f')finisher();else if(k==='q'&&dirty)dirtyMove()};
-    const ku=e=>{const k=(e.key||'').toLowerCase();if(k==='arrowdown'||k==='s')Z.guard=false;else if(k===' '||k==='w'){if(!Z.held)return;const h=T()-Z.held>=300;Z.held=0;strike(h)}};
+    const g=$('frG');g.onpointerdown=ev=>{ev.preventDefault();Z.guard=true;try{g.setPointerCapture(ev.pointerId)}catch(e){}};['pointerup','pointercancel','lostpointercapture'].forEach(n=>g.addEventListener(n,()=>{Z.guard=false}));
+    press('frS',()=>strike(false));press('frH',()=>strike(true));
+    [$('frDl'),$('frDr'),g,$('frS'),$('frH')].forEach(b=>{b.oncontextmenu=e=>e.preventDefault()});
+    const kd=e=>{const k=(e.key||'').toLowerCase();if(k==='arrowleft'||k==='a'){e.preventDefault();dodge('l')}else if(k==='arrowright'||k==='d'){e.preventDefault();dodge('r')}else if(k==='arrowdown'||k==='s'){e.preventDefault();Z.guard=true}else if(k===' '||k==='j'){e.preventDefault();if(!e.repeat)strike(false)}else if(k==='k'||k==='h'){e.preventDefault();if(!e.repeat)strike(true)}else if(k==='f'||k==='e')finisher();else if(k==='q'&&dirty)dirtyMove()};
+    const ku=e=>{const k=(e.key||'').toLowerCase();if(k==='arrowdown'||k==='s')Z.guard=false};
     document.addEventListener('keydown',kd);document.addEventListener('keyup',ku);
     const stop=()=>{document.removeEventListener('keydown',kd);document.removeEventListener('keyup',ku)};
     function end(){if(Z.over)return;Z.over=true;mgOn=false;stop();const w=Z.op<=0||(Z.me>0&&Z.op<Z.me);if(w)fsWin();
@@ -7254,7 +7254,7 @@ function gateGame(title,txt,go,art){modal(`${art?a2(art,340):''}<h2>${title}</h2
   shootoutGame:a=>['Shootout vs '+a[2],'Do the math. Each round shows their cover number and a hand of cards. Tap cards that add up to the number, then hit FIRE before the timer ends. Wrong number or too slow and they shoot you.'],
   talkGame:()=>['Talk your way through','You get a few lines. Pick the answer that fits the moment: confident and calm usually works, mouthing off or sounding unsure can cost you. Read each choice before you tap.'],
   hoopsG:()=>['Shooting contest','A marker slides back and forth. Tap Shoot (or press Space) when it is inside the zone. Bigger bets mean more on the line, so do not rush it.'],
-  fightGame0:a=>['Fight vs '+a[2],'One 20 second round. Red flash: left hook means Dodge Right, right cross means Dodge Left. Yellow is unblockable, dodge either way. Blue means he is open: hold Strike for a heavy hit. Tap Strike for a light one. Hold Guard to take 75% less from hooks and crosses. Three clean hits unlock a Finisher. He fakes sometimes, so do not bite. Swinging and dodging cost stamina. Keys: A / D dodge, S guard, Space strike.']};
+  fightGame0:a=>['Fight vs '+a[2],'One 20 second round. Red flash: left hook means Dodge Right, right cross means Dodge Left. Yellow is unblockable, dodge either way. Blue means he is open: hit Heavy. Jab is a quick light hit. Hold Guard to take 75% less from hooks and crosses. Three clean hits unlock a Finisher. He fakes sometimes, so do not bite. Swinging and dodging cost stamina. Keys: A / D dodge, S guard, Space jab, K heavy.']};
  const GART={safeGame:'g_safe',hotwireGame:'g_hotwire',stripGame:'g_strip',scaleGame:'g_scale',overwatchGame:'g_overwatch',markupGame:'g_markup',pokerGame:'g_poker',hawkGame:'g_hawk',countGame:'g_count',ironGame:'g_iron',apexGame:'g_apex',paperGame:'g_paper',yardGame:'g_yard',dropGame:'g_drop',turfGame:'g_turf',tailGame:'g_tail',chase:()=>(!S.car&&!window.__laneChase)?'g_runfoot':'g_roadblock',fightGame0:a=>a[2]==='your sparring partner'?'g_spar':null};
  const wrap=(name,fn)=>function(...a){if(window._ing||(name==='fightGame0'&&window.fgGun)||(name==='shootoutGame'&&noGun()))return fn.apply(this,a);const [t,x]=INFO[name](a);
    gateGame(t,x,()=>{window._ing=1;try{fn.apply(this,a)}finally{window._ing=0}},(()=>{const g=GART[name];return typeof g==='function'?g(a):g})())};
