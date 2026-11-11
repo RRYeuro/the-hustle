@@ -1739,7 +1739,7 @@ function sp3Day(){const P=S.sp;if(!P||!P.kind||S.pr)return;const X=sp3X();
   if(sp3Quiet())return;
   if(P.fame>=X.nextEndo&&X.endo.length<3&&adult()&&S.heat<60){X.nextEndo+=14;const D=pick([['Sneaker deal','shoes'],['Sports drink deal','a drink'],['Headphone deal','headphones']].concat(nilCol(P)?[['Car dealership deal','a local dealership'],['Pizza chain deal','a pizza chain']]:[])),pay=Math.round((150+P.fame*12)*(P.agent?1.25:1));
     wCard('endorse',nilCol(P)?'NIL offer':'Endorsement offer',`A company wants you in an ad for ${D[1]}. They pay ${money(pay)} a week as long as your fame holds up.`,[{l:'Sign it',f:()=>{X.endo.push({n:D[0],pay,min:Math.max(4,P.fame-6)});S.rep+=1;say(`Signed a ${D[0].toLowerCase()}.`)}},{l:'Pass',c:'',f:()=>{}}],'Sports');return}
-  if(P.stage>=2&&P.ovr>=20&&Math.random()<.012){wCard('agent','Trade talk','The coach says you are on the trading block. A move could hurt or help.',[{l:'Ask for a trade',f:()=>{if(Math.random()<.55){P.fame+=2;P.ovr=Math.min(100,P.ovr+ovrDm(P,2));say('You got traded to a better spot. Fame and overall up.')}else{P.fame=Math.max(0,P.fame-2);say('The trade fell through and you lost some respect.')}}},{l:'Stay and train',c:'',f:()=>{P.ovr=Math.min(100,P.ovr+ovrDm(P,1));addStress(6);say('Stayed put and worked harder. Overall +1.')}}],'Sports');return}
+  if(P.stage>=2&&P.ovr>=20&&P.kind!=='boxing'&&P.kind!=='mma'&&P.kind!=='track'&&Math.random()<.012){wCard('agent','Trade talk','The coach says you are on the trading block. A move could hurt or help.',[{l:'Ask for a trade',f:()=>{if(Math.random()<.55){P.fame+=2;P.ovr=Math.min(100,P.ovr+ovrDm(P,2));say('You got traded to a better spot. Fame and overall up.')}else{P.fame=Math.max(0,P.fame-2);say('The trade fell through and you lost some respect.')}}},{l:'Stay and train',c:'',f:()=>{P.ovr=Math.min(100,P.ovr+ovrDm(P,1));addStress(6);say('Stayed put and worked harder. Overall +1.')}}],'Sports');return}
   if(P.stage>=2&&P.ovr<(SP_NEED[P.stage]||30)-12&&Math.random()<.01){const buy=Math.round((SP_SAL[P.stage]||600)*2);
     wCard('agent','The team is cutting you','Your numbers dropped and the front office wants your spot. You can fight for it or take the buyout and move down a level.',[{l:'Fight for your spot',f:()=>{if(Math.random()<.45){addStress(8);say('You fought for it and kept your spot.')}else{P.stage=Math.max(0,P.stage-1);P.fame=Math.max(0,P.fame-3);say('You lost the fight for your spot and dropped a level.')}}},{l:`Take the ${money(buy)} buyout`,c:'',f:()=>{sp3Pay(buy);P.stage=Math.max(0,P.stage-1);say(`Took the buyout of ${money(buy)} and dropped a level.`)}}],'Sports')}}
 
@@ -7180,7 +7180,7 @@ function devGroup(){const mc=$('mcard');if(!mc||mc.querySelector('.dvgrp')||!mc.
 .tabs{position:fixed!important;left:0;right:0;bottom:0;z-index:15;margin:0!important;background:linear-gradient(180deg,#0b0912ee,#08060d)!important;border-top:1px solid var(--line);
  padding:6px max(8px,env(safe-area-inset-right,0px)) calc(6px + env(safe-area-inset-bottom,0px)) max(8px,env(safe-area-inset-left,0px))!important;box-shadow:0 -8px 24px rgba(0,0,0,.55)}
 @media(min-width:900px){.tabs{display:flex!important;flex-wrap:nowrap!important;gap:6px}.tabs button{flex:1 1 0!important;padding:10px 2px!important;font-size:13px}}
-body{padding-bottom:calc(var(--dockh,84px) + 14px)!important}
+body{padding-bottom:calc(var(--dockh,84px) + 96px)!important}#pane{padding-bottom:calc(var(--dockh,84px) + 70px)!important}
 .tabs button{position:relative;border-radius:10px!important}
 .tabs button[aria-selected="true"]{box-shadow:0 0 18px var(--skin-glow);animation:none}
 .stat .v,#cash,#day{font-family:ui-monospace,Menlo,Consolas,monospace}
@@ -7196,6 +7196,7 @@ body{padding-bottom:calc(var(--dockh,84px) + 14px)!important}
 <script id="skin1js">
 (function(){
 const CODE={block:'BLOCK-OPS',move:'TRP-MAP',beef:'ENCR-CHAT',crew:'ID-CARD',phone:'BURNER',cards:'DECKS',exp:'BILLS',spots:'SPOT-LOG',biz:'LAUNDRY',bag:'STASH',money:'LEDGER',sch:'CLASS',rap:'STUDIO',rob:'HEISTS',sp:'ARENA'};
+addEventListener('resize',()=>{try{codes()}catch(e){}});
 function codes(){const t=document.querySelector('.tabs');if(t)document.documentElement.style.setProperty('--dockh',t.offsetHeight+'px')}
 function tkr(){try{let t=document.getElementById('tkr');if(!t){const s=document.querySelector('.side');if(!s)return;t=document.createElement('div');t.id='tkr';t.setAttribute('role','button');t.setAttribute('aria-label','Street news, tap for more');t.innerHTML='<span></span>';s.insertBefore(t,s.firstChild)}
  const L=(typeof S!=='undefined'&&S&&S.log)?S.log.slice(0,10).map(x=>x.t.replace(/<[^>]+>/g,'')):[];
