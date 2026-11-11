@@ -3897,11 +3897,11 @@ function scaleGame(done){mgOn=true;let bag=0,hits=0,w=0,tgt=0,left=22,last=perfo
   window.__scDbg={set:v=>{w=v},tgt:()=>tgt};
   const loop=t=>{if(!mgOn||!$('sw'))return;const dt=(t-last)/1000;last=t;left-=dt;if(pour)w+=2.6*dt;$('sw').textContent=w.toFixed(1)+' g  →  '+tgt.toFixed(1)+' g';$('st').style.width=Math.max(0,left/22*100)+'%';if(left<=0)return fin();requestAnimationFrame(loop)};requestAnimationFrame(loop)}
 function overwatchGame(done){mgOn=true;let hit=0,bad=0,ev=0,N=12;
-  modal(`<h2>Overwatch</h2><p class="s" style="text-align:center">Tap the red gun when it pops in a window. Do not tap civilians. Get 4 and stay clean.</p><div id="ow" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">${Array.from({length:9},(_,i)=>`<button class="btn" id="ow${i}" style="height:64px;font-size:26px"></button>`).join('')}</div><p id="oq" class="s" style="text-align:center">Spotted 0 · Mistakes 0</p>`);
+  modal(`<h2>Overwatch</h2><p class="s" style="text-align:center">Tap the red gun when it pops in a window (or press 1 to 9). Do not tap civilians. Get 4 and stay clean.</p><div id="ow" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">${Array.from({length:9},(_,i)=>`<button class="btn" id="ow${i}" style="height:64px;font-size:26px;color:#6b6480">${i+1}</button>`).join('')}</div><p id="oq" class="s" style="text-align:center">Spotted 0 · Mistakes 0</p>`);
   const cur={i:-1,k:0,o:0};const q=()=>{$('oq').textContent='Spotted '+hit+' · Mistakes '+bad};
   for(let i=0;i<9;i++)$('ow'+i).onclick=()=>{if(!mgOn||cur.i!==i||cur.o)return;cur.o=1;if(cur.k){hit++;$('ow'+i).textContent='✔'}else{bad++;$('ow'+i).textContent='✖'}q()};
   window.__owDbg={cur:()=>cur,tap:()=>$('ow'+cur.i).click()};
-  const step=()=>{if(!mgOn||!$('ow'))return;if(cur.i>=0&&$('ow'+cur.i))$('ow'+cur.i).textContent='';if(ev>=N){mgOn=false;$('modal').hidden=true;return done(hit>=4&&bad<=1)}ev++;cur.i=rnd(0,8);cur.k=Math.random()<.55?1:0;cur.o=0;$('ow'+cur.i).textContent=cur.k?'🔫':'🧍';setTimeout(()=>{if(cur.i>=0&&!cur.o&&$('ow'+cur.i)){cur.o=1}step()},Math.max(650,1000-S.sk.smarts*30))};
+  const step=()=>{if(!mgOn||!$('ow'))return;if(cur.i>=0&&$('ow'+cur.i)){const b0=$('ow'+cur.i);b0.textContent=cur.i+1;b0.style.background='';b0.style.borderColor='';b0.style.color='#6b6480'}if(ev>=N){mgOn=false;$('modal').hidden=true;return done(hit>=4&&bad<=1)}ev++;cur.i=rnd(0,8);cur.k=Math.random()<.55?1:0;cur.o=0;{const b1=$('ow'+cur.i);b1.textContent=cur.k?'🔫':'🧍';b1.style.color='#fff';if(cur.k){b1.style.background='#b3202a';b1.style.borderColor='#ff4d4d'}};setTimeout(()=>{if(cur.i>=0&&!cur.o&&$('ow'+cur.i)){cur.o=1}step()},Math.max(650,1000-S.sk.smarts*30))};
   setTimeout(step,500)}
 function safeGame(o,done){mgOn=true;o=o||{};const NT=o.tumblers||2,TL=(o.sec||16)+S.sk.smarts*.8+(o.help?4:0)-(stressed()?2:0)*1;
   let ti=0,a=50,tg=rnd(12,88),half=Math.max(3,(Math.max(3.2,5+S.sk.smarts*.5)+(o.help?1.5:0))*(D().warn?Math.pow(D().warn,.5):1)),dir=0,still=0,tleft=TL,last=performance.now(),locked=[],msg='Turn the dial slowly. Hotter means closer.';
@@ -7228,7 +7228,7 @@ const CODES={
 };
 
 /* ---------- start button before mini games ---------- */
-function gateGame(title,txt,go,art){modal(`${art?a2(art,340):''}<h2>${title}</h2><p>${txt}</p><p class="s" style="color:var(--dim)">Read it, then hit Start when you're ready.</p><div class="btns"><button class="btn go" id="gst">Start</button></div>`);$('gst').onclick=go}
+function gateGame(title,txt,go,art){modal(`${art?a2(art,340):''}<h2>${title}</h2><p>${txt}</p><p class="s" style="color:var(--dim)">Read it, then hit Start when you're ready. Keyboard: Enter starts, then arrow keys, 1 to 9 and Space work in most games.</p><div class="btns"><button class="btn go" id="gst">Start</button></div>`);$('gst').onclick=go}
 {const INFO={
   flowGame:a=>[a[0],'Tap "Spit" (or press Space) when the circle fills up and turns green. 8 bars. It counts the instant you touch the button, so tap on the beat.'],
   grabGame:a=>[(a[1]||{}).title||'Grab and go',(a[1]||{}).txt||"Tap the shelves when a bag of pills shows up. Never touch a red camera. If you tap right as a bag disappears, it still counts."],
@@ -8012,6 +8012,22 @@ talkDown=function(diff,notes,need,cb){
      <div class="btns" style="flex-direction:column;align-items:stretch">${keys.map(k=>`<button class="btn" data-k="${k}" style="text-align:left;text-transform:none;min-height:48px">${CH[k].n}</button>`).join('')}</div>`);
     $('mcard').querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>{const d=CH[b.dataset.k].d[mood],ch=d<0?Math.round(d*mult):Math.round(d/Math.max(.6,mult));ag=clamp(ag+ch+(Math.random()<.5?3:0),0,110);turn++;log=ch<=-12?'That helped a lot.':ch<0?'That helped a little.':ch<8?'That did not land.':'That made it worse.';step()})};
   gateGame('Talk it out',`He is about to swing. Read how he feels, then pick the response that fits: calm for angry, firm for scared, respect for proud, a joke for drunk. Wrong picks make it worse. Get his aggression under 25 in ${TURNS} turns.`,step)};
+})();
+</script>
+<script id="skin15js">
+(function(){
+const held={};
+const btns=()=>[...document.querySelectorAll('#mcard button')].filter(b=>!b.disabled&&b.offsetParent&&!b.classList.contains('xbtn')&&b.textContent.trim()!=='✕');
+const ev=(b,n)=>b.dispatchEvent(new PointerEvent(n,{bubbles:true,cancelable:true,pointerId:7}));
+window.addEventListener('keydown',e=>{
+ if(e.defaultPrevented||e.ctrlKey||e.metaKey||e.altKey)return;const t=e.target;if(t&&/INPUT|TEXTAREA|SELECT/.test(t.tagName))return;
+ const m=document.getElementById('modal');if(!m||m.hidden)return;const k=e.key;
+ if(!mgOn){if(k==='Enter'||k===' '){const b=document.querySelector('#mcard #gst,#mcard #sgok');if(b&&!b.disabled){e.preventDefault();b.click();return}const o=document.getElementById('ok');if(o&&o.isConnected&&/^continue$/i.test(o.textContent.trim())){e.preventDefault();o.click()}}return}
+ if(window._frs&&!window._frs.over)return;
+ const B=btns();let b=null;
+ if(/^[1-9]$/.test(k))b=B[+k-1];else if(k==='ArrowLeft'&&B.length>=2)b=B[0];else if(k==='ArrowRight'&&B.length>=2)b=B[1];else if((k===' '||k==='Enter')&&B.length===1)b=B[0];
+ if(!b)return;e.preventDefault();if(e.repeat)return;held[k]=b;ev(b,'pointerdown')});
+window.addEventListener('keyup',e=>{const b=held[e.key];if(!b)return;delete held[e.key];ev(b,'pointerup')});
 })();
 </script>
 <script>if('serviceWorker' in navigator){addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}</script></body></html>
