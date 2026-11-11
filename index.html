@@ -243,6 +243,9 @@ function avatar(bi,sz=64){let P=PINFO[bi];
     P=Object.assign({},P,{skin:SK[h%7],shirt:SH[(h>>3)%10],hat:HT[(h>>7)%HT.length],glasses:((h>>11)%3===0)?1:0});}}catch(e){}
   if(S&&S.pname&&S.pname[bi]&&S.ppic&&S.ppic[bi]&&ARTX(S.ppic[bi]))return `<img src="${ARTX(S.ppic[bi])}" alt="" style="width:${sz}px;height:${sz}px;border-radius:6px;object-fit:cover;flex:none">`;
   if(PLUGPICS[bi]&&!(S&&S.pname&&S.pname[bi])&&PLUGS[bi]===PLUG0[bi])return `<img src="${PLUGPICS[bi]}" alt="" style="width:${sz}px;height:${sz}px;border-radius:6px;object-fit:cover;flex:none">`;
+  try{if(!(S&&S.pname&&S.pname[bi])){const f=plugFem(bi)?1:0,pre=f?'pp_f':'pp_m',pool=[];for(let i=1;i<=12;i++)if(ARTX(pre+i))pool.push(pre+i);
+   if(pool.length){let k=0;for(let j=0;j<bi;j++)if((FEM[j]?1:0)===f)k++;const ch=Object.keys(CPL).indexOf(clCity())+1;
+    return `<img src="${ARTX(pool[(k+ch*3)%pool.length])}" alt="" style="width:${sz}px;height:${sz}px;border-radius:6px;object-fit:cover;flex:none">`}}}catch(e){}
   const hat=P.hat==='cap'?`<path d="M18 26 Q32 10 46 26 Z" fill="${P.shirt}"/><rect x="30" y="24" width="22" height="4" rx="2" fill="${P.shirt}"/>`
    :P.hat==='beanie'?`<path d="M17 28 Q32 6 47 28 Z" fill="#333"/><rect x="16" y="25" width="32" height="5" rx="2" fill="#444"/>`
    :P.hat==='scarf'?`<path d="M15 32 Q32 6 49 32 L46 30 Q32 14 18 30 Z" fill="${P.shirt}"/>`
