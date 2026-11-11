@@ -8025,7 +8025,8 @@ window.addEventListener('keydown',e=>{
  if(!mgOn){if(k==='Enter'||k===' '){const b=document.querySelector('#mcard #gst,#mcard #sgok');if(b&&!b.disabled){e.preventDefault();b.click();return}const o=document.getElementById('ok');if(o&&o.isConnected&&/^continue$/i.test(o.textContent.trim())){e.preventDefault();o.click()}}return}
  if(window._frs&&!window._frs.over)return;
  const B=btns();let b=null;
- if(/^[1-9]$/.test(k))b=B[+k-1];else if(k==='ArrowLeft'&&B.length>=2)b=B[0];else if(k==='ArrowRight'&&B.length>=2)b=B[1];else if((k===' '||k==='Enter')&&B.length===1)b=B[0];
+ const dg=/^[1-9]$/.test(k)?+k:(!/^Arrow/.test(k)&&(/^(Numpad|Digit)([1-9])$/.exec(e.code||'')||[])[2]*1)||0;
+ if(dg)b=B[dg-1];else if(k==='ArrowLeft'&&B.length>=2)b=B[0];else if(k==='ArrowRight'&&B.length>=2)b=B[1];else if((k===' '||k==='Enter')&&B.length===1)b=B[0];
  if(!b)return;e.preventDefault();if(e.repeat)return;held[k]=b;ev(b,'pointerdown')});
 window.addEventListener('keyup',e=>{const b=held[e.key];if(!b)return;delete held[e.key];ev(b,'pointerup')});
 })();
@@ -8088,4 +8089,17 @@ function openMore(){const old=document.getElementById('moreSheet');if(old){old.r
 render();
 })();
 </script>
+<style id="skin17">
+/* phone polish: home grid fits, pinned people in one swipe row */
+.phx.ph-home .ph-w,.ph-home .ph-w{margin:2px 2px 8px;padding:10px 14px}
+.ph-home .ph-w b{font-size:28px}
+.ph-home .ph-ic{gap:10px 6px}
+.ph-home .ph-ic i{width:52px;height:52px;font-size:24px;border-radius:15px}
+.ph-home .ph-scr{padding-bottom:14px}
+.phx .mth-pins{display:flex;gap:10px;overflow-x:auto;scrollbar-width:none;padding:2px 2px 10px}
+.phx .mth-pins::-webkit-scrollbar{display:none}
+.phx .mth-pin{flex:0 0 64px}
+.phx .mth-pin .mav.big{width:50px;height:50px;font-size:21px}
+.phx .mth-top .bk{background:none!important;border:0!important;color:#3a8bff;font-weight:600;padding:0}
+</style>
 <script>if('serviceWorker' in navigator){addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}</script></body></html>
