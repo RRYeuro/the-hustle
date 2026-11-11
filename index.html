@@ -7290,12 +7290,13 @@ const _pm=paneMove;paneMove=function(){return board()+_pm.apply(this,arguments)}
 <script id="skin5js">
 (function(){
 const _dp=devPanel;devPanel=function(){_dp.apply(this,arguments);try{const mc=document.getElementById('mcard');if(!mc||mc.querySelector('#lkdev'))return;const d=document.createElement('div');d.id='lkdev';
- d.innerHTML='<div class="sec">Layout (new look)</div><div class="btns"><button class="btn" data-lk="sms">Test text pop-up</button><button class="btn" data-lk="crew">Add 3 crew photos</button><button class="btn" data-lk="news">Add news line</button><button class="btn" data-lk="ph:contacts">Phone: Contacts</button><button class="btn" data-lk="ph:trap">Phone: Trap house</button><button class="btn" data-lk="ph:modern">Phone: Wallet</button><button class="btn" data-lk="ph:hustle">Phone: Side hustles</button><button class="btn" data-lk="card">Open character card</button></div>';mc.appendChild(d)}catch(e){console.error('lkdev',e)}};
+ d.innerHTML='<div class="sec">Layout (new look)</div><div class="btns"><button class="btn" data-lk="sms">Test text pop-up</button><button class="btn" data-lk="crew">Add 3 crew photos</button><button class="btn" data-lk="news">Add news line</button><button class="btn" data-lk="ph:contacts">Phone: Contacts</button><button class="btn" data-lk="ph:trap">Phone: Trap house</button><button class="btn" data-lk="ph:modern">Phone: Wallet</button><button class="btn" data-lk="ph:hustle">Phone: Side hustles</button><button class="btn" data-lk="card">Open character card</button><button class="btn" data-lk="share">Share card test</button></div>';mc.appendChild(d)}catch(e){console.error('lkdev',e)}};
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-lk]');if(!b)return;e.stopPropagation();e.preventDefault();const k=b.dataset.lk;
  if(k==='sms')phoneMsg('Dev Plug','Test text. New shipment landed, come through.');
  else if(k==='crew'){S.crewM=S.crewM||[];['Mya','Zay','Kiki'].forEach(n=>{if(!S.crewM.some(m=>m.name===n))S.crewM.push(mkMember(n))});close();tab='beef';render()}
  else if(k.indexOf('ph:')===0){window._rph=k.slice(3);close();tab='phone';render()}
  else if(k==='card'){close();document.getElementById('me').click()}
+ else if(k==='share'){shareRun()}
  else if(k==='news'){say('Police chief spotted downtown. Plug low on stock.');close();render()}},true);
 })();
 </script>
@@ -7393,6 +7394,35 @@ document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest
 const _r8=render;render=function(){const r=_r8.apply(this,arguments);try{document.body.dataset.home=(homeBlock()===S.at)?'1':'0'}catch(e){}setTimeout(popups,450);return r};
 /* street business + stay on Block; appended after the block pane */
 const _pb8=paneBlock;paneBlock=function(){let h=_pb8.apply(this,arguments);try{window._rtick++;h+=_SR.secsFor('tab:block').map(x=>_SR.ser(x.nodes)).join('')}catch(e){console.error('blk',e)}return h};
+})();
+</script>
+<script id="skin9js">
+(function(){
+const URL_='https://rryeuro.github.io/the-hustle/';
+function stats(){const net=Math.round((S.cash||0)+(S.safe||0));const turf=(S.owner||[]).filter(o=>o==='me').length;
+ const mc=document.getElementById('mcard');const t=mc&&mc.querySelector('h2'),p=mc&&mc.querySelector('p');
+ return {title:(t&&t.textContent)||'My run',story:((p&&p.textContent)||'').slice(0,170),name:(document.getElementById('who')||{}).textContent||'',rank:(document.getElementById('rk')||{}).textContent||'',net,turf,rep:S.rep||0,day:S.day||0,age:S.age||0}}
+function wrap(c,txt,x,y,w,lh){const words=txt.split(' ');let line='';for(const wd of words){const t=line+wd+' ';if(c.measureText(t).width>w&&line){c.fillText(line,x,y);line=wd+' ';y+=lh}else line=t}c.fillText(line,x,y);return y}
+function fit(c,txt,max,size,fam,wt){let z=size;do{c.font=(wt||'700')+' '+z+'px '+fam;z-=4}while(c.measureText(txt).width>max&&z>24)}
+window.shareImg=function(){const d=stats(),cv=document.createElement('canvas');cv.width=1080;cv.height=1350;const c=cv.getContext('2d');
+ const g=c.createLinearGradient(0,0,0,1350);g.addColorStop(0,'#241a3a');g.addColorStop(1,'#0e0c14');c.fillStyle=g;c.fillRect(0,0,1080,1350);
+ c.strokeStyle='#f5a524';c.lineWidth=6;c.strokeRect(36,36,1008,1278);
+ c.textAlign='center';c.fillStyle='#f5a524';c.font='700 92px Anton,Impact,sans-serif';c.fillText('THE HUSTLE',540,190);
+ c.fillStyle='#9a93a8';c.font='500 34px Barlow Condensed,Arial,sans-serif';c.fillText('NO DAYS OFF',540,245);
+ c.fillStyle='#efe9e1';const tt=String(d.title).toUpperCase().slice(0,28);fit(c,tt,940,110,'Anton,Impact,sans-serif');c.fillText(tt,540,430);
+ c.fillStyle='#5fd38a';c.font='700 130px Anton,Impact,sans-serif';c.fillText('$'+d.net.toLocaleString(),540,590);
+ c.fillStyle='#9a93a8';c.font='500 34px Arial,sans-serif';c.fillText('ENDED WITH',540,650);
+ const rows=[['BLOCKS',String(d.turf)],['REP',String(d.rep)],['DAY',String(d.day)],['AGE',d.age?String(d.age):'-']];
+ rows.forEach((r,i)=>{const x=190+i*233;c.fillStyle='#3fd0c9';c.font='700 56px Anton,Impact,sans-serif';c.fillText(r[1],x,780);c.fillStyle='#9a93a8';c.font='500 28px Arial,sans-serif';c.fillText(r[0],x,825)});
+ c.fillStyle='#efe9e1';c.font='italic 36px Arial,sans-serif';wrap(c,'"'+d.story+'"',540,930,880,50);
+ c.fillStyle='#a98bff';c.font='700 40px Anton,Impact,sans-serif';c.fillText((d.name+' '+(d.rank?'· '+d.rank:'')).toUpperCase(),540,1150);
+ c.fillStyle='#f5a524';const ft='PLAY FREE: RRYEURO.GITHUB.IO/THE-HUSTLE';fit(c,ft,940,46,'Anton,Impact,sans-serif');c.fillText(ft,540,1250);
+ return cv};
+window.shareRun=function(){const d=stats();const text=`I ended The Hustle as "${d.title}" with $${d.net.toLocaleString()}. Think you can beat it? ${URL_}`;const cv=shareImg();
+ cv.toBlob(async b=>{try{const f=new File([b],'my-hustle-run.png',{type:'image/png'});if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f],text,title:'The Hustle'});return}}catch(e){if(e&&e.name==='AbortError')return}
+  try{const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='my-hustle-run.png';document.body.appendChild(a);a.click();a.remove()}catch(e){}
+  try{navigator.clipboard.writeText(text)}catch(e){}if(typeof say==='function'){say('Saved your run card. Text copied. Post it and tag the game!')}},'image/png')};
+const _m=modal;modal=function(h){const r=_m.apply(this,arguments);try{const mc=document.getElementById('mcard');const ag=mc&&mc.querySelector('#again');if(ag&&!mc.querySelector('#shareRun')){const b=document.createElement('button');b.className='btn';b.id='shareRun';b.textContent='Share my run';ag.parentNode.insertBefore(b,ag);b.onclick=()=>shareRun()}}catch(e){}return r};
 })();
 </script>
 <script>if('serviceWorker' in navigator){addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}</script></body></html>
