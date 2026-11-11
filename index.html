@@ -7619,7 +7619,7 @@ window._phLock=window._phLock||0;
 panePhone=function(){window._rtick++;const cur=window._rph||null,anim=lastApp!==cur;lastApp=cur;
  if(!cur){if(window._phLock!==S.day)return lock();return home(anim)}
  const a=ap(cur)||APPS[0];let c='';try{c=window._SR.secsFor('app:'+a[0]).map(x=>window._SR.ser(x.nodes)).join('')}catch(e){console.error(e)}
- let top='';if(a[0]==='messages'){top=window._MS?window._MS(chat):chat();if(window._MS)c=window._MS.rest(c)}else if(a[0]==='news'){top=news();c=''}else if(a[0]==='modern')top=wallet();else if(a[0]==='crew'){try{top=window._SR.rh?window._SR.rh():''}catch(e){}}else if(a[0]==='turf'){try{top=window._SR.pb()}catch(e){}}
+ let top='';if(a[0]==='messages'){top=window._MS?window._MS(chat):chat();if(window._MS)c=window._MS.rest(c)}if(window._AP13&&window._AP13[a[0]]){try{c=window._AP13[a[0]](c)}catch(e){console.error(e)}}else if(a[0]==='news'){top=news();c=''}else if(a[0]==='modern')top=wallet();else if(a[0]==='crew'){try{top=window._SR.rh?window._SR.rh():''}catch(e){}}else if(a[0]==='turf'){try{top=window._SR.pb()}catch(e){}}
  return `<div class="phx ph-app${anim?' ph-in':''}" data-app="${a[0]}" style="--ac:${a[3]}">${sb()}<div class="ph-scr"><div class="ph-hd"><button class="bk" data-rph="">‹ Home</button><h2><i>${a[2]}</i>${a[1]}</h2></div>${top}${c||(top?'':'<div class="s" style="padding:14px 4px">Nothing here yet.</div>')}</div><button class="ph-hb" data-rph="" aria-label="Home"></button></div>`};
 document.addEventListener('click',e=>{const u=e.target.closest&&e.target.closest('[data-unlock]');if(!u)return;e.preventDefault();e.stopPropagation();window._phLock=u.dataset.unlock==='lock'?0:S.day;window._rph=null;lastApp=undefined;render()},true);
 })();
@@ -7683,6 +7683,81 @@ document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest
  else if(Math.random()<.4+d.loy/250){o.up=1.15;say(`${d.n} agreed to 15% more.`)}
  else{B.ord.splice(i,1);d.loy=Math.max(0,d.loy-4);say(`${d.n} walked: "Too much. I will go somewhere else."`)}
  render()},true);
+})();
+</script>
+<style id="skin13">
+.acc{display:block;background:#221d2e;border:1px solid #3a3350;border-radius:12px;margin:6px 0;overflow:hidden}
+.acc>summary{list-style:none;cursor:pointer;padding:14px 14px;font:600 15px var(--label,inherit);display:flex;justify-content:space-between;align-items:center;min-height:44px}
+.acc>summary::-webkit-details-marker{display:none}
+.acc>summary:after{content:'\203A';font-size:22px;color:#f5c43a;transition:transform .15s}
+.acc[open]>summary:after{transform:rotate(90deg)}
+.acc>.accb{padding:0 8px 10px}
+.acc>summary small{display:block;font:400 12px var(--label,inherit);color:#9d94b8;margin-top:2px}
+.gacc>summary{gap:10px}.gacc>summary .t{font:600 15px var(--label,inherit)}
+.mehd{display:flex;gap:14px;align-items:center;background:linear-gradient(160deg,#2c2540,#1d1829);border:1px solid #3a3350;border-radius:16px;padding:14px;margin:6px 0}
+.mehd img,.mehd .mepl{width:72px;height:72px;border-radius:12px;object-fit:cover;flex:none;background:#3a3350}
+.mehd b{font:700 26px var(--display,inherit);line-height:1}.mehd span{font-size:13px;color:#9d94b8}
+.mest{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:8px 0}
+.mest div{background:#221d2e;border:1px solid #3a3350;border-radius:12px;padding:10px;text-align:center}.mest b{display:block;font-size:20px}.mest span{font-size:12px;color:#9d94b8}
+.cslots{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:6px 0}
+.cslots div{border:2px dashed #3a3350;border-radius:14px;min-height:92px;display:flex;align-items:center;justify-content:center;color:#9d94b8;font-size:13px}
+.stub{background:#f3efe4;color:#1c1a16;border-radius:4px;padding:18px 14px 20px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;margin:8px 0;box-shadow:0 6px 0 #0b0910}
+.stub .sh{text-align:center;font-weight:700;letter-spacing:2px;font-size:14px}.stub .ss{text-align:center;font-size:12px;color:#5a5546;margin-bottom:6px}
+.stub .sc{font-weight:700;letter-spacing:1px;border-top:1px dashed #8b8571;margin-top:10px;padding-top:8px}
+.stub details{margin:0}.stub summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;gap:10px;padding:5px 0;min-height:30px}
+.stub summary::-webkit-details-marker{display:none}.stub summary b{font-weight:600;white-space:nowrap}
+.stub .d{font-size:12px;color:#5a5546;padding:0 0 6px;font-family:var(--label,inherit)}
+.stub .tot{border-top:2px solid #1c1a16;margin-top:10px;padding-top:8px;font-weight:700;font-size:15px}
+.stub .pos{color:#1d6b3a}.stub .neg{color:#a32b22}
+.hus-today,.soc-card{background:#221d2e;border:1px solid #3a3350;border-radius:12px;padding:12px;font-size:14px;margin:4px 0 8px}
+.soc-card{display:flex;gap:14px;align-items:center}.soc-card .av{width:54px;height:54px;border-radius:50%;background:#3a3350;flex:none}.soc-card b{font-size:18px}
+.soc-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:6px 0 10px}
+.soc-grid button{min-height:52px;border-radius:12px;border:1px solid #3a3350;background:#221d2e;color:var(--fg);font:600 14px var(--label,inherit);padding:8px}
+.soc-grid button.go{background:var(--ac);color:#1a1205;border-color:transparent}.soc-grid button:disabled{opacity:.45}
+</style>
+<script id="skin13js">
+(function(){
+window._acc=window._acc||{};
+document.addEventListener('toggle',e=>{const d=e.target;if(d&&d.dataset&&d.dataset.acc)window._acc[d.dataset.acc]=d.open},true);
+const T=h=>{const t=document.createElement('template');t.innerHTML=h;return t};
+const esc2=x=>String(x).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+function split(h){const t=T(h),head=[],secs=[];let cur=null;t.content.childNodes.forEach(n=>{if(n.nodeType===1&&n.classList&&n.classList.contains('sec')){cur={t:n.textContent.trim(),nodes:[]};secs.push(cur)}else(cur?cur.nodes:head).push(n)});return {head,secs}}
+const ser=ns=>ns.map(n=>n.nodeType===1?n.outerHTML:(n.textContent||'')).join('');
+const acc=(key,title,body,open,cls)=>`<details class="acc ${cls||''}" data-acc="${esc2(key)}" ${(window._acc[key]!==undefined?window._acc[key]:open)?'open':''}><summary><span>${title}</span></summary><div class="accb">${body}</div></details>`;
+/* Cards */
+const _pc=paneCards;paneCards=function(){const h=_pc.apply(this,arguments);try{const {head,secs}=split(h);let out=ser(head);
+ secs.forEach(s=>{if(/^Your hand/i.test(s.t)){const m=/\((\d+)\s*\/\s*(\d+)\)/.exec(s.t),n=m?+m[1]:0,mx=m?+m[2]:3;out+=`<div class="sec">${esc2(s.t)}</div>`+ser(s.nodes)+`<div class="cslots">${Array.from({length:Math.max(0,mx-n)}).map(()=>'<div>Empty slot</div>').join('')}</div>`}
+  else if(/^Every card/i.test(s.t)){const g={};s.nodes.forEach(n=>{if(n.nodeType!==1)return;const t=T(n.outerHTML).content.firstChild;const r=(t.querySelector(':scope > .s')||{textContent:'Other'}).textContent.trim();(g[r]=g[r]||[]).push(n.outerHTML)});const cnt=Object.values(g).reduce((a,x)=>a+x.length,0);
+   out+=`<details class="acc" data-acc="cardbook" ${window._acc.cardbook?'open':''}><summary><span>Card book<small>Every card in the game · ${cnt} cards</small></span></summary><div class="accb">`+['Common','Rare','Legendary'].concat(Object.keys(g).filter(k=>!['Common','Rare','Legendary'].includes(k))).filter(k=>g[k]).map(k=>`<div class="sec">${esc2(k)}</div>`+g[k].join('')).join('')+`</div></details>`}
+  else out+=`<div class="sec">${esc2(s.t)}</div>`+ser(s.nodes)});return out}catch(e){return h}};
+/* Expenses stub */
+const _pe=paneExp;paneExp=function(){const h=_pe.apply(this,arguments);try{const {head,secs}=split(h);let out=ser(head);
+ const line=n=>{if(n.nodeType!==1||!n.classList.contains('row'))return '';const lab=(n.querySelector('.t')||{}).textContent||'',ds=(n.querySelector('.info .s')||{}).textContent||'',ch=n.querySelector('.chip'),amt=ch?ch.textContent.trim():'',btn=n.querySelector('button');
+  const cls=/^\+\$/.test(amt)?'pos':/^-\$/.test(amt)?'neg':'';return `<details><summary><span>${esc2(lab.trim())}</span><b class="${cls}">${esc2(amt)}</b></summary><div class="d">${esc2(ds)}</div>${btn?btn.outerHTML:''}</details>`};
+ let st=`<div class="stub"><div class="sh">WEEKLY STATEMENT</div><div class="ss">Tap a line for details</div>`;
+ secs.forEach(s=>{if(/^Total/i.test(s.t)){const r=s.nodes.find(n=>n.nodeType===1&&n.classList.contains('row'));if(r)st+=`<details class="tot"><summary><span>${esc2((r.querySelector('.t')||{}).textContent||'')}</span></summary><div class="d">${esc2((r.querySelector('.info .s')||{}).textContent||'')}</div></details>`}
+  else st+=`<div class="sc">${esc2(s.t.toUpperCase())}</div>`+s.nodes.map(line).join('')+s.nodes.filter(n=>n.nodeType===1&&!n.classList.contains('row')).map(n=>n.outerHTML).join('')});
+ return out+st+`<div class="ss" style="color:#9d94b8;margin-top:8px">Paid in full every Sunday</div></div>`}catch(e){return h}};
+/* Me */
+const _pcr=paneCrew;paneCrew=function(){const h=_pcr.apply(this,arguments);try{const {head,secs}=split(h);let out=ser(head);
+ const txt=secs.map(s=>s.t+' '+s.nodes.map(n=>n.textContent||'').join(' ')).join(' | ');
+ const sp=(/(\d+) skill points? to spend/.exec(txt)||[0,0])[1],bd=(/badges\s*(\d+\/\d+)/i.exec(txt)||[0,'0/12'])[1],pg=(/\((\d+) of (\d+) know you\)/i.exec(txt)||[0,0,6]);
+ const C=(typeof CHARS!=='undefined'&&CHARS.find(c=>c.id===S.char))||{name:'You'};const pic=(typeof PORTRAITS!=='undefined'&&PORTRAITS[S.char])?`<img src="${PORTRAITS[S.char]}" alt="">`:'<div class="mepl"></div>';
+ out+=`<div class="mehd">${pic}<div style="min-width:0"><b>${esc2(C.name)}</b><br><span>Level ${S.lvl||1} · Rep ${S.rep||0}</span></div></div><div class="mest"><div><b>${sp}</b><span>Skill points</span></div><div><b>${bd}</b><span>Badges</span></div><div><b>${pg[1]}/${pg[2]||6}</b><span>Plugs know you</span></div></div>`;
+ secs.forEach(s=>{const first=/^Level and skills/i.test(s.t);out+=acc(s.t,esc2(s.t.replace(/^./,c=>c.toUpperCase())),ser(s.nodes),first&&+sp>0)});return out}catch(e){return h}};
+/* Your Circle gangs */
+const _pb2=paneBeef;paneBeef=function(){const h=_pb2.apply(this,arguments);try{const t=T(h);t.content.querySelectorAll('.row').forEach(r=>{if(!r.querySelector('[data-a="squash"]'))return;const tt=r.querySelector('.t');if(!tt)return;const tit=tt.outerHTML;tt.remove();const key='gang:'+(tt.textContent||'').replace(/\s+/g,' ').trim().split(' ').slice(0,3).join(' ');
+  const d=document.createElement('details');d.className='acc gacc';d.dataset.acc=key;if(window._acc[key])d.open=true;d.innerHTML=`<summary><span>${tit}</span></summary><div class="accb">${r.innerHTML}</div>`;r.replaceWith(d)});return t.innerHTML}catch(e){return h}};
+/* phone apps */
+window._AP13={
+ hustle(c){const t=T(c);let done=0,tot=0;t.content.querySelectorAll('.row').forEach(r=>{const b=r.querySelector('button[data-a]');if(!b)return;const lab=b.textContent.trim();if(/^\$/.test(lab)||/Owned/.test(r.textContent)&&!b)return;tot++;if(/Done today|Wait/i.test(lab)){done++;return}
+   const s=(r.querySelector('.info .s')||{}).textContent||'';const m=/\$[\d,]+(?: to \$[\d,]+)?/.exec(s);if(m&&!b.disabled)b.textContent=lab+' · '+m[0]});
+  return `<div class="hus-today">Today: <b>${done}</b> of <b>${tot}</b> quick jobs done</div>`+t.innerHTML},
+ social(c){const t=T(c);const rows=[...t.content.querySelectorAll('.row')];let card='',grid='';
+  rows.forEach(r=>{const ti=(r.querySelector('.t')||{}).textContent||'';const f=/(\d[\d,]*)\s+followers/i.exec(ti);if(f){card=`<div class="soc-card"><span class="av"></span><div><b>${esc2(ti.trim())}</b><div style="font-size:13px;color:#9d94b8">${esc2((r.querySelector('.s')||{}).textContent||'')}</div></div></div>`;r.remove();return}
+   if(/Post$|Go live|Collab|Buy followers|Fake gun/i.test(ti.trim())){const b=r.querySelector('button[data-a]');if(b){const nb=b.cloneNode(true);nb.className=/Post$|Go live/i.test(ti.trim())?'go':'';nb.textContent=ti.replace(/^[^\w]+/,'').trim()+(/\$[\d,]+/.test((r.querySelector('.s')||{}).textContent||'')&&/Collab|Buy followers/i.test(ti)?'':'');grid+=nb.outerHTML;r.remove()}}});
+  return card+(grid?`<div class="soc-grid">${grid}</div>`:'')+t.innerHTML}
+};
 })();
 </script>
 <script>if('serviceWorker' in navigator){addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}</script></body></html>
