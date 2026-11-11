@@ -3124,7 +3124,7 @@ function paneExp(){
   h+=(!S.lawPay&&!law)?'':row('Lawyer',S.lawPay?'Attorney Cole is on retainer. He cuts raid risk and helps your case. Miss a payment and he walks.':'No lawyer on retainer.',law?money(law)+' / week':'$0');
   try{flowTick();const F=S.fl||{i:0,o:0,l:0},W7=(S.flh||[]).concat([F]),si=W7.reduce((a,x)=>a+x.i,0),so=W7.reduce((a,x)=>a+x.o-x.l,0),sl=W7.reduce((a,x)=>a+x.l,0),held=(S.workers||[]).reduce((a,w)=>a+(w.held||0),0),crewDay=cn+wk;
     const fr=(t,sub,a,c)=>`<div class="row" style="flex-wrap:wrap"><div class="info" style="flex:1 1 200px;min-width:0"><div class="t">${t}</div><div class="s">${sub}</div></div><span class="chip" style="color:${c};border-color:${c}">${a}</span></div>`,G='#5fd68a',B='var(--blood)',N='var(--accent)';
-    h+=`<div class="sec">Dirty money flow</div>`;
+    h+=plHTML();h+=`<div class="sec">Dirty money flow</div>`;
     h+=fr('In today','Sales, collections and street pickups since the day started.','+'+money(F.i),G);
     h+=fr('Out today','Product you bought, bills, crew pay and anything else paid with street money. Overnight bills count here.','-'+money(Math.max(0,F.o-F.l)),B);
     if(F.l)h+=fr('Laundered today','Dirty money you washed into clean.',money(F.l),N);
@@ -5676,7 +5676,7 @@ function serveCusto(ci,fromText,o){o=o||{};const c=S.custos[ci];if(!c)return;con
   if(c.uc&&c.buys<2&&Math.random()<.6){S.custos.splice(ci,1);S.texts=[];return lickBust('New number was the feds','That "new play" was undercover. Should have kept it to people you know.')}
   const fk=Math.min(S.fake[gid],Math.round(n*S.fake[gid]/S.inv[gid]));S.fake[gid]-=fk;
   const each=Math.round(custoPrice(c,gid)*(o.price||1)),got=Math.round((n-fk)*each+fk*each*.1);S.inv[gid]-=n;if(S.inv[gid]<=0){S.inv[gid]=0;S.paid[gid]=0;S.q[gid]=50;S.fake[gid]=0}
-  const profit=got-S.paid[gid]*n;S.cash+=got;if(profit>0){S.st.profit+=profit;addXP(Math.floor(profit/500))}S.st.sold+=n*g.sp*5;S.heat=Math.min(100,S.heat+1);srvTick(n,g);
+  const profit=got-S.paid[gid]*n;S.cash+=got;plRec(profit);if(profit>0){S.st.profit+=profit;addXP(Math.floor(profit/500))}S.st.sold+=n*g.sp*5;S.heat=Math.min(100,S.heat+1);srvTick(n,g);
   {const h0=c.hook||0,hv=({loud:2,snow:6,kicks:6,percs:7,bars:7,phones:5})[gid]||3;if(fk)c.fakeDay=S.day;c.hook=fk?h0:Math.min(gid==='loud'?45:100,h0+hv+rnd(0,2));c.hl=S.day;
    if(h0<50&&c.hook>=50)say(`${c.name} is getting hooked on that ${g.name}. They'll buy more, but it's on you.`);
    else if(h0<80&&c.hook>=80)say(`${c.name} is strung out now. Be careful, that can go bad.`);
@@ -6137,6 +6137,8 @@ function haGate(a,el){const snap={dataset:{...(el&&el.dataset||{})}};
     S.haOK=S.day;S.ha.run=1;S.heat=Math.min(100,S.heat+8);say('Cut the monitor and slipped out. You are on the run now. Heat +8. Keep your heat at 70 or under or they find you.');$('modal').hidden=true;act(a,snap)}}
 const plugBud=bi=>({Low:2500,Mid:9000,Big:24000})[PINFO[bi].lvl]||5000;
 function plugUsed(bi){if(!S.pbud||S.pbud.d!==S.day)S.pbud={d:S.day,u:{}};return S.pbud.u[bi]||0}
+function plRec(p){try{const L=S.pl=S.pl||{t:0,h:{},b:0,w:0,n:0};const k=String(S.day);L.h[k]=(L.h[k]||0)+p;L.t+=p;L.n++;if(p>L.b)L.b=p;if(p<L.w)L.w=p;const ks=Object.keys(L.h).map(Number).sort((a,b)=>a-b);while(ks.length>7)delete L.h[ks.shift()]}catch(e){}}
+function plHTML(){const L=S.pl;const c=v=>`<span style="color:${v>=0?'var(--money)':'var(--blood)'}">${v>=0?'+':'-'}${money(Math.abs(Math.round(v)))}</span>`;if(!L||!L.n)return `<div class="sec">Street profit</div><div class="row"><div class="info"><div class="t">No deals yet</div><div class="s">Every sale shows what you made or lost against what you paid.</div></div></div>`;const td=L.h[String(S.day)]||0,wk=Object.values(L.h).reduce((a,x)=>a+x,0);return `<div class="sec">Street profit</div>`+[['Today',td],['Last 7 days',wk],['All time',L.t],['Best deal',L.b],['Worst deal',L.w]].map(x=>`<div class="row" style="padding:8px 12px"><div class="info"><div class="t">${x[0]}</div></div><span class="chip">${c(x[1])}</span></div>`).join('')+`<div class="s" style="padding:2px 4px">Profit is what you got minus what you paid per unit. Losses count.</div>`}
 function qtyModal(kind,g,to,bl){if(proStop())return;if(to==='js'&&stuckHome(true))return;if(kind==='buy'&&frontBlock(S.at))return;
   if(kind==='buy'&&S.recr&&S.recr[S.at]){modal(`<h2>${plugName(S.at)} works for you</h2><p>${plugName(S.at)} signed on to run your traps and doesn't sell to you anymore. ${plugFem(S.at)?'She':'He'} will still buy from you though. Get product from another plug, or serve the Js.</p><div class="btns"><button class="btn go" id="ok">Bet</button></div>`);$('ok').onclick=close;return}
   to=kind==='sell'?(to||'plug'):null;const js=to==='js';
@@ -6211,8 +6213,8 @@ function qtyModal(kind,g,to,bl){if(proStop())return;if(to==='js'&&stuckHome(true
       if(bl==='win'&&Math.random()<.35){S.rep=Math.max(0,S.rep-1);say('A couple of the Js figured out it wasn\'t really top line. Rep −1.')}
       if(js&&((S.att||[])[S.at]||0)>=30&&Math.random()<Math.min(.06,(((S.att||[])[S.at]||0)-20)/1000)){if(S.rep>=60){S.heat=Math.min(100,S.heat+5);$('modal').hidden=true;modal(`<h2 style="color:var(--money)">Somebody looked out</h2><p>Right before you served, one of the homies pulled you to the side: "That new J by the store? That's twelve. Don't touch him." Your rep got you that heads up.</p><div class="btns"><button class="btn go" id="ok">Good looking</button></div>`);$('ok').onclick=close;say('A homie warned you a J was undercover. Didn\'t serve him.');return}
         lickDone('That J was twelve','One of the Js you served was undercover. Nobody warned you. People who got rep get a heads up.',false,true);{const _ok=$('ok');if(_ok)_ok.onclick=()=>{$('modal').hidden=true;busted();if($('modal').hidden){nextDay();checkEnd()}render()}}return}
-      S.inv[g.id]-=n;S.cash+=got;if(!js){plugUsed(S.at);S.pbud.u[S.at]=(S.pbud.u[S.at]||0)+got;if(got>6000){S.heat=Math.min(100,S.heat+Math.min(12,Math.floor(got/6000)));say('That much weight moving draws attention. Heat up.')}}if(js){S.jsLeft[S.at]=Math.max(0,jsLeftAt(S.at)-got);if(Math.random()<.15)addCusto(pick(CNAMES),g.id,'block')}const profit=got-S.paid[g.id]*n;S.st.sold+=n*g.sp*5;srvTick(n,g);if(profit>0){S.st.profit+=profit;addXP(Math.floor(profit/500))}
-      say(`${js?'Served the Js':'Sold '+plugName(S.at)}: ${amt(n,g)} of ${g.name} for ${money(got)} (${profit>=0?'+':''}${money(profit)}).`);
+      S.inv[g.id]-=n;S.cash+=got;if(!js){plugUsed(S.at);S.pbud.u[S.at]=(S.pbud.u[S.at]||0)+got;if(got>6000){S.heat=Math.min(100,S.heat+Math.min(12,Math.floor(got/6000)));say('That much weight moving draws attention. Heat up.')}}if(js){S.jsLeft[S.at]=Math.max(0,jsLeftAt(S.at)-got);if(Math.random()<.15)addCusto(pick(CNAMES),g.id,'block')}const profit=got-S.paid[g.id]*n;S.st.sold+=n*g.sp*5;srvTick(n,g);if(profit>0){S.st.profit+=profit;addXP(Math.floor(profit/500))}plRec(profit);
+      say(`${js?'Served the Js':'Sold '+plugName(S.at)}: ${amt(n,g)} of ${g.name} for ${money(got)}. ${profit>=0?'Profit +':'LOSS -'}${money(Math.abs(Math.round(profit)))}.`);
       if(fk){S.fkKnown=S.fkKnown||{};if(S.fake[g.id]>0)S.fkKnown[g.id]=1;S.rep=Math.max(0,S.rep-3);say(`${fk} of that ${g.name} was ${FAKE[g.id]}. Customers barely paid and your rep took a hit.`)}
       if(S.inv[g.id]===0){S.paid[g.id]=0;S.q[g.id]=50;S.fake[g.id]=0}
       const o=S.owner[S.at];
@@ -7388,7 +7390,7 @@ document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest
 </script>
 <script id="skin7js">
 (function(){
-const _pb=paneBlock;paneBlock=function(){let h=_pb.apply(this,arguments);try{const n=S.lh&&S.lh[S.at];if(n>0)h=`<div class="s" style="padding:2px 4px;color:#ff8a5c">🔥 Local heat on this block: ${Math.round(n)}</div>`+h}catch(e){}return h};
+const _pb=paneBlock;paneBlock=function(){let h=_pb.apply(this,arguments);try{const n=S.lh&&S.lh[S.at];if(n>0)h=`<div class="s" style="padding:2px 4px;color:#ff8a5c">🔥 Local heat on this block: ${Math.round(n)}</div>`+h}catch(e){}try{const L=S.pl;if(L&&L.n){const td=Math.round(L.h[String(S.day)]||0);h=`<div class="s" style="padding:2px 4px;color:${td>=0?'var(--money)':'var(--blood)'}">💵 Street profit today: ${td>=0?'+':'-'}${money(Math.abs(td))} · all time ${L.t>=0?'+':'-'}${money(Math.abs(Math.round(L.t)))}</div>`+h}}catch(e){}return h};
 let ride=0;
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-a="goR"]');if(!b||ride){ride=0;return}
  const pic=a2('g_rideapp',300);if(!pic)return;e.preventDefault();e.stopPropagation();
