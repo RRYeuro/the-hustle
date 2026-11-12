@@ -8244,7 +8244,26 @@ body{font-variant-numeric:tabular-nums}
 #pane .btn:hover:not(:disabled){filter:brightness(1.08)}
 #pane .btn:disabled{opacity:.5}
 </style>
+<style id="skin20">
+.blk-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.blk-tile{position:relative;text-align:center;padding:12px 8px 10px;border-radius:14px;border:1px solid var(--line,#2a2a2e);border-top-color:#383841;background:linear-gradient(180deg,#1c1c21,#16161a);color:inherit;font:inherit;cursor:pointer;transition:transform .08s,border-color .15s}
+.blk-tile:hover:not(:disabled){border-color:var(--accent,#e8c34a)}
+.blk-tile:active:not(:disabled){transform:scale(.97)}
+.blk-tile:disabled{opacity:.5;cursor:default}
+.blk-tile .bi{display:grid;place-items:center;width:38px;height:38px;margin:0 auto 5px;border-radius:10px;background:#25252b;border:1px solid #2f2f38;font-size:19px}
+.blk-tile .bt{font-weight:700;font-size:14px}
+.blk-tile .bs{font-size:11.5px;opacity:.65;margin-top:2px}
+.blk-tile .bc:empty{display:none}.blk-tile .bc{position:absolute;top:6px;right:6px;font-size:10px;font-weight:700;background:#25252b;border-radius:5px;padding:1px 5px;opacity:.9}
+</style>
 <script id="skin20js">
-(function(){if(typeof paneBlock!=='function')return;const _p=paneBlock;paneBlock=function(){let h=_p.apply(this,arguments);try{h=h.replace(/(data-a="w4_post"[^>]*>)([^<]*)/,(m,a,b)=>/⚡/.test(b)?m:a+b.trim()+' · ⚡6').replace(/(data-a="pcard"[^>]*>)([^<]*)/,(m,a,b)=>/⚡|free/i.test(b)?m:a+b.trim()+' · free')}catch(e){}return h}})();
+(function(){if(typeof render!=='function')return;const _r=render;
+function xf(){const P=document.getElementById('pane');if(!P||P.querySelector('.blk-grid'))return;const q=s=>P.querySelector(s);
+ const post=q('[data-a=w4_post]'),pass=q('[data-a=pcard]'),lay=q('[data-a=wq][data-k=lay]'),nap=q('[data-a=wq][data-k=nap]'),wq=q('.wq');
+ if(!wq||!(post||pass||lay||nap)||!q('.plugcard'))return;
+ const mk=(b,ic,t,sub,cost)=>{if(!b)return '';const d=b.disabled?' disabled':'';const at=[...b.attributes].filter(a=>/^data-/.test(a.name)).map(a=>`${a.name}="${a.value}"`).join(' ');return `<button class="blk-tile" ${at}${d}><span class="bc">${cost}</span><div class="bi">${ic}</div><div class="bt">${t}</div><div class="bs">${sub}</div></button>`};
+ const grid=`<div class="sec wspan">Hustle</div><div class="blk-grid wspan">${mk(post,'📍','Post up','Build corner cred','⚡6')}${mk(pass,'📱','Pass out','Hand out your number','free')}${mk(lay,'🛑','Lay low','Cool off, skip a day','')}${mk(nap,'😴','Nap','A little energy back','')}</div>`;
+ const html=grid;[post,pass,lay,nap].forEach(b=>{if(!b)return;const r=b.closest('.row');if(r&&!r.querySelector('.bar')&&r.querySelectorAll('button').length===1)r.remove();else b.remove()});
+ wq.insertAdjacentHTML('afterend',html)}
+render=function(){const r=_r.apply(this,arguments);try{xf()}catch(e){console.error('skin20',e)}return r}})();
 </script>
 <script>if('serviceWorker' in navigator){addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}</script></body></html>
