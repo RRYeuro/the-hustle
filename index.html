@@ -5706,6 +5706,7 @@ function offerElse(ci){const c=S.custos[ci];if(!c)return;const opts=GOODS.filter
     const no=pick([`"Nah, I only mess with ${G(c.gid).name}."`,`"${x.name}? I'm good on that."`,`"Maybe another time, I ain't got it like that today."`]);c.loy=Math.max(0,c.loy-2);say(`${c.name}: ${no}`);toast(`${c.name}: ${no}`,false);render()})}
 function hitUp(ci){const c=S.custos[ci];if(!c)return;const g=G(c.gid);c.hit=S.day;
   if(c.tmr&&c.tmr<=S.day){c.tmr=0;return serveCusto(ci,false,{loy:3})}
+  {const tx=(S.texts||[]).find(t=>t.ci===ci);if(tx||(c.buys===0&&c.last===S.day&&!c.tmr))return serveCusto(ci,false,tx&&tx.g?{gid:tx.g,sw:Math.random()<.25,loy:3}:{loy:3})}
   const luck=(S.sk.luck||3),r=Math.random()*100,good=30+c.loy/3+luck*3+(c.hook||0)/4;
   const ask=(h,t,btns)=>{modal(`${custPic(c.name,64).replace('flex:none','align-self:center')}<h2>${h}</h2><p>${t}</p><div class="btns">${btns.map((b,j)=>`<button class="btn ${j?'':'go'}" id="hb${j}">${b[0]}</button>`).join('')}</div>`);btns.forEach((b,j)=>$('hb'+j).onclick=()=>{$('modal').hidden=true;b[1]()})};
   if(r<good){if(Math.random()<.12+luck*.015&&stkG(c.gid)>=c.size*2)return ask(`${c.name} wants double`,`"Bet, I was just about to hit you. Bring me double, I got people with me."`,[[`Bring ${amt(c.size*2,g)}`,()=>serveCusto(ci,false,{mult:2,loy:4})],['Just the usual',()=>serveCusto(ci,false)]]);return serveCusto(ci,false)}
