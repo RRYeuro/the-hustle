@@ -5286,7 +5286,7 @@ function referral(g){if(!S.known.includes(S.at)||S.trust[S.at]<60)return '';
   const opts=BLOCKS.map((b,i)=>i).filter(i=>i!==S.at&&PINFO[i].carries.includes(g.id)&&!S.burned[i]);if(!opts.length)return '';
   const i=opts.find(x=>S.known.includes(x))??opts[0];return `${plugFem(S.at)?'She':'He'} told you: "Go see ${plugName(i)} on ${BLOCKS[i]}, ${plugFem(i)?'she':'he'} moves ${g.name}."`}
 /* ---------- Js budget ---------- */
-const JSBASE=[1100,1600,800,2800,2200,4000];
+const JSBASE=[1500,2000,1200,3200,2600,4000];
 const JSTAG=bi=>JSBASE[bi]>=2600?'Money block':JSBASE[bi]>=1900?'Decent money':JSBASE[bi]>=1300?'Getting by':'Broke block';
 const checkDay=()=>S.cal?calCheck():((S.day-1)%30)<2;
 const daysToCheck=()=>S.cal?calToCheck():30-((S.day-1)%30);
