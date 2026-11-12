@@ -4265,7 +4265,7 @@ const newConName=()=>{const own=conList().map(c=>c.name),gone=S.conGone||[];let 
   return pick(L.length?L:CONNECTS)};
 function conDrop(i){const C=conList()[i];if(!C)return;const t=ctier(C);
   modal(`<h2>Drop ${C.name}?</h2><p>You cut ${C.name} off. That opens a spot, and the next connect that finds you has a ${t<2?'good chance of being a higher tier than a '+['Low','Mid','High'][t]+' connect':'shot at another top-tier connect'}. No promises, though: you could end up with someone worse, and you lose ${C.name}'s trust and anything left on your weekly limit.</p><div class="btns"><button class="btn red" id="cd">Drop ${C.name}</button><button class="btn" id="cn">Keep ${C.name}</button></div>`);
-  $('cn').onclick=close;$('cd').onclick=()=>{S.cons=conList().filter(x=>x!==C);S.connect=S.cons[0]||null;S.conGone=(S.conGone||[]).concat(C.name);S.conWant=Math.min(2,t+1);S.ship=(S.ship||[]);say(`You dropped ${C.name}. A spot is open for a new connect.`);S.inbox=S.inbox||[];S.inbox.unshift({d:S.day,f:C.name,t:`Cool. We're done then. Don't call me.`});S.inbox=S.inbox.slice(0,16);close()}}
+  $('cn').onclick=close;$('cd').onclick=()=>{S.cons=conList().filter(x=>x!==C);S.connect=S.cons[0]||null;S.conGone=(S.conGone||[]).concat(C.name);S.conWant=Math.min(2,t+1);S.ship=(S.ship||[]);say(`You dropped ${C.name}. A spot is open for a new connect.`);S.inbox=S.inbox||[];S.inbox.unshift({d:S.day,f:C.name,t:`Cool. We're done then. Don't call me.`});S.inbox=S.inbox.slice(0,60);close()}}
 function addConnect(o){const L=conList();if(L.some(c=>c.name===o.name))return false;S.cons=L;S.cons.push(o);S.connect=S.cons[0];S.conWant=null;S.conSrv=(S.srvU||0)+rnd(180,300)*S.cons.length;return true}
 function connectCand(){if(!canNewConnect())return;const ok=bi=>S.known.includes(bi)&&!S.burned[bi]&&!(S.conAsk||{})[bi];
   if(S.conTh==null)S.conTh=rnd(-8,6);const th=S.conTh;
@@ -4690,7 +4690,7 @@ function burnPlan(bi,base,why){const sec=(S.sec||{})[bi],vouch=vouchOf(bi);let d
   if(sec){d=why==='rob'?5:5;tr=why==='rob'?15:30}
   if(vouch){d=Math.max(3,d-2);tr+=10}
   S.nt=S.nt||{};S.nt[bi]=tr;return {d,sec,vouch}}
-function newPlug(bi){{const L=conList(),g=L.find(c=>c.from===bi);if(g){say(`${g.name} stopped answering. Your connect went with ${plugName(bi)}.`);S.inbox=S.inbox||[];S.inbox.unshift({d:S.day,f:g.name,t:`Yo, my line is dead after what went down with ${plugName(bi)}. Don't hit this number again.`});S.inbox=S.inbox.slice(0,16);S.cons=L.filter(c=>c!==g);S.connect=S.cons[0]||null}}if(S.whole)delete S.whole[bi];if(S.conAsk)delete S.conAsk[bi];if(S.enemies)delete S.enemies[bi];if(S.gf&&S.gf.plug===bi)endGF();const why=(S.bwhy||{})[bi];if(S.bwhy)delete S.bwhy[bi];delete S.burned[bi];const sec=(S.sec||{})[bi],fem=sec?!!sec.fem:Math.random()<.5;const nm=sec?sec.name:pick(fem?NEWF:NEWM);S.pname[bi]=nm;S.pfem[bi]=fem?1:0;try{S.ppic=S.ppic||{};const pre=fem?'pp_f':'pp_m',used=Object.values(S.ppic),all=[];for(let i=1;i<=12;i++)if(ARTX(pre+i))all.push(pre+i);const free=all.filter(k=>used.indexOf(k)<0);const pk=free.length?free[Math.floor(Math.random()*free.length)]:all[Math.floor(Math.random()*all.length)];if(pk)S.ppic[bi]=pk;else delete S.ppic[bi]}catch(e){}
+function newPlug(bi){{const L=conList(),g=L.find(c=>c.from===bi);if(g){say(`${g.name} stopped answering. Your connect went with ${plugName(bi)}.`);S.inbox=S.inbox||[];S.inbox.unshift({d:S.day,f:g.name,t:`Yo, my line is dead after what went down with ${plugName(bi)}. Don't hit this number again.`});S.inbox=S.inbox.slice(0,60);S.cons=L.filter(c=>c!==g);S.connect=S.cons[0]||null}}if(S.whole)delete S.whole[bi];if(S.conAsk)delete S.conAsk[bi];if(S.enemies)delete S.enemies[bi];if(S.gf&&S.gf.plug===bi)endGF();const why=(S.bwhy||{})[bi];if(S.bwhy)delete S.bwhy[bi];delete S.burned[bi];const sec=(S.sec||{})[bi],fem=sec?!!sec.fem:Math.random()<.5;const nm=sec?sec.name:pick(fem?NEWF:NEWM);S.pname[bi]=nm;S.pfem[bi]=fem?1:0;try{S.ppic=S.ppic||{};const pre=fem?'pp_f':'pp_m',used=Object.values(S.ppic),all=[];for(let i=1;i<=12;i++)if(ARTX(pre+i))all.push(pre+i);const free=all.filter(k=>used.indexOf(k)<0);const pk=free.length?free[Math.floor(Math.random()*free.length)]:all[Math.floor(Math.random()*all.length)];if(pk)S.ppic[bi]=pk;else delete S.ppic[bi]}catch(e){}
   const nt=(S.nt||{})[bi]??20;if(S.sec)delete S.sec[bi];if(S.nt)delete S.nt[bi];
   S.pbio[bi]=sec?`Was ${fem?'her':'his'} boss's second on ${BLOCKS[bi]}. Stepped up when the last plug fell off. ${nt<=15?'Knows what you did. Walk careful.':'Heard good things about you.'}`:`New plug on ${BLOCKS[bi]}. Took over after the last one ${({rob:'got robbed',raid:'got raided',snitch:'got picked up',fate:'fell out with you'})[why]||'left'}. Don't know much about ${fem?'her':'him'} yet.`;S.trust[bi]=nt;S.deals[bi]=0;
   say(`${nm} ${sec?'stepped up as':'took over as'} the plug on ${BLOCKS[bi]}.`)}
@@ -7784,21 +7784,36 @@ const dayL=d=>d===S.day?'Today':S.day-d===1?'Yesterday':'Day '+d;
 function build(){const T={},get=(k,o)=>T[k]||(T[k]=Object.assign({k,n:k,m:[],ord:[],tx:[],last:-1,inc:0},o||{}));
  get('__all',{n:'Everybody',grp:1});
  const L=(S.inbox||[]).slice().reverse(),you={};
- L.forEach((m,i)=>{if(m.f==='You'){you[m.d]=m}if(m.f==='You'||m.f==='Blast'){const t=get('__all',{n:'Everybody',grp:1});t.m.push(m);t.last=i;return}const t=get(m.f);t.m.push(m);t.last=i;t.inc++;if(you[m.d]){const g=T.__all;g.m.push(m);g.last=i}});
+ L.forEach((m,i)=>{if(m.f==='You'&&m.to){const t=get(m.to);t.m.push(m);t.last=i;return}if(m.f==='You'){you[m.d]=m}if(m.f==='You'||m.f==='Blast'){const t=get('__all',{n:'Everybody',grp:1});t.m.push(m);t.last=i;return}const t=get(m.f);t.m.push(m);t.last=i;t.inc++;if(you[m.d]){const g=T.__all;g.m.push(m);g.last=i}});
  Object.values(T).forEach(t=>{if(t.grp)return;const ds=[...new Set(t.m.map(m=>m.d))];t.m=ds.flatMap(d=>[you[d]].filter(Boolean).concat(t.m.filter(m=>m.d===d)))});
  try{const B=b5(),dl=w5bDealers();(B.ord||[]).forEach((o,i)=>{const d=dl[o.d],t=get(d.n);t.ord.push([o,i,d]);t.inc++;t.last=1e6})}catch(e){}
   try{(S.texts||[]).forEach((x,i)=>{const c=(S.custos||[])[x.ci];if(!c)return;const t=get(c.name);t.tx.push([x,i,c]);t.inc++;t.last=Math.max(t.last,1e6-1)})}catch(e){}
  const pins=[];const addP=n=>{if(n&&pins.indexOf(n)<0){get(n);pins.push(n)}};
  try{const nm=bi=>(S.pname&&S.pname[bi])||PLUGS[bi];addP(nm(S.at));conList().forEach((C,i)=>{addP(C.name);get(C.name).con=[C,i]});Object.keys(S.deals||{}).forEach(bi=>{if(S.deals[bi]>0)addP(nm(+bi))});w5bDealers().forEach(d=>addP(d.n))}catch(e){}
  try{if(S.mk&&(S.mk.javi||S.mk.learn))addP('Javi');if(S.mk&&S.mk.mateo)addP('Mateo')}catch(e){}
+ try{(window._MC?window._MC():[]).forEach(c=>get(c.n))}catch(e){}
  pins.splice(8);
  S.msSeen=S.msSeen||{};Object.values(T).forEach(t=>{S.msSeen[t.k]=Math.min(S.msSeen[t.k]||0,t.inc);t.unread=t.inc>(S.msSeen[t.k]||0)});
  return {T,pins}}
 function ordB(o,i,d){const g=G(o.g),have=(S.inv[o.g]||0)>=o.n,price=Math.round(o.n*street(g)*(.85+d.loy/500)*(o.up||1)),left=o.by-S.day;
- return `<div class="bub ord"><b>Wants ${o.n}${w5bUN(g)} of ${E(g.name.toLowerCase())}</b><br>Pays ${money(price)}${o.up?' (your price)':''}<div class="msx-bar"><i style="width:${Math.max(6,Math.min(100,left/7*100))}%;background:${left<=1?'#e8504a':'#5fd68a'}"></i></div><span class="msx-due">${left<=0?'Due today':left+' day'+(left===1?'':'s')+' left'}${have?'':' · you are short'}</span><div class="msx-chips"><button class="go" data-a="w5b_ord" data-i="${i}" ${have?'':'disabled'}>Fill it</button><button data-mo="up" data-i="${i}" ${o.up?'disabled':''}>Price is up</button><button data-mo="no" data-i="${i}">Not today</button></div></div>`}
+ return `<div class="bub ord"><b>Wants ${o.n}${w5bUN(g)} of ${E(g.name.toLowerCase())}</b><br>Pays ${money(price)}${o.up?' (your price)':''}<div class="msx-bar"><i style="width:${Math.max(6,Math.min(100,left/7*100))}%;background:${left<=1?'#e8504a':'#5fd68a'}"></i></div><span class="msx-due">${left<=0?'Due today':left+' day'+(left===1?'':'s')+' left'}${have?'':' · you are short'}</span></div>`}
 function txB(x,i,c){const gid=x.g||c.gid,g=G(gid),have=stkG(gid)>=g.step,sz=x.g?altSize(c,gid):c.size,hot=(c.hook||0)>=80;
-  return `<div class="bub">${x.g?'Switching it up today. ':''}You got ${E(amt(sz,g))} of ${E(g.name)}?</div><div class="bub ord"><b>Pays about ${money(custoPrice(c,gid))} each</b><br><span class="msx-due">Reply by ${dayTxt(x.day+2)} or they move on${have?'':' · you are out'}${hot?' · strung out, serving them is a risk':''}</span><div class="msx-chips"><button class="go" data-a="pserve" data-i="${x.ci}" data-g="${x.g||''}" ${have?'':'disabled'}>${hot?'Pull up (risky)':'Tell them pull up'}</button><button data-a="pignore" data-i="${i}">Ignore</button></div></div>`}
+  return `<div class="bub">${x.g?'Switching it up today. ':''}You got ${E(amt(sz,g))} of ${E(g.name)}?</div><div class="bub ord"><b>Pays about ${money(custoPrice(c,gid))} each</b><br><span class="msx-due">Reply by ${dayTxt(x.day+2)} or they move on${have?'':' · you are out'}${hot?' · strung out, serving them is a risk':''}</span></div>`}
 function prev(t){if(t.tx.length&&!t.m.length&&!t.ord.length){const x=t.tx[0][0],c=t.tx[0][2],g=G(x.g||c.gid);return `You got ${amt(x.g?altSize(c,x.g):c.size,g)} of ${g.name}?`}if(t.ord.length&&!t.m.length){const o=t.ord[0][0],g=G(o.g);return `Wants ${o.n}${w5bUN(g)} of ${g.name.toLowerCase()}`}const m=t.m[t.m.length-1];return m?((m.f==='You'?'You: ':'')+m.t):(t.con?'Your connect · tap to order':'')}
+
+ const FL={plug:['You got product today?','Can you do better on the price?','I am good for now'],fam:['I am good, love you','I am at work','Cannot talk right now'],grow:['What is good?','I will come through soon','Later'],any:['What is good?','I am busy right now','Talk later']};
+ const RP={plug:['Come by and see.','Depends what you bring.','Check the block.'],fam:['Okay. Be careful out there.','Call me when you can.','Love you too.'],grow:['Stay ready.','Whenever you are ready.','Cool.'],any:['Yeah.','Bet.','Later.']};
+ const kindOf=t=>{try{if(t.n===(S.par&&S.par.name))return 'fam';if(/^(Mama|Dad|Mom|Auntie)/i.test(t.n))return 'fam';if(t.n==='Javi'||t.n==='Mateo')return 'grow';const nm=bi=>(S.pname&&S.pname[bi])||PLUGS[bi];if([S.at].concat(Object.keys(S.deals||{}).map(Number)).some(b=>nm(b)===t.n))return 'plug'}catch(e){}return 'any'};
+ window._KB={FL,RP,kindOf};
+ function kbHTML(t){const o=[],A=(l,at,says,cls)=>o.push(`<button class="mth-opt ${cls||''}" ${at}${says?` data-says="${E(says)}"`:''}>${l}</button>`);
+  try{
+   if(t.tx.length){const [x,i,c]=t.tx[0],gid=x.g||c.gid,have=stkG(gid)>=G(gid).step,hot=(c.hook||0)>=80;A(have?(hot?'Pull up (risky)':'Tell them pull up'):'Out of stock',`data-a="pserve" data-i="${x.ci}" data-g="${x.g||''}" ${have?'':'disabled'}`,'Pull up. I got you.','hot');A('Not today',`data-a="pignore" data-i="${i}"`,'Not today.')}
+   else if(t.ord.length){const [oo,i]=t.ord[0],g=G(oo.g),have=(S.inv[oo.g]||0)>=oo.n;A(have?'Fill it':'You are short',`data-a="w5b_ord" data-i="${i}" ${have?'':'disabled'}`,'On my way.','hot');A('Price is up',`data-mo="up" data-i="${i}" ${oo.up?'disabled':''}`,'Price is up today.');A('Not today',`data-mo="no" data-i="${i}"`,'Not today.')}
+   else{const ci=(S.custos||[]).findIndex(c=>c.name===t.n);
+    if(ci>=0){A('Hit them up',`data-a="phit" data-i="${ci}"`,'I am open. Pull up.','hot');A('What you need?',`data-a="pask" data-i="${ci}"`,'What you looking for?')}
+    else{const k=kindOf(t);FL[k].forEach((l,ix)=>A(l,`data-flav="${ix}" data-fk="${k}"`,'',ix===0?'hot':''))}}
+  }catch(e){}
+  return `<div class="mth-kb"><div class="mth-kt">Reply</div>${o.join('')}</div>`}
 window._MS=function(chat){const {T,pins}=build(),C=S.custos||[],done=S.textAll===S.day,passed=S.passed===S.day;
  let k=window._mth;if(k&&!T[k]){k=window._mth=null}
  if(k){const t=T[k];S.msSeen[k]=t.inc;let d=null,b='';
@@ -7808,11 +7823,12 @@ window._MS=function(chat){const {T,pins}=build(),C=S.custos||[],done=S.textAll==
    b+=t.tx.map(([x,i,c])=>`<div class="day">${dayL(x.day)}</div>${txB(x,i,c)}`).join('');
    if(t.con){try{b+=`<div class="day">The connect</div>${paneConnect1(t.con[0],t.con[1])}`}catch(e){}}
    try{if(window._MK&&(t.n==='Javi'||t.n==='Mateo'))b+=window._MK.card(t.n)}catch(e){}
-  return `<div class="mth-view mth-th"><div class="mth-top"><button class="bk" data-mth="">&#8249; Messages</button><div class="mth-id">${av(t.n)}<span>${E(t.n)}</span></div><span class="mth-sp"></span></div><div class="ph-chat">${b}<span id="msxFeed" class="ph-chat" style="padding:0"></span></div><div class="mth-bar"><div class="mth-in">iMessage</div>${t.grp?`<button class="mth-send" data-a="ptext" ${done||!C.length?'disabled':''} aria-label="Send">&#8593;</button>`:''}</div></div>`}
+  return `<div class="mth-view mth-th"><div class="mth-top"><button class="bk" data-mth="">&#8249; Messages</button><div class="mth-id">${av(t.n)}<span>${E(t.n)}</span></div><span class="mth-sp"></span></div><div class="ph-chat">${b}<span id="msxFeed" class="ph-chat" style="padding:0"></span></div>${t.grp?'':kbHTML(t)}<div class="mth-bar" ${t.grp?'':'hidden'}><div class="mth-in">iMessage</div>${t.grp?`<button class="mth-send" data-a="ptext" ${done||!C.length?'disabled':''} aria-label="Send">&#8593;</button>`:''}</div></div>`}
  const rows=Object.values(T).filter(t=>t.m.length||t.ord.length||t.tx.length).sort((a,b)=>b.last-a.last);
  const pinH=pins.length?`<div class="mth-pins">${pins.map(p=>{const t=T[p];return `<button class="mth-pin" data-mth="${E(encodeURIComponent(p))}">${av(t.n,1)}${t.unread?'<i class="mth-dot"></i>':''}<span>${E(t.n)}</span></button>`}).join('')}</div>`:'';
  const unreadN=rows.filter(t=>t.unread).length;
- return `<div class="mth-view mth-list"><div class="mth-top"><button class="bk" data-rph="">&#8249; Home</button><b class="mth-ttl">Messages${unreadN?` <em>${unreadN}</em>`:''}</b><span class="mth-sp"></span></div>${pinH}<div id="mthRows">${rows.length?rows.map(t=>`<button class="mth-row" data-mth="${E(encodeURIComponent(t.k))}" data-n="${E(t.n.toLowerCase())}">${t.unread?'<i class="mth-dot"></i>':''}${av(t.n)}<span class="mth-bd"><span class="mth-l1"><b>${E(t.n)}</b><small>${t.m.length?dayL(t.m[t.m.length-1].d):(t.ord.length||t.tx.length)?'Today':''}</small></span><span class="mth-pv">${E(prev(t))}</span></span><span class="mth-ch">&#8250;</span></button>`).join(''):'<div class="msx-sub" style="padding:18px 4px">No messages yet. Tap the pencil to text everybody.</div>'}</div>${window._mcomp?`<div class="mth-sheet"><div class="msx-act"><button class="go" data-a="ptext" ${done||!C.length?'disabled':''}>${done?'Blasted today':'Text everybody'}</button><button data-a="pcard" ${passed?'disabled':''}>${passed?'Passed out today':'Pass out your number'}</button></div><div class="msx-sub">${C.length} plays on your phone · a blast costs 3 energy, once a day, and adds local heat.</div></div>`:''}<div class="mth-bar"><div class="mth-srch"><span>&#9906;</span><input id="mthQ" placeholder="Search" autocomplete="off"></div><button class="mth-cmp" data-mcomp="1" aria-label="New message">&#9998;</button></div></div>`};
+  let needH='';try{const ch=[];try{if(Object.values((S.mk||{}).g||{}).some(c=>S.day>=c.ready))ch.push('<button class="mth-need" data-needs="crop">&#127807; Crop ready</button>')}catch(e){}rows.filter(t=>t.unread).slice(0,3).forEach(t=>ch.push(`<button class="mth-need" data-mth="${E(encodeURIComponent(t.k))}">${E(t.n)}</button>`));if(ch.length)needH=`<div class="mth-needs"><b>Needs you</b>${ch.join('')}</div>`}catch(e){}
+ return `<div class="mth-view mth-list"><div class="mth-top"><button class="bk" data-rph="">&#8249; Home</button><b class="mth-ttl">Messages${unreadN?` <em>${unreadN}</em>`:''}</b><span class="mth-sp"></span></div>${needH}${pinH}<div id="mthRows">${rows.length?rows.map(t=>`<button class="mth-row" data-mth="${E(encodeURIComponent(t.k))}" data-n="${E(t.n.toLowerCase())}">${t.unread?'<i class="mth-dot"></i>':''}${av(t.n)}<span class="mth-bd"><span class="mth-l1"><b>${E(t.n)}</b><small>${t.m.length?dayL(t.m[t.m.length-1].d):(t.ord.length||t.tx.length)?'Today':''}</small></span><span class="mth-pv">${E(prev(t))}</span></span><span class="mth-ch">&#8250;</span></button>`).join(''):'<div class="msx-sub" style="padding:18px 4px">No messages yet. Tap the pencil to text everybody.</div>'}</div>${window._mcomp?`<div class="mth-sheet"><div class="msx-act"><button class="go" data-a="ptext" ${done||!C.length?'disabled':''}>${done?'Blasted today':'Text everybody'}</button><button data-a="pcard" ${passed?'disabled':''}>${passed?'Passed out today':'Pass out your number'}</button></div><div class="msx-sub">${C.length} plays on your phone · a blast costs 3 energy, once a day, and adds local heat.</div><div class="msx-sub" style="margin-top:8px"><b>New message to</b></div>${(window._MC?window._MC():[]).map(c=>`<button class="mth-row" data-mth="${E(encodeURIComponent(c.n))}">${av(c.n)}<span class="mth-bd"><span class="mth-l1"><b>${E(c.n)}</b></span><span class="mth-pv">${E(c.sub)}</span></span></button>`).join('')}</div>`:''}<div class="mth-bar"><div class="mth-srch"><span>&#9906;</span><input id="mthQ" placeholder="Search" autocomplete="off"></div><button class="mth-cmp" data-mcomp="1" aria-label="New message">&#9998;</button></div></div>`};
 window._MS.unread=function(){try{const {T}=build();return Object.values(T).filter(t=>t.unread&&(t.m.length||t.ord.length||t.tx.length)).length}catch(e){return 0}};
 window._MS.rest=function(c){try{const t=document.createElement('template');t.innerHTML=c;t.content.querySelectorAll('[data-a="ptext"],[data-a="pcard"]').forEach(b=>{const w=b.parentElement;b.remove();if(w&&w.classList.contains('btns')&&!w.children.length)w.remove()});t.content.querySelectorAll('.sec').forEach(x=>{const tx=x.textContent.trim();if(/^Trap phone$/i.test(tx))x.remove();else if(/^Texts\b/i.test(tx)){const n=x.nextElementSibling;if(n&&/^No texts right now/i.test(n.textContent.trim()))n.remove();x.remove()}});t.content.querySelectorAll('.row').forEach(x=>{const tt=x.querySelector('.t');if((tt&&/^Trap phone$/i.test(tt.textContent.trim()))||x.querySelector('[data-a="pserve"],[data-a="pignore"]')||(x.querySelector('.chip.mine')&&/The connect/i.test(x.textContent)))x.remove()});return t.innerHTML}catch(e){return c}};
 function blast(){const C=S.custos||[];if(S.textAll===S.day||!C.length){try{textAll()}catch(e){}return}
@@ -7830,7 +7846,7 @@ function blast(){const C=S.custos||[];if(S.textAll===S.day||!C.length){try{textA
  let hot=3+came*2;try{S.lh=S.lh||{};S.lh[S.at]=Math.min(100,(S.lh[S.at]||0)+hot)}catch(e){}
  const sum=`${came} pulled up${came?`, +${money(S.cash-cash0)}`:''}${more>0?`. ${more} more left you on seen`:''}. Local heat +${hot}.`;
  const me='I\'m open. Pull up.',feed=document.getElementById('msxFeed');
- S.inbox=S.inbox||[];S.inbox.unshift({d:S.day,f:'You',t:me});shown.forEach(r=>S.inbox.unshift({d:S.day,f:r.f,t:r.t}));S.inbox.unshift({d:S.day,f:'Blast',t:sum});S.inbox=S.inbox.slice(0,16);
+ S.inbox=S.inbox||[];S.inbox.unshift({d:S.day,f:'You',t:me});shown.forEach(r=>S.inbox.unshift({d:S.day,f:r.f,t:r.t}));S.inbox.unshift({d:S.day,f:'Blast',t:sum});S.inbox=S.inbox.slice(0,60);
  if(!feed){render();return}
  const esc2=x=>String(x).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
  feed.insertAdjacentHTML('beforeend',`<div class="bub me">${esc2(me)}</div><div class="tick">Delivered</div>`);
@@ -8136,7 +8152,7 @@ paneBlock=function(){let h=_pb.apply(this,arguments);
 if(typeof paneBiz!=='function'||typeof nextDay!=='function')return;
 const M=()=>{S.mk=S.mk||{};const m=S.mk;m.g=m.g||{};m.pk=m.pk||{edib:0,wax:0,rock:0};m.ship=m.ship||[];m.learn=m.learn||0;m.mex=m.mex||0;m.disp=m.disp||0;return m};
 const PR={edib:35,wax:80,rock:110},PN={edib:'Edibles',wax:'Wax',rock:'Rock'},PU={edib:' packs',wax:'g',rock:'g'};
-const inbox=(f,t)=>{S.inbox=S.inbox||[];S.inbox.unshift({d:S.day,f,t});S.inbox=S.inbox.slice(0,16)};
+const inbox=(f,t)=>{S.inbox=S.inbox||[];S.inbox.unshift({d:S.day,f,t});S.inbox=S.inbox.slice(0,60)};
 const room=g=>Math.max(0,Math.floor((S.cap-used()-cartSp())/g.sp));
 const slots=()=>{const a=[];if(adult())a.push({k:'home',n:'Closet grow',cost:200,en:5,days:4,y:60,loc:'your closet'});(b5().re||[]).forEach(p=>a.push({k:'p'+p.id,n:p.n+' grow',cost:1500,en:10,days:6,y:400,loc:'your '+p.n.toLowerCase(),prop:1}));return a};
 const hasProp=()=>(b5().re||[]).length>0;
@@ -8310,6 +8326,49 @@ document.addEventListener('click',e=>{const o=e.target.closest&&e.target.closest
 document.addEventListener('keydown',e=>{if(typeof tab==='undefined'||!ST[tab]||window.mgOn||!document.getElementById('modal').hidden||/INPUT|TEXTAREA/.test((e.target||{}).tagName||''))return;
  if(e.key==='Escape'&&ST[tab].open){ST[tab].open=null;render();e.preventDefault();return}
  if(!ST[tab].open&&/^[1-9]$/.test(e.key)){const t=document.querySelectorAll('#pane .mv-tile')[+e.key-1];if(t){t.click();e.preventDefault();e.stopImmediatePropagation()}}},true);
+})();
+</script>
+<style id="skin22">
+.mth-kb{display:flex;flex-direction:column;gap:6px;padding:8px 10px 10px;border-top:1px solid #2a2a2e;background:#141418}
+.mth-kt{font-size:10px;letter-spacing:.14em;text-transform:uppercase;opacity:.55}
+.mth-opt{text-align:left;padding:9px 12px;border-radius:12px;border:1px solid #33333b;background:#25252b;color:inherit;font:inherit;font-size:13px;cursor:pointer}
+.mth-opt.hot{border-color:var(--accent,#e8c34a)}.mth-opt:disabled{opacity:.45}.mth-opt:active:not(:disabled){transform:scale(.98)}
+.mth-needs{display:flex;gap:6px;flex-wrap:wrap;align-items:center;padding:8px 10px;margin:4px 6px;border-radius:12px;background:rgba(232,195,74,.1);border:1px solid #3a3420;font-size:12px}
+.mth-needs b{color:var(--accent,#e8c34a)}
+.mth-need{background:var(--accent,#e8c34a);color:#111;border:0;border-radius:99px;padding:3px 10px;font-weight:700;font-size:11px;cursor:pointer}
+.ct-row{display:flex;align-items:center;gap:10px;padding:8px 6px;border-top:1px solid #1f1f24}
+.ct-row .in{flex:1;min-width:0}.ct-row .t{font-weight:600}.ct-row .s{font-size:12px;opacity:.65}
+.ct-row .btn{padding:5px 10px;font-size:11px}
+</style>
+<script id="skin22js">
+(function(){
+const E=x=>String(x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const pk=a=>a[Math.floor(Math.random()*a.length)];
+function MC(){const o=[],seen={},add=(n,sub)=>{if(n&&!seen[n]){seen[n]=1;o.push({n,sub})}};
+ try{const nm=bi=>(S.pname&&S.pname[bi])||PLUGS[bi];add(nm(S.at),'Plug · '+BLOCKS[S.at]);Object.keys(S.deals||{}).forEach(bi=>{if(S.deals[bi]>0)add(nm(+bi),'Plug · '+BLOCKS[+bi])})}catch(e){}
+ try{conList().forEach(C=>add(C.name,'Connect'))}catch(e){}
+ try{if(S.mk&&(S.mk.javi||S.mk.learn))add('Javi','Grower');if(S.mk&&S.mk.mateo)add('Mateo','Mexico connect')}catch(e){}
+ try{w5bDealers().forEach(d=>add(d.n,'Dealer'))}catch(e){}
+ try{(S.custos||[]).forEach(c=>add(c.name,'Customer · '+(G(c.gid)||{}).name))}catch(e){}
+ try{if(S.par&&S.par.name)add(S.par.name,'Family')}catch(e){}
+ return o}
+window._MC=MC;
+const grp=(t,list)=>list.length?`<div class="sec sub">${t}</div>`+list.map(c=>`<div class="ct-row"><div class="in"><div class="t">${E(c.n)}</div><div class="s">${E(c.sub)}</div></div><button class="btn" data-mth="${E(encodeURIComponent(c.n))}" data-rph="messages">Text</button></div>`).join(''):'';
+function contacts(c){
+ const all=MC(),by=k=>all.filter(x=>x.sub.startsWith(k));
+ let old=c;try{const t=document.createElement('template');t.innerHTML=c;t.content.querySelectorAll('.row').forEach(r=>{const d=r.querySelector('[data-a="pdel"]');if(!d)return;const cu=(S.custos||[])[+d.dataset.i];if(cu){const b=document.createElement('button');b.className='btn';b.dataset.mth=encodeURIComponent(cu.name);b.dataset.rph='messages';b.textContent='Text';const w=d.parentElement;(w&&w.classList.contains('btns')?w:r).appendChild(b)}});old=t.innerHTML}catch(e){}
+ let left='';try{const m=window._SR.secsFor('app:messages').map(x=>window._SR.ser(x.nodes)).join('');left=window._MS.rest(m);const t=document.createElement('template');t.innerHTML=left;if(!t.content.textContent.trim())left=''}catch(e){}
+ return grp('Plugs',by('Plug'))+grp('Connects',all.filter(x=>/^(Connect|Grower|Mexico)/.test(x.sub)))+grp('Dealers',by('Dealer'))+grp('Family',by('Family'))+old+(left?`<div class="sec sub">More</div>${left}`:'')}
+function boot(){if(!window._AP13)window._AP13={};window._AP13.contacts=contacts;window._AP13.messages=()=>''}
+boot();
+document.addEventListener('click',e=>{
+ const f=e.target.closest&&e.target.closest('[data-flav]');
+ if(f){e.preventDefault();e.stopPropagation();const n=window._mth,k=f.dataset.fk,i=+f.dataset.flav,K=window._KB;if(!n||!K)return;S.inbox=S.inbox||[];S.inbox.unshift({d:S.day,f:'You',to:n,t:K.FL[k][i]});S.inbox.unshift({d:S.day,f:n,t:pk(K.RP[k])});S.inbox=S.inbox.slice(0,60);render();return}
+ const sy=e.target.closest&&e.target.closest('[data-says]');
+ if(sy&&!sy.disabled&&window._mth){S.inbox=S.inbox||[];S.inbox.unshift({d:S.day,f:'You',to:window._mth,t:sy.dataset.says});S.inbox=S.inbox.slice(0,60)}
+ const nd=e.target.closest&&e.target.closest('[data-needs]');
+ if(nd){e.preventDefault();e.stopPropagation();if(nd.dataset.needs==='crop'){tab='biz';window._rph=null;render()}}
+},true);
 })();
 </script>
 <script>if('serviceWorker' in navigator){addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}</script></body></html>
