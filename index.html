@@ -382,7 +382,7 @@ function readSlot(n){try{const s=JSON.parse(localStorage.getItem(slotKey(n)));if
 function load(n){const raw=readSlot(n||curSlot());if(!raw)return null;let s=null;try{s=migrate(raw);if(s&&!CHARS.find(c=>c.id===s.char))s=null}catch(e){console.error('load',e);s=null}if(s&&!s.slot)s.slot=n||curSlot();return s}
 
 /* ---------- render ---------- */
-function groundSend(){if(S&&S.par&&S.home==='family'&&S.grounded>S.day&&S.sneakOK!==S.day&&S.at!==homeBlock()){S.at=homeBlock();say(`${S.par.name} came and got you. You're grounded, so you're back at the house on ${BLOCKS[S.at]}.`)}}
+function groundSend(){if(S&&S.par&&S.home==='family'&&S.grounded>S.day&&S.sneakOK!==S.day&&S.at!==homeBlock()&&!(S.at===4&&S.school==='in'&&S.classDay===S.day)){S.at=homeBlock();say(`${S.par.name} came and got you. You're grounded, so you're back at the house on ${BLOCKS[S.at]}.`)}}
 /*F2 heat tells you why*/
 const HEATWHY=[[/shipment|package|just dropped|landing|load of|drop/i,'drops'],[/chop|strip|flip/i,'the chop shop'],[/shoot|shot|fight|ambush|jumped|robbed/i,'violence'],[/posted|social|post\b/i,'posting'],[/lick|heist|stole|robbery|broke into/i,'licks'],[/trap/i,'the trap house'],[/sold|served|pulled up for|moved|weight/i,'selling'],[/cops|raid|warrant|officer|patrol/i,'police']];
 function heatSync(){try{if(!S||S.over||S.heat==null)return;if(S.hbase==null){S.hbase=S.heat;S.hsT=(S.log&&S.log[0]||{}).t;S.hsD=(S.log&&S.log[0]||{}).d;return}
@@ -1397,7 +1397,7 @@ function cityMap(){
 function placeAt(id){return PLACES.find(p=>p.id===id).bi}
 function openPlace(id){const P=PLACES.find(p=>p.id===id),bi=placeAt(id);
   if(bi!==S.at){modal(`<h2>${P.ic} ${P.name}</h2><p>That's on <b>${BLOCKS[bi]}</b>. You're on ${BLOCKS[S.at]}.</p><div class="btns"><button class="btn go" id="gt">Go to ${BLOCKS[bi]} (takes a day)</button><button class="btn" id="no">Not now</button></div>`);
-    $('no').onclick=close;$('gt').onclick=()=>{if(S.ha&&S.haOK!==S.day&&stuckHome())return;if(S.grounded>S.day&&S.sneakOK!==S.day){$('modal').hidden=true;say(`You're grounded. ${S.par?S.par.name:'They'} ain't letting you leave the house.`);render();return}$('modal').hidden=true;S.at=bi;say(`Pulled up to ${BLOCKS[bi]}.`);if(S.cal&&S.age&&S.age<18&&S.freeMv!==S.day){S.freeMv=S.day;say('First move of the day is free, so you can still make it to class.')}else{nextDay();checkEnd()}render();if($('modal').hidden)openPlace(id)};return}
+    $('no').onclick=close;$('gt').onclick=()=>{if(S.ha&&S.haOK!==S.day&&stuckHome())return;if(S.grounded>S.day&&S.sneakOK!==S.day&&!(bi===4&&S.school==='in'&&(!S.cal||schoolWeek()))){$('modal').hidden=true;say(`You're grounded. ${S.par?S.par.name:'They'} ain't letting you leave the house.`);render();return}$('modal').hidden=true;S.at=bi;say(`Pulled up to ${BLOCKS[bi]}.`);if(S.cal&&S.age&&S.age<18&&S.freeMv!==S.day){S.freeMv=S.day;say('First move of the day is free, so you can still make it to class.')}else{nextDay();checkEnd()}render();if($('modal').hidden)openPlace(id)};return}
   const row=(t,sub,btn)=>`<div class="row" style="padding:8px 12px;flex-wrap:wrap"><div class="info" style="flex:1 1 180px"><div class="t">${t}</div><div class="s">${sub}</div></div>${btn}</div>`;
   const b=(k,l,dis,c='go')=>`<button class="btn ${c}" data-pl="${k}" ${dis?'disabled':''}>${l}</button>`;
   let body='';
@@ -8068,7 +8068,7 @@ window.addEventListener('keyup',e=>{const b=held[e.key];if(!b)return;delete held
 .bizgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:6px 0}
 .bizgrid .row{flex-direction:column;align-items:stretch!important;gap:8px;margin:0!important;border-radius:14px}
 .bizgrid .row .btn{width:100%}
-#mcard>img,#mcard>div>img.art,#mcard>.art{max-height:120px;width:100%;object-fit:cover;border-radius:10px;margin-bottom:8px}
+#mcard>img,#mcard>div>img.art,#mcard>.art{max-height:190px;width:auto;max-width:100%;object-fit:contain;display:block;margin:0 auto 8px;border-radius:10px}
 #mcard h2{font-size:22px;line-height:1.15}
 button.needc{box-shadow:inset 0 0 0 2px #5fd68a}button.needc.no{box-shadow:inset 0 0 0 2px #e8a33a}
 
@@ -8275,5 +8275,41 @@ function xf(){const P=document.getElementById('pane');if(!P||P.querySelector('.b
  const rows=['w4_cook','w4_dog','w4_race','w4_chopb','w4_inf','w4_bnt'].map(a=>{const b=P.querySelector(`[data-a=${a}]`);return b&&b.closest('.row')}).filter(Boolean);
  if(rows.length>=3){const d=document.createElement('details');d.className='blk-more wspan';if(window._blkMore)d.open=true;d.innerHTML=`<summary>More on this block (${rows.length})</summary>`;rows[0].before(d);rows.forEach(r=>d.appendChild(r));d.addEventListener('toggle',()=>{window._blkMore=d.open})}}
 render=function(){const r=_r.apply(this,arguments);try{xf()}catch(e){console.error('skin20',e)}return r}})();
+</script>
+<style id="skin21">
+.mv-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin:8px 0}
+.mv-tile{position:relative;text-align:center;padding:14px 8px;border-radius:14px;border:1px solid #2a2a2e;border-top-color:#383841;background:linear-gradient(180deg,#1c1c21,#16161a);color:inherit;font:inherit;cursor:pointer;transition:transform .08s,border-color .15s}
+.mv-tile:hover{border-color:var(--accent,#e8c34a)}.mv-tile:active{transform:scale(.97)}
+.mv-tile .i{font-size:26px}.mv-tile .t{font-weight:700;margin-top:4px}.mv-tile .s{font-size:11.5px;opacity:.65}
+.mv-tile .bd{position:absolute;top:7px;right:7px;font-size:10px;font-weight:700;background:#25252b;border-radius:99px;padding:1px 7px}
+.mv-tile .bd.hot{background:#e8c34a;color:#111}
+.mv-back{display:flex;align-items:center;gap:10px;margin:6px 0}.mv-back button{background:none;border:0;color:var(--accent,#e8c34a);font:inherit;font-weight:700;cursor:pointer;padding:6px 0}.mv-back .h{font-weight:700;letter-spacing:.08em;text-transform:uppercase;font-size:12px;opacity:.8}
+</style>
+<script id="skin21js">
+(function(){if(typeof render!=='function')return;const _r=render;
+const IC={Fitness:'🏋️',Shops:'🛍️',Services:'🏥','Out and about':'🌆',Gambling:'🎰','Mini games':'🎮','Out of town':'✈️','Own a business':'🏪','Supply chain':'⛓️','Go legit':'🚪','Business moves':'📈',Laundering:'💸','Make it':'🌿','Your product':'📦','Real estate':'🏠',Workers:'👷'};
+const ST={move:{open:null},biz:{open:null}};window._mvUse=window._mvUse||{};
+const key=t=>Object.keys(IC).find(k=>t.startsWith(k))||t;
+function readyCrop(){try{return Object.values((S.mk||{}).g||{}).some(c=>S.day>=c.ready)}catch(e){return false}}
+function xf(){if(typeof tab==='undefined'||!ST[tab])return;const T=tab,st=ST[T],P=document.getElementById('pane');if(!P||P.querySelector('.mv-grid,.mv-back'))return;
+ let first;if(T==='move'){const mvh=P.querySelector('.mvh');if(!mvh)return;first=mvh.nextElementSibling}else{first=[...P.children].find(e=>e.classList.contains('sec'))}
+ if(!first)return;
+ const groups=[];let g=null;for(let el=first;el;el=el.nextElementSibling){if(el.classList.contains('sec')){g={title:el.textContent.trim(),els:[el],rows:0};groups.push(g)}else if(g){g.els.push(el);if(el.classList.contains('row')||el.classList.contains('bizgrid'))g.rows++}}
+ if(groups.length<3)return;
+ const open=st.open&&groups.find(x=>key(x.title)===st.open);
+ const before=T==='move'?P.querySelector('.mvh').nextElementSibling:first;
+ if(open){st.open=key(open.title);if(T==='move')P.querySelectorAll('.cbd,.mvh').forEach(e=>e.hidden=true);groups.forEach(x=>{if(x!==open)x.els.forEach(e=>e.hidden=true)});open.els[0].hidden=true;
+  before.insertAdjacentHTML('beforebegin',`<div class="mv-back wspan"><button data-mvback>‹ ${T==='move'?'Move':'Business'}</button><span class="h">${open.title}</span></div>`);return}
+ st.open=null;groups.forEach(x=>x.els.forEach(e=>e.hidden=true));
+ const sorted=[...groups].sort((a,b)=>(window._mvUse[key(b.title)]||0)-(window._mvUse[key(a.title)]||0));
+ const tiles=sorted.map(x=>{const k=key(x.title),hot=(/^Mini games/.test(x.title)&&x.rows>0)||(k==='Make it'&&readyCrop());return `<button class="mv-tile" data-mvopen="${k}"><span class="bd ${hot?'hot':''}">${hot&&k==='Make it'?'Crop ready':x.rows}</span><div class="i">${IC[k]||'📍'}</div><div class="t">${x.title}</div></button>`}).join('');
+ before.insertAdjacentHTML('beforebegin',`<div class="mv-grid wspan">${tiles}</div>`)}
+render=function(){const r=_r.apply(this,arguments);try{xf()}catch(e){console.error('skin21',e)}return r};
+document.addEventListener('click',e=>{const o=e.target.closest&&e.target.closest('[data-mvopen]');if(o&&ST[tab]){ST[tab].open=o.dataset.mvopen;window._mvUse[o.dataset.mvopen]=(window._mvUse[o.dataset.mvopen]||0)+1;render();return}
+ if(e.target.closest&&e.target.closest('[data-mvback]')&&ST[tab]){ST[tab].open=null;render();return}},true);
+document.addEventListener('keydown',e=>{if(typeof tab==='undefined'||!ST[tab]||window.mgOn||!document.getElementById('modal').hidden||/INPUT|TEXTAREA/.test((e.target||{}).tagName||''))return;
+ if(e.key==='Escape'&&ST[tab].open){ST[tab].open=null;render();e.preventDefault();return}
+ if(!ST[tab].open&&/^[1-9]$/.test(e.key)){const t=document.querySelectorAll('#pane .mv-tile')[+e.key-1];if(t){t.click();e.preventDefault();e.stopImmediatePropagation()}}},true);
+})();
 </script>
 <script>if('serviceWorker' in navigator){addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}</script></body></html>
