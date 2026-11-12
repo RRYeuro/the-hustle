@@ -1220,7 +1220,7 @@ function w4Act(a,el){if(a.slice(0,3)!=='w4_')return false;const X=w4(),hp=n=>{S.
   if(a==='w4_ty'){w4Reply(+el.dataset.i,true);return true}
   if(a==='w4_tn'){w4Reply(+el.dataset.i,false);return true}
   if(a==='w4_mis'){w4Mission(+el.dataset.i);return true}
-  if(a==='w4_post'){if(S.credPost===S.day)return true;if(S.age&&S.age<14)return true;if(spendEn(6)===false)return true;S.credPost=S.day;credAdd(S.at,6);S.heat=Math.min(100,S.heat+1);say(`Posted up on the corner in ${BLOCKS[S.at]}. People saw you.`);render();return true}
+  if(a==='w4_post'){if(S.credPost===S.day){say('You already posted up today. Come back tomorrow.');render();return true}if(S.age&&S.age<14)return true;if(spendEn(6)===false)return true;S.credPost=S.day;credAdd(S.at,6);S.heat=Math.min(100,S.heat+1);say(`Posted up on the corner in ${BLOCKS[S.at]}. People saw you.`);render();return true}
   if(a==='w4_cook'){if(S.cash<300||X.cook===S.day)return true;S.cash-=300;X.cook=S.day;w4Br(8);S.heat=Math.max(0,S.heat-4);say('Threw a block cookout. Everybody ate and the block noticed.');render();return true}
   if(a==='w4_dog'){if(S.cash<400||X.dog)return true;S.cash-=400;X.dog={n:pick(['Rex','Tank','Bruno','Duke','Diesel'])};say(`Got a dog. ${X.dog.n} is on the stash.`);if(ARTX('dog'))wNote('dog','New dog',`${X.dog.n} will watch your stash house.`);render();return true}
   if(a==='w4_dogx'){return true}
@@ -6752,7 +6752,7 @@ function confirmChar(id,yes,no){const c=CHARS.find(x=>x.id===id);
   modal(`<h2>Play as ${c.name}?</h2>${PORTRAITS[id]?`<img src="${PORTRAITS[id]}" alt="" style="width:96px;height:96px;border-radius:8px;object-fit:cover;float:right;margin:0 0 8px 10px">`:''}<p>${c.role}. You can go back and pick someone else.</p><div class="btns" style="clear:both"><button class="btn go" id="cyes">Start as ${c.name}</button><button class="btn" id="cno">Back</button></div>`);
   $('cyes').onclick=()=>yes(id);$('cno').onclick=no}
 function toast(t,good){let o=document.getElementById('toast');if(!o){o=document.createElement('div');o.id='toast';o.style.cssText='position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:9000;max-width:min(92vw,520px);padding:10px 14px;border-radius:8px;background:var(--panel);color:var(--fg);border:1px solid var(--accent);box-shadow:0 6px 24px rgba(0,0,0,.5);font-size:14px;line-height:1.35;transition:opacity .25s;pointer-events:none';document.body.appendChild(o)}
-  o.textContent=t;o.style.borderColor=good===true?'var(--money)':good===false?'var(--blood)':'var(--accent)';o.style.opacity=1;clearTimeout(o._t);o._t=setTimeout(()=>{o.style.opacity=0},2800)}
+  o.textContent=t;o.style.borderColor=good===true?'var(--money)':good===false?'var(--blood)':'var(--accent)';o.style.opacity=1;clearTimeout(o._t);o.style.pointerEvents='auto';o.onclick=()=>{clearTimeout(o._t);o.style.opacity=0};o._t=setTimeout(()=>{o.style.opacity=0},Math.min(9000,Math.max(4500,String(t).length*70)))}
 function flash(t,good){say(t);window._qf={t,good}}
 function turnsTxt(n){return S&&S.cal?(n===1?'1 turn':n+' turns'):(n===1?'1 day':n+' days')}
 function dayTxt(d){if(!S||!S.cal)return 'day '+d;const n=d-S.day;if(n===0)return 'today';if(n===1)return 'next turn';const dt=calDate(d);return ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][dt.getUTCMonth()]+' '+dt.getUTCDate()}
@@ -7371,7 +7371,7 @@ document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest
 const APPS=[['👤','CONTACTS','beef','#3fd0c9'],['🧺','TRAP','beef','#f5a524'],['💵','BANK','money','#5fd38a'],['🗺️','MAP','move','#a98bff'],['🧍','CREW','beef','#3fd0c9'],['🏠','HOUSES','spots','#f5a524'],['🎒','STASH','bag','#e8504a'],['📰','NEWS','block','#a98bff']];
 let tm=0;
 function toast(f,t){try{let s=document.getElementById('sms');if(!s){s=document.createElement('div');s.id='sms';s.setAttribute('role','status');document.body.appendChild(s)}
- s.innerHTML='<div class="f"></div><div class="t"></div>';s.firstChild.textContent='MESSAGES · '+String(f).toUpperCase();s.lastChild.textContent=t;s.classList.add('on');clearTimeout(tm);tm=setTimeout(()=>s.classList.remove('on'),4200)}catch(e){}}
+ s.innerHTML='<div class="f"></div><div class="t"></div>';s.firstChild.textContent='MESSAGES · '+String(f).toUpperCase();s.lastChild.textContent=t;s.classList.add('on');clearTimeout(tm);tm=setTimeout(()=>s.classList.remove('on'),Math.min(9000,Math.max(5000,String(t).length*70)))}catch(e){}}
 const _pm=phoneMsg;phoneMsg=function(f,t){const r=_pm.apply(this,arguments);toast(f,t);return r};
 function grid(){let tx='';try{if(typeof clCity==='function'&&clCity()&&typeof clStreetLane==='function'&&clStreetLane()&&typeof clRH==='function'&&clRH())tx='<div class="aptxt"><b>TEXT YOUR RIGHT HAND</b><button class="btn go" data-ap2="load">Pick up the load</button><button class="btn" data-ap2="drop">Make the drop</button></div>'}catch(e){}
  return '<div class="apgrid">'+APPS.map(a=>`<button data-ap="${a[2]}" style="--c:${a[3]}"><i>${a[0]}</i>${a[1]}</button>`).join('')+tx+'</div>'}
