@@ -7256,7 +7256,7 @@ function gateGame(title,txt,go,art){modal(`${art?a2(art,340):''}<h2>${title}</h2
   stripGame:()=>['Strip it fast','Parts pop up one at a time. Tap each before it disappears. The more you get, the more the chop shop pays.'],
   scaleGame:()=>['Weigh and bag','Hold Pour to add product, let go near the target weight, tap Trim to take a little off, then Lock in. Within 0.3 g counts. Better bags mean less quality lost in the cut.'],
   overwatchGame:()=>['Overwatch','Windows flash. Tap the red gun, never the civilians. Spot 4 and stay clean and you see them first (their strength drops 25%). Fail and you start the fight rattled.'],
-  shootoutGame:a=>['Shootout vs '+a[2],'Do the math. Each round shows their cover number and a hand of cards. Tap cards that add up to the number, then hit FIRE before the timer ends. Wrong number or too slow and they shoot you.'],
+  shootoutGame:a=>['Shootout vs '+a[2],'A crew fight. Each round pick 1 of 4 cards (keys 1 to 4), then Start fight (Space). Your card goes first, your crew shoots too, then they shoot back. Cards spend ammo, press R to reload. Drop their boss and the rest scatter. Your gun sets your damage and clip.'],
   talkGame:()=>['Talk your way through','You get a few lines. Pick the answer that fits the moment: confident and calm usually works, mouthing off or sounding unsure can cost you. Read each choice before you tap.'],
   hoopsG:()=>['Shooting contest','A marker slides back and forth. Tap Shoot (or press Space) when it is inside the zone. Bigger bets mean more on the line, so do not rush it.'],
   fightGame0:a=>['Fight vs '+a[2],'One 20 second round. Red flash: left hook means Dodge Right, right cross means Dodge Left. Yellow is unblockable, dodge either way. Blue means he is open: hit Heavy. Jab is a quick light hit. Hold Guard to take 75% less from hooks and crosses. Three clean hits unlock a Finisher. He fakes sometimes, so do not bite. Swinging and dodging cost stamina. Keys: left and right arrows dodge, down arrow guards, up arrow jabs, Space heavy, F finisher (A D S J K work too).']};
@@ -8373,6 +8373,119 @@ document.addEventListener('click',e=>{
  const nd=e.target.closest&&e.target.closest('[data-needs]');
  if(nd){e.preventDefault();e.stopPropagation();if(nd.dataset.needs==='crop'){tab='biz';window._rph=null;render()}}
 },true);
+})();
+</script>
+<style id="skin23">
+#sob .u{width:56px;text-align:center;font-size:10px;transition:transform .15s,opacity .3s}
+#sob .pic{width:56px;height:56px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:22px;border:2px solid rgba(255,255,255,.2);position:relative;overflow:hidden;color:#fff}
+#sob .pic img{width:100%;height:100%;object-fit:cover;display:block}
+#sob .foe{width:auto;display:flex;align-items:center;gap:6px;flex-direction:row-reverse}#sob .foe .pic{width:38px;height:38px;font-size:15px;border-radius:9px}
+#sob .hp{height:4px;background:rgba(255,255,255,.14);border-radius:9px;overflow:hidden;margin-top:3px}#sob .hp i{display:block;height:100%;background:linear-gradient(90deg,#5bffa8,#7df9ff);transition:width .4s}
+#sob .foe .hp{width:44px}#sob .foe .hp i{background:linear-gradient(90deg,#ff4655,#ff8a45)}
+#sob .dead{opacity:.22;filter:grayscale(1)}#sob .hit{transform:translateX(-6px) scale(.96)}#sob .foe.hit{transform:translateX(6px) scale(.96)}
+#sob .tg{font-size:9px;color:#aab1c6;margin-top:2px;white-space:nowrap}#sob .bt{position:absolute;left:-2px;top:-7px;font-size:8px;background:#f5b942;color:#111;font-weight:800;padding:1px 5px;border-radius:5px;z-index:2}
+#sob .arena{position:relative;border-radius:14px;overflow:hidden;height:250px;background:#10131f center/cover;box-shadow:inset 0 0 0 1px rgba(255,255,255,.12)}
+#sob .arena::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,10,18,.55),rgba(8,10,18,.82))}
+#sob .side{position:absolute;display:flex}#sob #sc{left:8px;top:8px;gap:7px}#sob #sf{right:8px;top:8px;flex-direction:column;gap:4px}
+#sob .ttl{position:absolute;left:0;right:0;top:92px;text-align:center;font-weight:900;font-size:44px;font-style:italic;color:#fff;text-shadow:0 0 22px #ff4655,0 4px 0 #8a1020;opacity:0;pointer-events:none}
+#sob .ttl.on{animation:sbslam .9s ease-out forwards}@keyframes sbslam{0%{opacity:0;transform:scale(2.4)}15%{opacity:1;transform:scale(1)}80%{opacity:1}100%{opacity:0;transform:scale(.95)}}
+#sob .fl{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none}#sob .fl.on{animation:sbfl .2s}@keyframes sbfl{0%{opacity:.35}100%{opacity:0}}
+#sob .shk{animation:sbsh .25s}@keyframes sbsh{20%{transform:translate(-5px,2px)}40%{transform:translate(5px,-3px)}60%{transform:translate(-3px,3px)}80%{transform:translate(3px,-2px)}}
+#sob .dmg{position:absolute;font-weight:900;font-size:16px;animation:sbup .9s forwards;pointer-events:none;text-shadow:0 2px 6px #000;z-index:3}@keyframes sbup{to{transform:translateY(-34px);opacity:0}}
+#sob .lg{position:absolute;left:8px;right:8px;bottom:6px;text-align:center;font-size:12px;color:#7df9ff;min-height:16px;z-index:2}
+#sob .bar2{display:flex;gap:6px;margin:8px 0 6px}#sob .bar2>div{flex:1;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:5px 8px;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#8e96aa}#sob .bar2 b{display:block;font-size:15px;letter-spacing:0;color:#fff}
+#sob .hand{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+#sob .cd{padding:8px 6px;border-radius:12px;border:1.5px solid rgba(255,255,255,.15);background:rgba(255,255,255,.06);color:#fff;cursor:pointer;text-align:left;font:inherit;min-height:112px;display:flex;flex-direction:column;gap:3px}
+#sob .cd .k{font-size:10px;color:#7d8498}#sob .cd .n{font-weight:800;font-size:12.5px}#sob .cd .d{font-size:10px;color:#aab1c6;line-height:1.3;flex:1}#sob .cd .c{font-size:10px;color:#f5b942;font-weight:700}
+#sob .cd.sel{border-color:#7df9ff;background:rgba(125,249,255,.13);box-shadow:0 0 16px rgba(125,249,255,.25)}#sob .cd:disabled{opacity:.35}
+#sob .btnr{display:flex;gap:8px;margin-top:8px}#sob .btnr button{padding:13px;border-radius:12px;border:0;color:#fff;font-weight:800;font-size:14px;cursor:pointer}
+#sob .gob{flex:1;background:linear-gradient(135deg,#ff4655,#ff7a45)}#sob .gob:disabled{opacity:.4}#sob .sm{flex:0 0 78px;background:rgba(255,255,255,.1)!important;border:1px solid rgba(255,255,255,.14)!important}
+#sob .kh{font-size:10.5px;color:#7d8498;text-align:center;margin-top:7px}
+@media(max-width:430px){#sob .hand{grid-template-columns:repeat(2,1fr)}#sob .ttl{font-size:34px}}
+</style>
+<script id="skin23js">
+(function(){
+const E=x=>String(x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const R=(a,b)=>Math.floor(a+Math.random()*(b-a+1));
+const CARDS=[
+{id:'spray',n:'Spray',d:'Hits ALL of them. Light damage.',a:3,k:'ALL HIT'},
+{id:'focus',n:'Pick one',d:'Heavy shot on one target.',a:1,k:'HEADSHOT'},
+{id:'boss',n:'Take the boss',d:'Big shot on their boss. If he drops, they scatter.',a:2,k:'TAKE HIM OUT'},
+{id:'flank',n:'Flank',d:'Double hit from the side on 2 targets.',a:2,k:'FLANK'},
+{id:'sup',n:'Suppress',d:'Hits 2 and pins them. They hit half as hard this round.',a:2,k:'PINNED'},
+{id:'rush',n:'Rush',d:'Huge hit on one target. You eat extra damage.',a:1,k:'RUSH'},
+{id:'hold',n:'Hold the corner',d:'Crew takes half damage and heals a little.',a:0,k:'HOLD IT DOWN'},
+{id:'patch',n:'Patch up',d:'Heal whoever is hurt worst.',a:0,k:'PATCH UP'},
+{id:'call',n:'Call the plug',d:'Backup hits 3. Costs 2 rep.',a:0,k:'BACKUP'},
+{id:'bluff',n:'Bluff',d:'30% they all run. Fail and you take extra.',a:0,k:'BLUFF'}];
+const portrait=()=>{try{const C=CHARS.find(c=>c.id===S.char);return PORTRAITS[C.id]||''}catch(e){return ''}};
+const pic=(u)=>u.img?`<img src="${u.img}" alt="">`:`<span>${E(u.n[0])}</span>`;
+window.shootoutGame0=function(mine,theirs,who,done){
+ mgOn=true;
+ const share=mine/(mine+theirs),best=Object.keys(S.guns||{}).sort((a,b)=>gStr(b)-gStr(a))[0]||'pistol',GS=GUNS[best]||GUNS.pistol;
+ const gmul=.7+gStr(best)/20,mag=Math.max(6,Math.min(12,GS.mag||8)),total=Math.max(3,Math.min(7,3+Math.round(theirs/10)));
+ const foeHp=Math.round(46+(1-share)*34),foeDmg=Math.round(5+(1-share)*9),bossHp=Math.round(foeHp*1.6);
+ let crew=[];try{crew=crewOk().slice(0,3)}catch(e){}
+ const allies=[{n:'You',hp:100,max:100,img:portrait(),me:1,c:'#2a6df4'}].concat(crew.map((m,i)=>{const h=60+m.sk.shoot*8;return{n:m.name,hp:h,max:h,sh:m.sk.shoot,img:(typeof CUSTPICS!=='undefined'&&CUSTPICS[m.name])||'',c:['#8e44ad','#16a085','#e67e22'][i%3]}}));
+ const foes=[];for(let i=0;i<total;i++){const b=i===0;foes.push({n:b?'BOSS':'G'+i,hp:b?bossHp:foeHp,max:b?bossHp:foeHp,boss:b,img:OPPPICS[i%OPPPICS.length],c:'#7f8c8d'})}
+ const st={rd:1,ammo:mag,mag,hand:[],sel:null,busy:false,over:false,kills:0,fast:false,pinned:0,bluff:0,rep:0,max:Math.max(10,total*3)};
+ const sleep=ms=>new Promise(r=>setTimeout(r,ms/(st.fast?2:1)));
+ const alive=a=>a.filter(u=>u.hp>0),live=()=>!!$('sob')&&!st.over;
+ modal(`<div id="sob"><div class="sec" style="margin:0;color:var(--blood)">Shootout</div><h2>You vs ${E(who)}</h2>
+  <div id="sbG"><div class="arena" id="sbA" style="background-image:url(${SHOOTBG})"><div class="side" id="sc"></div><div class="side" id="sf"></div><div class="ttl" id="sbTt"></div><div class="fl" id="sbF"></div><div class="lg" id="sbL"></div></div>
+  <div class="bar2"><div>Round <b id="sbR">1</b></div><div>${E(gName?gName(best):'Gun')} <b id="sbAm"></b></div><div>Crew <b id="sbC"></b></div><div>Them <b id="sbN"></b></div><div style="flex:0 0 58px;padding:0"><button id="sbS" style="width:100%;height:100%;background:none;border:0;color:#fff;font-weight:800;cursor:pointer;font-size:12px">2x</button></div></div>
+  <div class="hand" id="sbH"></div>
+  <div class="btnr"><button class="gob" id="sbFt" disabled>Start fight</button><button class="sm" id="sbRl">Reload</button></div>
+  <div class="kh"><b>1</b>–<b>4</b> pick · <b>Space</b> start fight · <b>R</b> reload</div></div></div>`);
+ const deal=()=>{const pool=[...CARDS].sort(()=>Math.random()-.5);let h=pool.slice(0,4);if(!h.some(c=>c.a===0))h[3]=pool.slice(4).find(c=>c.a===0);if(st.ammo>0&&!h.some(c=>c.id==='boss'&&alive(foes)[0]===foes[0])&&foes[0].hp>0&&Math.random()<.35)h[R(0,2)]=CARDS.find(c=>c.id==='boss');st.hand=h;st.sel=null};
+ const paint=()=>{if(!live())return;$('sbR').textContent=st.rd;$('sbAm').textContent=st.ammo+'/'+st.mag;$('sbC').textContent=alive(allies).length;$('sbN').textContent=alive(foes).length;
+  $('sc').innerHTML=allies.map((u,i)=>`<div class="u ${u.hp<=0?'dead':''}" id="sa${i}"><div class="pic" style="background:${u.c}">${pic(u)}</div><div class="hp"><i style="width:${Math.max(0,u.hp/u.max*100)}%"></i></div><div class="tg">${E(u.n)} ${Math.max(0,u.hp)}</div></div>`).join('');
+  $('sf').innerHTML=foes.map((u,i)=>`<div class="u foe ${u.hp<=0?'dead':''}" id="sf${i}"><div class="pic" style="background:${u.c}">${pic(u)}${u.boss?'<span class="bt">BOSS</span>':''}</div><div><div class="hp"><i style="width:${Math.max(0,u.hp/u.max*100)}%"></i></div><div class="tg">${Math.max(0,u.hp)}</div></div></div>`).join('');
+  $('sbH').innerHTML=st.hand.map((c,i)=>`<button class="cd ${st.sel===i?'sel':''}" data-i="${i}" ${c.a>st.ammo||st.busy?'disabled':''}><span class="k">${i+1}</span><span class="n">${c.n}</span><span class="d">${c.d}</span><span class="c">${c.a?c.a+' ammo':'free'}</span></button>`).join('');
+  $('sbH').querySelectorAll('.cd').forEach(b=>b.onclick=()=>pick(+b.dataset.i));$('sbFt').disabled=st.busy||st.sel===null;$('sbRl').disabled=st.busy||st.ammo>=st.mag};
+ const say=t=>{const e=$('sbL');if(e)e.textContent=t};
+ const shake=()=>{const a=$('sbA');if(!a)return;a.classList.remove('shk');void a.offsetWidth;a.classList.add('shk');const f=$('sbF');f.classList.remove('on');void f.offsetWidth;f.classList.add('on')};
+ const pop=(id,t,col)=>{const el=$(id),a=$('sbA');if(!el||!a)return;const r=el.getBoundingClientRect(),b=a.getBoundingClientRect(),d=document.createElement('div');d.className='dmg';d.style.cssText=`color:${col};left:${r.left-b.left+r.width/2-8}px;top:${r.top-b.top}px`;d.textContent=t;a.appendChild(d);setTimeout(()=>d.remove(),900)};
+ const title=async t=>{const e=$('sbTt');if(!e)return;e.textContent=t;e.classList.remove('on');void e.offsetWidth;e.classList.add('on');await sleep(850)};
+ const hurt=async(side,i,d,col)=>{const u=side[i];if(!u||u.hp<=0||!live())return;const was=u.hp;u.hp-=d;if(u.hp<=0&&side===foes&&was>0){st.kills++;try{S.bodies=(S.bodies||0)+1}catch(e){}}const id=(side===foes?'sf':'sa')+i;const el=$(id);el&&el.classList.add('hit');pop(id,'-'+d,col);shake();paint();await sleep(210);const e2=$(id);e2&&e2.classList.remove('hit')};
+ const F=()=>foes.map((u,i)=>u.hp>0?i:-1).filter(i=>i>=0);
+ const pick=i=>{if(st.busy||st.over||!st.hand[i]||st.hand[i].a>st.ammo)return;st.sel=i;paint()};
+ const finish=win=>{if(st.over)return;st.over=true;mgOn=false;const down=allies.filter(u=>u.hp<=0&&!u.me).length;
+  setTimeout(()=>{modal(`<h2 style="color:${win?'var(--money)':'var(--blood)'}">${win?'They fell back':'You had to fall back'}</h2><p>${win?`You dropped ${st.kills} of them in ${st.rd} rounds. ${E(who)} scattered.`:`${E(who)} had you pinned.`}${down?` ${down} of your crew went down in the fight.`:''}${st.rep?' Calling the plug cost you some rep.':''}</p><div class="btns"><button class="btn go" id="ok">Continue</button></div>`);$('ok').onclick=()=>{$('modal').hidden=true;try{done(win)}catch(e){console.error(e)}}},300)};
+ const myHit=(d)=>Math.max(6,Math.round(d*gmul*(.8+share*.4)));
+ const fight=async()=>{if(st.busy||st.over||st.sel===null)return;st.busy=true;const card=st.hand[st.sel];paint();
+  let guard=false;st.ammo-=card.a;
+  await title(card.k);paint();
+  if(card.id==='spray'){say('Everybody catches one.');for(const i of F())await hurt(foes,i,myHit(R(12,18)),'#fff')}
+  else if(card.id==='focus'){const i=F()[0];say('Dropped him back.');await hurt(foes,i,myHit(R(38,52)),'#ff4655')}
+  else if(card.id==='boss'){const i=foes[0].hp>0?0:F()[0];say(i===0?'Boss takes it.':'Got one.');await hurt(foes,i,myHit(R(50,66)),'#f5b942')}
+  else if(card.id==='flank'){say('Hit from the side.');for(const i of F().slice(0,2))await hurt(foes,i,myHit(R(26,36)),'#f5b942')}
+  else if(card.id==='sup'){say('They are pinned down.');st.pinned=1;for(const i of F().slice(0,2))await hurt(foes,i,myHit(R(14,22)),'#7df9ff')}
+  else if(card.id==='rush'){say('You rush him.');await hurt(foes,F()[0],myHit(R(56,72)),'#ff4655');st.bluff=1}
+  else if(card.id==='hold'){guard=true;say('Crew in cover. Patching up.');allies.forEach(u=>{if(u.hp>0)u.hp=Math.min(u.max,u.hp+8)});paint();await sleep(600)}
+  else if(card.id==='patch'){const w=alive(allies).sort((a,b)=>a.hp/a.max-b.hp/b.max)[0];if(w){const h=R(25,35);w.hp=Math.min(w.max,w.hp+h);pop('sa'+allies.indexOf(w),'+'+h,'#5bffa8');say(w.n+' patched up.')}paint();await sleep(600)}
+  else if(card.id==='call'){say('Plug sent people.');try{S.rep=Math.max(0,S.rep-2);st.rep=1}catch(e){}for(const i of F().slice(0,3))await hurt(foes,i,R(22,32),'#7df9ff')}
+  else if(card.id==='bluff'){if(Math.random()<.3){say('They ran. It worked.');foes.forEach(u=>u.hp=0);paint();await sleep(700);return finish(true)}say('They called it. Extra damage.');st.bluff=1;await sleep(700)}
+  if(!live())return;
+  // crew shoots
+  if(F().length&&card.id!=='bluff'){for(const a of alive(allies)){if(a.me||!F().length)continue;await hurt(foes,F()[R(0,F().length-1)],Math.round(5+(a.sh||1)*2.2),'#9ad')}}
+  if(!F().length)return finish(true);
+  if(foes[0].hp<=0&&!st.bossDown){st.bossDown=1;say('Boss is down. They are scattering.');foes.forEach(u=>{if(u.hp>0)u.hp=Math.min(u.hp,10)});paint();await sleep(700)}
+  await title('THEY SHOOT');if(!live())return;
+  for(const f of alive(foes).slice(0,4)){const t=alive(allies);if(!t.length)break;const a=t[R(0,t.length-1)],i=allies.indexOf(a);let d=foeDmg+R(0,4)+(f.boss?5:0);if(guard)d=Math.round(d/2);if(st.pinned)d=Math.round(d/2);if(st.bluff)d+=4;await hurt(allies,i,d,'#ff6b6b')}
+  st.pinned=0;st.bluff=0;
+  if(!live())return;
+  if(allies[0].hp<=0||!alive(allies).length)return finish(false);
+  st.rd++;if(st.rd>st.max)return finish(F().length<=Math.floor(total/2));
+  deal();st.busy=false;say('Pick a card. Reload if you are dry.');paint()};
+ const reload=async()=>{if(st.busy||st.over||st.ammo>=st.mag)return;st.busy=true;st.sel=null;paint();say('Reloading while they shoot…');await sleep(500);st.ammo=st.mag;await title('RELOAD');await title('THEY SHOOT');for(const f of alive(foes).slice(0,3)){const t=alive(allies);if(!t.length)break;const a=t[R(0,t.length-1)];await hurt(allies,allies.indexOf(a),foeDmg+R(0,3),'#ff6b6b')}
+  if(!live())return;if(allies[0].hp<=0||!alive(allies).length)return finish(false);st.rd++;if(st.rd>st.max)return finish(F().length<=Math.floor(total/2));deal();st.busy=false;say('Reloaded. Pick a card.');paint()};
+ const kd=e=>{if(!$('sob')){document.removeEventListener('keydown',kd,true);return}
+  if(e.key>='1'&&e.key<='4'){pick(+e.key-1);e.stopPropagation()}else if(e.key===' '){e.preventDefault();e.stopPropagation();if(!$('sbFt').disabled)fight()}else if(e.key==='r'||e.key==='R'){e.stopPropagation();reload()}};
+ document.addEventListener('keydown',kd,true);
+ deal();say('Pick a card, then start the fight.');paint();
+ $('sbFt').onclick=fight;$('sbRl').onclick=reload;$('sbS').onclick=()=>{st.fast=!st.fast;$('sbS').textContent=st.fast?'4x':'2x'};
+};
 })();
 </script>
 <script>if('serviceWorker' in navigator){addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}</script></body></html>
