@@ -4262,7 +4262,7 @@ const newConName=()=>{const own=conList().map(c=>c.name),gone=S.conGone||[];let 
   return pick(L.length?L:CONNECTS)};
 function conDrop(i){const C=conList()[i];if(!C)return;const t=ctier(C);
   modal(`<h2>Drop ${C.name}?</h2><p>You cut ${C.name} off. That opens a spot, and the next connect that finds you has a ${t<2?'good chance of being a higher tier than a '+['Low','Mid','High'][t]+' connect':'shot at another top-tier connect'}. No promises, though: you could end up with someone worse, and you lose ${C.name}'s trust and anything left on your weekly limit.</p><div class="btns"><button class="btn red" id="cd">Drop ${C.name}</button><button class="btn" id="cn">Keep ${C.name}</button></div>`);
-  $('cn').onclick=close;$('cd').onclick=()=>{S.cons=conList().filter(x=>x!==C);S.connect=S.cons[0]||null;S.conGone=(S.conGone||[]).concat(C.name);S.conWant=Math.min(2,t+1);S.ship=(S.ship||[]);say(`You dropped ${C.name}. A spot is open for a new connect.`);close()}}
+  $('cn').onclick=close;$('cd').onclick=()=>{S.cons=conList().filter(x=>x!==C);S.connect=S.cons[0]||null;S.conGone=(S.conGone||[]).concat(C.name);S.conWant=Math.min(2,t+1);S.ship=(S.ship||[]);say(`You dropped ${C.name}. A spot is open for a new connect.`);S.inbox=S.inbox||[];S.inbox.unshift({d:S.day,f:C.name,t:`Cool. We're done then. Don't call me.`});S.inbox=S.inbox.slice(0,16);close()}}
 function addConnect(o){const L=conList();if(L.some(c=>c.name===o.name))return false;S.cons=L;S.cons.push(o);S.connect=S.cons[0];S.conWant=null;S.conSrv=(S.srvU||0)+rnd(180,300)*S.cons.length;return true}
 function connectCand(){if(!canNewConnect())return;const ok=bi=>S.known.includes(bi)&&!S.burned[bi]&&!(S.conAsk||{})[bi];
   if(S.conTh==null)S.conTh=rnd(-8,6);const th=S.conTh;
@@ -4687,7 +4687,7 @@ function burnPlan(bi,base,why){const sec=(S.sec||{})[bi],vouch=vouchOf(bi);let d
   if(sec){d=why==='rob'?5:5;tr=why==='rob'?15:30}
   if(vouch){d=Math.max(3,d-2);tr+=10}
   S.nt=S.nt||{};S.nt[bi]=tr;return {d,sec,vouch}}
-function newPlug(bi){{const L=conList(),g=L.find(c=>c.from===bi);if(g){say(`${g.name} stopped answering. Your connect went with ${plugName(bi)}.`);S.cons=L.filter(c=>c!==g);S.connect=S.cons[0]||null}}if(S.whole)delete S.whole[bi];if(S.conAsk)delete S.conAsk[bi];if(S.enemies)delete S.enemies[bi];if(S.gf&&S.gf.plug===bi)endGF();const why=(S.bwhy||{})[bi];if(S.bwhy)delete S.bwhy[bi];delete S.burned[bi];const sec=(S.sec||{})[bi],fem=sec?!!sec.fem:Math.random()<.5;const nm=sec?sec.name:pick(fem?NEWF:NEWM);S.pname[bi]=nm;S.pfem[bi]=fem?1:0;try{S.ppic=S.ppic||{};const pre=fem?'pp_f':'pp_m',used=Object.values(S.ppic),all=[];for(let i=1;i<=12;i++)if(ARTX(pre+i))all.push(pre+i);const free=all.filter(k=>used.indexOf(k)<0);const pk=free.length?free[Math.floor(Math.random()*free.length)]:all[Math.floor(Math.random()*all.length)];if(pk)S.ppic[bi]=pk;else delete S.ppic[bi]}catch(e){}
+function newPlug(bi){{const L=conList(),g=L.find(c=>c.from===bi);if(g){say(`${g.name} stopped answering. Your connect went with ${plugName(bi)}.`);S.inbox=S.inbox||[];S.inbox.unshift({d:S.day,f:g.name,t:`Yo, my line is dead after what went down with ${plugName(bi)}. Don't hit this number again.`});S.inbox=S.inbox.slice(0,16);S.cons=L.filter(c=>c!==g);S.connect=S.cons[0]||null}}if(S.whole)delete S.whole[bi];if(S.conAsk)delete S.conAsk[bi];if(S.enemies)delete S.enemies[bi];if(S.gf&&S.gf.plug===bi)endGF();const why=(S.bwhy||{})[bi];if(S.bwhy)delete S.bwhy[bi];delete S.burned[bi];const sec=(S.sec||{})[bi],fem=sec?!!sec.fem:Math.random()<.5;const nm=sec?sec.name:pick(fem?NEWF:NEWM);S.pname[bi]=nm;S.pfem[bi]=fem?1:0;try{S.ppic=S.ppic||{};const pre=fem?'pp_f':'pp_m',used=Object.values(S.ppic),all=[];for(let i=1;i<=12;i++)if(ARTX(pre+i))all.push(pre+i);const free=all.filter(k=>used.indexOf(k)<0);const pk=free.length?free[Math.floor(Math.random()*free.length)]:all[Math.floor(Math.random()*all.length)];if(pk)S.ppic[bi]=pk;else delete S.ppic[bi]}catch(e){}
   const nt=(S.nt||{})[bi]??20;if(S.sec)delete S.sec[bi];if(S.nt)delete S.nt[bi];
   S.pbio[bi]=sec?`Was ${fem?'her':'his'} boss's second on ${BLOCKS[bi]}. Stepped up when the last plug fell off. ${nt<=15?'Knows what you did. Walk careful.':'Heard good things about you.'}`:`New plug on ${BLOCKS[bi]}. Took over after the last one ${({rob:'got robbed',raid:'got raided',snitch:'got picked up',fate:'fell out with you'})[why]||'left'}. Don't know much about ${fem?'her':'him'} yet.`;S.trust[bi]=nt;S.deals[bi]=0;
   say(`${nm} ${sec?'stepped up as':'took over as'} the plug on ${BLOCKS[bi]}.`)}
@@ -7787,6 +7787,7 @@ function build(){const T={},get=(k,o)=>T[k]||(T[k]=Object.assign({k,n:k,m:[],ord
   try{(S.texts||[]).forEach((x,i)=>{const c=(S.custos||[])[x.ci];if(!c)return;const t=get(c.name);t.tx.push([x,i,c]);t.inc++;t.last=Math.max(t.last,1e6-1)})}catch(e){}
  const pins=[];const addP=n=>{if(n&&pins.indexOf(n)<0){get(n);pins.push(n)}};
  try{const nm=bi=>(S.pname&&S.pname[bi])||PLUGS[bi];addP(nm(S.at));conList().forEach((C,i)=>{addP(C.name);get(C.name).con=[C,i]});Object.keys(S.deals||{}).forEach(bi=>{if(S.deals[bi]>0)addP(nm(+bi))});w5bDealers().forEach(d=>addP(d.n))}catch(e){}
+ try{if(S.mk&&(S.mk.javi||S.mk.learn))addP('Javi');if(S.mk&&S.mk.mateo)addP('Mateo')}catch(e){}
  pins.splice(8);
  S.msSeen=S.msSeen||{};Object.values(T).forEach(t=>{S.msSeen[t.k]=Math.min(S.msSeen[t.k]||0,t.inc);t.unread=t.inc>(S.msSeen[t.k]||0)});
  return {T,pins}}
@@ -7803,6 +7804,7 @@ window._MS=function(chat){const {T,pins}=build(),C=S.custos||[],done=S.textAll==
   b+=t.ord.map(([o,i,dd])=>`<div class="day">Order</div>${ordB(o,i,dd)}`).join('');
    b+=t.tx.map(([x,i,c])=>`<div class="day">${dayL(x.day)}</div>${txB(x,i,c)}`).join('');
    if(t.con){try{b+=`<div class="day">The connect</div>${paneConnect1(t.con[0],t.con[1])}`}catch(e){}}
+   try{if(window._MK&&(t.n==='Javi'||t.n==='Mateo'))b+=window._MK.card(t.n)}catch(e){}
   return `<div class="mth-view mth-th"><div class="mth-top"><button class="bk" data-mth="">&#8249; Messages</button><div class="mth-id">${av(t.n)}<span>${E(t.n)}</span></div><span class="mth-sp"></span></div><div class="ph-chat">${b}<span id="msxFeed" class="ph-chat" style="padding:0"></span></div><div class="mth-bar"><div class="mth-in">iMessage</div>${t.grp?`<button class="mth-send" data-a="ptext" ${done||!C.length?'disabled':''} aria-label="Send">&#8593;</button>`:''}</div></div>`}
  const rows=Object.values(T).filter(t=>t.m.length||t.ord.length||t.tx.length).sort((a,b)=>b.last-a.last);
  const pinH=pins.length?`<div class="mth-pins">${pins.map(p=>{const t=T[p];return `<button class="mth-pin" data-mth="${E(encodeURIComponent(p))}">${av(t.n,1)}${t.unread?'<i class="mth-dot"></i>':''}<span>${E(t.n)}</span></button>`}).join('')}</div>`:'';
@@ -8117,6 +8119,117 @@ paneBlock=function(){let h=_pb.apply(this,arguments);
   const k='Street business</div>',i=h.indexOf(k);
   h=i>=0?h.slice(0,i+k.length)+row+h.slice(i+k.length):h+row}catch(e){}
  return h};
+})();
+</script>
+<style id="skin18">
+.mk-b{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.mk-bar{position:relative;height:26px;border-radius:13px;background:#1d2024;border:1px solid #333;overflow:hidden;margin:12px 0}
+.mk-z{position:absolute;top:0;bottom:0;background:rgba(80,200,110,.35);border-left:2px solid #4dd37a;border-right:2px solid #4dd37a}
+.mk-f{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,#c9a227,#e8c34a);width:0}
+.mk-t{position:absolute;top:-2px;bottom:-2px;width:4px;background:#fff;left:50%}
+</style>
+<script id="skin18js">
+(function(){
+if(typeof paneBiz!=='function'||typeof nextDay!=='function')return;
+const M=()=>{S.mk=S.mk||{};const m=S.mk;m.g=m.g||{};m.pk=m.pk||{edib:0,wax:0,rock:0};m.ship=m.ship||[];m.learn=m.learn||0;m.mex=m.mex||0;m.disp=m.disp||0;return m};
+const PR={edib:35,wax:80,rock:110},PN={edib:'Edibles',wax:'Wax',rock:'Rock'},PU={edib:' packs',wax:'g',rock:'g'};
+const inbox=(f,t)=>{S.inbox=S.inbox||[];S.inbox.unshift({d:S.day,f,t});S.inbox=S.inbox.slice(0,16)};
+const room=g=>Math.max(0,Math.floor((S.cap-used()-cartSp())/g.sp));
+const slots=()=>{const a=[];if(adult())a.push({k:'home',n:'Closet grow',cost:200,en:5,days:4,y:80,loc:'your closet'});(b5().re||[]).forEach(p=>a.push({k:'p'+p.id,n:p.n+' grow',cost:1500,en:10,days:6,y:400,loc:'your '+p.n.toLowerCase(),prop:1}));return a};
+const hasProp=()=>(b5().re||[]).length>0;
+const dirty=()=>{try{return dirtyCash()}catch(e){return S.cash}};
+function row(t,s,btns){return `<div class="row" style="flex-wrap:wrap"><div class="info" style="flex:1 1 200px;min-width:0"><div class="t">${t}</div><div class="s">${s}</div>${btns?`<div class="mk-b">${btns}</div>`:''}</div></div>`}
+const B=(k,l,c,dis)=>`<button class="btn ${c||''}" data-mk="${k}" ${dis?'disabled':''}>${l}</button>`;
+function growRows(card){let h='';const m=M();slots().forEach(s=>{const c=m.g[s.k];
+ if(s.prop&&!m.learn){if(!card)h+=row(`🌱 ${s.n}`,'Javi can show you how to run a real grow house. He texts after a few days on the street.','');return}
+ if(!c){const lack=S.cash<s.cost;h+=row(`🌱 ${s.n}`,`${money(s.cost)}, ${s.en} energy. Ready in ${s.days} days, about ${s.y}g of weed.${s.prop?' Raid risk is lower with security.':' Closet crops get found more easily when heat is up.'}`,B('plant:'+s.k,'Start ('+money(s.cost)+')','go',lack)+(s.prop?B('plant:'+s.k+':1','With security ('+money(s.cost+400)+')','',S.cash<s.cost+400):''));return}
+ const rd=S.day>=c.ready;h+=row(`🌿 ${s.n}`,rd?`Ready. ${c.y}g waiting.${c.sec?' Security is on.':''}`:`Day ${s.days-(c.ready-S.day)} of ${s.days}. About ${c.y}g when it's ready.`,rd?B('harv:'+s.k,'Harvest','go'):'')});
+ return h}
+function section(){if(!adult())return '';const m=M();let h=`<div class="sec">Make it</div>`;
+ h+=growRows(false);
+ if(m.learn){const w=S.inv.loud||0,sn=S.inv.snow||0;
+  h+=row('🍪 Edibles','100g of weed and $60 of ingredients make 40 packs worth about $35 each. 3 energy.',B('edib','Cook up a batch','go',w<100||S.cash<60));
+  h+=row('🧴 Wax press','200g of weed makes about 40g of wax at roughly $80 a gram. A mini game decides the quality. 6 energy.',B('wax','Start pressing','go',w<200));
+  h+=row('🧪 Cook rock','10g of coke becomes about 12g of rock, but you need your own property and a steady hand. It can go bad. Big heat. 8 energy.',B('cook','Start cooking','go',sn<10||!hasProp()))}
+ else h+=row('📖 More to learn','Edibles, wax and a real grow house unlock when Javi shows you the ropes.','');
+ const pk=Object.keys(PN).filter(k=>m.pk[k]>0);
+ if(pk.length)h+=`<div class="sec">Your product</div>`+pk.map(k=>row(`${PN[k]}: ${m.pk[k]}${PU[k]}`,`About ${money(PR[k])} each${k==='edib'?' (a pack)':' per gram'}. Dirty cash, some heat.`,B('sell:'+k,'Sell it all','go'))).join('');
+ if(m.mex)h+=row('🇲🇽 Mexico connect',`Order 50g of coke at about 70% of street price. Arrives in 3 days. About 1 in 10 loads gets seized.${m.ship.length?' On the way: '+m.ship.map(x=>x.n+'g').join(', ')+'.':''}`,B('order','Order 50g ('+money(Math.round(50*street(G('snow'))*.7))+')','go',S.cash<Math.round(50*street(G('snow'))*.7)));
+ if(m.disp){const done=m.convD===S.day;h+=row('🌿 Dispensary','Open. It costs $500 a day to run. Push up to $2,500 of dirty cash through the register, keep 80% as clean money.',B('conv','Run the register','go',done||dirty()<100)+`<span class="s" style="align-self:center">${done?'Done today':''}</span>`)}
+ else if((S.age||0)>=21&&(S.rep||0)>=50)h+=row('🌿 Dispensary','$10,000 clean buy-in. Then you can wash up to $2,500 of dirty money a day at a 20% fee. $500 a day overhead.',B('disp','Buy in ('+money(10000)+')','red',cleanCash()<10000));
+ return h}
+const _pb=paneBiz;paneBiz=function(){let h=_pb.apply(this,arguments);try{h+=section()}catch(e){console.error('mk',e)}return h};
+
+/* day tick */
+function mkDay(){if(!S||S.over||!adult())return;const m=M();
+ Object.keys(m.g).forEach(k=>{const c=m.g[k];if(S.day>=c.ready&&!c.rd){c.rd=1;const p=Math.max(.02,(10+S.heat*.15-(c.sec?8:0))/100);
+  if(Math.random()<p){delete m.g[k];const f=Math.min(S.cash,rnd(300,900));S.cash-=f;S.heat=Math.min(100,S.heat+12);say(`Police found your grow. The crop is gone, you paid ${money(f)} and the heat went up.`);if(m.learn)inbox('Javi',`They hit the spot. Crop's gone. Keep your head down for a bit.`)}
+  else{say('Your crop is ready to harvest.');if(m.learn)inbox('Javi',`Your crop is ready. Come get it before somebody else does.`)}}});
+ m.ship=m.ship.filter(x=>{if(S.day<x.day)return true;if(Math.random()<.1){say(`The Mexico load got seized at the border. ${x.n}g gone.`);inbox('Mateo','Customs got it. Not on me, that happens. Order again when you are ready.');return false}
+  const g=G('snow'),r=room(g);if(r<=0)return true;const n=Math.min(r,x.n);S.inv.snow=(S.inv.snow||0)+n;x.n-=n;say(`${n}g of coke from Mexico landed in your stash.`);return x.n>0});
+ if(m.disp){if(S.cash>=500)S.cash-=500;else{m.disp=0;say("You couldn't cover the dispensary overhead and it closed.")}}
+ if(!m.javi&&S.day>=6&&Math.random()<.3){m.javi=1;inbox('Javi',`Yo, I hear you about it. I grow for a living. I can show you the real way, edibles, wax, a proper grow house. Hit me.`)}
+ if(m.learn&&!m.mateo&&(S.rep||0)>=40&&S.day>=15&&Math.random()<.2){m.mateo=1;inbox('Mateo',`Javi says you are serious. I have people in Mexico moving real weight. Come correct and I'll connect you.`)}
+ if(S.dr&&S.day<=S.dr.until&&Object.keys(m.g).length&&m.drSeen!==S.dr.until){m.drSeen=S.dr.until;say('The streets are dry and you have a crop in the ground. That is about to be worth more.')}}
+const _nd=nextDay;nextDay=function(){const r=_nd.apply(this,arguments);try{mkDay()}catch(e){console.error('mkDay',e)}return r};
+
+/* actions */
+function harvest(k){const m=M(),c=m.g[k];if(!c||S.day<c.ready)return;const g=G('loud'),r=room(g);if(r<=0)return say('No room in your stash for the harvest. Free some space first.');
+ const n=Math.min(c.y,r);S.inv.loud=(S.inv.loud||0)+n;c.y-=n;if(c.y<=0)delete m.g[k];say(`Harvested ${n}g of weed${c.y>0?`. ${c.y}g is still waiting for room`:''}.`)}
+function gameKeys(map){const h=e=>{const k=(e.key||'').toLowerCase();const f=map[k]||map[e.code];if(!f)return;e.stopImmediatePropagation();e.preventDefault();if(e.type==='keydown'&&!e.repeat||e.type==='keyup')f(e.type)};
+ addEventListener('keydown',h,true);addEventListener('keyup',h,true);return()=>{removeEventListener('keydown',h,true);removeEventListener('keyup',h,true)}}
+function pressGame(done){let r=0,sc=[],p=0,hold=false,iv,off,t=0;let ctr,w;const newR=()=>{ctr=rnd(55,85);w=18-r*3;p=0;const z=$('mkz');if(z){z.style.left=(ctr-w/2)+'%';z.style.width=w+'%'}const m=$('mkmsg');if(m)m.textContent=`Round ${r+1} of 3. Hold, then let go inside the green band.`};
+ modal(`<h2>Press</h2><div class="mk-bar"><div class="mk-z" id="mkz"></div><div class="mk-f" id="mkf"></div></div><div class="s" id="mkmsg"></div><div class="btns"><button class="btn go" id="mkh" style="touch-action:none">Hold to press</button></div>`);
+ try{mgOn=true}catch(e){}
+ const end=()=>{clearInterval(iv);off();try{mgOn=false}catch(e){}};
+ const rel=()=>{if(!hold)return;hold=false;const d=Math.abs(p-ctr),s=d<=w/2?1:Math.max(0,1-(d-w/2)/25);sc.push(p>=100?0:s);r++;
+  if(r>=3){end();const a=sc.reduce((x,y)=>x+y,0)/3;modal(`<h2>${a>.8?'Clean press':a>.45?'Decent press':'Sloppy press'}</h2><p>Quality ${Math.round(a*100)}%.</p><div class="btns"><button class="btn go" id="mkok">Collect</button></div>`);$('mkok').onclick=()=>{close();done(a)};return}
+  const m=$('mkmsg');if(m)m.textContent=`${Math.round(s*100)}% on that one.`;setTimeout(newR,500)};
+ const h=$('mkh');h.onpointerdown=e=>{if(r<3){hold=true}};h.onpointerup=h.onpointerleave=rel;h.onclick=e=>e.preventDefault();
+ off=gameKeys({' ':ty=>{if(ty==='keydown')hold=true;else rel()},enter:ty=>{if(ty==='keydown')hold=true;else rel()}});
+ newR();iv=setInterval(()=>{if(!$('mkf')){end();return}if(hold){p=Math.min(100,p+2.2);if(p>=100)rel()}const f=$('mkf');f.style.width=p+'%'},30)}
+function cookGame(done){let T=50,dr=0,n=0,ok=0,iv,off;const TOT=240;
+ modal(`<h2>Cook</h2><div class="mk-bar"><div class="mk-z" style="left:40%;width:20%"></div><div class="mk-t" id="mkt"></div></div><div class="s" id="mkmsg">Keep it in the green band for 12 seconds.</div><div class="btns"><button class="btn" id="mkc">Cool (←)</button><button class="btn red" id="mkw">Heat (→)</button></div>`);
+ try{mgOn=true}catch(e){}
+ const end=()=>{clearInterval(iv);off();try{mgOn=false}catch(e){}};
+ const cool=()=>{T-=7},heat=()=>{T+=7};
+ $('mkc').onclick=cool;$('mkw').onclick=heat;
+ off=gameKeys({arrowleft:ty=>ty==='keydown'&&cool(),arrowright:ty=>ty==='keydown'&&heat(),'1':ty=>ty==='keydown'&&cool(),'2':ty=>ty==='keydown'&&heat(),Digit1:ty=>ty==='keydown'&&cool(),Digit2:ty=>ty==='keydown'&&heat(),Numpad1:ty=>ty==='keydown'&&cool(),Numpad2:ty=>ty==='keydown'&&heat()});
+ iv=setInterval(()=>{if(!$('mkt')){end();return}dr=dr*.9+(Math.random()-.4)*.9;T+=dr;n++;if(T>=40&&T<=60)ok++;$('mkt').style.left=Math.max(0,Math.min(100,T))+'%';
+  if(T>=96||T<=4||n>=TOT){end();const burnt=T>=96||T<=4,s=burnt?0:ok/TOT;modal(`<h2>${burnt?'Ruined':s>.8?'Perfect batch':s>.5?'Okay batch':'Weak batch'}</h2><p>${burnt?'You lost control of the heat.':'You held it in range '+Math.round(s*100)+'% of the time.'}</p><div class="btns"><button class="btn go" id="mkok">Collect</button></div>`);$('mkok').onclick=()=>{close();done(burnt?0:Math.max(.05,s))}}},50)}
+function tut(title,txt,go){try{gateGame(title,txt,go)}catch(e){go()}}
+function act(a){const m=M(),parts=a.split(':'),k=parts[0];
+ if(k==='plant'){const s=slots().find(x=>x.k===parts[1]);if(!s||m.g[s.k])return;if(s.prop&&!m.learn)return;const sec=parts[2]?1:0,cost=s.cost+(sec?400:0);if(S.cash<cost)return say('Not enough cash.');if(spendEn(s.en)===false)return;w5bPay(cost);m.g[s.k]={start:S.day,ready:S.day+s.days,y:s.y,sec,rd:0};say(`Started a grow in ${s.loc}. Ready in ${s.days} days.`);return}
+ if(k==='harv')return harvest(parts[1]);
+ if(k==='learn'){if(m.learn)return;if(S.cash<500)return say('Javi wants $500.');S.cash-=500;m.learn=1;inbox('Javi',`Good. Edibles, wax, grow houses. Check your Business tab, everything is in Make it. Get a property for the big grows.`);say('Javi showed you the ropes. Edibles, wax and grow houses are unlocked in Make it.');return}
+ if(k==='edib'){if((S.inv.loud||0)<100||S.cash<60)return;if(spendEn(3)===false)return;S.inv.loud-=100;S.cash-=60;m.pk.edib+=40;S.heat=Math.min(100,S.heat+1);say('Cooked 40 packs of edibles.');return}
+ if(k==='wax'){if((S.inv.loud||0)<200)return;tut('Wax press','Hold the button to build pressure and let go inside the green band. Three rounds. Go over 100 and you blow it. Better pressing means more wax. Space or Enter also works.',()=>{if(spendEn(6)===false)return;S.inv.loud-=200;pressGame(a=>{const g=Math.round(40*(.6+.8*a));m.pk.wax+=g;S.heat=Math.min(100,S.heat+3);say(`Pressed ${g}g of wax.`);render()})});return}
+ if(k==='cook'){if((S.inv.snow||0)<10||!hasProp())return;tut('Cook','Keep the temperature in the green band for 12 seconds. Use Cool and Heat, or the left and right arrow keys. Too hot or too cold and the batch is ruined. This draws heavy heat and a bad batch can happen.',()=>{if(spendEn(8)===false)return;S.inv.snow-=10;S.heat=Math.min(100,S.heat+8);
+  if(Math.random()<.15){say('The batch went bad. Fumes, a mess, and ten grams of coke gone.');S.heat=Math.min(100,S.heat+4);render();return}
+  cookGame(s=>{const g=s>0?Math.round(12*(.4+.6*s)):0;m.pk.rock+=g;say(g?`Cooked ${g}g of rock.`:'The batch was ruined.');render()})});return}
+ if(k==='sell'){const x=parts[1],n=m.pk[x];if(!n)return;if(spendEn(2)===false)return;const p=Math.round(n*PR[x]*(.9+Math.random()*.25));S.cash+=p;m.pk[x]=0;const h=x==='edib'?n/20:x==='wax'?n/8:Math.min(15,n/3);S.heat=Math.min(100,S.heat+Math.max(1,Math.round(h)));say(`Sold ${n}${PU[x]} of ${PN[x].toLowerCase()} for ${money(p)} dirty.`);return}
+ if(k==='mex'){if(m.mex)return;if(S.cash<4000)return say('Mateo wants $4,000 clean.');if(needClean(4000,'the Mexico connect'))return;w5bPay(4000);m.mex=1;inbox('Mateo',`Welcome. Order whenever, 50 at a time. Three days. Some loads don't make it.`);say('You paid for the Mexico connect.');return}
+ if(k==='order'){const c=Math.round(50*street(G('snow'))*.7);if(S.cash<c)return say('Not enough cash.');S.cash-=c;m.ship.push({day:S.day+3,n:50});say(`Ordered 50g from Mexico for ${money(c)}. Arrives in 3 days.`);return}
+ if(k==='disp'){if(m.disp||cleanCash()<10000)return;if(needClean(10000,'a dispensary'))return;w5bPay(10000);m.disp=1;say('You bought into a dispensary.');return}
+ if(k==='conv'){if(!m.disp||m.convD===S.day)return;const c=Math.min(2500,dirty());if(c<100)return;m.convD=S.day;const fee=Math.round(c*.2);S.cash-=fee;legit(c-fee);say(`Ran ${money(c)} through the register. ${money(c-fee)} came out clean.`);return}}
+window._MK={card(n){let h='';const m=M();
+ if(n==='Javi'){if(!m.learn)h=row('Javi can teach you','$500 and he shows you edibles, wax and grow houses.',B('learn','Pay Javi ($500)','go',S.cash<500));else h=growRows(true)||''}
+ if(n==='Mateo'){if(!m.mex)h=row('Mexico connect','$4,000 clean. Coke at about 70% of street, 3 days out, some loads seized.',B('mex','Pay $4,000','go',cleanCash()<4000));else h=row('Mexico connect','Order 50g of coke whenever.',B('order','Order 50g','go'))}
+ return h?`<div class="day">${n}</div>${h}`:''}};
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-mk]');if(!b||b.disabled)return;e.stopPropagation();e.preventDefault();try{act(b.dataset.mk)}catch(x){console.error('mk',x)}try{render()}catch(x){}},true);
+/* dev menu */
+const DV=[['mk_javi','Javi text'],['mk_learn','Unlock Make it'],['mk_ready','Finish grows'],['mk_press','Test Press'],['mk_cook','Test Cook'],['mk_mex','Mateo text'],['mk_cash','+$20k clean']];
+function dev(k){const m=M();
+ if(k==='mk_javi'){m.javi=1;inbox('Javi','Yo, I grow for a living. I can show you the real way. Hit me.')}
+ if(k==='mk_learn'){m.learn=1;m.javi=1}
+ if(k==='mk_ready'){Object.values(m.g).forEach(c=>{c.ready=S.day})}
+ if(k==='mk_press'){close();return pressGame(a=>{say('Dev: press score '+Math.round(a*100)+'%');render()})}
+ if(k==='mk_cook'){close();return cookGame(s=>{say('Dev: cook score '+Math.round(s*100)+'%');render()})}
+ if(k==='mk_mex'){m.mateo=1;m.learn=1;inbox('Mateo','Come correct and I will connect you.')}
+ if(k==='mk_cash'){S.cash+=20000;S.clean=(S.clean||0)+20000}
+ say('Dev: '+k);render();try{devPanel()}catch(e){}}
+if(typeof devPanel==='function'){const _dp=devPanel;devPanel=function(){_dp.apply(this,arguments);try{const c=$('mcard');if(!c||c.querySelector('#mkdev'))return;const d=document.createElement('div');d.id='mkdev';d.innerHTML=`<div class="sec">Make it tests</div><div class="btns">${DV.map(x=>`<button class="btn" data-mkd="${x[0]}">${x[1]}</button>`).join('')}</div>`;c.appendChild(d);d.querySelectorAll('[data-mkd]').forEach(b=>b.onclick=()=>dev(b.dataset.mkd))}catch(e){console.error('mkdev',e)}}}
+try{TUT.push(['Make it','Open Business and scroll to Make it. Start a closet grow for $200 (18+) and harvest weed in 4 days. Javi texts you after a few days on the street and teaches you edibles, wax and real grow houses for $500. Grow houses need a property you own. Edibles, wax and rock are sold from Make it for dirty cash. Higher heat means a better chance of a raid when your crop is ready. Later a connect in Mexico can sell you coke cheap, and at 21 with rep 50 you can buy a dispensary to wash dirty money.'])}catch(e){}
 })();
 </script>
 <script>if('serviceWorker' in navigator){addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}</script></body></html>
