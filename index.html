@@ -7780,7 +7780,8 @@ document.addEventListener('click',e=>{const u=e.target.closest&&e.target.closest
 const pk=a=>a[Math.floor(Math.random()*a.length)];
 const E=x=>String(x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const hue=n=>{let h=0;for(const ch of String(n))h=(h*31+ch.charCodeAt(0))%360;return h};
-const av=(n,big)=>`<span class="mav${big?' big':''}" style="background:linear-gradient(160deg,hsl(${hue(n)} 30% 40%),hsl(${hue(n)} 32% 22%))">${n==='Everybody'?'&#9679;&#9679;':E(String(n).replace(/[^A-Za-z0-9]/g,'').charAt(0).toUpperCase()||'?')}</span>`;
+const av0=(n,big)=>`<span class="mav${big?' big':''}" style="background:linear-gradient(160deg,hsl(${hue(n)} 30% 40%),hsl(${hue(n)} 32% 22%))">${n==='Everybody'?'&#9679;&#9679;':E(String(n).replace(/[^A-Za-z0-9]/g,'').charAt(0).toUpperCase()||'?')}</span>`;
+ const av=(n,big)=>{try{if(window._AVX){const r=window._AVX(n,big?62:46);if(r)return `<span class="mavw${big?' big':''}">${r.pic||av0(n,big)}${r.ic?`<i class="mavb">${r.ic}</i>`:''}</span>`}}catch(e){}return av0(n,big)};
 const dayL=d=>d===S.day?'Today':S.day-d===1?'Yesterday':'Day '+d;
 function build(){const T={},get=(k,o)=>T[k]||(T[k]=Object.assign({k,n:k,m:[],ord:[],tx:[],last:-1,inc:0},o||{}));
  get('__all',{n:'Everybody',grp:1});
@@ -8330,6 +8331,7 @@ document.addEventListener('keydown',e=>{if(typeof tab==='undefined'||!ST[tab]||w
 })();
 </script>
 <style id="skin22">
+.mavw{position:relative;display:inline-flex;flex:none}.mavw .mavb{position:absolute;right:-3px;bottom:-3px;width:20px;height:20px;border-radius:50%;background:#1a1720;border:1px solid #3a3544;font-style:normal;font-size:12px;display:flex;align-items:center;justify-content:center;line-height:1}.mavw.big .mavb{width:22px;height:22px;font-size:13px}.mavw img{display:block}
 .mth-kb{display:flex;flex-direction:column;gap:6px;padding:8px 10px 10px;border-top:1px solid #2a2a2e;background:#141418}
 .mth-kt{font-size:10px;letter-spacing:.14em;text-transform:uppercase;opacity:.55}
 .mth-opt{text-align:left;padding:9px 12px;border-radius:12px;border:1px solid #33333b;background:#25252b;color:inherit;font:inherit;font-size:13px;cursor:pointer}
@@ -8354,6 +8356,13 @@ function MC(){const o=[],seen={},add=(n,sub)=>{if(n&&!seen[n]){seen[n]=1;o.push(
  try{if(S.par&&S.par.name)add(S.par.name,'Family')}catch(e){}
  return o}
 window._MC=MC;
+window._AVX=function(n,sz){let pic='',ic='';const im=h=>h;
+ try{if((S.custos||[]).some(c=>c.name===n)){ic='&#129503;';pic=custPic(n,sz)}}catch(e){}
+ try{const nm=bi=>(S.pname&&S.pname[bi])||PLUGS[bi];for(let bi=0;bi<BLOCKS.length;bi++)if(nm(bi)===n){ic='&#128268;';pic=avatar(bi,sz);break}}catch(e){}
+ try{if(conList().some(C=>C.name===n)){ic='&#129309;';pic=cpic(n,sz)}}catch(e){}
+ if(pic)pic=pic.replace(/border-radius:\d+px/,'border-radius:50%');
+ if(!pic&&!ic)return null;return {pic,ic}};
+
 const grp=(t,list)=>list.length?`<div class="sec sub">${t}</div>`+list.map(c=>`<div class="ct-row"><div class="in"><div class="t">${E(c.n)}</div><div class="s">${E(c.sub)}</div></div><button class="btn" data-mth="${E(encodeURIComponent(c.n))}" data-rph="messages">Text</button></div>`).join(''):'';
 function contacts(c){
  const all=MC(),by=k=>all.filter(x=>x.sub.startsWith(k));
