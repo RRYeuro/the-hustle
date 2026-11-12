@@ -8138,7 +8138,7 @@ const M=()=>{S.mk=S.mk||{};const m=S.mk;m.g=m.g||{};m.pk=m.pk||{edib:0,wax:0,roc
 const PR={edib:35,wax:80,rock:110},PN={edib:'Edibles',wax:'Wax',rock:'Rock'},PU={edib:' packs',wax:'g',rock:'g'};
 const inbox=(f,t)=>{S.inbox=S.inbox||[];S.inbox.unshift({d:S.day,f,t});S.inbox=S.inbox.slice(0,16)};
 const room=g=>Math.max(0,Math.floor((S.cap-used()-cartSp())/g.sp));
-const slots=()=>{const a=[];if(adult())a.push({k:'home',n:'Closet grow',cost:200,en:5,days:4,y:80,loc:'your closet'});(b5().re||[]).forEach(p=>a.push({k:'p'+p.id,n:p.n+' grow',cost:1500,en:10,days:6,y:400,loc:'your '+p.n.toLowerCase(),prop:1}));return a};
+const slots=()=>{const a=[];if(adult())a.push({k:'home',n:'Closet grow',cost:200,en:5,days:4,y:60,loc:'your closet'});(b5().re||[]).forEach(p=>a.push({k:'p'+p.id,n:p.n+' grow',cost:1500,en:10,days:6,y:400,loc:'your '+p.n.toLowerCase(),prop:1}));return a};
 const hasProp=()=>(b5().re||[]).length>0;
 const dirty=()=>{try{return dirtyCash()}catch(e){return S.cash}};
 function row(t,s,btns){return `<div class="row" style="flex-wrap:wrap"><div class="info" style="flex:1 1 200px;min-width:0"><div class="t">${t}</div><div class="s">${s}</div>${btns?`<div class="mk-b">${btns}</div>`:''}</div></div>`}
@@ -8158,8 +8158,8 @@ function section(){if(!adult())return '';const m=M();let h=`<div class="sec">Mak
  const pk=Object.keys(PN).filter(k=>m.pk[k]>0);
  if(pk.length)h+=`<div class="sec">Your product</div>`+pk.map(k=>row(`${PN[k]}: ${m.pk[k]}${PU[k]}`,`About ${money(PR[k])} each${k==='edib'?' (a pack)':' per gram'}. Dirty cash, some heat.`,B('sell:'+k,'Sell it all','go'))).join('');
  if(m.mex)h+=row('🇲🇽 Mexico connect',`Order 50g of coke at about 70% of street price. Arrives in 3 days. About 1 in 10 loads gets seized.${m.ship.length?' On the way: '+m.ship.map(x=>x.n+'g').join(', ')+'.':''}`,B('order','Order 50g ('+money(Math.round(50*street(G('snow'))*.7))+')','go',S.cash<Math.round(50*street(G('snow'))*.7)));
- if(m.disp){const done=m.convD===S.day;h+=row('🌿 Dispensary','Open. It costs $500 a day to run. Push up to $2,500 of dirty cash through the register, keep 80% as clean money.',B('conv','Run the register','go',done||dirty()<100)+`<span class="s" style="align-self:center">${done?'Done today':''}</span>`)}
- else if((S.age||0)>=21&&(S.rep||0)>=50)h+=row('🌿 Dispensary','$10,000 clean buy-in. Then you can wash up to $2,500 of dirty money a day at a 20% fee. $500 a day overhead.',B('disp','Buy in ('+money(10000)+')','red',cleanCash()<10000));
+ if(m.disp){const done=m.convD===S.day;h+=row('🌿 Dispensary','Open. It costs $300 a day to run. Push up to $2,500 of dirty cash through the register, keep 80% as clean money.',B('conv','Run the register','go',done||dirty()<100)+`<span class="s" style="align-self:center">${done?'Done today':''}</span>`)}
+ else if((S.age||0)>=21&&(S.rep||0)>=50)h+=row('🌿 Dispensary','$10,000 clean buy-in. Then you can wash up to $2,500 of dirty money a day at a 20% fee. $300 a day overhead.',B('disp','Buy in ('+money(10000)+')','red',cleanCash()<10000));
  return h}
 const _pb=paneBiz;paneBiz=function(){let h=_pb.apply(this,arguments);try{h+=section()}catch(e){console.error('mk',e)}return h};
 
@@ -8170,7 +8170,7 @@ function mkDay(){if(!S||S.over||!adult())return;const m=M();
   else{say('Your crop is ready to harvest.');if(m.learn)inbox('Javi',`Your crop is ready. Come get it before somebody else does.`)}}});
  m.ship=m.ship.filter(x=>{if(S.day<x.day)return true;if(Math.random()<.1){say(`The Mexico load got seized at the border. ${x.n}g gone.`);inbox('Mateo','Customs got it. Not on me, that happens. Order again when you are ready.');return false}
   const g=G('snow'),r=room(g);if(r<=0)return true;const n=Math.min(r,x.n);S.inv.snow=(S.inv.snow||0)+n;x.n-=n;say(`${n}g of coke from Mexico landed in your stash.`);return x.n>0});
- if(m.disp){if(S.cash>=500)S.cash-=500;else{m.disp=0;say("You couldn't cover the dispensary overhead and it closed.")}}
+ if(m.disp){if(S.cash>=300)S.cash-=300;else{m.disp=0;say("You couldn't cover the dispensary overhead and it closed.")}}
  if(!m.javi&&S.day>=6&&Math.random()<.3){m.javi=1;inbox('Javi',`Yo, I hear you about it. I grow for a living. I can show you the real way, edibles, wax, a proper grow house. Hit me.`)}
  if(m.learn&&!m.mateo&&(S.rep||0)>=40&&S.day>=15&&Math.random()<.2){m.mateo=1;inbox('Mateo',`Javi says you are serious. I have people in Mexico moving real weight. Come correct and I'll connect you.`)}
  if(S.dr&&S.day<=S.dr.until&&Object.keys(m.g).length&&m.drSeen!==S.dr.until){m.drSeen=S.dr.until;say('The streets are dry and you have a crop in the ground. That is about to be worth more.')}}
