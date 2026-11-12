@@ -8244,4 +8244,7 @@ body{font-variant-numeric:tabular-nums}
 #pane .btn:hover:not(:disabled){filter:brightness(1.08)}
 #pane .btn:disabled{opacity:.5}
 </style>
+<script id="skin20js">
+(function(){if(typeof paneBlock!=='function')return;const _p=paneBlock;paneBlock=function(){let h=_p.apply(this,arguments);try{h=h.replace(/(data-a="w4_post"[^>]*>)([^<]*)/,(m,a,b)=>/⚡/.test(b)?m:a+b.trim()+' · ⚡6').replace(/(data-a="pcard"[^>]*>)([^<]*)/,(m,a,b)=>/⚡|free/i.test(b)?m:a+b.trim()+' · free')}catch(e){}return h}})();
+</script>
 <script>if('serviceWorker' in navigator){addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}</script></body></html>
