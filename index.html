@@ -4265,7 +4265,7 @@ const newConName=()=>{const own=conList().map(c=>c.name),gone=S.conGone||[];let 
   return pick(L.length?L:CONNECTS)};
 function conDrop(i){const C=conList()[i];if(!C)return;const t=ctier(C);
   modal(`<h2>Drop ${C.name}?</h2><p>You cut ${C.name} off. That opens a spot, and the next connect that finds you has a ${t<2?'good chance of being a higher tier than a '+['Low','Mid','High'][t]+' connect':'shot at another top-tier connect'}. No promises, though: you could end up with someone worse, and you lose ${C.name}'s trust and anything left on your weekly limit.</p><div class="btns"><button class="btn red" id="cd">Drop ${C.name}</button><button class="btn" id="cn">Keep ${C.name}</button></div>`);
-  $('cn').onclick=close;$('cd').onclick=()=>{S.cons=conList().filter(x=>x!==C);S.connect=S.cons[0]||null;S.conGone=(S.conGone||[]).concat(C.name);S.conWant=Math.min(2,t+1);S.ship=(S.ship||[]);say(`You dropped ${C.name}. A spot is open for a new connect.`);S.inbox=S.inbox||[];S.inbox.unshift({d:S.day,f:C.name,t:`Cool. We're done then. Don't call me.`});S.inbox=S.inbox.slice(0,60);close()}}
+  $('cn').onclick=close;$('cd').onclick=()=>{S.cons=conList().filter(x=>x!==C);S.connect=S.cons[0]||null;S.conGone=(S.conGone||[]).concat(C.name);S.conWant=Math.min(2,t+1);S.ship=(S.ship||[]);say(`You dropped ${C.name}. A spot is open for a new connect.`);S.inbox=S.inbox||[];S.inbox.unshift({d:S.day,f:C.name,t:`Cool. We're done then. Don't call me.`});S.inbox=S.inbox.slice(0,150);close()}}
 function addConnect(o){const L=conList();if(L.some(c=>c.name===o.name))return false;S.cons=L;S.cons.push(o);S.connect=S.cons[0];S.conWant=null;S.conSrv=(S.srvU||0)+rnd(180,300)*S.cons.length;return true}
 function connectCand(){if(!canNewConnect())return;const ok=bi=>S.known.includes(bi)&&!S.burned[bi]&&!(S.conAsk||{})[bi];
   if(S.conTh==null)S.conTh=rnd(-8,6);const th=S.conTh;
@@ -4690,7 +4690,7 @@ function burnPlan(bi,base,why){const sec=(S.sec||{})[bi],vouch=vouchOf(bi);let d
   if(sec){d=why==='rob'?5:5;tr=why==='rob'?15:30}
   if(vouch){d=Math.max(3,d-2);tr+=10}
   S.nt=S.nt||{};S.nt[bi]=tr;return {d,sec,vouch}}
-function newPlug(bi){{const L=conList(),g=L.find(c=>c.from===bi);if(g){say(`${g.name} stopped answering. Your connect went with ${plugName(bi)}.`);S.inbox=S.inbox||[];S.inbox.unshift({d:S.day,f:g.name,t:`Yo, my line is dead after what went down with ${plugName(bi)}. Don't hit this number again.`});S.inbox=S.inbox.slice(0,60);S.cons=L.filter(c=>c!==g);S.connect=S.cons[0]||null}}if(S.whole)delete S.whole[bi];if(S.conAsk)delete S.conAsk[bi];if(S.enemies)delete S.enemies[bi];if(S.gf&&S.gf.plug===bi)endGF();const why=(S.bwhy||{})[bi];if(S.bwhy)delete S.bwhy[bi];delete S.burned[bi];const sec=(S.sec||{})[bi],fem=sec?!!sec.fem:Math.random()<.5;const nm=sec?sec.name:pick(fem?NEWF:NEWM);S.pname[bi]=nm;S.pfem[bi]=fem?1:0;try{S.ppic=S.ppic||{};const pre=fem?'pp_f':'pp_m',used=Object.values(S.ppic),all=[];for(let i=1;i<=12;i++)if(ARTX(pre+i))all.push(pre+i);const free=all.filter(k=>used.indexOf(k)<0);const pk=free.length?free[Math.floor(Math.random()*free.length)]:all[Math.floor(Math.random()*all.length)];if(pk)S.ppic[bi]=pk;else delete S.ppic[bi]}catch(e){}
+function newPlug(bi){{const L=conList(),g=L.find(c=>c.from===bi);if(g){say(`${g.name} stopped answering. Your connect went with ${plugName(bi)}.`);S.inbox=S.inbox||[];S.inbox.unshift({d:S.day,f:g.name,t:`Yo, my line is dead after what went down with ${plugName(bi)}. Don't hit this number again.`});S.inbox=S.inbox.slice(0,150);S.cons=L.filter(c=>c!==g);S.connect=S.cons[0]||null}}if(S.whole)delete S.whole[bi];if(S.conAsk)delete S.conAsk[bi];if(S.enemies)delete S.enemies[bi];if(S.gf&&S.gf.plug===bi)endGF();const why=(S.bwhy||{})[bi];if(S.bwhy)delete S.bwhy[bi];delete S.burned[bi];const sec=(S.sec||{})[bi],fem=sec?!!sec.fem:Math.random()<.5;const nm=sec?sec.name:pick(fem?NEWF:NEWM);S.pname[bi]=nm;S.pfem[bi]=fem?1:0;try{S.ppic=S.ppic||{};const pre=fem?'pp_f':'pp_m',used=Object.values(S.ppic),all=[];for(let i=1;i<=12;i++)if(ARTX(pre+i))all.push(pre+i);const free=all.filter(k=>used.indexOf(k)<0);const pk=free.length?free[Math.floor(Math.random()*free.length)]:all[Math.floor(Math.random()*all.length)];if(pk)S.ppic[bi]=pk;else delete S.ppic[bi]}catch(e){}
   const nt=(S.nt||{})[bi]??20;if(S.sec)delete S.sec[bi];if(S.nt)delete S.nt[bi];
   S.pbio[bi]=sec?`Was ${fem?'her':'his'} boss's second on ${BLOCKS[bi]}. Stepped up when the last plug fell off. ${nt<=15?'Knows what you did. Walk careful.':'Heard good things about you.'}`:`New plug on ${BLOCKS[bi]}. Took over after the last one ${({rob:'got robbed',raid:'got raided',snitch:'got picked up',fate:'fell out with you'})[why]||'left'}. Don't know much about ${fem?'her':'him'} yet.`;S.trust[bi]=nt;S.deals[bi]=0;
   say(`${nm} ${sec?'stepped up as':'took over as'} the plug on ${BLOCKS[bi]}.`)}
@@ -5354,7 +5354,7 @@ const TUT=[
  ['Move: every place','The gym, rec center, stadium, stores, mall, car lot, barber, pharmacy, hospital, lawyer, school, park and studio are all listed here. Tap one to go in. If it is on another block it takes a day to get there. Tip the barber and the rumors get real: a plug tip for tomorrow.'],
  ['Circle tab: your people','Your fight style, trap houses, family and where you stay, homies, your girl and the crews all live here. Your fight style levels up every time you win a fight. After 18 your girl texts you, and how you answer matters. If a plug turns on you, go to their block and settle it. A worker who has put in enough days can be made a trap house manager: he sells out of your stash house, keeps 15%, and you can have two. What you do comes back: slide on a crew\'s opps and they may hit you or your trap later, giving up a name gets out, and your girl remembers how you treated her.'],
  ['Plugs','Every block has a plug and each one has a personality (Greedy, Loyal, Paranoid or Flashy) that shows once you know them and changes prices and haggling. Do 3 deals with one and they know you: better prices, and at Talk 4 you can haggle (that is the talk rhythm game). Rob a plug and they disappear until somebody new takes over the block. With enough rep and trust you can recruit a plug to work for you: they sell whatever you front them on their block, and a trap house sells more with less heat.'],
- ['Phone: Messages','Open Phone, then Messages. Tap Text everybody to blast your plays: your text goes out, typing dots show, and each one answers. A blast costs 3 energy, once a day, and adds local heat on your block. A Burner swap clears it. Dealer orders now arrive here as chat bubbles with a timer bar: Fill it, Price is up (they might say yes or walk) or Not today.'],
+ ['Phone: Messages','Open Phone, then Messages. Tap Text everybody to blast your plays: it goes to everybody one by one, and each one answers in their own thread. A blast costs 3 energy, once a day, and adds local heat on your block. A Burner swap clears it. Dealer orders now arrive here as chat bubbles with a timer bar: Fill it, Price is up (they might say yes or walk) or Not today.'],
  ['Phone tab: plays and connects','Plays text you for product. If you are out on you but it is in your safe, they go in the safe. You can see the grade of what you carry before you meet up. A connect can go dark for weeks after a caught shipment or a raid on your people, so keep your plugs. Once you earn a connect you can order up to 3 times a day, and you can drop one to get a shot at a better one.'],
  ['Me tab: your life','Spend skill points, handle your stash and safe, jobs and life choices. There are nine skills: Hustle, Talk, Muscle, Street Smarts and Luck, plus Stamina (energy), Charm (music and shows), Business (what your businesses pay) and Discipline (stress and grades). The traits you pick at the start are locked in for the whole run. Cash in the safe stays hidden from strict parents and can pay for things your family or remote connects ask for.'],
  ['Energy and time','Most moves cost energy. When you run out you are wiped and have to end the day, and it fills back up in the morning. Stamina, Muscle and your traits change how much you have. A nap gives a little back once a day. Time can also skip: next event, a week of laying low, or your next birthday in story mode. Bills still hit while you skip, and time stops when something big comes up.'],
@@ -7834,7 +7834,7 @@ window._MS=function(chat){const {T,pins}=build(),C=S.custos||[],done=S.textAll==
 window._MS.unread=function(){try{const {T}=build();return Object.values(T).filter(t=>t.unread&&(t.m.length||t.ord.length||t.tx.length)).length}catch(e){return 0}};
 window._MS.rest=function(c){try{const t=document.createElement('template');t.innerHTML=c;t.content.querySelectorAll('[data-a="ptext"],[data-a="pcard"]').forEach(b=>{const w=b.parentElement;b.remove();if(w&&w.classList.contains('btns')&&!w.children.length)w.remove()});t.content.querySelectorAll('.sec').forEach(x=>{const tx=x.textContent.trim();if(/^Trap phone$/i.test(tx))x.remove();else if(/^Texts\b/i.test(tx)){const n=x.nextElementSibling;if(n&&/^No texts right now/i.test(n.textContent.trim()))n.remove();x.remove()}});t.content.querySelectorAll('.row').forEach(x=>{const tt=x.querySelector('.t');if((tt&&/^Trap phone$/i.test(tt.textContent.trim()))||x.querySelector('[data-a="pserve"],[data-a="pignore"]')||(x.querySelector('.chip.mine')&&/The connect/i.test(x.textContent)))x.remove()});return t.innerHTML}catch(e){return c}};
 function blast(){const C=S.custos||[];if(S.textAll===S.day||!C.length){try{textAll()}catch(e){}return}
- if(spendEn(3)===false)return;if(window._mth!=='__all'){window._mth='__all';window._mcomp=false;try{render()}catch(e){}}
+ if(spendEn(3)===false)return;
  const was=C.map(c=>c.buys||0),cash0=S.cash;S.texted=S.day;textAll();
  try{const m=document.getElementById('mcard');if(m&&/I'm open/.test(m.innerText))$('modal').hidden=true}catch(e){}
  const rows=[];let came=0;C.forEach((c,i)=>{const bought=(c.buys||0)>was[i];if(bought)came++;let t;
@@ -7848,14 +7848,8 @@ function blast(){const C=S.custos||[];if(S.textAll===S.day||!C.length){try{textA
  let hot=3+came*2;try{S.lh=S.lh||{};S.lh[S.at]=Math.min(100,(S.lh[S.at]||0)+hot)}catch(e){}
  const sum=`${came} pulled up${came?`, +${money(S.cash-cash0)}`:''}${more>0?`. ${more} more left you on seen`:''}. Local heat +${hot}.`;
  const me='I\'m open. Pull up.',feed=document.getElementById('msxFeed');
- S.inbox=S.inbox||[];S.inbox.unshift({d:S.day,f:'You',t:me});shown.forEach(r=>S.inbox.unshift({d:S.day,f:r.f,t:r.t}));S.inbox.unshift({d:S.day,f:'Blast',t:sum});S.inbox=S.inbox.slice(0,60);
- if(!feed){render();return}
- const esc2=x=>String(x).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
- feed.insertAdjacentHTML('beforeend',`<div class="bub me">${esc2(me)}</div><div class="tick">Delivered</div>`);
- let t=0;const add=(html,after)=>{setTimeout(()=>{feed.insertAdjacentHTML('beforeend',html);after&&after()},t)};
- shown.forEach((r,i)=>{t+=650;const id='msxd'+i;add(`<div class="who" id="${id}w">${esc2(r.f)}</div><div class="bub dots" id="${id}"><i></i><i></i><i></i></div>`);t+=700;setTimeout(()=>{const d=document.getElementById(id);if(d){d.className='bub';d.textContent=r.t}},t)});
- t+=700;add(`<div class="who">Result</div><div class="bub">${esc2(sum)}</div>`);
- setTimeout(()=>{try{render()}catch(e){}},t+1400)}
+ S.inbox=S.inbox||[];rows.forEach(r=>{S.inbox.unshift({d:S.day,f:'You',to:r.f,t:me});S.inbox.unshift({d:S.day,f:r.f,t:r.t})});S.inbox=S.inbox.slice(0,150);
+ window._mth=null;window._mcomp=false;toast('Texted '+C.length+' people one by one. '+sum,true);say('📱 '+sum);try{render()}catch(e){}}
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('.phx [data-a="ptext"]');if(!b||b.disabled)return;e.preventDefault();e.stopImmediatePropagation();blast()},true);
 document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('.phx [data-mth],.phx [data-mcomp],.phx [data-rph],.phx [data-a="pcard"]');if(!t)return;
  if(t.dataset.mth!==undefined){e.preventDefault();e.stopPropagation();window._mth=t.dataset.mth?decodeURIComponent(t.dataset.mth):null;window._mcomp=false;render();return}
@@ -8154,7 +8148,7 @@ paneBlock=function(){let h=_pb.apply(this,arguments);
 if(typeof paneBiz!=='function'||typeof nextDay!=='function')return;
 const M=()=>{S.mk=S.mk||{};const m=S.mk;m.g=m.g||{};m.pk=m.pk||{edib:0,wax:0,rock:0};m.ship=m.ship||[];m.learn=m.learn||0;m.mex=m.mex||0;m.disp=m.disp||0;return m};
 const PR={edib:35,wax:80,rock:110},PN={edib:'Edibles',wax:'Wax',rock:'Rock'},PU={edib:' packs',wax:'g',rock:'g'};
-const inbox=(f,t)=>{S.inbox=S.inbox||[];S.inbox.unshift({d:S.day,f,t});S.inbox=S.inbox.slice(0,60)};
+const inbox=(f,t)=>{S.inbox=S.inbox||[];S.inbox.unshift({d:S.day,f,t});S.inbox=S.inbox.slice(0,150)};
 const room=g=>Math.max(0,Math.floor((S.cap-used()-cartSp())/g.sp));
 const slots=()=>{const a=[];if(adult())a.push({k:'home',n:'Closet grow',cost:200,en:5,days:4,y:60,loc:'your closet'});(b5().re||[]).forEach(p=>a.push({k:'p'+p.id,n:p.n+' grow',cost:1500,en:10,days:6,y:400,loc:'your '+p.n.toLowerCase(),prop:1}));return a};
 const hasProp=()=>(b5().re||[]).length>0;
@@ -8373,9 +8367,9 @@ function boot(){if(!window._AP13)window._AP13={};window._AP13.contacts=contacts;
 boot();
 document.addEventListener('click',e=>{
  const f=e.target.closest&&e.target.closest('[data-flav]');
- if(f){e.preventDefault();e.stopPropagation();const n=window._mth,k=f.dataset.fk,i=+f.dataset.flav,K=window._KB;if(!n||!K)return;S.inbox=S.inbox||[];S.inbox.unshift({d:S.day,f:'You',to:n,t:K.FL[k][i]});S.inbox.unshift({d:S.day,f:n,t:pk(K.RP[k])});S.inbox=S.inbox.slice(0,60);render();return}
+ if(f){e.preventDefault();e.stopPropagation();const n=window._mth,k=f.dataset.fk,i=+f.dataset.flav,K=window._KB;if(!n||!K)return;S.inbox=S.inbox||[];S.inbox.unshift({d:S.day,f:'You',to:n,t:K.FL[k][i]});S.inbox.unshift({d:S.day,f:n,t:pk(K.RP[k])});S.inbox=S.inbox.slice(0,150);render();return}
  const sy=e.target.closest&&e.target.closest('[data-says]');
- if(sy&&!sy.disabled&&window._mth){S.inbox=S.inbox||[];S.inbox.unshift({d:S.day,f:'You',to:window._mth,t:sy.dataset.says});S.inbox=S.inbox.slice(0,60)}
+ if(sy&&!sy.disabled&&window._mth){S.inbox=S.inbox||[];S.inbox.unshift({d:S.day,f:'You',to:window._mth,t:sy.dataset.says});S.inbox=S.inbox.slice(0,150)}
  const nd=e.target.closest&&e.target.closest('[data-needs]');
  if(nd){e.preventDefault();e.stopPropagation();if(nd.dataset.needs==='crop'){tab='biz';window._rph=null;render()}}
 },true);
