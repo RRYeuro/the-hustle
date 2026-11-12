@@ -8245,7 +8245,7 @@ body{font-variant-numeric:tabular-nums}
 #pane .btn:disabled{opacity:.5}
 </style>
 <style id="skin20">
-.blk-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.blk-more>summary{cursor:pointer;padding:10px 12px;border-radius:12px;border:1px solid #2a2a2e;background:#16161a;font-weight:600;list-style:none;margin:6px 0}.blk-more[open]>summary{margin-bottom:8px}.blk-more{display:block}.blk-hint{padding:9px 12px;border-radius:12px;border:1px solid #2f2f38;background:rgba(232,195,74,.08);font-size:13px;margin:2px 0 6px}.blk-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .blk-tile{position:relative;text-align:center;padding:12px 8px 10px;border-radius:14px;border:1px solid var(--line,#2a2a2e);border-top-color:#383841;background:linear-gradient(180deg,#1c1c21,#16161a);color:inherit;font:inherit;cursor:pointer;transition:transform .08s,border-color .15s}
 .blk-tile:hover:not(:disabled){border-color:var(--accent,#e8c34a)}
 .blk-tile:active:not(:disabled){transform:scale(.97)}
@@ -8262,8 +8262,18 @@ function xf(){const P=document.getElementById('pane');if(!P||P.querySelector('.b
  if(!wq||!(post||pass||lay||nap)||!q('.plugcard'))return;
  const mk=(b,ic,t,sub,cost)=>{if(!b)return '';const d=b.disabled?' disabled':'';const at=[...b.attributes].filter(a=>/^data-/.test(a.name)).map(a=>`${a.name}="${a.value}"`).join(' ');return `<button class="blk-tile" ${at}${d}><span class="bc">${cost}</span><div class="bi">${ic}</div><div class="bt">${t}</div><div class="bs">${sub}</div></button>`};
  const grid=`<div class="sec wspan">Hustle</div><div class="blk-grid wspan">${mk(post,'📍','Post up','Build corner cred','⚡6')}${mk(pass,'📱','Pass out','Hand out your number','free')}${mk(lay,'🛑','Lay low','Cool off, skip a day','')}${mk(nap,'😴','Nap','A little energy back','')}</div>`;
- const html=grid;[post,pass,lay,nap].forEach(b=>{if(!b)return;const r=b.closest('.row');if(r&&!r.querySelector('.bar')&&r.querySelectorAll('button').length===1)r.remove();else b.remove()});
- wq.insertAdjacentHTML('afterend',html)}
+ let tip='';try{const hold=Object.values(S.inv||{}).reduce((x,y)=>x+(+y||0),0);
+  if(S.heat>=70)tip='Heat is high. Lay low before you do anything risky.';
+  else if(hold<=0&&S.cash>=50)tip=`Your stash is empty. Buy from ${plugName(S.at)} and sell it on the block.`;
+  else if(hold>0)tip='You have product. Sell it to the Js or the plug before it sits.';
+  else if(S.passed!==S.day&&S.age>=14)tip='Pass out your number to pick up new customers.';
+  else if(S.credPost!==S.day&&S.age>=14)tip='Post up on the corner to build cred.';
+  else tip='Nothing urgent. Move to another block or end the day.'}catch(e){}
+ const hint=tip?`<div class="blk-hint wspan">💡 ${tip}</div>`:'';
+ const html=hint+grid;[post,pass,lay,nap].forEach(b=>{if(!b)return;const r=b.closest('.row');if(r&&!r.querySelector('.bar')&&r.querySelectorAll('button').length===1)r.remove();else b.remove()});
+ wq.insertAdjacentHTML('afterend',html)
+ const rows=['w4_cook','w4_dog','w4_race','w4_chopb','w4_inf','w4_bnt'].map(a=>{const b=P.querySelector(`[data-a=${a}]`);return b&&b.closest('.row')}).filter(Boolean);
+ if(rows.length>=3){const d=document.createElement('details');d.className='blk-more wspan';if(window._blkMore)d.open=true;d.innerHTML=`<summary>More on this block (${rows.length})</summary>`;rows[0].before(d);rows.forEach(r=>d.appendChild(r));d.addEventListener('toggle',()=>{window._blkMore=d.open})}}
 render=function(){const r=_r.apply(this,arguments);try{xf()}catch(e){console.error('skin20',e)}return r}})();
 </script>
 <script>if('serviceWorker' in navigator){addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}</script></body></html>
