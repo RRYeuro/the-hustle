@@ -144,7 +144,7 @@ with sync_playwright() as p:
     # busted clears loot; day hook search fires; save/load keeps loot
     J("()=>{window._l27force=false;S.loot=[{k:'ring',v:200,p:50,d:1,w:'p'}];S.lootH=[{k:'tv',v:500,p:50,d:1,w:'c'}];save();const s=load();window._sv=[s.loot.length,s.lootH.length]}")
     ck('save/load keeps loot',J("()=>window._sv")==[1,1])
-    J("()=>{window.noL27=0;S.l27s=-99;S.heat=90;Math._r=Math.random;Math.random=()=>0;try{WD[WD.length-1]()}finally{Math.random=Math._r}}");pg.wait_for_timeout(700)
+    J("()=>{window.noL27=0;S.l27s=-99;S.heat=90;Math._r=Math.random;Math.random=()=>0;try{WD.find(f=>f.name==='l27Day')()}finally{Math.random=Math._r}}");pg.wait_for_timeout(700)
     ck('day hook: search pops',J("()=>!document.getElementById('modal').hidden&&/Stopped and searched/.test(document.querySelector('#mcard h2').textContent)"),txt())
     J("()=>{window.noL27=1;document.getElementById('modal').hidden=true;S.loot=[{k:'ring',v:200,p:50,d:1,w:'p'}];try{busted()}catch(e){window._be=String(e)}}")
     ck('busted takes loot',J("()=>S.loot.length===0&&!window._be"),J("()=>window._be"))

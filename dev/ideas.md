@@ -158,3 +158,8 @@ Order if built: 1, 2, 3 as one batch (~2 hrs), then 5. Leaderboard only after pe
 - One name = one face now (skin29): same-name people in different lists share a picture; workers and people looking for work show faces. Pronoun fixes for female crew/workers.
 - Still need art: 18 missing faces, 6 city plugs, 6 look-alike redos, 4 text/brand/scene redos, 16 old-style redos (see art list F1-S4).
 - Not checked yet: event, place and scene pictures. Sam's face reads female but text says he: ask Chris.
+
+## BUILT Nov 13 afternoon (skin31, live silent, not bumped)
+- Plug rework: plugs call you (trust 40+, new load at 10-15% off, good that day), pull up on you (trust 50, or 40 if they called; +8% price; no day passes; once per plug per day; not when heat 70+, on the monitor or out of town), or you drive to their spot. Block tab lists your plugs with Pull up. Meet screen reuses the normal buy/sell. Dev buttons, tutorial page. Test dev/t_plug.py.
+- Bug pass: 8,800 random clicks over 4 characters, 0 crashes, 0 broken popups, 0 money errors; clean-money audit of 28 big purchases found no leaks.
+- Balance left for Chris: Unc's wanted board pays 115% of a gun's price (buy from Unc, sell to the board = free money every 4 days). Businesses pay back in ~67 days vs 35-day run. Tank's crew cost has no warning.
