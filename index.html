@@ -9201,4 +9201,31 @@ window.l32Drive=function(){try{if(!S||!S.car)return false;if(S.en==null)S.en=enM
 try{TUT.push(['Driving','With a car, moving between blocks does not cost the day anymore. Each drive is $5 gas and 3 energy. With no car, or when you are too tired to drive, walking still takes the day. A stolen car still adds heat every time you ride it.'])}catch(e){}
 })();
 </script>
+<script id="skin33js">
+(function(){if(window._sk33)return;window._sk33=1;
+/* logic gaps closed: age limits, do it where you are, ankle monitor, stolen goods on a plane */
+const el=id=>document.getElementById(id);
+const yo=()=>(S&&S.age)||99;
+const no=t=>{say(t);try{el('modal').hidden=true}catch(e){}render();return true};
+const AGE={szbuy:[18,'Nobody rents a stash house to a kid. Come back at 18.'],hire:[16,'Grown men are not taking orders from a kid. Soldiers at 16.'],hirew:[16,'You are too young to have people working a house for you. Wait till 16.'],
+ twgo:[16,'You are too young to start a war. 16 and up.'],ctput:[16,'Nobody is taking hit money from a kid. 16 and up.'],pad:[16,'You cannot drive yet, so a Pro Pad is no use. 16 and up.'],cn_walk:[16,'You cannot drive out of town yet. 16 and up.'],
+ w4_inf:[18,'A cop is not going on a kid\'s payroll. 18 and up.'],parcar:[16,'You cannot buy a car yet. 16 and up.'],bparty:[16,'You are too young to throw the block a party. 16 and up.'],law:[18,'Your guardian has to hire the lawyer until you are 18.'],lpay:[18,'Your guardian has to hire the lawyer until you are 18.']};
+function blocked(a,d){d=d||{};const k=a==='gear'&&d.k==='car'?'gcar':a;
+ if(k==='gcar'){if(yo()<16)return no('You cannot drive yet, so a getaway car is no use. 16 and up.');return false}
+ const G=AGE[k];if(G&&yo()<G[0])return no(G[1]);
+ try{if(a==='punch'&&typeof placeAt==='function'&&placeAt('mall')!==S.at)return no('Punch cards get swiped at the mall. Go to the mall first.')}catch(e){}
+ try{if(a==='trap'&&d.i!=null&&+d.i!==S.at)return no(`You have to be on ${BLOCKS[+d.i]} to set up a trap house there.`)}catch(e){}
+ return false}
+try{const _a=act;act=function(a,e){try{
+  if(blocked(a,e&&e.dataset))return;
+  if(a==='fmeet'&&typeof placeAt==='function'&&placeAt('park')!==S.at)return void no('People hang out at the park. Go there to meet somebody.');
+  if((a==='goR'||a==='goB')&&typeof stuckHome==='function'&&stuckHome())return;
+  if(a==='goR'&&S.car&&yo()>=16){say('You have a car, so you drove instead of paying for a ride.');return _a.call(this,'go',e)}
+ }catch(x){console.error('sk33',x)}return _a.apply(this,arguments)}}catch(e){console.error('sk33 act',e)}
+try{const _p=placeAct;placeAct=function(k,id){try{if(blocked(k,{}))return}catch(x){console.error('sk33',x)}return _p.apply(this,arguments)}}catch(e){}
+try{const _d=window.l32Drive;window.l32Drive=function(){if(yo()<16)return false;return _d.apply(this,arguments)}}catch(e){}
+try{const _c=clCarry;clCarry=function(){try{if(Array.isArray(S.loot)&&S.loot.length){say('You cannot travel with stolen goods on you. Sell them, stash them at home or ditch them.');return true}}catch(e){}return _c.apply(this,arguments)}}catch(e){}
+try{const _o=openPlace;openPlace=function(id){const r=_o.apply(this,arguments);try{if(id==='pawn'){const b=document.querySelector('#mcard [data-pl="lhouse"]');if(b&&!window.noTips&&!(S.lt&&S.lt.house>=S.day)){b.disabled=true;b.textContent='Need a tip'}}}catch(e){}return r}}catch(e){}
+})();
+</script>
 <script>if('serviceWorker' in navigator){addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}</script></body></html>

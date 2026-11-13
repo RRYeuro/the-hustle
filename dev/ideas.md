@@ -171,3 +171,18 @@ Order if built: 1, 2, 3 as one batch (~2 hrs), then 5. Leaderboard only after pe
 - Family merged: guardian (chores, give money, car) and family texts moved from Contacts into the Family app.
 - Story ties on plugs: a plug you date, or Lucky's ex / cousin's homeboy (Tre), pulls up at any trust with no delivery charge, calls like a trusted plug, and vouches at 30 trust; Slick gets +20% at intro meets.
 - Driving: with a car, moving between blocks takes no day ($5 gas, 3 energy). Walking or too tired still takes the day.
+
+## Day and night on the energy bar (idea from Rock Beno + Chris, Nov 13, NOT built, wait for build)
+- No new clock. The energy bar IS the day: phase comes from energy spent today (Morning 0-35%, Afternoon 35-60%, Evening 60-80%, Night 80-100%). Bar empty = day over.
+- Naps and energy drinks give energy back but never rewind the phase.
+- Phase changes things: school/jobs/bank/court/lawyer daytime only; pawn, mall, car lot close at night; club, strip, dice, street race evening and night; houses are empty by day (easier lick) and people are home at night; store and pharmacy licks easier at night; fewer patrols late but stops are harsher; Js pay more at night; plugs pull up any time.
+- One tap 'Kill time until night' spends the energy so nobody waits. Header shows a sun/moon on the bar. Sky tint per phase.
+- Size: about 3-4 hrs with tests. Gaps found Nov 13 and not fixed: rideshare/bus ignore the ankle monitor, a 14-year-old holding a car can drive, flying with stolen goods, pawn 'Hit a house' lit with no tip, $25 ride offered when you own a car.
+- PARKED (Nov 13): testers may want a full 24-hour day with nightfall instead. Chris is asking them. Do not build either version until he says.
+
+## Gaps found Nov 13 (NOT fixed, waiting on Chris)
+- Age 14 with money can: rent a stash house, hire soldiers and trap workers, go to war / pay for a hit, buy a getaway car and Pro Pad, drive to Charlotte/Atlanta/Houston/Miami, put a lawyer on payroll, pay an informant on the force, buy a parent a car, throw a $2,000 block party.
+- Place gaps: Punch cards (says 'at the mall') works from any block; open a trap house on a block you are not on; Go meet people from the phone anywhere.
+- Movement: rideshare and bus ignore the ankle monitor; a 14-year-old holding a car can drive; flying with stolen goods; pawn 'Hit a house' lit with no tip; $25 ride offered when you own a car.
+- Not checked yet: prison/jail, energy costs per action, school rules, businesses, relationships.
+- Nov 13 12:40: all 17 gaps FIXED (skin33): age limits on stash house, soldiers, workers, war, hits, getaway car, Pro Pad, driving out of town, lawyer, informant, parent car, block party; punch cards only at the mall; trap house only on the block you are on; meet people only at the park; rides and bus respect the monitor; no kid driving; no travel with stolen goods; pawn house button needs a tip; ride with a car = you drive. Test dev/t_gap.py.
