@@ -8,12 +8,14 @@ Thanks for all the bug reports. This one is big.
 - 🎒 **Real loot from licks:** you need a book bag. Pockets hold 4 small things, bag 8 more, TVs and speakers need a car trunk. Jewelry only sells at the pawn shop (40 to 60%). Check the Licks app.
 - 🚔 **Cops can stop and search you** while you carry stolen stuff. Talk helps.
 - 🔐 **Sort and Pin Cracker mini games** on licks (alarm panels, safes, the pharmacy cabinet, phones). Keyboard works: arrows, numbers, Enter.
-- 📞 **Plugs are people now:** once one trusts you (40+) they call you with a one-day discount and can pull up on you. You can also drive to their spot. New "Meet the plug" intro.
+- 📞 **Plugs moved to the Move map:** the plug card is off the Block tab. Look for **Plug spots** on Move. 60+ trust = pull up any time. 20 to 59 = text "let me pull up" first and the spot opens for the day. New plugs need "Get introduced". Kick it, fronts, pitching and robbing only show while you are at the meet. They still call you with a one-day discount (40+).
+- ⚖️ **Bulk buying:** Low plugs sell grams and single pills (start here), Mid plugs sell ounces and packs of 50, Big plugs sell QPs, pounds and boats. Block tab now shows what you hold and the Js.
+- 🧭 **Move map icons:** every spot has a clear icon now instead of a tiny picture.
 - 👤 More faces, a loading screen, and 17 logic fixes (age limits, actions only where you are, car moves don't cost the day).
 
 **Test this:** Menu > Dev has buttons for it.
 - Loot and cops testers: "Bag + loot", "Toggle book bag", "Cop search now", "Clear loot".
 - Mini game testers: "Sort game", "Pin Cracker", "Always alarm + safe", "House tip + reset".
-- Plug and story testers: "Know every plug", "All plugs 100 trust", "Meet the connect", "Date the plug here". Try every city (switch city in the dev menu).
+- Plug and story testers: "Open Plug spots", "All plugs 25 trust (text first)", "All plugs 65 trust (pull up any time)", "Meet the plug here", "Plug call now", "Intro test". Buy from a Low, a Mid and a Big plug and tell me if the sizes and prices feel right. Also "Meet the connect", "Date the plug here". Try every city (switch city in the dev menu).
 - Phone testers: check Move and the bottom bar on a small screen.
 Found a bug? Drop it in #hustle-bugs with what you tapped and what city you were in.

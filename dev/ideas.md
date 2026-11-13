@@ -187,7 +187,9 @@ Order if built: 1, 2, 3 as one batch (~2 hrs), then 5. Leaderboard only after pe
 - Not checked yet: prison/jail, energy costs per action, school rules, businesses, relationships.
 - Nov 13 12:40: all 17 gaps FIXED (skin33): age limits on stash house, soldiers, workers, war, hits, getaway car, Pro Pad, driving out of town, lawyer, informant, parent car, block party; punch cards only at the mall; trap house only on the block you are on; meet people only at the park; rides and bus respect the monitor; no kid driving; no travel with stolen goods; pawn house button needs a tip; ride with a car = you drive. Test dev/t_gap.py.
 
-## Plugs on the Move map + bulk buying (Chris, Nov 13, NOT BUILT, wait for "build")
+## Plugs on the Move map + bulk buying (Chris, Nov 13) BUILT Nov 13 1:50 PM, live silent, v210 not bumped
+- Numbers chosen: contact floor 20 trust; 60+ always open; text opens the spot today and tomorrow; going to a spot costs what a move costs (a day on foot, nothing with a car), the meet itself is free; plug comes to you only when they call (8% more) or for story ties (free). Units: Weed Low 0.5 g / Mid ounce / Big QP; Coke and Molly Low 0.5 g / Mid half ounce / Big QP; Xans and Percs Low 1 / Mid 50 / Big 500; Lean Low 1 oz / Mid 4 oz / Big pint. Intro win sets trust 22 (30 with a strong vouch). Move map markers are icons now. Tests: dev/t_plug.py (21), t_tie, t_intro, t_gap, t_fuzz.
+- Original notes:
 - Remove the plug card from the Block tab (the old per-block plug with Kick it, Ask for a front, Pitch, Slide on opps, Rob her).
 - Plugs show on the Move map in their own section, as spots you go to. Their actions (front, pitch, slide, rob) only show when you are meeting them.
 - Trust 60+: you can always pull up on them (go to their spot any time).
@@ -195,3 +197,4 @@ Order if built: 1, 2, 3 as one batch (~2 hrs), then 5. Leaderboard only after pe
 - Buy sizes depend on the plug and the drug: Low plug = grams/pieces (beginner), Mid = ounces, Big = QPs and pounds. Prices and stash space follow the unit.
 - Open: contact trust floor, does going to a spot take the day, per-drug unit table, how this changes Pull up (8% markup) and the daily call discount.
 - Needs: dev menu, tutorial, plug tests (t_plug, t_tie, t_intro), clean/dirty cash on bulk buys, map tags. About 3-4 hrs, best for Opus/Fable.
+- Time vote option 4 (Chris, Nov 13): a short 12-hour clock, 10 AM to 10 PM. Every action costs hours (deal 1h, move 1h or 30 min with a car, job shift 4h, lick 3h, gym 2h). After 6 PM it is night. At 10 PM the day ends. Energy stays as how tired you are; the clock is how much day is left. Not built, waiting on the vote.

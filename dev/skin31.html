@@ -1,0 +1,139 @@
+<style id="skin31">
+#mt31{position:fixed;inset:0;z-index:18;background:var(--bg,#0b0910);overflow:auto;padding:14px 12px calc(20px + env(safe-area-inset-bottom,0px))}
+#mt31 .mt31w{max-width:640px;margin:0 auto}
+#mt31 .mt31h{display:flex;align-items:center;gap:10px;justify-content:space-between;margin-bottom:8px}
+#mt31 .mt31h b{font-family:var(--display);font-weight:400;font-size:20px}
+#mt31 .mt31h small{display:block;color:var(--dim);font-size:13px}
+</style>
+<script id="skin31js">
+(function(){
+if(window._sk31)return;window._sk31=1;
+/* plugs are people with spots on the Move map. 60+ trust: pull up on them any time. 20 to 59: text first and the spot shows that day.
+   The plug card and its actions only exist while you are meeting them. Buying is in bulk by plug level and drug. */
+const el=id=>document.getElementById(id);
+const FLOOR=20,ALWAYS=60,CALLT=40,TAX=1.08;
+const pk=bi=>{S.pk=S.pk||{};return S.pk[bi]=S.pk[bi]||{}};
+const tr=bi=>((S.trust||{})[bi]||0);
+const kn=bi=>(S.known||[]).includes(bi);
+const gone=bi=>!!(S.burned&&S.burned[bi])||!!(S.recr&&S.recr[bi])||!!((S.enemies||{})[bi]);
+const away=()=>{try{return typeof clCity==='function'&&!!clCity()}catch(e){return false}};
+const locked=()=>!!(S.over||S.pr||S.prison||S.inJail);
+const yo=()=>(S&&S.age)||99;
+const face=(bi,sz)=>{try{return avatar(bi,sz)}catch(e){return ''}};
+/* story ties: Lucky's ex or cousin's homeboy, and a plug you are dating, treat you like family */
+const tie=bi=>{try{if(S.gf&&S.gf.plug===bi)return plugFem(bi)?'Your girl':'Your man';if(is('lucky')&&S.ex===bi)return S.age&&S.age<18?'Your cousin\'s homeboy':'Your ex'}catch(e){}return ''};
+const known=()=>(S.known||[]).filter(bi=>!gone(bi));
+const openToday=bi=>(pk(bi).open||-9)>=S.day;
+const canGo=bi=>kn(bi)&&!gone(bi)&&(!!tie(bi)||tr(bi)>=ALWAYS||openToday(bi));
+/* ---------- bulk units: what each level sells by ---------- */
+const UT={loud:{Low:.5,Mid:28,Big:112},snow:{Low:.5,Mid:14,Big:112},kicks:{Low:.5,Mid:14,Big:112},bars:{Low:1,Mid:50,Big:500},percs:{Low:1,Mid:50,Big:500},phones:{Low:1,Mid:4,Big:16}};
+window.l34U=function(bi,g){try{const u=(UT[g.id]||{})[PINFO[bi].lvl];return u&&u>g.step?u:g.step}catch(e){return g.step}};
+window.l34N=function(U,g){const N=g.unit==='g'?{.5:'gram',14:'half ounce',28:'ounce',112:'QP'}:g.unit==='pills'?{1:'pill',50:'pack of 50',500:'boat of 500'}:{1:'ounce',4:'4 oz bottle',16:'pint'};return N[U]||(U+' '+g.unit)};
+const lvlSells=bi=>({Low:'grams and singles',Mid:'ounces and packs',Big:'QPs, pounds and boats'})[PINFO[bi].lvl];
+/* ---------- the meet ---------- */
+function endMeet(silent){const M=S.meet;if(!M)return;S.at=M.from;delete S.meet;const o=el('mt31');if(o)o.remove();if(!silent)say(M.how==='pull'?`${plugName(M.bi)} pulled off.`:`You left ${plugName(M.bi)}'s spot.`)}
+function meet(bi){if(locked()||gone(bi)||S.at!==bi)return;S.meet={bi,from:bi,day:S.day,how:'spot'};say(`You pulled up on ${plugName(bi)} on ${BLOCKS[bi]}.`);render()}
+function whyPull(bi,called){
+ if(locked())return 'Not now.';if(away())return 'They do not drive out of town.';
+ try{if(S.ha&&S.haOK!==S.day)return 'No visitors while you are on the monitor.'}catch(e){}
+ if(bi===S.at)return 'Already here.';if(pk(bi).pu===S.day)return 'Already came to you today.';
+ if(S.heat>=70)return 'You are too hot. Nobody is coming to you.';
+ if(!tie(bi)&&!(called&&tr(bi)>=CALLT))return 'They only come to you when they call.';return ''}
+function pullUp(bi,called){const w=whyPull(bi,called);if(w){say(w);return render()}
+ pk(bi).pu=S.day;S.meet={bi,from:S.at,day:S.day,how:'pull'};S.at=bi;S.heat=Math.min(100,S.heat+1);
+ say(`${plugName(bi)} came to you on ${BLOCKS[S.meet.from]}. ${tie(bi)?'No delivery charge for you.':'Delivery costs 8% more.'}`);render()}
+function goSpot(bi){if(locked()||away())return;if(!canGo(bi)){say('That spot is not open to you today.');return render()}
+ if(S.at===bi)return meet(bi);
+ try{act('go',{dataset:{i:String(bi)}})}catch(e){console.error('sk31 go',e)}
+ if(S&&!S.over&&S.at===bi&&el('modal').hidden&&canGo(bi))meet(bi);else render()}
+function textPlug(bi){const P=pk(bi);if(locked()||away()||!kn(bi)||gone(bi)||tr(bi)<FLOOR||P.txt===S.day)return;P.txt=S.day;const nm=plugName(bi);
+ try{S.inbox=S.inbox||[];S.inbox.unshift({d:S.day,f:'You',to:nm,t:'Let me pull up.'})}catch(e){}
+ if(S.heat>=70){try{phoneMsg(nm,'"You too hot right now. Not today."')}catch(e){}return render()}
+ P.open=S.day+1;try{phoneMsg(nm,`"Bet. I am at the spot on ${BLOCKS[bi]}. Come through."`)}catch(e){}render()}
+window.l31PullUp=pullUp;window.l31End=endMeet;window.l31Meet=meet;window.l31Go=goSpot;window.l31Text=textPlug;
+function drawMeet(){const M=S.meet;if(!M)return;let o=el('mt31');if(!o){o=document.createElement('div');o.id='mt31';document.body.appendChild(o);o.addEventListener('click',e=>{const b=e.target.closest('button[data-a]');if(!b||b.disabled)return;try{sfx('tap')}catch(_){}try{act(b.dataset.a,b)}catch(err){console.error('sk31 act',err)}})}
+ const sc=o.scrollTop,pull=M.how==='pull';
+ o.innerHTML=`<div class="mt31w"><div class="mt31h"><div><b>${esc(plugName(M.bi))}${pull?' came to you':'\'s spot'}</b><small>${pull?`You are still on ${esc(BLOCKS[M.from])}. No day passes. ${tie(M.bi)?tie(M.bi)+': no delivery charge.':'Prices are 8% higher for the delivery.'}`:`On ${esc(BLOCKS[M.bi])}. The meet itself does not use the day.`} Sells by: ${lvlSells(M.bi)}.</small></div><button class="btn go" id="mt31x">Done</button></div><div class="pane" id="mt31p">${_pb()}</div><div class="btns" style="justify-content:center;margin-top:10px"><button class="btn" id="mt31y">Done dealing</button></div></div>`;
+ o.scrollTop=sc;el('mt31x').onclick=el('mt31y').onclick=()=>{endMeet();render()}}
+/* ---------- Move map: plug spots ---------- */
+const LV={Low:[100,1],Mid:[300,.5],Big:[800,.38]};
+const strangers=()=>BLOCKS.map((b,i)=>i).filter(bi=>!gone(bi)&&!(S.burned&&S.burned[bi])&&(!kn(bi)||(tr(bi)<FLOOR&&!tie(bi))));
+function voucher(bi){const fam=known().find(i=>i!==bi&&tie(i)&&tr(i)>=30);if(fam!=null)return{n:plugName(fam)+' ('+tie(fam).toLowerCase()+')',t:Math.max(80,tr(fam)),plug:1};const ps=known().filter(i=>i!==bi&&tr(i)>=60).sort((a,b)=>tr(b)-tr(a));if(ps.length)return{n:plugName(ps[0]),t:tr(ps[0]),plug:1};
+ const f=(S.friends||[])[0];if(f)return{n:f.name,t:50};try{const m=crewList()[0];if(m)return{n:m.name,t:50}}catch(e){}
+ const need=Math.round((LVL[PINFO[bi].lvl].rep||0)*.6);if((S.rep||0)>=Math.max(5,need))return{n:'Your name',t:40,rep:1};return null}
+function introWhy(bi){if((S.introD||-9)===S.day)return 'One link-up a day.';if((pk(bi).cold||0)>S.day)return `Not feeling you. Try again in ${pk(bi).cold-S.day} day${pk(bi).cold-S.day===1?'':'s'}.`;if(!voucher(bi))return 'Nobody to vouch for you yet. Make a friend, earn a plug\'s trust (60), or build more rep.';if(S.cash<LV[PINFO[bi].lvl][0])return 'Need '+money(LV[PINFO[bi].lvl][0])+'.';return ''}
+function goLabel(bi){if(bi===S.at)return 'Meet';if(S.car&&yo()>=16)return 'Drive there';try{if(S.cal&&S.age&&S.age<18&&S.freeMv!==S.day)return 'Go (free move)'}catch(e){}return 'Go · 1 day'}
+function spotsHTML(){if(locked()||away())return '';const L=known().filter(bi=>tie(bi)||tr(bi)>=FLOOR).sort((a,b)=>tr(b)-tr(a)),U=strangers();if(!L.length&&!U.length)return '';
+ let h=`<div class="sec">Plug spots</div>`;
+ h+=L.map(bi=>{const t=tr(bi),P=PINFO[bi],go=canGo(bi),tx=pk(bi).txt===S.day,why=go?(tie(bi)?tie(bi):t>=ALWAYS?'Pull up any time':'Spot is open today'):(tx?'No answer today':'Text first, then the spot shows');
+  const wp=tie(bi)&&bi!==S.at?whyPull(bi):'x';
+  return `<div class="row" style="padding:8px 12px;flex-wrap:wrap">${face(bi,34)}<div class="info" style="flex:1 1 150px;min-width:0"><div class="t">${esc(plugName(bi))}</div><div class="s">${esc(BLOCKS[bi])} · ${P.lvl} level · ${lvlSells(bi)} · Trust ${t}/100 · ${why}</div></div><div class="btns">${go?`<button class="btn go" data-a31="go" data-i="${bi}">${goLabel(bi)}</button>${wp===''?`<button class="btn" data-a31="pu" data-i="${bi}">Come to me</button>`:''}`:`<button class="btn" data-a31="tx" data-i="${bi}" ${tx?'disabled':''}>${tx?'Texted':'Text: let me pull up'}</button>`}</div></div>`}).join('');
+ h+=U.map(bi=>{const P=PINFO[bi],w=introWhy(bi),cold=kn(bi);return `<div class="row" style="padding:8px 12px;flex-wrap:wrap"><div class="info" style="flex:1 1 150px;min-width:0"><div class="t">${cold?esc(plugName(bi))+' is not picking up':'Somebody on '+esc(BLOCKS[bi])}</div><div class="s">${cold?esc(BLOCKS[bi])+' · ':''}${P.lvl} level · ${lvlSells(bi)} · moves ${P.carries.map(id=>G(id).name).join(', ')}${w?' · '+w:''}</div></div><button class="btn" data-a31="in" data-i="${bi}" ${w?'disabled':''}>Get introduced ${money(LV[P.lvl][0])}</button></div>`}).join('');
+ return h}
+window.l31Spots=spotsHTML;
+function intro(bi){const w=introWhy(bi);if(w){say(w);return render()}const P=PINFO[bi],V=voucher(bi),fee=LV[P.lvl][0],nm=plugName(bi),fem=plugFem(bi),he=fem?'she':'he',He=fem?'She':'He';
+ const odds=Math.max(.2,Math.min(.9,LV[P.lvl][1]+((S.sk&&S.sk.talk)||0)*.04+(V.plug?(V.t>=80?.2:.1):0)+(()=>{try{return is('slick')?.2:0}catch(e){return 0}})()));
+ modal(`${face(bi,72)}<div class="sec" style="margin:0;color:var(--accent)">The link-up</div><h2>Meet ${esc(nm)}</h2><p>${V.rep?'Your name has been ringing, so the meet got set up.':esc(V.n)+' made the call and vouched for you.'} ${esc(nm)} runs ${BLOCKS[bi]} and will meet you in a parked car around the corner. No day passes, but it costs ${money(fee)} to set up and some energy.</p><p class="s" style="color:var(--dim)">${P.lvl==='Low'?`${He} is small time. Show up with the money and you are in.`:`First impressions matter. Keep your face straight (Poker face) and ${he} locks your number in. Slip and ${he} will not deal with you for 4 days. Talk and a strong vouch help.`}</p><div class="btns"><button class="btn go" id="i31a">Pull up to the meet</button><button class="btn" id="i31b">Not yet</button></div>`);
+ el('i31b').onclick=close;
+ el('i31a').onclick=()=>{el('modal').hidden=true;if(typeof spendEn==='function'&&spendEn(8)===false)return;S.cash-=fee;try{cleanCash()}catch(e){}S.introD=S.day;
+  const win=()=>{if(!S.known.includes(bi))S.known.push(bi);S.trust[bi]=Math.max(S.trust[bi]||0,V.plug&&V.t>=80?FLOOR+10:FLOOR+2);pk(bi).open=S.day+1;try{addXP(3)}catch(e){}try{phoneMsg(nm,'"Lock my number in. Text me before you pull up."')}catch(e){}
+   say(`You met ${nm}. ${He} is in your phone now.`);modal(`${face(bi,72)}<h2 style="color:var(--money)">${esc(nm)} is in your phone</h2><p>${He} looked you over, counted the money and nodded. "Lock my number in." Text first and ${he} tells you when to come through. Get ${fem?'her':'him'} to 60 trust and you can pull up any time. ${fem?'Her':'His'} spot is open to you today and tomorrow.</p><div class="btns"><button class="btn go" id="ok">Bet</button></div>`);el('ok').onclick=close};
+  const lose=()=>{pk(bi).cold=S.day+4;try{addStress(4)}catch(e){}say(`${nm} was not feeling you. Try again in 4 days.`);modal(`<h2 style="color:var(--blood)">Not feeling you</h2><p>${esc(nm)} watched you sweat and rolled the window back up. The ${money(fee)} is gone. Give it 4 days.</p><div class="btns"><button class="btn go" id="ok">Continue</button></div>`);el('ok').onclick=close};
+  if(P.lvl==='Low')return win();pokerGame(odds,ok=>ok?win():lose())}}
+window.l31Intro=intro;
+try{const _pm=paneMove;paneMove=function(){let h=_pm.apply(this,arguments);try{h=spotsHTML()+h}catch(e){console.error('sk31 spots',e)}return h}}catch(e){console.error('sk31 move',e)}
+/* ---------- Block tab: no plug card. Just what you are holding and the Js ---------- */
+const _pb=paneBlock;
+function streetHTML(){if(S.recr&&S.recr[S.at])return _pb();const o=S.owner[S.at],have=GOODS.filter(g=>S.inv[g.id]>0);
+ let h=`<div class="sec">On you · serve the Js on ${esc(BLOCKS[S.at])}</div>`;
+ if(o!=='me'&&o!=='none'){try{h+=`<div class="row" style="padding:6px 12px"><div class="info"><div class="s">${esc(cdef(o).name)} turf: serving the Js here makes them mad, unless it is a drug they do not move.</div></div></div>`}catch(e){}}
+ if(!have.length)h+=`<div class="row" style="padding:8px 12px"><div class="info"><div class="t">Nothing on you</div><div class="s">Plugs are spots on the Move map now. Pull up on one to buy.</div></div><button class="btn go" data-a31="mv">Plug spots</button></div>`;
+ else h+=have.map(g=>{let jp=0;try{jp=Math.round(plugPrice('sell',g,true)*1.55*(is('val')?1.1:1)*(checkDay()?1.15:1))}catch(e){}
+  return `<div class="row">${(()=>{try{return drugPic(g.id,34)}catch(e){return ''}})()}<div class="info" style="min-width:0"><div class="t">${g.name}</div><div class="s">You got ${amt(S.inv[g.id],g)} (${grade(S.q[g.id],g)})${S.paid[g.id]?` · paid ~${money(S.paid[g.id])}`:' · got it free'} · Js pay ~${money(jp)}</div></div><div class="btns"><button class="btn" data-a="sell" data-g="${g.id}">Sell</button></div></div>`}).join('');
+ try{if((S.enemies||{})[S.at]&&S.burned[S.at])h+=revengeHTML(S.at)}catch(e){}
+ return h}
+paneBlock=function(){if(S.meet)return _pb.apply(this,arguments);try{return streetHTML()}catch(e){console.error('sk31 street',e);return _pb.apply(this,arguments)}};
+try{const _qm=qtyModal;qtyModal=function(kind,g,to,bl){const street=!S.meet&&!(S.recr&&S.recr[S.at]);
+ if(street&&kind==='buy'){say('Plugs are spots on the Move map now. Pull up on one to buy.');try{el('modal').hidden=true}catch(e){}return render()}
+ if(street&&kind==='sell')to='js';const r=_qm.call(this,kind,g,to,bl);
+ if(street){try{const mc=el('mcard');mc.querySelectorAll('[data-to="plug"],#pl').forEach(x=>x.remove())}catch(e){}}return r}}catch(e){console.error('sk31 qty',e)}
+document.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.target.closest('[data-a31]');if(!b||b.disabled)return;const k=b.dataset.a31,i=+b.dataset.i;
+ try{if(k==='go')goSpot(i);else if(k==='tx')textPlug(i);else if(k==='pu')pullUp(i);else if(k==='in')intro(i);else if(k==='mv'){tab='move';render()}}catch(err){console.error('sk31 click',err)}});
+/* keep the meet honest: it ends when the day moves, on a bust, or if you get locked up */
+const _rd=render;render=function(){try{if(S&&S.meet&&(locked()||gone(S.meet.bi)))endMeet(true)}catch(e){}const r=_rd.apply(this,arguments);try{if(S&&S.meet)drawMeet();else{const o=el('mt31');if(o)o.remove()}}catch(e){console.error('sk31 meet',e)}return r};
+const _nd=nextDay;nextDay=function(){try{if(S&&S.meet)endMeet(true)}catch(e){}return _nd.apply(this,arguments)};
+try{const _b=busted;busted=function(){try{if(S&&S.meet)endMeet(true)}catch(e){}return _b.apply(this,arguments)}}catch(e){}
+try{const _pp=plugPrice;plugPrice=function(kind,g,raw){let p=_pp.apply(this,arguments);try{if(S.meet&&S.meet.how==='pull'&&kind==='buy'&&!raw&&!tie(S.meet.bi))p=Math.round(p*TAX)}catch(e){}return p}}catch(e){}
+/* ---------- plugs call you ---------- */
+function plugCall(bi,force){if(!force&&(!el('modal').hidden||window.FF))return false;const P=PINFO[bi],gs=P.carries.map(G).filter(Boolean);if(!gs.length)return false;
+ const g=pick(gs),o=S.offer[bi]&&S.offer[bi][g.id];if(!o)return false;const disc=pick([.88,.9,.85]);
+ o.tip=disc;o.fake=false;if(o.real)o.q=o.real;try{o.stock=Math.max(l34U(bi,g)*3,Math.round(newStock(bi,g)*1.5))}catch(e){}
+ S.pcall=S.day;pk(bi).call=S.day;pk(bi).open=S.day+1;const nm=plugName(bi),fem=plugFem(bi),w=whyPull(bi,true),pct=Math.round((1-disc)*100);
+ try{phoneMsg(nm,`"Just got a new load of ${g.name}. ${pct}% off today. Pull up or I come to you."`)}catch(e){}
+ modal(`${face(bi,72)}<div class="sec" style="margin:0;color:var(--accent)">Incoming call</div><h2>${esc(nm)} is calling</h2><p>"Just got a new load of ${g.name}. ${pct}% off today, for you. You coming to ${BLOCKS[bi]} or you want me to come to you?"</p><p class="s" style="color:var(--dim)">${fem?'Her':'His'} spot is open on the Move map today and tomorrow. Going there costs what any move costs (a day on foot, nothing with a car). ${fem?'She':'He'} can come to you for 8% more and no day passes. The discount is only good today.${w&&bi!==S.at?' '+w:''}</p><div class="btns" style="flex-direction:column;align-items:stretch"><button class="btn go" id="c31a" ${bi!==S.at&&w?'disabled':''}>${bi===S.at?'I am right here':'Come to me'}</button><button class="btn" id="c31b">I will pull up on you</button><button class="btn" id="c31c">Not today</button></div>`);
+ el('c31a').onclick=()=>{el('modal').hidden=true;if(bi===S.at)return meet(bi);pullUp(bi,true)};
+ el('c31b').onclick=()=>{say(`${nm}'s spot on ${BLOCKS[bi]} is open on the Move map.`);close()};
+ el('c31c').onclick=()=>{close()};return true}
+window.l31Call=plugCall;
+function l31Day(){if(locked()||away()||window.FF||window.noL31)return;if((S.pcall||-99)+2>S.day)return;if(S.age&&S.age<14)return;
+ const L=known().filter(bi=>tie(bi)||tr(bi)>=CALLT);if(!L.length)return;
+ let held=0;try{held=GOODS.reduce((a,g)=>a+S.inv[g.id]*street(g),0)}catch(e){}
+ const p=Math.min(.3,.07*L.length)*(held<500?1.6:1);if(Math.random()>=p)return;
+ const bi=pick(L);setTimeout(()=>{try{if(!S||S.over||S.meet)return;plugCall(bi)}catch(e){console.error('sk31 call',e)}},500)}
+try{WD.push(l31Day)}catch(e){console.error('sk31 wd',e)}
+/* crew pay warning */
+function crewWarn(){try{if(!S.soldiers||S.pr)return;const per=S.myGang?100:150,c=per*S.soldiers,have=S.cash+(S.safe||0),d=Math.floor(have/c);if(!S.cwSeen){S.cwSeen=1;say(`💸 Your crew costs ${money(c)} a day (${money(per)} each). Miss a day and they walk. See Expenses.`);return}if(d<=3&&(S.cwD||-9)+2<=S.day){S.cwD=S.day;say(`⚠️ Crew pay is ${money(c)} a day and you can only cover ${d} more day${d===1?'':'s'}. Make money or let somebody go.`)}}catch(e){}}
+try{WD.push(crewWarn)}catch(e){}
+try{TUT.push(['Plug spots and bulk buying','Plugs are not on the Block tab anymore. They are spots on the Move map, under Plug spots. At 60 trust or more you can pull up on a plug any time. From 20 to 59 the plug is a phone contact: tap Text: let me pull up and the spot opens for today and tomorrow. Under 20, or a plug you never met, needs Get introduced (somebody vouches, you pay a fee, Mid and Big plugs make you hold a Poker face). Going to a spot costs what any move costs: the day on foot, nothing with a car. The meet itself is free. Kick it, fronts, pitching, sliding on opps and robbing only show while you are meeting the plug. Plugs sell in bulk by level: Low plugs sell grams and single pills (start here), Mid plugs sell ounces (half ounces of Coke and Molly), packs of 50 pills and 4 oz bottles, Big plugs sell QPs and pounds, boats of 500 pills and pints. Price and stash space follow the size. The Block tab now shows what you are holding and lets you serve the Js. A plug with 40 trust still calls when a new load lands, and can come to you for 8% more. A plug you are dating, or Lucky\'s ex or cousin\'s homeboy, is always open and comes to you free.'])}catch(e){}
+try{const _dp=devPanel;devPanel=function(){const r=_dp.apply(this,arguments);try{const mc=el('mcard');if(mc&&!el('modal').hidden&&!mc.querySelector('[data-d31]')){const B=(k,l)=>`<button class="btn" data-d31="${k}">${l}</button>`;const d=document.createElement('div');d.innerHTML=`<div class="sec">Plug spots and bulk (new)</div><div class="btns">${B('spots','Open Plug spots')}${B('meet','Meet the plug here')}${B('t25','All plugs 25 trust (text first)')}${B('t65','All plugs 65 trust (pull up any time)')}${B('call','Plug call now')}${B('end','End the meet')}${B('intro','Intro test (forget a plug)')}</div>`;const h2=mc.querySelector('h2');if(h2&&h2.parentNode)h2.parentNode.insertBefore(d,h2.nextSibling);else mc.appendChild(d);
+ d.querySelectorAll('[data-d31]').forEach(b=>b.onclick=ev=>{ev.stopPropagation();const k=b.dataset.d31,all=v=>{BLOCKS.forEach((x,i)=>{if(!gone(i)){if(!S.known.includes(i))S.known.push(i);S.trust[i]=v;pk(i).txt=-9;pk(i).open=-9}})};
+  const other=()=>{for(let i=0;i<BLOCKS.length;i++)if(i!==S.at&&!gone(i)){if(!S.known.includes(i))S.known.push(i);S.trust[i]=Math.max(tr(i),60);pk(i).pu=-9;return i}return -1};
+  el('modal').hidden=true;
+  if(k==='end'){endMeet();return render()}
+  if(k==='spots'){try{tab='move'}catch(e){}return render()}
+  if(k==='t25'||k==='t65'){all(k==='t25'?25:65);say('Dev: every plug at '+(k==='t25'?25:65)+' trust.');try{tab='move'}catch(e){}return render()}
+  if(k==='meet'){if(gone(S.at)){say('Dev: no plug on this block right now.');return render()}if(!S.known.includes(S.at))S.known.push(S.at);S.trust[S.at]=Math.max(tr(S.at),60);return meet(S.at)}
+  if(k==='intro'){const x=(S.known||[]).find(i=>i!==S.at&&!gone(i));if(x==null)return render();S.known=S.known.filter(i=>i!==x);S.introD=-9;pk(x).cold=0;S.cash=Math.max(S.cash,2000);try{tab='move'}catch(e){}render();return intro(x)}
+  if(k==='call'){const bi=other();if(bi<0)return render();S.heat=Math.min(S.heat,40);return plugCall(bi,true)}})}}catch(e){console.error('sk31 dev',e)}return r}}catch(e){}
+})();
+</script>
