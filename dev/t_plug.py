@@ -8,7 +8,7 @@ with sync_playwright() as p:
     pg.on('console',lambda m:errs.append('C:'+m.text[:200]) if m.type=='error' and 'sk31' in m.text else None)
     pg.goto('file:///home/claude/the-hustle/index.html',wait_until='load');pg.wait_for_timeout(1800);J=pg.evaluate
     J("()=>{startLife('lucky');document.getElementById('modal').hidden=true;window.noL31=1;window.noL27=1;S.age=19;S.cal=0;S.school='out';S.cash=20000;S.clean=5000;S.heat=10;S.rep=80;S.at=0;S.known=[0,1,2];S.trust[0]=60;S.trust[1]=60;S.trust[2]=30;S.cap=900;tab='block';render()}")
-    r=J("()=>[...document.querySelectorAll('[data-a31="pu"]')].map(b=>b.dataset.i+':'+(b.disabled?'off':'on'))")
+    r=J("()=>[...document.querySelectorAll('[data-a31=\"pu\"]')].map(b=>b.dataset.i+':'+(b.disabled?'off':'on'))")
     ck('block tab lists other plugs',r==['1:on','2:off'],str(r))
     p0=J("()=>plugPrice('buy',G(PINFO[1].carries[0]))");d0=J("()=>S.day")
     pg.locator('[data-a31][data-i="1"]').click();pg.wait_for_timeout(300)
