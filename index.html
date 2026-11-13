@@ -2128,7 +2128,7 @@ ART2['g_overwatch']='art/9a1f9e729350.jpg';
 ART2['g_markup']='art/be149e10c467.jpg';
 ART2['g_poker']='art/774285eb969a.jpg';
 ART2['g_hawk']='art/595cec677233.jpg';
-ART2['g_safe']='art/f30a9d5c92ff.jpg';
+ART2['g_safe']='art/f30a9d5c92ff.jpg';ART2['g_copstop']='art/58f0b6e2a703.jpg';ART2['g_search']='art/49c504bed45f.jpg';ART2['g_jewel']='art/cd52c584c1c0.jpg';ART2['g_trunk']='art/5eaf3b8e89d5.jpg';ART2['g_vault']='art/dfec7caa4340.jpg';ART2['g_alarm']='art/a231c048e3f6.jpg';ART2['g_pharm']='art/23e7c66043f8.jpg';ART2['g_phone']='art/f18549ba034e.jpg';
 ART2['g_hotwire']='art/c77d44c34968.jpg';
 ART2['g_strip']='art/31672e832bb2.jpg';
 ART2['g_scale']='art/b8e99f2a9c61.jpg';
@@ -7165,7 +7165,7 @@ function ckReport(){try{ckState()}catch(e){}const done=CKL.filter(x=>{try{return
 $('mcard').addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(!b||b.disabled||b.onclick||!$('mcard').contains(b))return;sfx('tap');try{act(b.dataset.a,b)}catch(err){console.error(err)}});
 $('pane').onclick=e=>{sfx('tap');const pp=e.target.closest('.mapp');if(pp)return openPlace(pp.dataset.p);const m=e.target.closest('.mapb');if(m){if(m.dataset.a==='go')act('go',m);return}const b=e.target.closest('button[data-a]');if(b&&!b.disabled){let ak=null;try{ak=ACTART[b.dataset.a+(b.dataset.k?':'+b.dataset.k:'')]||ACTART[b.dataset.a]||null}catch(_){};const top=S&&S.log&&S.log[0];let pk=null;try{if(b.closest('#pane'))pk=artFor(b)}catch(_){}act(b.dataset.a,b);try{if(pk&&$('modal').hidden)setTimeout(()=>{try{if($('modal').hidden)artPop(pk)}catch(_){}},80)}catch(_){}const nw=S&&S.log&&S.log[0];if(nw&&nw!==top&&$('modal').hidden){if(ak&&ARTX(ak)&&!(ak===_apk&&Date.now()-_apt<2500)){_apk=ak;_apt=Date.now();modal(`${a2(ak,340)}<p>${esc(nw.t)}</p><div class="btns"><button class="btn go" id="apk">OK</button></div>`);$('apk').onclick=close}else toast(nw.t)}}};
 $('retire').onclick=()=>{modal(`${a2('retire',320)}<h2>Retire your career?</h2><p>This ends the run and shows your final score. You cannot undo it.</p><div class="btns"><button class="btn red" id="rok">Retire</button><button class="btn" id="rno">Keep playing</button></div>`);$('rok').onclick=()=>{$('modal').hidden=true;S.over=true;checkEnd()};$('rno').onclick=close};
-const BUILD='v209';
+const BUILD='v210';
 const DISCORD_INVITE='https://discord.gg/bVsvWzbGW';const OG_UNTIL=Infinity;
 const ogBox=()=>DISCORD_INVITE&&Date.now()<OG_UNTIL?`<a href="${DISCORD_INVITE}" target="_blank" rel="noopener" style="display:block;text-decoration:none;border:2px solid var(--accent);border-radius:10px;padding:10px 12px;background:rgba(0,0,0,.55);color:#fff;text-align:left"><div style="font-family:var(--label);font-weight:700;letter-spacing:.14em;color:var(--accent);font-size:12px">THE HUSTLE COMMUNITY</div><div style="font-size:13px;margin-top:3px">Join the Discord to pitch ideas, report bugs and back the game when it launches. Tap to join →</div></a>`:'';
 
@@ -8932,7 +8932,7 @@ function pinGame(o,done){o=o||{};const TR=(o.tries||6)+(sm()>=6?1:0),TL=Math.max
   document.addEventListener('keydown',kd,true);draw();
   const tick=()=>{if(over)return;const t=el('pct');if(!t){stop();return}const left=TL-(performance.now()-t0);t.style.width=Math.max(0,left/TL*100)+'%';if(left<=0)return fin(false);raf=requestAnimationFrame(tick)};tick();
   window.__pcDbg={code:()=>code,tries:()=>tries,max:TR,g:()=>g,solve:()=>{g=code.slice();crack()},fail:()=>fin(false)};
- },o.art||'g_safe')}
+ },o.art||(hasArt('g_vault')?'g_vault':'g_safe'))}
 window.l27Sort=sortGame;window.l27Pin=pinGame;
 
 /* ---------- real loot ---------- */
@@ -9002,10 +9002,10 @@ document.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.targ
 const _lk=lick;lick=function(k){window._l27q=0;window._l27al=0;return _lk.apply(this,arguments)};
 const forced=()=>!!window._l27force;
 window.l27Alarm=function(go,fail){if(!(forced()||ch(.4)))return go();
- sortGame({title:'Kill the alarm panel',txt:'There is an alarm panel by the back door.',sec:22},ok=>{if(ok){window._l27q=1;say('The alarm panel is dead. Nobody is getting a call.');go()}else{heatUp(8);fail()}})};
+ sortGame({title:'Kill the alarm panel',txt:'There is an alarm panel by the back door.',sec:22,art:'g_alarm'},ok=>{if(ok){window._l27q=1;say('The alarm panel is dead. Nobody is getting a call.');go()}else{heatUp(8);fail()}})};
 function addDrug(id,n){try{const g2=G(id),rm=Math.floor((S.cap-used())/g2.sp);n=Math.max(0,Math.min(n,rm));if(n<=0)return 0;const real=Math.max(0,S.inv[id]-(S.fake[id]||0)),q=rnd(88,97);S.q[id]=Math.round((S.q[id]*real+q*n)/(real+n));S.paid[id]=Math.round((S.paid[id]||0)*S.inv[id]/(S.inv[id]+n));S.inv[id]+=n;return n}catch(e){console.error('l27 drug',e);return 0}}
 function safeAsk(title,txt,o,win,lose,skip){
- modal(`${art('g_safe')}<h2>${title}</h2><p>${txt}</p><p class="s" style="color:var(--dim)">Crack the keypad and the big money is yours. Run out of tries and ${window._l27q?'it locks up. You killed the alarm, so nobody hears it.':'the alarm goes off.'}</p><div class="btns"><button class="btn red" id="l27c">Crack it</button><button class="btn" id="l27n">Leave it</button></div>`);
+ modal(`${art(o.art||'g_vault')}<h2>${title}</h2><p>${txt}</p><p class="s" style="color:var(--dim)">Crack the keypad and the big money is yours. Run out of tries and ${window._l27q?'it locks up. You killed the alarm, so nobody hears it.':'the alarm goes off.'}</p><div class="btns"><button class="btn red" id="l27c">Crack it</button><button class="btn" id="l27n">Leave it</button></div>`);
  el('l27n').onclick=()=>{el('modal').hidden=true;skip()};
  el('l27c').onclick=()=>{el('modal').hidden=true;pinGame(o,ok=>ok?win():lose())}}
 window.l27Safe=function(type,inv,fin,alarm){if(inv||!(forced()||ch({reg:.3,trap:.55,plug:1}[type]||0)))return fin('');
@@ -9014,7 +9014,7 @@ window.l27Safe=function(type,inv,fin,alarm){if(inv||!(forced()||ch({reg:.3,trap:
   if(type==='reg'&&ch(.4)){const it=mk('watch',1.5);if(takeIt(it))x+=' And a nice watch.'}fin(x)},
   ()=>{heatUp(12);addStress(6);if(window._l27q)return fin(' The safe locked you out, but the alarm was already dead.');alarm('The keypad locked up and the safe alarm started screaming.')},()=>fin(''))};
 window.l27Store=function(go,fail){
- modal(`<h2>Corner store</h2><p>There is an alarm panel on the back wall. Kill it first and the register is quieter work. Mess it up and it calls out before you get a dollar.</p><div class="btns"><button class="btn go" id="l27a">Kill the alarm first</button><button class="btn red" id="l27b">Just run in</button></div>`);
+ modal(`${art('g_alarm')}<h2>Corner store</h2><p>There is an alarm panel on the back wall. Kill it first and the register is quieter work. Mess it up and it calls out before you get a dollar.</p><div class="btns"><button class="btn go" id="l27a">Kill the alarm first</button><button class="btn red" id="l27b">Just run in</button></div>`);
  el('l27b').onclick=()=>{el('modal').hidden=true;go()};
  el('l27a').onclick=()=>{el('modal').hidden=true;sortGame({title:'Kill the alarm panel',txt:'Cross the right wires on the store panel.',sec:22},ok=>{if(ok){window._l27q=1;say('The store alarm is dead.');go()}else fail()})}};
 window.l27StoreSafe=function(fin,alarm){if(window._l27q)heatUp(-8);const q=window._l27q?' With the alarm dead, nobody called it in.':'';if(!(forced()||ch(.6)))return fin(q);
@@ -9022,13 +9022,13 @@ window.l27StoreSafe=function(fin,alarm){if(window._l27q)heatUp(-8);const q=windo
   const v=rnd(1500,4500),pay=S.bag?v:Math.round(v*.5);S.cash+=pay;addXP(3);fin(`${q} The back-room safe gave up ${money(pay)} more.${S.bag?'':' No bag, so you left half of it.'}`)},
   ()=>{heatUp(10);addStress(5);if(window._l27q)return fin(q+' The safe locked you out.');alarm('The safe keypad locked up and the alarm went off. You still have the register money.')},()=>fin(q))};
 window.l27Pharm=function(fin,alarm){if(!(forced()||ch(.7)))return fin('');
- safeAsk('The locked cabinet','Behind the counter is a locked cabinet with a keypad. That is where they keep the strong stuff.',{title:'Crack the cabinet',tries:6,sec:40},()=>{
+ safeAsk('The locked cabinet','Behind the counter is a locked cabinet with a keypad. That is where they keep the strong stuff.',{title:'Crack the cabinet',tries:6,sec:40,art:'g_pharm'},()=>{
   const a=addDrug('percs',rnd(60,140)),b=addDrug('bars',rnd(40,100));heatUp(5);addXP(4);fin(a+b?` The locked cabinet had ${a} more Percs and ${b} more Xans.`:' The cabinet opened, but your stash was too full to take more.')},
   ()=>{heatUp(12);addStress(6);alarm('The cabinet keypad locked up and the alarm tripped. You still have what you grabbed off the shelves.')},()=>fin(''))};
 window.l27Scam=function(fin){
- modal(`<h2>He dropped his phone</h2><p>The buyer left his phone on the seat. His money app is still logged in behind the lock screen.</p><p class="s" style="color:var(--dim)">Break in and you can send yourself what is in there. Take too long and the account gets flagged.</p><div class="btns"><button class="btn red" id="l27a">Break into it</button><button class="btn" id="l27b">Leave it</button></div>`);
+ modal(`${art('g_phone')}<h2>He dropped his phone</h2><p>The buyer left his phone on the seat. His money app is still logged in behind the lock screen.</p><p class="s" style="color:var(--dim)">Break in and you can send yourself what is in there. Take too long and the account gets flagged.</p><div class="btns"><button class="btn red" id="l27a">Break into it</button><button class="btn" id="l27b">Leave it</button></div>`);
  el('l27b').onclick=()=>{el('modal').hidden=true;fin('')};
- el('l27a').onclick=()=>{el('modal').hidden=true;sortGame({title:'Break into the phone',txt:'Beat the lock screen before the account flags.',sec:20},ok=>{if(ok){const v=rnd(300,1500);S.cash+=v;heatUp(4);fin(` You got into his phone and sent yourself ${money(v)} more. Dirty.`)}else{heatUp(6);fin(' You tried his phone, but the account flagged and locked. Heat +6.')}})}};
+ el('l27a').onclick=()=>{el('modal').hidden=true;sortGame({title:'Break into the phone',txt:'Beat the lock screen before the account flags.',sec:20,art:'g_phone'},ok=>{if(ok){const v=rnd(300,1500);S.cash+=v;heatUp(4);fin(` You got into his phone and sent yourself ${money(v)} more. Dirty.`)}else{heatUp(6);fin(' You tried his phone, but the account flagged and locked. Heat +6.')}})}};
 window.l27Car=function(hot,cb){if(!(forced()||ch(.5)))return hot(cb);sortGame({title:'Bypass the ignition',txt:'This one is push to start. Sort the ignition wiring to bypass it.',sec:22,art:'g_hotwire'},cb)};
 
 /* heist safes: half are keypad safes */
@@ -9036,11 +9036,11 @@ try{const _sg=safeGame;safeGame=function(o,done){if(o&&o.title&&!o.dial&&(forced
 
 /* ---------- cops can search you ---------- */
 function search(){const L=loot(),n=L.length,val=L.reduce((t,x)=>t+x.v,0),odds=Math.max(.1,Math.min(.85,.4+((S.sk&&S.sk.talk)||0)*.05-S.heat/300-n*.03));
- modal(`${art('g_stop')}<h2>Stopped and searched</h2><p>Twelve rolls up slow and hops out. "Hands where I can see them. What you got on you?" You are carrying ${n} stolen thing${n===1?'':'s'}, worth about ${money(val)}.</p><p class="s" style="color:var(--dim)">Play it cool: about ${Math.round(odds*100)}% they let you walk. Talk helps, heat and a full bag hurt. Under $2,000 they take it and write you up. $2,000 or more is a felony and you go in.</p><div class="btns"><button class="btn go" id="l27a">Play it cool</button><button class="btn red" id="l27b">Run</button></div>`);
+ modal(`${art('g_copstop')}<h2>Stopped and searched</h2><p>Twelve rolls up slow and hops out. "Hands where I can see them. What you got on you?" You are carrying ${n} stolen thing${n===1?'':'s'}, worth about ${money(val)}.</p><p class="s" style="color:var(--dim)">Play it cool: about ${Math.round(odds*100)}% they let you walk. Talk helps, heat and a full bag hurt. Under $2,000 they take it and write you up. $2,000 or more is a felony and you go in.</p><div class="btns"><button class="btn go" id="l27a">Play it cool</button><button class="btn red" id="l27b">Run</button></div>`);
  const found=run=>{S.loot=[];heatUp(12);addStress(8);
   if(val>=2000||run){say(`They found ${money(val)} of stolen goods on you.`);el('modal').hidden=true;busted();if(el('modal').hidden)render();return}
   try{newsPush('Stop and search turns up stolen goods.')}catch(e){}say('They took everything you had on you and wrote you up. Heat +12.');
-  modal(`<h2 style="color:var(--blood)">They found it</h2><p>They took all of it and wrote you up for petty stuff. No cuffs this time. Heat +12.</p><div class="btns"><button class="btn go" id="ok">Continue</button></div>`);el('ok').onclick=close};
+  modal(`${art('g_search')}<h2 style="color:var(--blood)">They found it</h2><p>They took all of it and wrote you up for petty stuff. No cuffs this time. Heat +12.</p><div class="btns"><button class="btn go" id="ok">Continue</button></div>`);el('ok').onclick=close};
  el('l27a').onclick=()=>{if(ch(odds)){addStress(3);say('You kept it cool and they let you walk.');close()}else found(false)};
  el('l27b').onclick=()=>{el('modal').hidden=true;chase(esc2=>{addStress(8);if(esc2){heatUp(8);say('You got away with the bag, but they got a look at you. Heat +8.');el('modal').hidden=true;render()}else found(true)})}}
 window.l27Search=search;
