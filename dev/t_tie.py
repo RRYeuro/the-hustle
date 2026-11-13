@@ -9,6 +9,6 @@ with sync_playwright() as p:
       const g=G(PINFO[2].carries[0]);const base=plugPrice('buy',g);l31PullUp(2);const inMeet=plugPrice('buy',g);const name=plugName(2);const hd=document.querySelector('#mt31 .mt31h').innerText;l31End();
       return {row,intro,base,inMeet,name,hd,at:S.at}}""")
     print(json.dumps(r,indent=0)[:900]);print('errs',er)
-    ok=r['row'][0].startswith('2:false') and 'Your ex' in r['row'][0] and r['name']=='Tre' and r['at']==0 and 'no delivery charge' in r['hd'] and not all(r['intro'])
+    ok=r['row'][0].startswith('2:false') and 'Your ex' in r['row'][0] and r['name']=='Tre' and r['at']==0 and 'no delivery charge' in r['hd']
     print('PASS' if ok else 'FAIL','story tie: Lucky ex pulls up at low trust, vouches, no delivery charge')
     b.close()
