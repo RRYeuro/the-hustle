@@ -8726,6 +8726,13 @@ function inside24(){
 .fm26 .you{position:absolute;transform:translate(-50%,-50%);font:800 11px system-ui,sans-serif;background:#2563eb;color:#fff;border:2px solid #fff;padding:2px 8px;border-radius:10px;pointer-events:none;box-shadow:0 0 12px #2563eb;z-index:3}
 .fm26 .tip{position:absolute;left:8px;bottom:8px;max-width:min(260px,70%);background:rgba(8,6,6,.94);border:2px solid #fff;padding:7px 10px;pointer-events:none;opacity:0;transition:opacity .12s;z-index:7;color:#fff}.fm26 .tip.on{opacity:1}
 .fm26 .tip b{font:400 20px/1.1 'PM24','Permanent Marker',Impact,sans-serif;letter-spacing:.5px;display:block}.fm26 .tip small{display:block;font:600 12px/1.35 system-ui,sans-serif;color:#ddd;margin-top:2px}.fm26 .tip i{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px}
+.tb26{margin:8px 0 14px}.tb26 .tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:8px}
+.tb26 .tabs button{all:unset;box-sizing:border-box;cursor:pointer;text-align:center;background:#d8cfae;color:#15130f;font:400 13px/1.15 'PM24','Permanent Marker',cursive;padding:9px 4px;box-shadow:2px 3px 0 #000;display:flex;flex-direction:column;align-items:center;gap:3px}
+.tb26 .tabs button.on{background:#f2c500}.tb26 .tabs i{width:9px;height:9px;border-radius:50%;display:inline-block;margin-right:4px}.tb26 .tabs small{font:700 9px system-ui,sans-serif;letter-spacing:.4px;color:#5a4a1a}
+.tb26 .bi{background:rgba(10,8,6,.85);border:1px solid #3a3226;border-radius:6px;padding:8px 10px;margin-bottom:8px;font:600 12px/1.4 system-ui,sans-serif;color:#e6dcc0}.tb26 .bi b{font:400 19px 'PM24','Permanent Marker',Impact,sans-serif;color:#f5b72a;display:block;margin-bottom:1px}
+.tb26 button.mapp{all:unset;box-sizing:border-box;display:flex;align-items:center;gap:12px;width:100%;background:#1a1612;border:1px solid #3a3226;border-radius:8px;padding:9px 12px;margin:6px 0;cursor:pointer;color:#f5ecd0;font:600 15px system-ui,sans-serif}
+.tb26 button.mapp:active,.tb26 button.mapp:focus-visible{border-color:#f5b72a;background:#241c14}.tb26 .bd{flex:none;width:46px;height:46px;border-radius:50%;border:3px solid var(--c,#fff);background:#14100c center/cover;display:grid;place-items:center;font:900 15px Impact,sans-serif;color:var(--c,#fff);box-shadow:0 0 8px var(--c,#fff)}
+.tb26 .nm{flex:1}.tb26 .nm small{display:block;font:600 11px system-ui,sans-serif;color:#a89c7a;margin-top:2px}.tb26 .go{font:700 11px system-ui,sans-serif;color:#f5b72a;border:1px solid #f5b72a;border-radius:4px;padding:3px 7px}
 </style>
 <script id="skin25js">
 (function(){
@@ -8763,10 +8770,25 @@ function wire(v){
  v.addEventListener('pointermove',e=>{if(e.pointerType==='mouse')show(at(e))});v.addEventListener('pointerleave',hide);
  v.addEventListener('pointerdown',e=>{if(e.pointerType!=='mouse'&&!e.target.closest('.mapp')){show(at(e));clearTimeout(tmr);tmr=setTimeout(hide,4000)}});
 }
+
+let tbI=null;
+function tabHTML(){if(tbI===null)tbI=S.at;const i=tbI;
+ let h=`<div class="tb26" id="tb26"><div class="tabs">`;
+ BLOCKS.forEach((b,k)=>{const f=bInfo(k);h+=`<button data-t="${k}" class="${k===i?'on':''}"><span><i style="background:${HC[f.lv]}"></i>${b}</span><small>${k===S.at?'YOU ARE HERE':'1 DAY'}</small></button>`});
+ h+=`</div>`;const f=bInfo(i);
+ h+=`<div class="bi"><b>${f.name}</b>${f.ol} · Heat ${f.lv} · ${i===S.at?'You are here':'1 day to get here'}${f.x.length?'<br>'+f.x.join(' · '):''}</div>`;
+ const row=(id,k,n,sub)=>{const im=BADGE[k];return `<button class="mapp" data-p="${id}" aria-label="${n}"><span class="bd" style="--c:${IC[k][1]}${im?';background-image:url('+im+')':''}">${im?'':IC[k][0]}</span><span class="nm">${n}<small>${sub}</small></span><span class="go">${i===S.at?'GO IN':'1 DAY'}</span></button>`};
+ PLACES.forEach(P=>{if(P.bi!==i||!IC[P.id])return;if(P.id==='studio'&&!S.rapOn)return;h+=row(P.id,P.id,P.name,P.id==='stadium'?'Open field':'')});
+ try{if(i===5&&(S.biz||{}).club)h+=row('club24','club','Nightclub','Your club')}catch(e){}
+ try{if(S.traps&&S.traps[i])h+=row('trap'+i,'trap','Trap house','Yours')}catch(e){}
+ return h+`</div>`}
+function wireTabs(v){v.addEventListener('click',e=>{const t=e.target.closest('[data-t]');if(!t)return;tbI=+t.dataset.t;const n=document.createElement('div');n.innerHTML=tabHTML();v.replaceWith(n.firstChild);wireTabs(document.getElementById('tb26'))})}
+const narrow=()=>window.innerWidth<700;
+let _nw=narrow();window.addEventListener('resize',()=>{const n=narrow();if(n!==_nw){_nw=n;try{if(tab==='move')render()}catch(e){}}});
 const _rn=render;render=function(){try{if(S&&S.mv==='list')S.mv='map'}catch(e){}const r=_rn.apply(this,arguments);try{
  const pane=document.getElementById('pane');if(pane&&tab==='move'&&S&&!S.over&&!away()){const old=pane.querySelector('#mp24');pane.querySelectorAll('.mp24-sw').forEach(x=>x.remove());
-  if(old){old.insertAdjacentHTML('beforebegin',mapHTML());old.remove();const v=document.getElementById('fm26');v&&wire(v)}
-  try{if(typeof TUT!=='undefined'&&!TUT._fm26){TUT._fm26=1;const t=TUT.find(x=>x&&x[0]==='Move map');if(t)t[1]='Move shows one map of the whole city. Each letter is a place: tap it to go in. If it is on another block you will be asked to go there first (takes a day). Hover a district (or tap empty ground on a phone) to see its name, owner and heat. Arrow keys jump between places and Enter goes in.'}}catch(e){}}
+  if(old){if(narrow()){tbI=S.at;old.insertAdjacentHTML('beforebegin',tabHTML());old.remove();wireTabs(document.getElementById('tb26'))}else{old.insertAdjacentHTML('beforebegin',mapHTML());old.remove();const v=document.getElementById('fm26');v&&wire(v)}}
+  try{if(typeof TUT!=='undefined'&&!TUT._fm26){TUT._fm26=1;const t=TUT.find(x=>x&&x[0]==='Move map');if(t)t[1]='On a laptop Move shows one map of the whole city, on a phone it shows a tab for each block. Each round picture is a place: tap it to go in. If it is on another block you will be asked to go there first (takes a day). Hover a district (or tap empty ground on a phone) to see its name, owner and heat. Arrow keys jump between places and Enter goes in.'}}catch(e){}}
 }catch(e){console.error('fm26',e)}return r};
 document.addEventListener('keydown',e=>{try{const v=document.getElementById('fm26');if(!v||!$('modal').hidden||tab!=='move')return;const t=e.target;if(t&&/INPUT|TEXTAREA|SELECT/.test(t.tagName))return;
  const D={ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,-1],ArrowDown:[0,1]}[e.key];if(!D)return;const bs=[...v.querySelectorAll('.mapp')];if(!bs.length)return;let cur=bs.includes(document.activeElement)?document.activeElement:null;
