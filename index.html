@@ -3527,9 +3527,9 @@ function mgMaze(o,cb){mgOn=true;const C=7,R=9,T=22,GW=2*C+1,GH=2*R+1,W=GW*T,H=GH
 function mgInv(o,cb){mgOn=true;const W=320,H=400,d=o.d||0,rows=3+(d>.5?1:0),cols=6;let px=W/2,lives=mgLv(3+(skv('muscle')>=7?1:0)),bul=[],eb=[],gx=0,gy=0,dir=1,inv=0,lastF=0,lastE=0,lt=performance.now();const T0=lt,LIM=48000;
   const en=[];for(let r=0;r<rows;r++)for(let c=0;c<cols;c++)en.push({x:34+c*44,y:30+r*28,a:1});
   const sp=(34+d*24)*(1-Math.min(.35,skv('smarts')*.03)),fireMs=Math.max(200,430-skv('hustle')*24),eMs=Math.max(450,1000-d*350);
-  modal(`<h2>${o.title||'Hold the firewall'}</h2>${mgHud('Drag to move. Your gun fires on its own.')}${mgCv(W,H)}`);
-  const cv=$('mgc'),x=cv.getContext('2d');const mv=e=>{if(mgOn)px=Math.max(16,Math.min(W-16,mgPt(cv,e)[0]))};cv.onpointerdown=e=>{try{cv.setPointerCapture(e.pointerId)}catch(_){}mv(e)};cv.onpointermove=mv;
-  const loop=t=>{if(!mgOn||!cv.isConnected)return;const dt=Math.min(.05,(t-lt)/1000);lt=t;const left=1-(t-T0)/LIM;if($('mgt'))$('mgt').style.width=Math.max(0,left*100)+'%';if(left<=0)return mgFin(cb,false,'Out of time. They rebuilt the wall.');
+  modal(`<h2>${o.title||'Hold the firewall'}</h2>${mgHud('Drag or use ← → to move. Your gun fires on its own.')}${mgCv(W,H)}`);
+  const cv=$('mgc'),x=cv.getContext('2d');const mv=e=>{if(mgOn)px=Math.max(16,Math.min(W-16,mgPt(cv,e)[0]))};cv.onpointerdown=e=>{try{cv.setPointerCapture(e.pointerId)}catch(_){}mv(e)};cv.onpointermove=mv;const kk={},kd=e=>{const k=(e.key||'').toLowerCase();if(k==='arrowleft'||k==='a'){kk.l=1;e.preventDefault()}if(k==='arrowright'||k==='d'){kk.r=1;e.preventDefault()}},ku=e=>{const k=(e.key||'').toLowerCase();if(k==='arrowleft'||k==='a')kk.l=0;if(k==='arrowright'||k==='d')kk.r=0};document.addEventListener('keydown',kd);document.addEventListener('keyup',ku);
+  const loop=t=>{if(!mgOn||!cv.isConnected){document.removeEventListener('keydown',kd);document.removeEventListener('keyup',ku);return}const dt=Math.min(.05,(t-lt)/1000);lt=t;if(kk.l)px=Math.max(16,px-260*dt);if(kk.r)px=Math.min(W-16,px+260*dt);const left=1-(t-T0)/LIM;if($('mgt'))$('mgt').style.width=Math.max(0,left*100)+'%';if(left<=0)return mgFin(cb,false,'Out of time. They rebuilt the wall.');
     const al=en.filter(e=>e.a);if(!al.length)return mgFin(cb,true,'Firewall down. You are through.');
     gx+=dir*sp*dt;const mn=Math.min(...al.map(e=>e.x))+gx,mx=Math.max(...al.map(e=>e.x))+gx;if((dir>0&&mx>W-16)||(dir<0&&mn<16)){dir*=-1;gy+=14}
     if(Math.max(...al.map(e=>e.y))+gy>H-62)return mgFin(cb,false,'They reached your line. Traced.');
@@ -8556,7 +8556,7 @@ function place24(){
   if(c){pane.insertAdjacentHTML('afterbegin',`<div class="mp24-note">🗺️ Map art for ${c} is coming. Showing the list for now.</div>`);return}
   const mv=S.mv||'map';
   pane.insertAdjacentHTML('afterbegin',swHTML(mv,!S.mpTip)+(mv==='map'?mapHTML():''));
-  if(mv==='map'){pane.classList.add('mp24-map');pane.querySelectorAll('.cbd').forEach(x=>x.classList.add('mp24-x'));pane.querySelectorAll('.sec').forEach(x=>{if(GROUPS.indexOf(x.textContent.trim())>-1)x.classList.add('mp24-x')})}
+  if(mv==='map'){pane.classList.add('mp24-map');pane.querySelectorAll('.cbd').forEach(x=>x.classList.add('mp24-x'));pane.querySelectorAll('.mv-tile').forEach(x=>{if(/Fitness and sports|Shops|Services|Out and about/.test(x.innerText))x.classList.add('mp24-x')});pane.querySelectorAll('.sec').forEach(x=>{if(GROUPS.indexOf(x.textContent.trim())>-1)x.classList.add('mp24-x')})}
   else pane.classList.remove('mp24-map');
 }
 /* pan / zoom */
@@ -8568,8 +8568,9 @@ function apply(){const cv=document.getElementById('mp24cv');if(!cv)return;clamp(
 function zoomAt(f,cx,cy){const nz=Math.min(minz()*5,Math.max(minz(),st.z*f));st.tx=cx-(cx-st.tx)*(nz/st.z);st.ty=cy-(cy-st.ty)*(nz/st.z);st.z=nz;apply()}
 function whole(){st.z=minz();st.tx=0;st.ty=0;apply()}
 function focusBlock(i){const m=metr();st.z=Math.max(minz(),m.w/SW);const cy=OFF[i]+(i?(400-TOPS[i])/2:200);st.tx=(m.w-SW*st.z)/2;st.ty=m.h/2-cy*st.z;apply()}
+let _rw=0;window.addEventListener('resize',()=>{const v=vp();if(!v||!window._mp24)return;const w=v.clientWidth;if(Math.abs(w-_rw)>40){_rw=w;setTimeout(()=>{if(vp())focusBlock(S.at)},150)}});
 function init24(){
-  place24();const v=vp();if(!v)return;
+  place24();const v=vp();if(!v)return;_rw=v.clientWidth;
   if(!st.init||!st.z){focusBlock(S.at);st.init=true}else apply();
   const ptr=new Map();let lastD=0;
   v.addEventListener('pointerdown',e=>{if(e.target.closest('.mp24-zb'))return;ptr.set(e.pointerId,[e.clientX,e.clientY]);st.moved=0;lastD=0});
