@@ -5046,7 +5046,7 @@ function lkBlock(k,what){const n=lkLeft(k);if(!n)return false;const t=`${what} i
 function lick(k){if(proStop())return;if(stuckHome())return;if(k==='store'&&lkBlock('store','The corner store'))return;if(k==='pharm'&&lkBlock('pharm','The pharmacy'))return;if((k==='house'||k==='strap')&&!window.noTips&&!(S.lt&&S.lt[k]>=S.day)){say('You need a tip first. Check your phone.');return render()}if(S.lt)delete S.lt[k];if((S.rob.fat||0)>=7){say('Everybody on the block is watching for you. Lay off the licks for a few days.');return render()}S.rob.c0=S.cash;if(LCD[k]){S.lcd=S.lcd||{};S.lcd[k]=S.day+LCD[k]}
   const sm=S.sk.smarts+(friendWith('rob')?2:0),mu=S.sk.muscle,st=stressed()?.1:0;
   if(k==='car'&&S.age&&S.age<16){say('Too young to steal cars. Come back at 16.');return render()}
-  if(k==='car')return hotwireGame(ok=>{
+  if(k==='car')return (window.l27Car?(f=>l27Car(hotwireGame,f)):hotwireGame)(ok=>{
     if(ok){const pay=rnd(1500,4000);S.heat=Math.min(100,S.heat+15);addXP(4);addStress(5);
       const sell=()=>{S.cash+=pay;lickDone('Got the whip',`Key programmed, car gone. The chop shop paid ${money(pay)}.`,true)};
       if(S.car)return sell();
@@ -5067,21 +5067,22 @@ function lick(k){if(proStop())return;if(stuckHome())return;if(k==='store'&&lkBlo
     const pa=Math.min(a,room),pb=Math.min(b2,Math.max(0,room-pa));
     [['percs',pa],['bars',pb]].forEach(([id,n])=>{if(n<=0)return;const real=Math.max(0,S.inv[id]-(S.fake[id]||0)),q=rnd(84,97);S.q[id]=Math.round((S.q[id]*real+q*n)/(real+n));S.paid[id]=Math.round((S.paid[id]||0)*S.inv[id]/(S.inv[id]+n));S.inv[id]+=n});
     S.heat=Math.min(100,S.heat+35);addXP(5);addStress(10);
-    lickDone('Cleaned out the shelves',`You grabbed ${got} bags. That's ${pa} Percs and ${pb} Xans, pharm grade.${pa+pb<a+b2?' Your stash was too full for the rest.':''}`,true)},{T:7000,redAdd:.14,spd:.82,title:'Pharmacy, camera on you',txt:'Tap the shelves when a bag of pills shows up. The cameras cover more of the shelves here, the pharmacist is watching and you got less time. Need at least 4 bags.'});
-  if(k==='store')return seqGame(ok=>{
-    if(ok){const pay=rnd(400,1500);S.cash+=pay;S.heat=Math.min(100,S.heat+15);addXP(3);addStress(5);return lickDone('Register emptied',`You moved too fast for him. Walked out with ${money(pay)}.`,true)}
+    const _f=x=>lickDone('Cleaned out the shelves',`You grabbed ${got} bags. That's ${pa} Percs and ${pb} Xans, pharm grade.${pa+pb<a+b2?' Your stash was too full for the rest.':''}`+(x||''),true);return window.l27Pharm?l27Pharm(_f,t=>alarmRun('Alarm tripped',t,'You got away','Out the door with what you grabbed.')):_f()},{T:7000,redAdd:.14,spd:.82,title:'Pharmacy, camera on you',txt:'Tap the shelves when a bag of pills shows up. The cameras cover more of the shelves here, the pharmacist is watching and you got less time. Need at least 4 bags.'});
+  if(k==='store'){const _go=()=>seqGame(ok=>{
+    if(ok){const pay=rnd(400,1500);S.cash+=pay;S.heat=Math.min(100,S.heat+15);addXP(3);addStress(5);const _f=x=>lickDone('Register emptied',`You moved too fast for him. Walked out with ${money(pay)}.`+(x||''),true);return window.l27StoreSafe?l27StoreSafe(_f,t=>alarmRun('Alarm tripped',t,'You got away','Out the door with the register money.')):_f()}
     const dmg=vcut(rnd(10,25));S.hp-=dmg;S.heat=Math.min(100,S.heat+10);addStress(10);
-    lickDone('Clerk had a bat',`You froze up and he came over the counter. −${dmg} health.`,false)});
+    lickDone('Clerk had a bat',`You froze up and he came over the counter. −${dmg} health.`,false)});return window.l27Store?l27Store(_go,()=>{S.heat=Math.min(100,S.heat+10);alarmRun('Alarm tripped','You crossed the wrong wire and the panel started screaming before you got inside.','You got away','Empty handed, but free.')}):_go()}
   if(k==='house'){let inv=false;const run=(steps,woke)=>{
     if(woke){cut('escape','GET OUT');}
-    if(woke)return alarmRun('Somebody\'s home','A floorboard creaked and the lights came on. They\'re calling 911.','You got away','Over the back fence and gone.');
+    if(woke&&window._l27al){window._l27al=0;return alarmRun('Alarm tripped','You fumbled the alarm panel and it started screaming. Somebody called it in.','You got away','Over the back fence and gone.')}if(woke)return alarmRun('Somebody\'s home','A floorboard creaked and the lights came on. They\'re calling 911.','You got away','Over the back fence and gone.');
     const teen=gAge()&&gAge()<18,r=Math.random(),type=inv?(r<.55?'reg':r<.85?'trap':'plug'):r<.06?'empty':r<.62?'reg':r<.9||teen?'trap':'plug',L=[];
     const cash=(a,b,t)=>{const v=rnd(a,b);L.push({t:t?t.replace('$V',money(v)):`${money(v)} cash`,f:()=>{S.cash+=v}})},dr=(id,n)=>{const g2=G(id);L.push({t:`${id==='loud'&&n>=896?`${n/448} pounds (${n}g)`:amt(n,g2)} of ${g2.name}`,f:()=>{const room=Math.floor((S.cap-used())/g2.sp);const q=Math.max(0,Math.min(n,room));S.inv[id]+=q;return q<n?` (no room for ${amt(n-q,g2)})`:''}})},
       gun=pool=>{if(teen)return cash(300,900,'a gun you pawned on the way out');const g2=pick(pool);L.push({t:`a ${GUNS[g2].name}`,f:()=>{S.guns=S.guns||{};if(S.guns[g2]||armed().includes(g2)){const v=Math.round(GUNS[g2].cost*.5);S.cash+=v;return ` (already had one, pawned it for ${money(v)})`}S.guns[g2]=1}})};
-    if(type==='reg'){cash(300,2500);cash(400,2500,'jewelry box (pawn)');if(Math.random()<.5)cash(200,900,'a game system and a TV (pawn)');if(Math.random()<.35)dr('loud',28);if(Math.random()<.15)gun(['pistol','revolver','smitty'])}
+    if(type==='reg'){cash(300,2500);if(Math.random()<.35)dr('loud',28);if(Math.random()<.15)gun(['pistol','revolver','smitty'])}
     if(type==='trap'){cash(1500,teen?3000:6000);dr('loud',teen?112:448);if(Math.random()<.6)dr('snow',teen?28:pick([56,112,250]));if(Math.random()<.5)dr(pick(['bars','percs']),teen?50:pick([100,300]));if(Math.random()<.45)gun(['glizzy','smitty','shotgun','micro'])}
     if(type==='plug'){cash(5000,20000);dr('loud',448*rnd(2,4));dr('snow',pick([250,500,1000]));dr(pick(['bars','percs']),500);gun(['micro','baby','draco','rifle']);if(Math.random()<.5)gun(['glizzy','switchy','shotgun'])}
-    if(inv){cash(1000,type==='plug'?15000:type==='trap'?6000:3000,'$V out the safe (you made them open it)');if(type==='reg'&&Math.random()<.5)cash(500,1800,'$V in wallets, phones and a watch')}
+    if(inv){cash(1000,type==='plug'?15000:type==='trap'?6000:3000,'$V out the safe (you made them open it)');if(type==='reg'&&Math.random()<.5)cash(200,700,'$V in wallets')}
+    try{if(type!=='empty')l27House(L,type,inv)}catch(e){console.error('l27',e)}
     if(type==='empty'){S.heat=Math.min(100,S.heat+6);addStress(4);return lickDone('Nothing here','You got in clean, but somebody already cleaned it out. Empty drawers, empty closets. Wasted trip.',false)}
     L.sort(()=>Math.random()-.5);
     const nm=(inv?'Home invasion: ':'')+{reg:'Regular house',trap:'It\'s a trap house',plug:'You hit a plug\'s stash house'}[type];
@@ -5092,9 +5093,9 @@ function lick(k){if(proStop())return;if(stuckHome())return;if(k==='store'&&lkBlo
       const list=take.length?`You got out with: ${notes.join(', ')}.`:'You froze up and got nothing.';
       if(inv&&!alarm&&Math.random()<.3)return alarmRun('Neighbors called it in',`Somebody heard the door go down. ${list} Sirens getting closer.`,'You got away','Hopped in the car and gone.');
       if(alarm)return alarmRun('Car pulled up',`Headlights hit the window. ${list} ${type!=='reg'?'And whoever runs this spot is gonna want it back.':''}`,'You got away','Over the back fence with the bag.');
-      lickDone(take.length?'Clean lick':'Empty handed',`${list}${take.length<L.length?` You left ${L.length-take.length} thing${L.length-take.length===1?'':'s'} behind.`:' Cleaned it out.'}`,take.length>0)},
+      const _f=x=>lickDone(take.length||x?'Clean lick':'Empty handed',`${list}${take.length<L.length?` You left ${L.length-take.length} thing${L.length-take.length===1?'':'s'} behind.`:' Cleaned it out.'}${x||''}`,take.length>0||!!x);if(window.l27Safe)return l27Safe(type,inv,_f,t=>alarmRun('Safe alarm',`${list} ${t}`,'You got away','Over the back fence with the bag.'));_f('')},
       {title:'Grab it and get out',txt:inv?'You got them on the floor. Tap the bag when it shows up. If headlights hit the window, don\'t touch it.':'Tap the bag when it shows up. If headlights hit the window, don\'t touch it.',icon:'💰',bad:'🚗',unit:'Grabbed',max:L.length,T:inv?9000:7000})};
-    const sneak=()=>{cut('door','');sneakGame(run)};
+    const sneak=()=>{cut('door','');const _go=()=>sneakGame(run);if(window.l27Alarm)return l27Alarm(_go,()=>{window._l27al=1;run(0,true)});_go()};
     if(!adult()||gunBonus()<=0)return sneak();
     modal(`<h2>Hit a house</h2><p>How you doing it?</p>
       <button class="btn" id="sn" style="text-align:left;white-space:normal;text-transform:none;padding:10px 12px"><b>Sneak in</b> · nobody home. Quiet, less heat. Wake somebody up and you gotta run.</button>
@@ -5138,7 +5139,7 @@ function lick(k){if(proStop())return;if(stuckHome())return;if(k==='store'&&lkBlo
   if(k==='scam')return talkGame(sus=>{
     if(Math.random()<.1+sus*.03-S.sk.talk*.005-girlB()){return lickBust('It was a setup','The "buyer" was undercover. Should have known.')}
     if(sus<=1){const pay=rnd(600,1800);S.cash+=pay;S.rep+=2;S.heat=Math.min(100,S.heat+10);addXP(3);addStress(5);
-      return lickDone('He came with the bread',`He fell for every word. Buyer showed up with ${money(pay)} and you took it.`,true)}
+      const _f=x=>lickDone('He came with the bread',`He fell for every word. Buyer showed up with ${money(pay)} and you took it.`+(x||''),true);return window.l27Scam?l27Scam(_f):_f()}
     if(sus<=3){const dmg=vcut(rnd(10,30));S.hp-=dmg;addStress(12);return lickDone('He came strapped',`He didn't trust you, so he came ready. You got out, but not clean. −${dmg} health.`,false)}
     lickDone('He ghosted',"Your story didn't add up and he blocked you. Nothing happened.",false)});
 }
@@ -8847,6 +8848,225 @@ function scene(){
  mc.querySelectorAll('.in24-h,.in24-ps,.in24-pic').forEach(x=>x.remove());
 }
 const _md=modal;modal=function(h){try{const m0=document.getElementById('mcard');if(m0)m0.classList.remove('scn26')}catch(e){}const r=_md.apply(this,arguments);try{scene()}catch(e){console.error('scn26',e)}return r};
+})();
+</script>
+<style id="skin27">
+.sr27{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;max-width:300px;margin:8px auto;width:100%}
+.sr27 button{aspect-ratio:1;font-size:20px;padding:0;min-width:0;font-variant-numeric:tabular-nums}
+.sr27 button.dn{opacity:.22}
+.sr27 button.cu{outline:3px solid var(--accent);outline-offset:1px}
+.sr27 button.bad{background:var(--blood);border-color:var(--blood)}
+.pc27{display:flex;gap:8px;justify-content:center;margin:8px 0}
+.pc27 span{width:46px;height:54px;display:flex;align-items:center;justify-content:center;font-size:28px;background:#1b1a20;border-radius:6px;border-bottom:5px solid var(--line);font-variant-numeric:tabular-nums}
+.pc27 span.cu{outline:2px solid var(--accent)}
+.pc27 span.g{border-bottom-color:#4fd36a;color:#4fd36a}
+.pc27 span.y{border-bottom-color:#f1c232;color:#f1c232}
+.pc27h{display:flex;flex-direction:column;gap:3px;align-items:center;min-height:44px}
+.pc27h div{display:flex;gap:4px}
+.pc27h i{font-style:normal;width:22px;text-align:center;border-bottom:3px solid var(--line);font-size:14px;color:var(--dim)}
+.pc27h i.g{border-bottom-color:#4fd36a;color:#4fd36a}
+.pc27h i.y{border-bottom-color:#f1c232;color:#f1c232}
+.pk27{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;max-width:240px;margin:6px auto;width:100%}
+.pk27 button{padding:10px 0;font-size:17px;min-width:0}
+</style>
+<script id="skin27js">
+(function(){
+if(window._sk27)return;window._sk27=1;
+const el=id=>document.getElementById(id);
+const sm=()=>{try{return S.sk.smarts||0}catch(e){return 0}};
+const strs=()=>{try{return stressed()?1:0}catch(e){return 0}};
+const hasArt=k=>{try{return !!(k&&ARTX(k))}catch(e){return false}};
+const art=k=>hasArt(k)?a2(k,340):'';
+const gate=(t,x,go,k)=>{try{if(typeof gateGame==='function')return gateGame(t,x,go,hasArt(k)?k:null)}catch(e){console.error('l27 gate',e)}go()};
+const heatUp=n=>{S.heat=Math.max(0,Math.min(100,S.heat+n))};
+const ch=p=>Math.random()<p;
+
+/* ---------- Sort: tap 1 to 16 in order ---------- */
+function sortGame(o,done){o=o||{};const N=o.n||16,TL=Math.max(8,(o.sec||22)+sm()*.6-strs()*2)*1000,ttl=o.title||'Sort it';
+ gate(ttl,(o.txt?o.txt+' ':'')+'Tap the numbers 1 to '+N+' in order before the bar runs out. A wrong tap costs you a second. Keyboard: arrow keys move the box, Enter or Space picks, Esc gives up. Street Smarts gives you more time.',()=>{
+  mgOn=true;const ord=Array.from({length:N},(_,i)=>i+1).sort(()=>Math.random()-.5);let next=1,cur=0,pen=0,over=false,raf=0,lastBad=0;const t0=performance.now();
+  modal(`<h2>${ttl}</h2><div class="bar" style="height:8px"><i id="srt" style="width:100%;background:var(--heat)"></i></div><div class="sr27" id="srg">${ord.map((n,i)=>`<button class="btn${i?'':' cu'}" data-sr="${i}">${n}</button>`).join('')}</div><p id="srm" class="s" style="text-align:center">Next: <b>1</b></p><div class="btns" style="justify-content:center"><button class="btn" id="srx">Give up</button></div>`);
+  const bs=[...el('srg').children];
+  const stop=()=>{over=true;mgOn=false;document.removeEventListener('keydown',kd,true);cancelAnimationFrame(raf)};
+  const fin=ok=>{if(over)return;stop();el('modal').hidden=true;done(!!ok)};
+  const pickT=i=>{if(over)return;const b=bs[i];if(!b||b.classList.contains('dn'))return;
+   if(ord[i]===next){b.classList.add('dn');next++;if(next>N)return fin(true);el('srm').innerHTML='Next: <b>'+next+'</b>'}
+   else{const n=performance.now();if(n-lastBad<250)return;lastBad=n;pen+=1000;b.classList.add('bad');setTimeout(()=>b.classList.remove('bad'),200)}};
+  const mv=d=>{bs[cur].classList.remove('cu');cur=(cur+d+N)%N;bs[cur].classList.add('cu')};
+  function kd(e){if(e.ctrlKey||e.metaKey||e.altKey)return;if(!el('srg')){stop();return}e.preventDefault();e.stopPropagation();const k=e.key;
+   if(k==='ArrowLeft')mv(-1);else if(k==='ArrowRight')mv(1);else if(k==='ArrowUp')mv(-4);else if(k==='ArrowDown')mv(4);
+   else if(e.repeat)return;else if(k==='Enter'||k===' ')pickT(cur);else if(k==='Escape')fin(false)}
+  bs.forEach((b,i)=>b.onclick=()=>{if(over)return;bs[cur].classList.remove('cu');cur=i;b.classList.add('cu');pickT(i)});
+  el('srx').onclick=()=>fin(false);
+  document.addEventListener('keydown',kd,true);
+  const tick=()=>{if(over)return;const t=el('srt');if(!t){stop();return}const left=TL-(performance.now()-t0)-pen;t.style.width=Math.max(0,left/TL*100)+'%';if(left<=0)return fin(false);raf=requestAnimationFrame(tick)};tick();
+  window.__srDbg={ord:()=>ord,next:()=>next,cur:()=>cur,solve:()=>{for(let n=next;n<=N&&!over;n++)pickT(ord.indexOf(n))},fail:()=>fin(false)};
+ },o.art)}
+
+/* ---------- Pin Cracker: 4 digits, green = right spot, yellow = wrong spot ---------- */
+function pinGame(o,done){o=o||{};const TR=(o.tries||6)+(sm()>=6?1:0),TL=Math.max(20,(o.sec||50)+sm()*2-strs()*5)*1000,ttl=o.title||'Pin Cracker';
+ gate(ttl,(o.txt?o.txt+' ':'')+'Find the 4 digit code. No digit repeats. Enter 4 digits and hit Crack: green means right digit in the right spot, yellow means the digit is in the code but in another spot. Greens stay locked in. You get '+TR+' tries and the clock is running. Keyboard: type the digits, left and right arrows move, up and down change a digit, Backspace clears, Enter cracks, Esc gives up. Street Smarts gives you more time.',()=>{
+  mgOn=true;const code=[0,1,2,3,4,5,6,7,8,9].sort(()=>Math.random()-.5).slice(0,4);let g=[null,null,null,null],mk=['','','',''],cur=0,tries=0,over=false,raf=0;const hist=[];const t0=performance.now();
+  modal(`<h2>${ttl}</h2><div class="bar" style="height:8px"><i id="pct" style="width:100%;background:var(--heat)"></i></div><div class="pc27" id="pcs"></div><div class="pc27h" id="pch"></div><p id="pcm" class="s" style="text-align:center">Tries left: <b>${TR}</b></p>
+   <div class="pk27">${[1,2,3,4,5,6,7,8,9].map(n=>`<button class="btn" data-pk="${n}">${n}</button>`).join('')}<button class="btn" data-pk="b">⌫</button><button class="btn" data-pk="0">0</button><button class="btn go" data-pk="c">Crack</button></div>
+   <div class="btns" style="justify-content:center"><button class="btn" id="pcx">Give up</button></div>`);
+  const stop=()=>{over=true;mgOn=false;document.removeEventListener('keydown',kd,true);cancelAnimationFrame(raf)};
+  const fin=ok=>{if(over)return;stop();el('modal').hidden=true;done(!!ok)};
+  const draw=()=>{const s=el('pcs');if(!s)return;s.innerHTML=g.map((d,i)=>`<span class="${i===cur?'cu ':''}${g[i]!=null?mk[i]:''}" data-ps="${i}">${d==null?'·':d}</span>`).join('');
+   [...s.children].forEach((x,i)=>x.onclick=()=>{cur=i;draw()});
+   el('pch').innerHTML=hist.slice(-2).map(h=>`<div>${h.g.map((d,i)=>`<i class="${h.m[i]}">${d}</i>`).join('')}</div>`).join('')};
+  const put=d=>{if(over)return;g[cur]=d;mk[cur]='';if(cur<3)cur++;draw()};
+  const back=()=>{if(over)return;if(g[cur]==null&&cur>0)cur--;g[cur]=null;mk[cur]='';draw()};
+  const spin=d=>{if(over)return;g[cur]=((g[cur]==null?(d>0?-1:10):g[cur])+d+10)%10;mk[cur]='';draw()};
+  const crack=()=>{if(over)return;if(g.some(x=>x==null)){el('pcm').textContent='Fill in all 4 digits first.';return}
+   tries++;const m=g.map((d,i)=>d===code[i]?'g':code.includes(d)?'y':'');hist.push({g:g.slice(),m});
+   if(m.every(x=>x==='g')){mk=m;draw();return fin(true)}
+   if(tries>=TR){draw();return fin(false)}
+   g=g.map((d,i)=>m[i]==='g'?d:null);mk=m.map(x=>x==='g'?'g':'');cur=Math.max(0,g.findIndex(x=>x==null));
+   el('pcm').innerHTML='Tries left: <b>'+(TR-tries)+'</b>';draw()};
+  function kd(e){if(e.ctrlKey||e.metaKey||e.altKey)return;if(!el('pcs')){stop();return}e.preventDefault();e.stopPropagation();const k=e.key;
+   if(k==='ArrowLeft'){cur=(cur+3)%4;draw()}else if(k==='ArrowRight'){cur=(cur+1)%4;draw()}else if(k==='ArrowUp')spin(1);else if(k==='ArrowDown')spin(-1);
+   else if(e.repeat)return;else if(/^[0-9]$/.test(k))put(+k);else if(k==='Backspace'||k==='Delete')back();else if(k==='Enter')crack();else if(k==='Escape')fin(false)}
+  let lastT=0;
+  el('mcard').querySelectorAll('[data-pk]').forEach(b=>b.onclick=()=>{const n=performance.now();if(n-lastT<120)return;lastT=n;const k=b.dataset.pk;if(k==='b')back();else if(k==='c')crack();else put(+k)});
+  el('pcx').onclick=()=>fin(false);
+  document.addEventListener('keydown',kd,true);draw();
+  const tick=()=>{if(over)return;const t=el('pct');if(!t){stop();return}const left=TL-(performance.now()-t0);t.style.width=Math.max(0,left/TL*100)+'%';if(left<=0)return fin(false);raf=requestAnimationFrame(tick)};tick();
+  window.__pcDbg={code:()=>code,tries:()=>tries,max:TR,g:()=>g,solve:()=>{g=code.slice();crack()},fail:()=>fin(false)};
+ },o.art||'g_safe')}
+window.l27Sort=sortGame;window.l27Pin=pinGame;
+
+/* ---------- real loot ---------- */
+const LT={ring:{n:'gold ring',s:'p',c:'j',v:[150,500]},chain:{n:'gold chain',s:'p',c:'j',v:[300,1400]},watch:{n:'watch',s:'p',c:'j',v:[250,1800]},jbox:{n:'jewelry box',s:'b',c:'j',v:[600,2600]},
+ phone:{n:'phone',s:'p',c:'e',v:[150,450]},laptop:{n:'laptop',s:'b',c:'e',v:[350,900]},console:{n:'game system',s:'b',c:'e',v:[200,450]},kicks:{n:'pair of sneakers',s:'b',c:'g',v:[120,400]},
+ tv:{n:'flat screen TV',s:'c',c:'e',v:[400,1200]},spk:{n:'set of speakers',s:'c',c:'e',v:[250,700]},tools:{n:'tool set',s:'c',c:'g',v:[200,600]},bike:{n:'bike',s:'c',c:'g',v:[150,500]}};
+const CAP={p:4,b:8,c:6},HOMECAP=20,WN={p:'pockets',b:'bag',c:'trunk'};
+const loot=()=>{if(!Array.isArray(S.loot))S.loot=[];return S.loot};
+const lootH=()=>{if(!Array.isArray(S.lootH))S.lootH=[];return S.lootH};
+const cnt=w=>loot().filter(x=>x.w===w).length;
+function room(s){
+ if(s==='p'&&cnt('p')<CAP.p)return 'p';
+ if(s!=='c'&&S.bag&&cnt('b')<CAP.b)return 'b';
+ if(S.car&&cnt('c')<CAP.c)return 'c';
+ return null}
+function mk(k,mult){const T=LT[k];return{k,v:Math.max(10,Math.round(rnd(T.v[0],T.v[1])*(mult||1)/10)*10),p:rnd(40,60),d:S.day}}
+function takeIt(it){const w=room(LT[it.k].s);if(!w)return false;it.w=w;loot().push(it);return true}
+function entry(L,k,mult){const it=mk(k,mult),T=LT[k];const why=T.s==='c'&&!S.car?' (too big without a car)':T.s==='b'&&!S.bag&&!S.car?' (needs a book bag)':'';
+ L.push({t:'a '+T.n+why,f:()=>takeIt(it)?'':(why?', left behind':' (no room, left behind)')})}
+window.l27House=function(L,type,inv){
+ if(type==='reg'){const n=rnd(1,3);for(let i=0;i<n;i++)entry(L,pick(['ring','chain','watch']));if(ch(.35))entry(L,'jbox');if(ch(.5))entry(L,pick(['console','laptop']));if(ch(.45))entry(L,pick(['tv','tv','spk','tools','bike']));if(ch(.3))entry(L,'kicks')}
+ if(type==='trap'){if(ch(.5))entry(L,'chain',1.3);if(ch(.5))entry(L,'console');if(ch(.35))entry(L,'tv');if(ch(.4))entry(L,'kicks',1.5)}
+ if(type==='plug'){entry(L,'chain',2.5);entry(L,'watch',2.5);if(ch(.6))entry(L,'tv',1.5);if(ch(.5))entry(L,'laptop')}
+ if(inv&&type==='reg'){entry(L,'phone');if(ch(.6))entry(L,'watch')}};
+const sticky=()=>{try{return hasT('sticky')?1.1:1}catch(e){return 1}};
+const teen=()=>{try{const a=gAge();return a!=null&&a<18}catch(e){return false}};
+const lockCut=it=>it.k==='phone'&&!it.u?.6:1;
+const pawnPay=it=>Math.round(it.v*lockCut(it)*(teen()?40:it.p)/100*sticky());
+const plugPay=it=>Math.round(it.v*lockCut(it)*Math.min(68,it.p+8)/100*sticky());
+const isHot=it=>S.day-(it.d||0)<3;
+const nameOf=it=>LT[it.k].n+(it.k==='phone'&&!it.u?' (locked)':'');
+const plugHere=()=>{try{if(typeof clCity==='function'&&clCity())return false;return (S.known||[]).includes(S.at)&&((S.trust||{})[S.at]||0)>=25&&!(S.burned&&S.burned[S.at]>S.day)}catch(e){return false}};
+const atHome=()=>{try{return homeBlock()===S.at}catch(e){return false}};
+function sell(list,payFn,who,hot){if(!list.length)return;let tot=0,h=0;list.forEach(it=>{tot+=payFn(it);if(hot&&isHot(it))h+=2});h=Math.min(10,h);
+ S.loot=loot().filter(x=>!list.includes(x));S.cash+=tot;try{cleanCash()}catch(e){}if(h)heatUp(h);
+ say(`${who} took ${list.length} thing${list.length===1?'':'s'} for ${money(tot)} dirty.${h?` Some of it was still hot. Heat +${h}.`:''}`)}
+
+/* pawn shop rows */
+function pawnRows(){const L=loot();if(!L.length)return '';const J=L.filter(x=>LT[x.k].c==='j'),E=L.filter(x=>LT[x.k].c!=='j');const sum=a=>a.reduce((t,x)=>t+pawnPay(x),0),hot=L.some(isHot);
+ const row=(t,sub,k,a)=>`<div class="row" style="padding:8px 12px;flex-wrap:wrap"><div class="info" style="flex:1 1 180px"><div class="t">${t}</div><div class="s">${sub}</div></div><button class="btn go" data-l27="${k}">${money(sum(a))}</button></div>`;
+ return (J.length?row(`Sell jewelry (${J.length})`,`${J.map(nameOf).join(', ')}. Unc pays ${teen()?'40% with no ID':'40 to 60%'} of what it is worth. Dirty cash.`,'pj',J):'')
+  +(E.length?row(`Sell electronics and goods (${E.length})`,`${E.map(nameOf).join(', ')}. Dirty cash.${E.some(x=>x.k==='phone'&&!x.u)?' Locked phones go for less.':''}`,'pe',E):'')
+  +(hot?`<div class="row" style="padding:4px 12px"><div class="info"><div class="s" style="color:var(--heat)">Some of this is fresh off a lick. Selling it inside 3 days adds heat.</div></div></div>`:'')}
+const _op=openPlace;openPlace=function(id){const r=_op.apply(this,arguments);try{if(id==='pawn'){const mc=el('mcard'),p=mc&&mc.querySelector('.pane');if(p&&!mc.querySelector('#gt')&&!el('modal').hidden){const h=pawnRows();if(h){p.insertAdjacentHTML('afterbegin',h);p.querySelectorAll('[data-l27]').forEach(b=>b.onclick=ev=>{ev.stopPropagation();const L=loot(),j=b.dataset.l27==='pj';sell(L.filter(x=>(LT[x.k].c==='j')===j),pawnPay,'Unc',true);render();openPlace('pawn')})}}}}catch(e){console.error('l27 pawn',e)}return r};
+
+/* Licks app: what you are carrying */
+function lootHTML(){const L=loot(),H=lootH();let h='';
+ if(!L.length&&!H.length)return S.bag?'':`<div class="row"><div class="info"><div class="s" style="color:var(--dim)">No book bag: on a lick you only keep what fits in your pockets (cash, a phone, a chain). The mall sells one for $150.</div></div></div>`;
+ const val=L.reduce((t,x)=>t+x.v,0);
+ h+=`<div class="sec">Stolen goods · pockets ${cnt('p')}/${CAP.p}${S.bag?` · bag ${cnt('b')}/${CAP.b}`:''}${S.car?` · trunk ${cnt('c')}/${CAP.c}`:''}</div>`;
+ if(L.length){const lp=L.find(x=>x.k==='phone'&&!x.u),E=L.filter(x=>LT[x.k].c==='e'),ph=plugHere();
+  h+=`<div class="row" style="flex-wrap:wrap"><div class="info" style="flex:1 1 200px"><div class="t">On you: ${L.length} thing${L.length===1?'':'s'}, worth about ${money(val)}</div><div class="s">${L.map(x=>nameOf(x)+(x.w==='c'?' (trunk)':'')).join(', ')}. Jewelry only sells at the pawn shop. Electronics go to the pawn shop or a plug who trusts you. Cops can search you while you carry it.</div></div>
+   <div class="btns">${lp?`<button class="btn" data-l27="unlock">Unlock a phone</button>`:''}${ph&&E.length?`<button class="btn go" data-l27="plug">Sell electronics to ${esc(plugName(S.at))} ${money(E.reduce((t,x)=>t+plugPay(x),0))}</button>`:''}${atHome()?`<button class="btn" data-l27="stash">Stash at home</button>`:''}<button class="btn red" data-l27="ditch">Ditch it all</button></div></div>`}
+ if(H.length)h+=`<div class="row" style="flex-wrap:wrap"><div class="info" style="flex:1 1 200px"><div class="t">At home: ${H.length} thing${H.length===1?'':'s'}</div><div class="s">${H.map(nameOf).join(', ')}. Safe from a street search, but a raid takes it.</div></div>${atHome()?`<button class="btn" data-l27="grab">Pick it up</button>`:`<span class="s" style="color:var(--dim)">Go home to get it</span>`}</div>`;
+ return h}
+const _pl=paneLicks;paneLicks=function(){let h=_pl.apply(this,arguments);try{h=lootHTML()+h}catch(e){console.error('l27 pane',e)}return h};
+function act(k){const L=loot();
+ if(k==='ditch'){if(!L.length)return;S.loot=[];say(`Ditched ${L.length} stolen thing${L.length===1?'':'s'} in a dumpster.`);return render()}
+ if(k==='stash'){if(!atHome())return;const H=lootH();let n=0;while(L.length&&H.length<HOMECAP){H.push(L.shift());n++}say(n?`Put ${n} thing${n===1?'':'s'} up at home.`:'No more room at home.');return render()}
+ if(k==='grab'){if(!atHome())return;const H=lootH();let n=0;for(let i=0;i<H.length;){if(takeIt(H[i])){H.splice(i,1);n++}else i++}say(n?`Picked up ${n} thing${n===1?'':'s'} from home.${H.length?' No room for the rest.':''}`:'No room to carry any of it.');return render()}
+ if(k==='plug'){if(!plugHere())return;sell(L.filter(x=>LT[x.k].c==='e'),plugPay,plugName(S.at),false);return render()}
+ if(k==='unlock'){const it=L.find(x=>x.k==='phone'&&!x.u);if(!it)return;if(typeof spendEn==='function'&&spendEn(5)===false)return;
+  return sortGame({title:'Unlock the phone',txt:'Get past the lock screen before it wipes itself.',sec:20},ok=>{if(ok){it.u=1;say('Phone unlocked. It sells for full price now.')}else{it.v=Math.round(it.v*.5/10)*10;it.u=1;say('The phone wiped and locked itself. It is only good for parts now.')}render()})}}
+document.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.target.closest('[data-l27]');if(!b||b.disabled||b.closest('#mcard'))return;try{act(b.dataset.l27)}catch(err){console.error('l27 act',err)}});
+
+/* ---------- lick hooks ---------- */
+const _lk=lick;lick=function(k){window._l27q=0;window._l27al=0;return _lk.apply(this,arguments)};
+const forced=()=>!!window._l27force;
+window.l27Alarm=function(go,fail){if(!(forced()||ch(.4)))return go();
+ sortGame({title:'Kill the alarm panel',txt:'There is an alarm panel by the back door.',sec:22},ok=>{if(ok){window._l27q=1;say('The alarm panel is dead. Nobody is getting a call.');go()}else{heatUp(8);fail()}})};
+function addDrug(id,n){try{const g2=G(id),rm=Math.floor((S.cap-used())/g2.sp);n=Math.max(0,Math.min(n,rm));if(n<=0)return 0;const real=Math.max(0,S.inv[id]-(S.fake[id]||0)),q=rnd(88,97);S.q[id]=Math.round((S.q[id]*real+q*n)/(real+n));S.paid[id]=Math.round((S.paid[id]||0)*S.inv[id]/(S.inv[id]+n));S.inv[id]+=n;return n}catch(e){console.error('l27 drug',e);return 0}}
+function safeAsk(title,txt,o,win,lose,skip){
+ modal(`${art('g_safe')}<h2>${title}</h2><p>${txt}</p><p class="s" style="color:var(--dim)">Crack the keypad and the big money is yours. Run out of tries and ${window._l27q?'it locks up. You killed the alarm, so nobody hears it.':'the alarm goes off.'}</p><div class="btns"><button class="btn red" id="l27c">Crack it</button><button class="btn" id="l27n">Leave it</button></div>`);
+ el('l27n').onclick=()=>{el('modal').hidden=true;skip()};
+ el('l27c').onclick=()=>{el('modal').hidden=true;pinGame(o,ok=>ok?win():lose())}}
+window.l27Safe=function(type,inv,fin,alarm){if(inv||!(forced()||ch({reg:.3,trap:.55,plug:1}[type]||0)))return fin('');
+ safeAsk('There is a safe','You find a safe with a keypad in the bedroom closet.',{title:'Crack the safe',tries:type==='plug'?5:6},()=>{
+  const v=type==='plug'?rnd(5000,15000):type==='trap'?rnd(2000,7000):rnd(800,3000),pay=S.bag?v:Math.round(v*.5);S.cash+=pay;addXP(3);let x=` The safe had ${money(pay)} dirty in it.${S.bag?'':' No bag, so you left half of it.'}`;
+  if(type==='reg'&&ch(.4)){const it=mk('watch',1.5);if(takeIt(it))x+=' And a nice watch.'}fin(x)},
+  ()=>{heatUp(12);addStress(6);if(window._l27q)return fin(' The safe locked you out, but the alarm was already dead.');alarm('The keypad locked up and the safe alarm started screaming.')},()=>fin(''))};
+window.l27Store=function(go,fail){
+ modal(`<h2>Corner store</h2><p>There is an alarm panel on the back wall. Kill it first and the register is quieter work. Mess it up and it calls out before you get a dollar.</p><div class="btns"><button class="btn go" id="l27a">Kill the alarm first</button><button class="btn red" id="l27b">Just run in</button></div>`);
+ el('l27b').onclick=()=>{el('modal').hidden=true;go()};
+ el('l27a').onclick=()=>{el('modal').hidden=true;sortGame({title:'Kill the alarm panel',txt:'Cross the right wires on the store panel.',sec:22},ok=>{if(ok){window._l27q=1;say('The store alarm is dead.');go()}else fail()})}};
+window.l27StoreSafe=function(fin,alarm){if(window._l27q)heatUp(-8);const q=window._l27q?' With the alarm dead, nobody called it in.':'';if(!(forced()||ch(.6)))return fin(q);
+ safeAsk('Back-room safe','The register is empty now, and there is a safe with a keypad in the back room.',{title:'Crack the back-room safe',tries:6},()=>{
+  const v=rnd(1500,4500),pay=S.bag?v:Math.round(v*.5);S.cash+=pay;addXP(3);fin(`${q} The back-room safe gave up ${money(pay)} more.${S.bag?'':' No bag, so you left half of it.'}`)},
+  ()=>{heatUp(10);addStress(5);if(window._l27q)return fin(q+' The safe locked you out.');alarm('The safe keypad locked up and the alarm went off. You still have the register money.')},()=>fin(q))};
+window.l27Pharm=function(fin,alarm){if(!(forced()||ch(.7)))return fin('');
+ safeAsk('The locked cabinet','Behind the counter is a locked cabinet with a keypad. That is where they keep the strong stuff.',{title:'Crack the cabinet',tries:6,sec:40},()=>{
+  const a=addDrug('percs',rnd(60,140)),b=addDrug('bars',rnd(40,100));heatUp(5);addXP(4);fin(a+b?` The locked cabinet had ${a} more Percs and ${b} more Xans.`:' The cabinet opened, but your stash was too full to take more.')},
+  ()=>{heatUp(12);addStress(6);alarm('The cabinet keypad locked up and the alarm tripped. You still have what you grabbed off the shelves.')},()=>fin(''))};
+window.l27Scam=function(fin){
+ modal(`<h2>He dropped his phone</h2><p>The buyer left his phone on the seat. His money app is still logged in behind the lock screen.</p><p class="s" style="color:var(--dim)">Break in and you can send yourself what is in there. Take too long and the account gets flagged.</p><div class="btns"><button class="btn red" id="l27a">Break into it</button><button class="btn" id="l27b">Leave it</button></div>`);
+ el('l27b').onclick=()=>{el('modal').hidden=true;fin('')};
+ el('l27a').onclick=()=>{el('modal').hidden=true;sortGame({title:'Break into the phone',txt:'Beat the lock screen before the account flags.',sec:20},ok=>{if(ok){const v=rnd(300,1500);S.cash+=v;heatUp(4);fin(` You got into his phone and sent yourself ${money(v)} more. Dirty.`)}else{heatUp(6);fin(' You tried his phone, but the account flagged and locked. Heat +6.')}})}};
+window.l27Car=function(hot,cb){if(!(forced()||ch(.5)))return hot(cb);sortGame({title:'Bypass the ignition',txt:'This one is push to start. Sort the ignition wiring to bypass it.',sec:22,art:'g_hotwire'},cb)};
+
+/* heist safes: half are keypad safes */
+try{const _sg=safeGame;safeGame=function(o,done){if(o&&o.title&&!o.dial&&(forced()||ch(.5)))return pinGame({title:o.title,txt:'This one has a keypad, not a dial.',tries:o.tumblers>=3?5:6,sec:o.tumblers>=3?45:50},done);return _sg.apply(this,arguments)}}catch(e){console.error('l27 safe',e)}
+
+/* ---------- cops can search you ---------- */
+function search(){const L=loot(),n=L.length,val=L.reduce((t,x)=>t+x.v,0),odds=Math.max(.1,Math.min(.85,.4+((S.sk&&S.sk.talk)||0)*.05-S.heat/300-n*.03));
+ modal(`${art('g_stop')}<h2>Stopped and searched</h2><p>Twelve rolls up slow and hops out. "Hands where I can see them. What you got on you?" You are carrying ${n} stolen thing${n===1?'':'s'}, worth about ${money(val)}.</p><p class="s" style="color:var(--dim)">Play it cool: about ${Math.round(odds*100)}% they let you walk. Talk helps, heat and a full bag hurt. Under $2,000 they take it and write you up. $2,000 or more is a felony and you go in.</p><div class="btns"><button class="btn go" id="l27a">Play it cool</button><button class="btn red" id="l27b">Run</button></div>`);
+ const found=run=>{S.loot=[];heatUp(12);addStress(8);
+  if(val>=2000||run){say(`They found ${money(val)} of stolen goods on you.`);el('modal').hidden=true;busted();if(el('modal').hidden)render();return}
+  try{newsPush('Stop and search turns up stolen goods.')}catch(e){}say('They took everything you had on you and wrote you up. Heat +12.');
+  modal(`<h2 style="color:var(--blood)">They found it</h2><p>They took all of it and wrote you up for petty stuff. No cuffs this time. Heat +12.</p><div class="btns"><button class="btn go" id="ok">Continue</button></div>`);el('ok').onclick=close};
+ el('l27a').onclick=()=>{if(ch(odds)){addStress(3);say('You kept it cool and they let you walk.');close()}else found(false)};
+ el('l27b').onclick=()=>{el('modal').hidden=true;chase(esc2=>{addStress(8);if(esc2){heatUp(8);say('You got away with the bag, but they got a look at you. Heat +8.');el('modal').hidden=true;render()}else found(true)})}}
+window.l27Search=search;
+function l27Day(){
+ const L=loot();if(!S.car&&L.some(x=>x.w==='c')){S.loot=L.filter(x=>x.w!=='c');say('Your car is gone, and the stolen stuff in the trunk went with it.')}
+ const n=loot().length;if(!n||S.over||S.pr||S.prison||S.inJail||window.FF||window.noL27)return;if((S.l27s||-99)+4>S.day)return;
+ if(!ch(Math.min(.2,.02+S.heat/500+n*.012)))return;
+ setTimeout(()=>{try{if(!el('modal').hidden||S.over||window.FF||!loot().length)return;S.l27s=S.day;search()}catch(e){console.error('l27 search',e)}},450)}
+try{WD.push(l27Day)}catch(e){console.error('l27 wd',e)}
+try{const _b=busted;busted=function(){try{if(S&&Array.isArray(S.loot)&&S.loot.length){S.loot=[];say('They took the stolen goods you had on you too.')}}catch(e){}return _b.apply(this,arguments)}}catch(e){}
+try{const _r=raid;raid=function(){const r=_r.apply(this,arguments);try{const h=document.querySelector('#mcard h2');if(!el('modal').hidden&&h&&/raid/i.test(h.textContent)&&lootH().length){const n=lootH().length;S.lootH=[];heatUp(5);say(`The raid found ${n} stolen thing${n===1?'':'s'} at your spot too.`)}}catch(e){}return r}}catch(e){}
+
+/* ---------- tutorial + dev menu ---------- */
+try{TUT.push(['Licks and loot','Licks give real things now, not instant cash. Pockets hold 4 small things (jewelry, phones). A book bag from the mall holds 8 more and fits laptops, game systems and sneakers. TVs, speakers, tools and bikes only fit in a car trunk (6). No bag or no car means you leave the big stuff behind. Jewelry only sells at the pawn shop, for 40 to 60% of what it is worth. Electronics go to the pawn shop or to a plug who trusts you (on their block). It is all dirty cash, and selling inside 3 days of the lick adds heat. Cops can stop and search you while you carry it: Talk helps you play it cool. Stash it at home to stay clean on the street, but a raid takes it. Check the Licks app to see what you are holding.'],
+ ['Sort and Pin Cracker','Two new mini games on licks. Sort (tap 1 to 16 in order) is for electronics: alarm panels at a house or the corner store, push-to-start cars, and breaking into a phone. Pin Cracker (4 digit code, green is the right spot, yellow is the wrong spot) is for safes and locks: a safe in a house, the back-room safe at the store, the locked cabinet at the pharmacy and keypad safes on heists. Crack it for the big loot. Fail and the alarm goes off and heat goes up, unless you killed the alarm panel first. Street Smarts gives you more time on both.'])}catch(e){console.error('l27 tut',e)}
+function devAct(k){const done=m=>{say('Dev: '+m);render();devPanel()};
+ if(k==='sort'){el('modal').hidden=true;return sortGame({title:'Sort test'},ok=>done('sort '+(ok?'won':'lost')))}
+ if(k==='pin'){el('modal').hidden=true;return pinGame({title:'Pin Cracker test'},ok=>done('pin '+(ok?'cracked':'failed')))}
+ if(k==='loot'){S.bag=S.bag||1;Object.keys(LT).forEach(x=>takeIt(mk(x)));return done('bag + one of each loot (big stuff needs a car)')}
+ if(k==='clear'){S.loot=[];S.lootH=[];return done('loot cleared')}
+ if(k==='nobag'){S.bag=S.bag?0:1;return done('book bag '+(S.bag?'on':'off'))}
+ if(k==='search'){if(!loot().length)takeIt(mk('chain'));el('modal').hidden=true;return search()}
+ if(k==='force'){window._l27force=!window._l27force;return done('alarm panels and safes always show: '+(window._l27force?'ON':'off'))}
+ if(k==='tip'){S.lt=S.lt||{};S.lt.house=S.day+3;if(S.rob)S.rob.fat=0;S.lcd={};return done('house tip ready, lookouts reset')}}
+try{const _dp=devPanel;devPanel=function(){const r=_dp.apply(this,arguments);try{const mc=el('mcard');if(mc&&!el('modal').hidden&&!mc.querySelector('[data-d27]')){const B=(k,l)=>`<button class="btn" data-d27="${k}">${l}</button>`;const d=document.createElement('div');d.innerHTML=`<div class="sec">Licks and loot (new)</div><div class="btns">${B('sort','Sort game')}${B('pin','Pin Cracker')}${B('loot','Bag + loot')}${B('nobag','Toggle book bag')}${B('search','Cop search now')}${B('force','Always alarm + safe')}${B('tip','House tip + reset')}${B('clear','Clear loot')}</div>`;const h2=mc.querySelector('h2');if(h2&&h2.parentNode)h2.parentNode.insertBefore(d,h2.nextSibling);else mc.appendChild(d);d.querySelectorAll('[data-d27]').forEach(b=>b.onclick=ev=>{ev.stopPropagation();devAct(b.dataset.d27)})}}catch(e){console.error('l27 dev',e)}return r}}catch(e){}
 })();
 </script>
 <script>if('serviceWorker' in navigator){addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}</script></body></html>

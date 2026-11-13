@@ -1,0 +1,155 @@
+# The Hustle: ideas list (organized Nov 9)
+Rule: build only when Chris says "build".
+Part 1 = REVAMP (fix and rework what already exists). Part 2 = NEW (new systems, after the revamp). Part 3 = DONE.
+
+# PART 1: REVAMP
+All done and live (v201). Nothing left here.
+
+# PART 2: NEW (after the revamp)
+
+## 2A. Big systems
+- Reputation by block (feared, respected, trusted) changing prices, safety, events.
+- Seasons and city events (holidays, crackdowns, fight night, festival).
+
+## 2B. Money and world
+- INTERACTIVE CITIES: BUILT (walk around out-of-town cities, places per city; depth inside each place unchecked, Nov 11). The world in 2B is INTERACTIVE. When you travel to another city or block, you can walk into places there and do things inside (shops, houses, the pawn spot, the garage, a bar, the courthouse), not just read a pop-up. Each city or block gets its own places to enter, with its own people and things to do inside. Anything in 2B (debtors, pawn and fence, stash spots, impound, bills, bail and lawyers) should live in those places.
+- Bills that bite (rent, phone, insurance, repo, guardian steps in).
+- Bail and lawyer choice (cheap, average, sharp).
+- Worker plugs push their old menu harder.
+- Favors from the barber, cousin on the block at 16.
+
+## 2C. Endgame
+(nothing left here, both built)
+
+# PART 3: DONE (kept for the record)
+- Nov 10 (v203 candidate, local, art pending): Modern life batch built from 2D and 2E: local heat per block, burner phones, privacy glasses, tracker + mechanic sweep, delivery app shift (clean), SaaS shell front, Go live, cash app loan (clean, 40%/wk, collectors), crypto stash, encrypted crew chat, legal defense pool, bank flag on washing too fast, fake ID (casino), rideshare, social media slip, marketplace buyer, crew tax on their block, product shortage, group chat leak crew story. Clean vs dirty audit: loan, parent gifts, inheritance now clean. NOT built: card skimmers (real fraud), drone drops, cloud subpoena, gift card arbitrage, AI chatbot, BNPL, digital receipts, doorbell cams on house hits, medical bills, informant audit, personal toll. Art keys: g_loan g_crypto g_gig g_slip g_market g_tax g_sleak g_ride g_burner g_glasses g_flag g_short. tests/t_md.py.
+- Nov 10 (v203 candidate, local, art pending): Rival kingpin (day 25+, 18+; scout, fight, truce; moves: cops tip, corner cred, undercut). 2026 realism (phone evidence + app payments, plate readers, Narcan, ghost gun kit, FAFSA + student loan; SC minimum wage DROPPED from the list Nov 10 per Chris). Supply chain (Business tab: raw, cut, pack, ship). Daily challenge (menu button, seeded luck per day, copy-for-Discord score, state code in dev). Dynasty (pass it down to a crew member or kid). Art keys: g_chain g_daily g_dynasty g_narcan g_rival g_rmove g_rface g_rdown + the crew/NIL 8. tests/t_big4.py, t_rival.py.
+- Nov 10: Crew story missions (fam, beef, tip, ride, steal; stDay every 9+ days, 14% chance) and NIL upgrade (college stage 3, 18+, agent +25%, pulled on arrest or heat 60+). Built locally as v203 candidate, art pending (g_sfam g_sbeef g_stip g_ssteal g_ride g_nbrand g_nlost g_nagent). tests/t_story.py.
+- Nov 9 late: Lose the tail, basketball/all-sport training rolls + diminishing returns, plug personalities, Where you stay moved to Spots, 7-day dirty money chart, difficulty dials, block identity, ending story epilogue, inventory capacity bars. Laptop layout checked (no overflow, two columns).
+- Nov 9 evening (v198, not bumped): G1 car chase forks + armor; G2 Dial the Safe (quiet heists) + real gym spar; G3 Hotwire (steal car), Strip it fast, Weigh it (cuts), Scope it out/Overwatch (ambush); G4 Work the price (plug haggle), Poker face (connect haggle), Hawk Eye (snitch paper), Count it (worker cash); G5 Yard rules, Dead drop (prison package), Defend the trap (rival hits). 1C: action toast, risk word on licks, Collect all on Expenses, skill numbers, smaller art pops. Still open from G: Tail and lose the car (needs a delivery-tail event), Apex Shift (street race), Clean Paper (laundering rework).
+- G1 foot run (Nov 9): on foot a chase is a side-scroll run (jump, hold for tall fences, slide), 2 stumbles = caught, PC keys Space/Up/W jump and Down/S slide, touch buttons. Car chase upgrade (roadblock choice, alley forks, lookout warning, driver widens lanes, armor) is still open in G1.
+- G1a foot run (Nov 9): on foot a chase is a side-scroll run. Jump low stuff, hold for tall fences, slide under lines, 2 stumbles = busted, gap to the cops shown, heavy bag / bad knee / low energy / stress make it harder, a lookout shows obstacles early (otherwise they show late). Keys: Space, Up or W jump (hold higher), Down or S slide. Touch: Jump and Slide buttons. Car chase upgrade (G1b) still open; alley fork on hard runs still open.
+- G1 foot run (no car = on-foot chase: jump, hold for tall fences, slide, 2 stumbles; PC keys Space/Up/W and Down/S, touch buttons). Car chase upgrade still open.
+- F12 connect cool-down (Chris's version): a connect goes dark 1 week to 2 months after a caught shipment (7-28 days) or a raid on your people (14-60 days), with random excuse texts when you reach out. Shipments already ordered still land.
+- F4 trap manager, F9 choices come back, F8 prison carries over, barber tips (built Nov 9 ~10:40, deployed with the next push, not bumped).
+- Import / export saves: Backup button on the main menu, export file or copied text, 3-digit code good for 10 minutes (live).
+- Pro athletes (stage 4+) cannot hustle, heist, lick, take blocks or open traps; quit the sport to unlock (live).
+- Distribution needs a car (F5, live). City spots (F6) mostly built.
+- F1 plugs remember you, F2 heat tells you why, F3 crew roles, F4 raids and upgrades, F7 turning 16, F10 weekly recap, F11 score (all live).
+- Nov 9-10 (v198 to v201): the whole revamp is built and live: all mini-game reworks (car chase, foot run, safe, hotwire, strip, scale, overwatch, haggles, hawk eye, count, yard, dead drop, defend the trap, lose the tail, Apex Shift, Clean Paper, Iron Grip), inventory tabs, Smart Buy, Fast sell, and every tester report (basketball rolls, no shootouts in UFC/boxing, ankle monitor fix).
+- Nov 10 (v201 + live ff67735, unbumped): Gang ladder built. Per crew: meet Enforcer at 30 respect on their block, kick it / slide on his opps (real fight) / buy product fills a hidden meter, he vouches to Underboss, then Boss, who can put you on with a connect. Dev button Ladder: unlock, tutorial entry, tests/t_lad.py.
+- Nov 10: Hall of the block (plaque per finished run, title screen button, hustle-hall in localStorage, tests/t_hall.py) and The Last Big Deal (Licks, once per game, needs 18+, $250K net, $50K clean, car, driver 5+, lookout 5+; stages: Poker face terms, Hawk Eye setup, chase out; tests/t_lbd.py). Dev button Last Big Deal.
+- Nov 10: Debtors (people on the block ask to borrow, 25% interest in 7 days; Money tab: Collect with Ask calm (Poker face) or Lean on him (fight), More time, Forgive; skip town a week late; state S.dtr, separate from plug fronts S.debt) and Corner cred (New face / Regular / Trusted per block, built by serving and Post up in Street business, +4%/+8% on J serves, fades when away). Dev button Debtor. Tests t_debt.py.
+- Nov 10: Street news (Spots tab, reacts to arrests, races, big deals, ladder, skipped debts, high heat), Impound (a bust can tow your car 50%: pay fee 400+30/day or sneak it out with Hotwire + chase; auctioned after 21 days), Traffic stop (20K+ dirty and heat 50+: Play it cool / Drive off / Slip him money; 5-day cooldown). Dev buttons Impound, Traffic stop. Tests t_b4.py.
+- Nov 10: Contacts web (Doc at hospital: half price at 40 favors, free at 70; Mechanic at car lot: new plates -12/-20 heat every 10 days, hidden compartment +8 stash at 70; Forger at pawn shop: new papers -20/-35 heat every 14/30 days; favors earned by running errands once a day) and Unc's wanted board (pays 115% for one gun, refreshes every 4 days). Stash spots not needed: the stash house, safe and guard dog already cover it. Dev button Contacts max. Tests t_con.py.
+
+- Nov 10 BUILT (local, v203+ not deployed): SC-realistic law and loot, scaled to game days (classes on charges, court costs +107.5%, bench warrant, juvenile = no costs; tests t_crt.py). Original idea: (1) Value threshold: stealing under $2,000 is petit larceny (misdemeanor), over $2,000 is grand larceny (felony). Make bust charges and sentences depend on the value of what was taken or carried. (2) Sentence tiers by crime class: Class C misdemeanor up to 1 yr, Class A misdemeanor up to 3 yrs, Class F felony up to 5, Class D felony up to 15, Class A felony up to 30 (armed robbery, 10 yr minimum). (3) Court surcharge: a fine gets about +107.5% added (a $500 fine costs $1,037.50). If you can't pay, a bench warrant means a re-arrest. Would hook into the existing bust, court date, trial and bail systems. NEEDS CHECK before building: confirm the figures against SC code (scstatehouse.gov) and balance against current fine and sentence sizes.
+
+- Nov 10 (idea from another AI, NOT built, build only on "build"): COURT DRAMA upgrade. We already have: 3 lawyer tiers, strategy choice (alibi witness / family character witness / attack evidence), plea, bail, trial day, snitch. NEW parts worth adding: (1) Court flavor by stage: under 18 = quiet juvenile family court, no jury, probation/community service/parents pay; 18-21 = fast General Sessions, plea pressure; late game = federal court, higher conviction odds, street alibis weaker, only top lawyers/laundering/witness tampering help. (2) More witness types: girlfriend (strong, but sinks you if the relationship is bad), paid stranger ($500, risky), homie (uses loyalty/respect). Witness can crack on the stand. (3) Act III: "Plead the Fifth" (safe) or "Take the Stand" (gamble on Street Smarts/Intelligence). (4) Plea bargain: state offers a lesser charge class to skip trial (fits the new SC class system). SKIP: 95% federal conviction, wiretap system, game-over sentences (clash with strikes).
+- Nov 10 (BUILT, silent deploy, still v204): Court drama (plea, stages, witness types, take the stand, 4 pictures) + criminal record (priors add 10% to costs, max 50%; expunge misdemeanors $300 after 60 clean days; felonies stay; juvenile sealed) + pretrial intervention (first offense, nonviolent C/A/F/E, $500, dismissed) + news hooks. Tests t_rec, t_pti. Dev button "Add 3 priors".
+- Nov 10 (built local, undeployed): skill hooks on law layer: Talk lowers pretrial fee (500-40/pt, min 250), Business lowers expunge fee (300-20/pt, min 150), Discipline shortens clean wait (60-3/pt, min 40).
+- Nov 10 (built local, undeployed): court payment plan (half now, rest +14 days, one per bill, not for juvenile or after a bench warrant). Tests t_plan.
+- Nov 10 (built local): OUT-OF-TOWN CONTACTS + DROPS (from Chris + other AI): encounters on trips (buyer builds trust, undercover cop check with Street Smarts, bartender tip sets a price spike), trust raises price bonus up to 20%, at 40% trust a weekly drop (setup cost cut by Business, payout, +3 heat, flip risk cut by Smarts, 18+), news hooks, dev button Charlotte contact 60%. Art keys needed: g_meet g_cop g_tip g_route (DONE, wired) in art list). Tests t_net, t_net2. Interactive home-block places already exist (Spots tab); extra city doors still parked.
+- Nov 10 (built local): WALK AROUND CITIES: each out-of-town city has Walk around (60% of trip gas, energy, 5 actions, 3-day wait). Doors: Charlotte bank/courthouse/pawn/barber, Atlanta fence/truck stop/bar/barber, Houston warehouse/flophouse/dockside bar/barber, Miami luxury pawn/members club/bank/barber, plus Your contact. Actions: sell with city mult and sting risk, wash dirty cash (25% or 20%, Business cuts), pay court costs 10% off + expunge, bar fights, flop sleep, club gate (heat 30 or cash 1500), contact orders and drops. Art keys needed: g_cstreet g_bank g_club g_flop (collage in art list). Tests t_city.
+- Nov 10 (built, deployed silent): FLY OUT + GANGS + PLUGS: fly-only cities New York, Los Angeles, Chicago (flight+rental, 18+, no product on the plane), fly or drive options for the near four; every city has a plug (needs trust 30%, sells ~30% under street into a local stash sold only in that city) and a local gang (hostility, tribute, talk, fight enforcer, shake-down at 60+). Trust sources: bar, club, barber, tribute, plug buys. Art keys needed: g_plug g_gang g_air g_fence (collage in art list). Tests t_fly. Full-screen city view with switch bar: shipped.
+- Nov 10: city + fly art (8 pictures) wired and deployed. Art list empty.
+- Nov 10 (deployed silent): Prison fixes (header says Inside, no turf/attention chip; texts and phone messages blocked in prison unless you hold a contraband phone, calls to outside still work). Dev menu redesigned: search box, Quick bar, collapsible groups (Law, courts and cities first), top Close, open state remembered. Tests t_dev.
+
+## Living in other cities (from voice chat, Nov 10) - NOT BUILT, wait for "build"
+- Home screen header shows your location: Columbia, South Carolina (home base). Changes when you relocate.
+- Relocating is a real move, not a day trip. You keep ALL tabs and buttons. Each city has its own blocks, spots, studio, plugs, gangs, prices. Columbia stays playable.
+- Big cities = luxury tier: higher rent and upkeep, bigger money (penthouses, cars, clubs, rich buyers). Miami house pays more than Columbia.
+- Houses buyable/rentable in any city. "Rent out house" button (or via phone) pays weekly, clean cash, only when you press it.
+- Gangs: cannot start a new gang in another city. CAN fly out/bring people (buttons: send N people, pick which soldiers to send/remove), recruit locally, take over blocks. Each soldier sent leaves Columbia, so home turf gets weaker.
+- Right hand man runs the stash house at home. You text him jobs ("pick up this load", "make this drop"). Loyalty and skills decide if he does it or steals/messes up.
+- Skills work everywhere (Talk = trust, Street Smarts = cops, Business = costs, Charm/Luck = meetings).
+- Sports = separate legit lane, not a side thing. Sports follows you across cities (fights/games in each city, texts from team/coach/agent). On the sports route: no trapping, no dealing, no shootouts, and NO crew/stash/right hand man (you are out of the streets). Can go back to streets later but not both at once.
+- Also: Rival screen and one other screen still have big pictures; shrink to thumbnails/thin strips.
+
+## v205 BUILT: Living in other cities (Nov 10)
+Moving between 7 cities with real relocation, per-city block/gang/plug/spot names, price + rent scaling, houses + weekly rent-out (Money/Phone/Spots), crew fly-out/recruit/take blocks, right hand man texts, sports lane away games (no street), no travel cooldown, airport in Downtown, luxury perks in Miami/NY/LA/Chicago (penthouse, exotic car, VIP table), 24+ new faces, thin pictures, wide-layout gap fix, dev menu Cities group.
+
+## v206 BUILT: new game layout
+- Dock with code names + plain words, street news ticker, polaroid crew wall (tap to flip), quick glitch tab switch (reduced-motion safe), burner-phone text pop-ups + Phone app grid, crime board map for Move, dev menu "Layout" buttons, tutorial entry.
+- Not done / ideas: terminal war room look, vertical swipe deck, real crew face photos on polaroids (now initials), hall/ladder polaroids with more detail, yarn visible between polaroids.
+
+## v207 candidate (built, deployed silent, not bumped): sections moved + real phone (Nov 10 voice plan)
+- Done: code labels off dock; ticker wraps + tap for more, What's happening box removed; flip card fixed; Phone = real phone (12 apps in 4 groups, opens inside with Back); Spots folded into Move (Here on block sections), Bag tab hidden (tap character card for fit/ride), Money/Circle/Me/Business sections routed (fight style, jobs to Me; laundering to Business; trap/workers/contacts/crew/family/turf/wallet/backer/side hustles/social/orders/burners to phone apps); plug face + Ride/Stay on each board card; ride picture pops on Ride; hoop row removed from Move mini games; local heat shown on Block.
+- Still open: rival card to Your Circle + sweep remaining on-page pictures (street news, rival); in-game text still says "Spots tab" in places; gun on character card; dev menu buttons to open phone apps; real face photos on polaroids; phone dock fits on small screens.
+
+## v207 BUILT (Nov 10): real phone + sections moved. Rival to Your Circle, Street news to Phone News app, gun on character card, dev buttons for phone apps, "Spots tab" text fixed. Still open: real face photos on polaroids, phone dock fit on small screens.
+
+## Nov 10 evening fixes (deployed silent after v207)
+- Street news comes from a named person (plug, friend, right hand, a kid, the Js) and pops up with its picture on each new item. Street business moved to Block. Where you stay and Living in moved to Business. Your people moved to Contacts app. Licks moved to a Phone app. Last Big Deal is now a text pop-up from the Right Hand (offered every 7 days when eligible). Jump bars hidden. Next day/Lay low/Nap bar and Time section show only at home. Character card has a "tap for fit, ride, gun" hint.
+- Tester bug (assistantcoachricky): manager does NOT sell drugs the trap is not set to (Chris said keep it that way, Nov 10). Fix reverted.
+- Nov 10 19:00: trap dealers sell whatever you give them (stash house for managers, their stash, or your bag), no per-trap drug setting and no limit on how many kinds (Chris's call). Moving up a level in sports drops overall by 10 (competition is tougher).
+- Nov 10 19:15: moving up in sports now drops overall by 20% (min 10): 100 becomes 80, 60 becomes 48.
+
+## v208 BUILT (Nov 10): fixes after v207. Street news with sources and pop-ups, Street business on Block, Where you stay in Business, Licks phone app, Last Big Deal as a text, home-only time bar, dealers sell whatever you give them, sports move-up penalty.
+
+## Nov 11 ideas (from Trapper RPG update video)
+- Loan shark ALREADY IN (Mr. Vi + collector). Only add: due-date texts on phone + calendar countdown
+- Spy/lookout: pay crew to scout rival stash, can fail, shows on crime board
+- Quick deals: ALREADY IN as plays (Phone tab, they text for product). Not needed.
+- Random street events: short pop-ups, 2 choices (tip, cops, friend locked up)
+- Enforcer jobs (ladder Enforcer exists; own-enforcer jobs do not): handle beef/collect debts, risk of injury or turning if loyalty low
+- Customer moods: change price, better dealers read it
+- End-of-run replay clip: REJECTED by Chris Nov 11, do not build
+- DonMojo (Nov 11): boxing should be its own thing in the Sports tab, separate from school (no school boxing program). Trade offers now skip boxing/MMA/track. Separate boxing path still open.
+
+## Crew jobs by rank (Nov 11, from Gemini list, tweaked; build when Chris says build)
+Existing routes (guard/trap/rob/scam, 2 days) stay. Add "Send on a job" per member showing rank-fit jobs; costs the member's time not my energy; risks land on member (busted, hurt, betrayal at low loyalty); result text back.
+1 Scrap run (Soldier, Scam ~$150) 2 Fake papers drop (Scam ~$600) 3 Collect protection (Enforcer ~$500 + block rep) 4 Guard poker room (Enforcer ~$900, jackboys) 5 Collect a debt (Enforcer, uses Debtors) 6 Hit rival restock (Stash Leader/Enforcer, raises beef) 7 Move stash before raid (Stash Leader) 8 Bribe drop (Right Hand, cuts heat) 9 Truck hijack (RH/Captain day 40+) 10 Fix a street race (Soldier/Enforcer) 11 Flip a rival soldier (RH, high loyalty) 12 Ghost run (Stash Leader/RH, 18+, big clean money)
+Cut: corner watch, drug run, chop shop (already exist).
+Crew jobs PRICING (Nov 11, matches game formula: base x (.55+skill*.1) x level x RH 1.12 x loyalty; loy<30 35% skim half): 1 Scrap 120-350 h+2 | 2 Papers 250-700 h+4 cost 50 | 3 Protection 300-800+rep h+6 | 4 Poker guard 400-1000 h+5 | 5 Debt = debt, keeps 15% h+4 | 6 Rival restock 600-1500+product h+10 beef+20 | 7 Move stash cost 200 saves raid loss | 8 Bribe heat-15 cost 800-1500 | 9 Truck 2000-5000 goods h+15 day40+ | 10 Race fix 800-2000 stake 300 h+6 | 11 Flip rival soldier cost 1000 h+5 | 12 Ghost run 3000-7000 clean cost 500, 18+. Top jobs locked by rank/day/age.
+- Nov 11 BUILT (skin10, local->live): Crew jobs by rank (Phone > Crew > Jobs, 12 jobs + Scout a rival crew), raid shield from "Move the stash early", 7 random street events (10% a day), dev buttons (Set up crew for jobs, Street event now, Finish all jobs now), tutorial card. Still open from this batch: customer moods, Real estate office place, boxing separate from school.
+- Nov 11 BUILT (live, silent): Customer moods (flush +15% / tight -12%, daily per customer, good talkers dodge the tight ones), Real estate office place in Move (buy/sell rentals and move homes only there), boxing/MMA no longer benched for grades and show as "Your gym". Nothing left from the Nov 11 batch.
+- Nov 11 ART IN (v209 batch): ev_* and crewjobs pictures wired and live. Nothing pending.
+- Nov 11 BUILT (live silent): Phone redesign (skin11): fixed phone frame with status bar and home bar, lock screen once per day, home widget, 14 icons with badges, 4-app dock, open animation, Messages as chat bubbles, Wallet as a bank card (Phone/apps/cameras section moved in from Money), News as a post feed, other apps restyled. Polaroid squares fixed (.ph class clash), card pictures hidden in panes.
+- Nov 11 (Messages merge, not built yet; waiting on "build"): one chat screen with Text everybody and Pass out your number on top; animated blast (your bubble, then replies pop in with typing dots); orders arrive as customer bubbles with a Fill button (Orders app goes away). My adds: typing dots and seen ticks; replies depend on customer mood and hook; blasting too many texts raises local heat and a Burner swap clears it; one blast a day for 3 energy; order bubbles have a timer and late means the customer goes cold; quick reply chips (Pull up, Price is up, Not today).
+- Nov 11 (idea, not built): Fight rework. Fighting is still the original Dodge/Hit timing game (fighter styles boxer/brawler/street). Rework: tutorial card with Start, 3 rounds, jab/hook/block buttons with enemy tells, stamina, combos, finisher; same game for street fights, boxing, UFC and gym spars.
+- Nov 11 (Gemini ideas, not built): FIGHT REWORK: 4 thumb buttons (Dodge L/R, Guard, Strike tap light/hold heavy), enemy tells (red left/right, yellow unblockable, blue opening), 3 rounds x 30s, stamina + gasping, 3-hit combo unlocks finisher, styles (Boxer perfect-dodge counter, Brawler guard/armor, Street dirty tricks), Muscle/Hustle/gear scaling. OLD MINI GAMES: basketball swipe arc with drift, football 3-lane runner, track cadence pulse, talk-it-down aggression vs compliance meter. NEW MINI GAMES: cut and bag (scale), plug negotiation (3 replies by mood), escape a raid (floorplan), lockpick, court appearance, stash hiding (drag items), bribe drop, counterfeit detection (UV), tattoo/barber trace. SKIP: ATM skimming (real fraud). RUN IDEAS: rival takes unattended blocks, Day 15 path (Legit vs Kingpin), daily headlines w/ effects, unlock starting traits, informant burner tip, clean-money legacy 15%, 6 ending tiers, crew betrayal meter, gentrification every 7 days, daily lick contracts. UI: color-code clean/dirty buttons, one Map/Travel place, cards drawer on Block, group phone apps, merge Expenses into Wallet (ask first).
+- Nov 11 BUILT: fight rework (20s round), football lane runner, basketball angle+power, track stride pulse (also Run a meet), Talk it down meter. Dev menu has Test buttons for each. Shootout still old.
+- Nov 11 BUILT UI pass: compact stats, one goal at a time (mission hides Next), one-row icon tab bar + More sheet (mobile), compact plug card (tap to expand), business cards grid, pop-up pictures capped, clean-cash green/amber ring on price buttons of $5,000+.
+- Nov 11 (DonMojo idea, not built): Processing and growing. Weed concentrates (wax, edibles, butter, syrup) as value-add products; coke to crack cook; learn growing from a grower in a legal-state city, closet grow, then grow house or outdoor grow (illegal, raid risk), then brand and dispensary (legit clean-money business). Plan: needs a place (real estate), skill, energy, days, heat; mini game for cooking; 18+.
+
+## Make it (built, Nov 2026)
+- Business tab "Make it": closet grow ($200, 4 days, ~80g), grow house per owned property ($1,500, 6 days, ~400g, optional security), raid risk at harvest scaled by heat.
+- Javi texts from day 6 and teaches edibles, wax (Press hold mini game) and grow houses for $500. Cook (rock) needs a property, 12 second heat mini game, bad batch chance.
+- Products sit in S.mk.pk and are sold from Make it for dirty cash. Mexico connect (Mateo, $4,000 clean): coke at ~70% street, 3 days, 10% seizure. Dispensary at 21+ rep 50: $10,000 clean, wash up to $2,500 a day at 20% fee, $500/day overhead.
+- Lost connects now send a text. Dev menu has Make it tests.
+- Still to do: shootout rework, restyle Move/Block/Licks, Cuba cut.
+
+## Go inside the spots (Nov 12)
+- Keep current Move tab. Tapping a spot you're at opens a small "inside" scene (art backdrop, people, few tap spots) instead of a long button list. Full map view parked for later (map-mockup-8.html is the look). Animated cutscenes = pre-launch polish only.
+
+## Map phase 3 (not built)
+- Per-customer and per-cop-patrol positions (the game does not track a block for customers or patrols yet).
+- City-specific map art for other cities.
+
+## Getting attention (not built, waiting for "build")
+1. Fast first load: instant title screen, load art in the background, compress the biggest pictures (file is about 19.8 MB). ~1 hr
+2. Link previews: picture, title and one-line hook when the link is pasted in Discord, texts, Instagram. ~20 min
+3. Share card at the end of a run: picture with name, days survived, cash, rep, one-tap save/share. ~1 hr
+4. Daily challenge and leaderboard: same seed for everyone each day, ranked by final cash. Needs a small server or free service. ~3-4 hrs
+5. Trailer clips: record real gameplay (map, trap house, mini games) into 15-20 second vertical clips. ~1 hr
+6. Listings on itch.io and browser-game lists with the new art as the cover. ~30 min
+7. Simple privacy-friendly analytics to see where players quit. ~30 min
+Order if built: 1, 2, 3 as one batch (~2 hrs), then 5. Leaderboard only after people are actually playing.
+
+## Balance notes (not changed)
+- Idle burn about $14-20/day for most characters; Tank burns about $130/day (soldier pay) with no warning; Life starts tight ($1,000).
+- Businesses (barber, car wash, laundromat, club) pay back in about 67 days, but a Normal run is 35 days. Check how score counts them, or lower the costs / add a score bonus.
+
+## Business upgrades (instead of only cutting prices) (not built)
+- Lower base price a bit, add 3 upgrade levels per business paid from clean money (like trap fortify). Each level raises daily pay and unlocks a perk. Each upgrade should pay back in about 10-12 days.
+- Club: base $35k. L1 VIP room $8k (+$300/day, VIP sells +30%), L2 security $12k (cannot be shut down, fewer fight events), L3 headliner nights $20k (+$700/day, +fans for rappers).
+- Barber: more chairs, then a back room that cleans more money. Car wash: second bay, then a detail shop with a rich-customer bonus. Laundromat: more machines, then a bigger cash-cleaning limit.
+- Also: show daily crew cost on the cash display / character card (Tank's soldier costs $150/day). About 2-3 hrs total, test payback with played runs.
+
+## BUILT Nov 13 (skin27, live silent, not bumped, art pending: g_search, g_keypad)
+- Licks with real loot: S.loot items (pockets 4, book bag 8, trunk 6), no bag = pocket stuff only, big stuff needs a car. Jewelry sells only at the pawn shop (40-60%, teens 40%), electronics at pawn or a plug with 25+ trust on their block (up to 68%). All dirty. Selling inside 3 days adds heat. Cop stop and search (under $2,000 seized + write-up, $2,000+ busted), home stash (raid takes it), busts take loot, trunk loot goes with the car. Licks app shows what you hold.
+- Sort: house alarm panel (40%), store alarm panel (your choice), push-to-start cars (50%), scam buyer's phone, unlocking stolen phones.
+- Pin Cracker: house safe, store back-room safe, pharmacy locked cabinet, half of heist safes. Fail = alarm + heat unless the panel was killed first.
+- Dev menu group "Licks and loot (new)", 2 tutorial pages. Test: dev/t_l27.py. Source: dev/skin27.html + dev/build.py.
+- Not done from the idea: small guns and pills as loot items, daily lick contracts.
