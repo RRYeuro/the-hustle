@@ -186,3 +186,12 @@ Order if built: 1, 2, 3 as one batch (~2 hrs), then 5. Leaderboard only after pe
 - Movement: rideshare and bus ignore the ankle monitor; a 14-year-old holding a car can drive; flying with stolen goods; pawn 'Hit a house' lit with no tip; $25 ride offered when you own a car.
 - Not checked yet: prison/jail, energy costs per action, school rules, businesses, relationships.
 - Nov 13 12:40: all 17 gaps FIXED (skin33): age limits on stash house, soldiers, workers, war, hits, getaway car, Pro Pad, driving out of town, lawyer, informant, parent car, block party; punch cards only at the mall; trap house only on the block you are on; meet people only at the park; rides and bus respect the monitor; no kid driving; no travel with stolen goods; pawn house button needs a tip; ride with a car = you drive. Test dev/t_gap.py.
+
+## Plugs on the Move map + bulk buying (Chris, Nov 13, NOT BUILT, wait for "build")
+- Remove the plug card from the Block tab (the old per-block plug with Kick it, Ask for a front, Pitch, Slide on opps, Rob her).
+- Plugs show on the Move map in their own section, as spots you go to. Their actions (front, pitch, slide, rob) only show when you are meeting them.
+- Trust 60+: you can always pull up on them (go to their spot any time).
+- Below 60: a plug is a phone contact once trust hits a floor (suggest 20). Text "let me pull up" and their spot appears on the Move map for that day, then you go.
+- Buy sizes depend on the plug and the drug: Low plug = grams/pieces (beginner), Mid = ounces, Big = QPs and pounds. Prices and stash space follow the unit.
+- Open: contact trust floor, does going to a spot take the day, per-drug unit table, how this changes Pull up (8% markup) and the daily call discount.
+- Needs: dev menu, tutorial, plug tests (t_plug, t_tie, t_intro), clean/dirty cash on bulk buys, map tags. About 3-4 hrs, best for Opus/Fable.
