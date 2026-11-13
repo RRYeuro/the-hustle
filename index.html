@@ -7446,7 +7446,7 @@ body[data-home="0"] .wq{display:none!important}
 const RAW={beef:paneBeef,crew:paneCrew,money:paneMoney,biz:paneBiz,spots:paneSpots,phone:panePhone,move:paneMove};
 const R=[[/^Your fight style/,'tab:crew'],[/^(Trap houses|Your workers|Looking for work)/,'app:trap'],[/^(Your homies|Your girl)/,'app:contacts'],[/^Your crew$/,'app:crew'],[/^Family/,'app:family'],[/^Turf and space/,'app:turf'],[/^Stash and safe/,'drop'],
  [/^(Jobs|School, work and business)/,'tab:crew'],[/^(Side hustles online|Side work)/,'app:hustle'],[/^Clean and dirty cash/,'drop'],[/^Modern life/,'app:modern'],[/^Backer/,'app:backer'],[/^Laundering/,'tab:biz'],
- [/^(Trap phone|Texts)/,'app:messages'],[/^Contacts/,'app:contacts'],[/^Phone, apps and cameras/,'app:modern'],[/^Dealer orders/,'drop'],[/^Debtors/,'app:contacts'],[/^Burners/,'app:burners'],[/^Social/,'app:social'],[/^The city/,'drop'],[/^Your people/,'app:contacts'],[/^Licks/,'app:licks'],[/^The Last Big Deal/,'drop']];
+ [/^(Trap phone|Texts)/,'app:messages'],[/^Contacts/,'app:contacts'],[/^Phone, apps and cameras/,'app:modern'],[/^Dealer orders/,'drop'],[/^Debtors/,'app:contacts'],[/^Burners/,'app:burners'],[/^Social/,'app:social'],[/^The city/,'drop'],[/^Your people/,'app:family'],[/^Licks/,'app:licks'],[/^The Last Big Deal/,'drop']];
 const dest=(src,t)=>{if(src==='spots')return /^Rival/.test(t)?'tab:beef':/^Street news/.test(t)?'app:news':/^Street business/.test(t)?'tab:block':/^(Where you stay|Living in)/.test(t)?'tab:biz':'tab:move';for(const r of R)if(r[0].test(t))return r[1];return null};
 const own={beef:'beef',crew:'crew',money:'money',biz:'biz',spots:'move',phone:'phone',move:'move'};
 function thin(n){if(n.querySelectorAll)n.querySelectorAll('img').forEach(i=>{if(i.closest('.cbd,.pol,.rph-grid'))return;const s=i.getAttribute('style')||'';const m=/(?:^|;)\s*width:\s*(\d+)px/.exec(s);if(!m||+m[1]>100)i.remove()})}
@@ -8362,8 +8362,8 @@ function contacts(c){
  const all=MC(),by=k=>all.filter(x=>x.sub.startsWith(k));
  let old=c;try{const t=document.createElement('template');t.innerHTML=c;t.content.querySelectorAll('.row').forEach(r=>{const d=r.querySelector('[data-a="pdel"]');if(!d)return;const cu=(S.custos||[])[+d.dataset.i];if(cu){const b=document.createElement('button');b.className='btn';b.dataset.mth=encodeURIComponent(cu.name);b.dataset.rph='messages';b.textContent='Text';const w=d.parentElement;(w&&w.classList.contains('btns')?w:r).appendChild(b)}});old=t.innerHTML}catch(e){}
  let left='';try{const m=window._SR.secsFor('app:messages').map(x=>window._SR.ser(x.nodes)).join('');left=window._MS.rest(m);const t=document.createElement('template');t.innerHTML=left;if(!t.content.textContent.trim())left=''}catch(e){}
- return grp('Plugs',by('Plug'))+grp('Connects',all.filter(x=>/^(Connect|Grower|Mexico)/.test(x.sub)))+grp('Dealers',by('Dealer'))+grp('Family',by('Family'))+old+(left?`<div class="sec sub">More</div>${left}`:'')}
-function boot(){if(!window._AP13)window._AP13={};window._AP13.contacts=contacts;window._AP13.messages=()=>''}
+ return grp('Plugs',by('Plug'))+grp('Connects',all.filter(x=>/^(Connect|Grower|Mexico)/.test(x.sub)))+grp('Dealers',by('Dealer'))+old+(left?`<div class="sec sub">More</div>${left}`:'')}
+function boot(){if(!window._AP13)window._AP13={};window._AP13.contacts=contacts;window._AP13.family=c=>{try{return c+grp('Call or text',MC().filter(x=>x.sub.startsWith('Family')))}catch(e){return c}};window._AP13.messages=()=>''}
 boot();
 document.addEventListener('click',e=>{
  const f=e.target.closest&&e.target.closest('[data-flav]');

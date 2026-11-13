@@ -168,3 +168,4 @@ Order if built: 1, 2, 3 as one batch (~2 hrs), then 5. Leaderboard only after pe
 - Meet the plug: Get introduced on the Block tab (needs a vouch: friend, crew, plug at 60 trust, or rep; fee 100/300/800; Low = pay and you are in, Mid/Big = Poker face; fail = cold 4 days; one a day).
 - Balance: wanted board 115% -> 80%; businesses cheaper and pay about double (payback ~23 days); crew pay warning.
 - Duplicates removed: Nap (Time tile vs top bar), Licks (Heists tab vs Licks app; now only the app). Loot list sits inside the Licks app.
+- Family merged: guardian (chores, give money, car) and family texts moved from Contacts into the Family app.
