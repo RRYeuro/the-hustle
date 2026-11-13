@@ -1,22 +1,19 @@
-🚨 **THE HUSTLE: v209 IS LIVE** 🚨
-Thanks for the bug reports, DonMojo (Your Circle scroll, boxing trades) and everybody.
-📲 **Get it first:** PC **Ctrl+Shift+R** (Mac Cmd+Shift+R). iPhone: Safari **aA > Reload Page**; Home Screen app: swipe it closed and reopen (twice if still old). Check it says **v209**. Saves carry over.
+🚨 **THE HUSTLE: v210 IS LIVE** 🚨
+Thanks for all the bug reports. This one is big.
+📲 **Get it first:** PC **Ctrl+Shift+R** (Mac Cmd+Shift+R). iPhone: Safari **aA > Reload Page**; Home Screen app: swipe it closed and reopen (twice if still old). Check it says **v210**. Saves carry over.
 
 **New**
-- 🧑‍🤝‍🧑 **Crew jobs:** Phone > Crew > **Jobs** on any member. 13 jobs locked by rank. They take 2 days and text you back. Low loyalty = they might skim.
-- 🔭 **Scout a rival crew** to see their strength.
-- 🏙️ **Random street events** (tips, cops, wallets, block parties).
-- 💵 **Customer moods:** flush customers pay more, tight ones haggle.
-- 🏢 **Real estate office** in Move > Services: houses are bought, sold and moved only there.
-- 🪪 Tap your portrait: fit, ride, gun and where you stay.
-- 📤 **Share my run** on the end screen makes a card you can post.
-
-**Fixes**
-- Your Circle scrolls all the way down on PC.
-- Boxing and MMA: no grade benching, no trade offers.
+- 🗺️ **A night map for every city** (all 8). Hover a district to see the block. On phones it's block tabs.
+- 🏚️ **Full scene screen for every spot** (barber, gym, pawn shop, trap house...). Actions sit on the picture.
+- 🎒 **Real loot from licks:** you need a book bag. Pockets hold 4 small things, bag 8 more, TVs and speakers need a car trunk. Jewelry only sells at the pawn shop (40 to 60%). Check the Licks app.
+- 🚔 **Cops can stop and search you** while you carry stolen stuff. Talk helps.
+- 🔐 **Sort and Pin Cracker mini games** on licks (alarm panels, safes, the pharmacy cabinet, phones). Keyboard works: arrows, numbers, Enter.
+- 📞 **Plugs are people now:** once one trusts you (40+) they call you with a one-day discount and can pull up on you. You can also drive to their spot. New "Meet the plug" intro.
+- 👤 More faces, a loading screen, and 17 logic fixes (age limits, actions only where you are, car moves don't cost the day).
 
 **Test this:** Menu > Dev has buttons for it.
-- Crew testers: "Set up crew for jobs" then Phone > Crew > Jobs. Try every rank.
-- Story and sports testers: "Street event now" and boxing from the Sports tab.
-- Money testers: "Open Real estate office", "Customer moods today".
-Found a bug? Drop it in #hustle-bugs with what you tapped.
+- Loot and cops testers: "Bag + loot", "Toggle book bag", "Cop search now", "Clear loot".
+- Mini game testers: "Sort game", "Pin Cracker", "Always alarm + safe", "House tip + reset".
+- Plug and story testers: "Know every plug", "All plugs 100 trust", "Meet the connect", "Date the plug here". Try every city (switch city in the dev menu).
+- Phone testers: check Move and the bottom bar on a small screen.
+Found a bug? Drop it in #hustle-bugs with what you tapped and what city you were in.
