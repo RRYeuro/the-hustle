@@ -153,3 +153,8 @@ Order if built: 1, 2, 3 as one batch (~2 hrs), then 5. Leaderboard only after pe
 - Pin Cracker: house safe, store back-room safe, pharmacy locked cabinet, half of heist safes. Fail = alarm + heat unless the panel was killed first.
 - Dev menu group "Licks and loot (new)", 2 tutorial pages. Test: dev/t_l27.py. Source: dev/skin27.html + dev/build.py.
 - Not done from the idea: small guns and pills as loot items, daily lick contracts.
+
+## Face audit Nov 13 (live silent)
+- One name = one face now (skin29): same-name people in different lists share a picture; workers and people looking for work show faces. Pronoun fixes for female crew/workers.
+- Still need art: 18 missing faces, 6 city plugs, 6 look-alike redos, 4 text/brand/scene redos, 16 old-style redos (see art list F1-S4).
+- Not checked yet: event, place and scene pictures. Sam's face reads female but text says he: ask Chris.

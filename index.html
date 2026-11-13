@@ -3419,10 +3419,10 @@ function paneTraps(){
   if(!spots.length)h+=`<div class="row"><div class="info"><div class="s">You need a block to open a trap. Take one from a crew.</div></div></div>`;
   const busy=id=>Object.values(S.traps).some(t=>t.w===id);
   {const tot=S.workers.reduce((a,w)=>a+(w.held||0),0);h+=`<div class="sec">Your workers (${S.workers.length})</div>`+(tot?`<div class="row" style="padding:8px 12px"><div class="info"><div class="t">${money(tot)} waiting</div><div class="s">Workers hold the money until you collect it. Low loyalty workers can skim or run.</div></div><div class="btns"><button class="btn green" data-a="wcollectall">Collect all</button><button class="btn" data-a="wcount">Count it (+3%)</button></div></div>`:'');}
-  h+=S.workers.length?S.workers.map((w,i)=>`<div class="row" style="padding:8px 12px"><div class="info"><div class="t">${w.name} ${busy(w.id)?'<span class="chip mine">Working</span>':'<span class="chip">Free</span>'}</div><div class="s">Level ${wLv(w)} · Hustle ${w.hustle} · Loyalty ${w.loyal} · ${money(wPay(w))}/day · ${bossTag(w.pct||100)}<br>Holding ${money(w.held||0)} · stash: ${wStashTxt(w)}${(w.held||0)>1500&&w.loyal<=3?' <span style="color:var(--blood)">(might run with it)</span>':''}</div></div><div class="btns"><button class="btn green" data-a="wcollect" data-i="${i}" ${w.held?'':'disabled'}>Collect</button><button class="btn" data-a="wstash" data-i="${i}">Stash</button><button class="btn" data-a="wpay" data-i="${i}">Pay</button><button class="btn" data-a="firew" data-i="${i}">Fire</button></div></div>`).join('')
+  h+=S.workers.length?S.workers.map((w,i)=>`<div class="row" style="padding:8px 12px">${faceImg(w.name,'c',40)}<div class="info"><div class="t">${w.name} ${busy(w.id)?'<span class="chip mine">Working</span>':'<span class="chip">Free</span>'}</div><div class="s">Level ${wLv(w)} · Hustle ${w.hustle} · Loyalty ${w.loyal} · ${money(wPay(w))}/day · ${bossTag(w.pct||100)}<br>Holding ${money(w.held||0)} · stash: ${wStashTxt(w)}${(w.held||0)>1500&&w.loyal<=3?' <span style="color:var(--blood)">(might run with it)</span>':''}</div></div><div class="btns"><button class="btn green" data-a="wcollect" data-i="${i}" ${w.held?'':'disabled'}>Collect</button><button class="btn" data-a="wstash" data-i="${i}">Stash</button><button class="btn" data-a="wpay" data-i="${i}">Pay</button><button class="btn" data-a="firew" data-i="${i}">Fire</button></div></div>`).join('')
     :`<div class="row"><div class="info"><div class="s">No workers yet. Hire one below.</div></div></div>`;
   h+=`<div class="sec">Looking for work (max 3 workers, you have ${S.workers.length})</div>`;
-  h+=S.cands.map((c,i)=>`<div class="row" style="padding:8px 12px"><div class="info"><div class="t">${c.name}</div><div class="s">Hustle ${c.hustle} (sells more) · Loyalty ${c.loyal} (steals less) · ${money(c.wage)}/day</div></div><button class="btn green" data-a="hirew" data-i="${i}" ${S.cash>=500&&S.workers.length<3?'':'disabled'}>${S.workers.length>=3?'Max 3 workers':'Hire $500'}</button></div>`).join('');
+  h+=S.cands.map((c,i)=>`<div class="row" style="padding:8px 12px">${faceImg(c.name,'c',40)}<div class="info"><div class="t">${c.name}</div><div class="s">Hustle ${c.hustle} (sells more) · Loyalty ${c.loyal} (steals less) · ${money(c.wage)}/day</div></div><button class="btn green" data-a="hirew" data-i="${i}" ${S.cash>=500&&S.workers.length<3?'':'disabled'}>${S.workers.length>=3?'Max 3 workers':'Hire $500'}</button></div>`).join('');
   h+=`<div class="row" style="padding:8px 12px"><div class="info"><div class="s">New faces show up every week.</div></div><button class="btn" data-a="newcands" ${S.cash>=200?'':'disabled'}>Ask around $200</button></div>`;
   return h;
 }
@@ -9079,6 +9079,18 @@ addEventListener('load',()=>setTimeout(async()=>{try{
  const next=async()=>{while(i<L.length){const u=L[i++];try{await fetch(u)}catch(e){}await new Promise(r=>setTimeout(r,document.hidden?400:60))}};
  next();next();
 }catch(e){}},8000));
+})();
+</script>
+<script id="skin29js">
+(function(){if(window._sk29)return;window._sk29=1;
+/* one name = one face, everywhere. Same-name people in different lists now share a picture. */
+try{const c=ART3.c,g=ART3.g,b=ART3.b,set=(o,k,v)=>{if(v)o[k]=v};
+ set(c,'pooh',CUSTPICS['Pooh']);set(c,'kim',CUSTPICS['Kim']);set(c,'lil kev',CUSTPICS['Lil Kev']);set(c,'nikki',CUSTPICS['Nikki']);set(c,'dre',CUSTPICS['Dre']);
+ set(c,'tay',STRAPPICS['Tay']);set(c,'boog',STRAPPICS['Boog']);set(c,'lil ced',STRAPPICS['Lil Ced']);
+ set(c,'tyler',b.tyler);set(c,'jake',b.jake);set(g,'jada',c.jada);set(c,'mei',g.mei);
+ set(c,'truck',c._x1);set(c,'paco',c._x2);
+ PLUGS.forEach((n,i)=>set(c,String(n).toLowerCase(),PLUGPICS[i]));
+}catch(e){console.error('sk29',e)}
 })();
 </script>
 <script>if('serviceWorker' in navigator){addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}</script></body></html>
