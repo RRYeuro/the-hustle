@@ -169,3 +169,4 @@ Order if built: 1, 2, 3 as one batch (~2 hrs), then 5. Leaderboard only after pe
 - Balance: wanted board 115% -> 80%; businesses cheaper and pay about double (payback ~23 days); crew pay warning.
 - Duplicates removed: Nap (Time tile vs top bar), Licks (Heists tab vs Licks app; now only the app). Loot list sits inside the Licks app.
 - Family merged: guardian (chores, give money, car) and family texts moved from Contacts into the Family app.
+- Story ties on plugs: a plug you date, or Lucky's ex / cousin's homeboy (Tre), pulls up at any trust with no delivery charge, calls like a trusted plug, and vouches at 30 trust; Slick gets +20% at intro meets.
