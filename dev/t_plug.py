@@ -8,7 +8,7 @@ with sync_playwright() as p:
     pg.on('console',lambda m:errs.append('C:'+m.text[:200]) if m.type=='error' and 'sk31' in m.text else None)
     pg.goto('file:///home/claude/the-hustle/index.html',wait_until='load');pg.wait_for_timeout(1800);J=pg.evaluate
     J("()=>{startLife('lucky');document.getElementById('modal').hidden=true;window.noL31=1;window.noL27=1;S.age=19;S.cal=0;S.school='out';S.cash=20000;S.clean=5000;S.heat=10;S.rep=80;S.at=0;S.known=[0,1,2];S.trust[0]=60;S.trust[1]=60;S.trust[2]=30;S.cap=900;tab='block';render()}")
-    r=J("()=>[...document.querySelectorAll('[data-a31]')].map(b=>b.dataset.i+':'+(b.disabled?'off':'on'))")
+    r=J("()=>[...document.querySelectorAll('[data-a31="pu"]')].map(b=>b.dataset.i+':'+(b.disabled?'off':'on'))")
     ck('block tab lists other plugs',r==['1:on','2:off'],str(r))
     p0=J("()=>plugPrice('buy',G(PINFO[1].carries[0]))");d0=J("()=>S.day")
     pg.locator('[data-a31][data-i="1"]').click();pg.wait_for_timeout(300)
@@ -39,7 +39,7 @@ with sync_playwright() as p:
     r=J("()=>Object.values(S.offer[1]).filter(o=>o.tip).length");ck('call sets a one-day deal',r>=1,str(r))
     J("()=>document.getElementById('c31a').click()");pg.wait_for_timeout(200);ck('call: pull up on me works',J("()=>!!S.meet&&S.at===1"))
     J("()=>{try{busted()}catch(e){window._be=String(e)}}");ck('bust ends the meet',J("()=>!S.meet&&!window._be"),J("()=>window._be"))
-    J("()=>{document.getElementById('modal').hidden=true;S.pr=null;S.over=false;devPanel()}");ck('dev buttons',J("()=>document.querySelectorAll('[data-d31]').length")==3)
+    J("()=>{document.getElementById('modal').hidden=true;S.pr=null;S.over=false;devPanel()}");ck('dev buttons',J("()=>document.querySelectorAll('[data-d31]').length")==4)
     ck('tutorial entry',J("()=>TUT.some(t=>/Plugs call/.test(t[0]))"))
     b.close()
 bad=[n for n,c in res if not c];print('ERRORS',errs[:6]);print(f'{len(res)-len(bad)}/{len(res)} passed')

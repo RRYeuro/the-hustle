@@ -521,7 +521,6 @@ function skipTime(kind){
 function napDo(){if(S.napDay===S.day)return;S.napDay=S.day;S.en=Math.min(enMax(),(S.en==null?enMax():S.en)+15);addStress(-5);say('Took a nap. Energy back a bit.');render()}
 function skipRows(){if(S.pr)return '';const ok=atHome(),row=(t,s,a,l,d)=>`<div class="row" style="padding:8px 12px;flex-wrap:wrap"><div class="info" style="flex:1 1 180px"><div class="t">${t}</div><div class="s">${s}</div></div><button class="btn ${d?'':'go'}" data-a="${a}" ${d?'disabled':''}>${l}</button></div>`;
   return `<div class="sec">Time</div>`+
-   row('😴 Take a nap','A little energy back. Once a day.','nap','Nap',S.napDay===S.day)+
    row('🌙 Lay low for a week',S.cal?'Stay in for a week and a weekend. Heat falls, health and stress come back. Bills and the crew still cost money, and something can still come up.':'Stay in for 7 days. Heat falls, health and stress come back. Bills and the crew still cost money, and something can still come up.','lay7','A week',!ok)+
    (S.age?row('🎂 Skip to your birthday','Let time pass until you are a year older. School keeps going, bills still hit, and it stops if something big comes up.','skipb','Skip',false):'')+
    row('⏭️ Skip to the next event','Let days pass until something happens.','skipn','Skip',false)}
@@ -1425,7 +1424,7 @@ function openPlace(id){const P=PLACES.find(p=>p.id===id),bi=placeAt(id);
 const CONK={hosp:['doc','Doc','Run errands for Doc','Pick up supplies and keep your mouth shut.'],carlot:['mech','the Mechanic','Work a shift in the shop','Sweep up, change oil, learn his name.'],pawn:['forg','the Forger','Run a package for Unc\'s cousin','Drop it off, do not look inside.']};
 const conHint=v=>v<25?'barely knows you':v<55?'knows your face':v<85?'looks out for you':'ride or die';
 const docMult=()=>{const v=(RL().doc||0);return v>=70?0:v>=40?.5:1};
-function pawnWant(){const ks=Object.keys(GUNS).filter(k=>!GUNS[k].myth);if(!S.pawnW||S.day>=S.pawnW.exp){const k=pick(ks);S.pawnW={k,price:Math.round(GUNS[k].cost*1.15),exp:S.day+4}}return S.pawnW}
+function pawnWant(){const ks=Object.keys(GUNS).filter(k=>!GUNS[k].myth);if(!S.pawnW||S.day>=S.pawnW.exp){const k=pick(ks);S.pawnW={k,price:Math.round(GUNS[k].cost*.8),exp:S.day+4}}return S.pawnW}
 function conBody(id,row,b){const C=CONK[id];if(!C||(gAge()!=null&&gAge()<16))return '';const R=RL();R.cfd=R.cfd||{};R.cd=R.cd||{};const k=C[0],v=R[k]||0;let h=a2('g_'+k,340)+row(`${C[1][0].toUpperCase()+C[1].slice(1)}: ${conHint(v)}`,C[3]+' Do favors and they remember it.',b('cf_'+k,C[2],R.cfd[k]===S.day));
   if(k==='doc')h+=row('What Doc does for you',v>=70?'Free patching, no questions asked.':v>=40?'Patching is half price.':'At 40 favors, patching is half price. At 70, free.','');
   if(k==='mech'){const cd=(R.cd.mech||-99)+10-S.day;h+=row('Quiet work',v>=40?(S.car?(cd>0?`Come back in ${cd} day${cd===1?'':'s'}.`:`New plates and a respray. Heat down ${v>=70?20:12}.`):'You need a car.'):'At 40 favors he will swap your plates.',v>=40&&S.car?b('cp_mech',cd>0?`Wait ${cd}d`:'Do it',cd>0):'');if(v>=70)h+=row('Hidden compartment',R.hid?'Already built.':'He builds you one. +8 stash space for good.',R.hid||!S.car?'<span class="chip mine">'+(R.hid?'Built':'Need a car')+'</span>':b('cp_hid','Build it'))}
@@ -1483,7 +1482,7 @@ function paneMove(){
   h+=`<div class="sec">Mini games on ${BLOCKS[S.at]}</div>
    <div class="row"><div class="info"><div class="t">Hoop at the park</div><div class="s">Bet on a 5-shot shootout. Once a day.${is('tank')?' Tank still got it: bigger green zone.':''}</div></div><button class="btn go" data-a="hoops" ${S.park===S.day||S.cash<100?'disabled':''}>${S.park===S.day?'Played today':'Play'}</button></div>
    <div class="row"><div class="info"><div class="t">Shoot dice</div><div class="s">Street craps. 7 or 11 wins, 2, 3 or 12 loses, anything else is your point.</div></div><button class="btn go" data-a="dice" ${S.cash<50?'disabled':''}>Play</button></div>
-   ${S.robOn?'':paneLicks()}
+   ${paneLicks()}
    ${S.scamOn?paneScam():''}
    `;
   return h;
@@ -3767,7 +3766,6 @@ function paneRob(){const B=S.rob;
    <div class="row"><div class="info"><div class="t">Ski mask ${B.mask?'<span class="chip mine">Owned</span>':''}</div><div class="s">Less heat from licks and better heist odds.</div></div>${B.mask?'':`<button class="btn green" data-a="gear" data-k="mask" ${S.cash>=50?'':'disabled'}>$50</button>`}</div>
    <div class="row"><div class="info"><div class="t">Getaway car ${B.car?'<span class="chip mine">Owned</span>':''}</div><div class="s">Cops drive slower in every chase.</div></div>${B.car?'':`<button class="btn green" data-a="gear" data-k="car" ${S.cash>=5000?'':'disabled'}>$5,000</button>`}</div>
    <div class="row"><div class="info"><div class="t">Pro Pad ${S.pad?'<span class="chip mine">Owned</span>':''}</div><div class="s">Steal cars.</div></div>${S.pad?'':`<button class="btn green" data-a="pad" ${S.cash>=1500?'':'disabled'}>$1,500</button>`}</div>`;
-  h+=paneLicks();
   h+=`<div class="sec">Heists · each one takes the day</div>`+Object.entries(HEISTS).map(([k,H])=>{const miss=[];if(S.soldiers<H.need.crew)miss.push(`${H.need.crew} soldiers`);if(H.need.mask&&!B.mask)miss.push('a ski mask');if(H.need.car&&!B.car)miss.push('a getaway car');
     return `<div class="row"><div class="info"><div class="t">${H.name}</div><div class="s">${money(H.pay[0])} to ${money(H.pay[1])} before cuts · heat +${H.heat}${miss.length?` · <span style="color:var(--blood)">Need ${miss.join(', ')}</span>`:''}</div></div>
       <button class="btn red" data-a="heist" data-k="${k}" ${miss.length?'disabled':''}>Plan it</button></div>`}).join('');
@@ -4432,7 +4430,7 @@ function lifeCustom(){let fem=false,age=14;
   draw();
 }
 const JOBS={lawn:{name:'Lawn crew',pay:250},fast:{name:'Fast food',pay:350},retail:{name:'Retail',pay:450},ware:{name:'Warehouse',pay:600},office:{name:'Office job',pay:1300,degree:1}};
-const BIZ={taq:{name:'Family taqueria',cost:0,pay:140,hide:1},barber:{name:'Barbershop',cost:10000,pay:150},wash:{name:'Car wash',cost:15000,pay:220},laundry:{name:'Laundromat',cost:25000,pay:350},club:{name:'Nightclub',cost:60000,pay:900}};
+const BIZ={taq:{name:'Family taqueria',cost:0,pay:140,hide:1},barber:{name:'Barbershop',cost:7000,pay:300},wash:{name:'Car wash',cost:10000,pay:440},laundry:{name:'Laundromat',cost:16000,pay:700},club:{name:'Nightclub',cost:40000,pay:1700}};
 function lifeDay(){
   if(S.cal){calTick();if(!S.inJail){if(fate())return;if(t16due())return turned16();if(S.age>=18&&S.fate&&!S.fate.eighteenShown){S.fate.eighteenShown=1;return eighteen()}}}
   else if(S.age&&S.day>1&&(S.day-1)%30===0){S.age++;say(`Happy birthday. You're ${S.age} now.`);bdayPop();if(fate())return;if(t16due())return turned16();if(S.age===18)return eighteen()}
@@ -8984,13 +8982,13 @@ const _op=openPlace;openPlace=function(id){const r=_op.apply(this,arguments);try
 function lootHTML(){const L=loot(),H=lootH();let h='';
  if(!L.length&&!H.length)return S.bag?'':`<div class="row"><div class="info"><div class="s" style="color:var(--dim)">No book bag: on a lick you only keep what fits in your pockets (cash, a phone, a chain). The mall sells one for $150.</div></div></div>`;
  const val=L.reduce((t,x)=>t+x.v,0);
- h+=`<div class="sec">Stolen goods · pockets ${cnt('p')}/${CAP.p}${S.bag?` · bag ${cnt('b')}/${CAP.b}`:''}${S.car?` · trunk ${cnt('c')}/${CAP.c}`:''}</div>`;
+ h+=`<div class="row" style="padding:6px 12px"><div class="info"><div class="t">Stolen goods · pockets ${cnt('p')}/${CAP.p}${S.bag?` · bag ${cnt('b')}/${CAP.b}`:''}${S.car?` · trunk ${cnt('c')}/${CAP.c}`:''}</div></div></div>`;
  if(L.length){const lp=L.find(x=>x.k==='phone'&&!x.u),E=L.filter(x=>LT[x.k].c==='e'),ph=plugHere();
   h+=`<div class="row" style="flex-wrap:wrap"><div class="info" style="flex:1 1 200px"><div class="t">On you: ${L.length} thing${L.length===1?'':'s'}, worth about ${money(val)}</div><div class="s">${L.map(x=>nameOf(x)+(x.w==='c'?' (trunk)':'')).join(', ')}. Jewelry only sells at the pawn shop. Electronics go to the pawn shop or a plug who trusts you. Cops can search you while you carry it.</div></div>
    <div class="btns">${lp?`<button class="btn" data-l27="unlock">Unlock a phone</button>`:''}${ph&&E.length?`<button class="btn go" data-l27="plug">Sell electronics to ${esc(plugName(S.at))} ${money(E.reduce((t,x)=>t+plugPay(x),0))}</button>`:''}${atHome()?`<button class="btn" data-l27="stash">Stash at home</button>`:''}<button class="btn red" data-l27="ditch">Ditch it all</button></div></div>`}
  if(H.length)h+=`<div class="row" style="flex-wrap:wrap"><div class="info" style="flex:1 1 200px"><div class="t">At home: ${H.length} thing${H.length===1?'':'s'}</div><div class="s">${H.map(nameOf).join(', ')}. Safe from a street search, but a raid takes it.</div></div>${atHome()?`<button class="btn" data-l27="grab">Pick it up</button>`:`<span class="s" style="color:var(--dim)">Go home to get it</span>`}</div>`;
  return h}
-const _pl=paneLicks;paneLicks=function(){let h=_pl.apply(this,arguments);try{h=lootHTML()+h}catch(e){console.error('l27 pane',e)}return h};
+const _pl=paneLicks;paneLicks=function(){let h=_pl.apply(this,arguments);try{const L=lootHTML(),k='takes the day</div>',i=h.indexOf(k);h=i>=0?h.slice(0,i+k.length)+L+h.slice(i+k.length):L+h}catch(e){console.error('l27 pane',e)}return h};
 function act(k){const L=loot();
  if(k==='ditch'){if(!L.length)return;S.loot=[];say(`Ditched ${L.length} stolen thing${L.length===1?'':'s'} in a dumpster.`);return render()}
  if(k==='stash'){if(!atHome())return;const H=lootH();let n=0;while(L.length&&H.length<HOMECAP){H.push(L.shift());n++}say(n?`Put ${n} thing${n===1?'':'s'} up at home.`:'No more room at home.');return render()}
@@ -9142,10 +9140,30 @@ function drawMeet(){const M=S.meet;if(!M)return;let o=el('mt31');if(!o){o=docume
  o.scrollTop=sc;el('mt31x').onclick=el('mt31y').onclick=()=>{endMeet();render()}}
 /* block pane: your other plugs are one call away */
 const _pb=paneBlock;
-function callRows(){if(S.meet||locked()||away())return '';const L=known().filter(bi=>bi!==S.at);if(!L.length)return '';
- return `<div class="sec">Your plugs · call one to pull up</div>`+L.map(bi=>{const w=why(bi),t=(S.trust||{})[bi]||0;return `<div class="row" style="padding:8px 12px">${(()=>{try{return avatar(bi,34)}catch(e){return ''}})()}<div class="info" style="min-width:0"><div class="t">${esc(plugName(bi))}</div><div class="s">${esc(BLOCKS[bi])} · Trust ${t}/100${w?' · '+w:''}</div></div><button class="btn go" data-a31="pu" data-i="${bi}" ${w?'disabled':''}>Pull up</button></div>`}).join('')}
+function callRows(){if(S.meet||locked()||away())return '';const L=known().filter(bi=>bi!==S.at),U=strangers();if(!L.length&&!U.length)return '';
+ return (L.length?`<div class="sec">Your plugs · call one to pull up</div>`:'')+L.map(bi=>{const w=why(bi),t=(S.trust||{})[bi]||0;return `<div class="row" style="padding:8px 12px">${(()=>{try{return avatar(bi,34)}catch(e){return ''}})()}<div class="info" style="min-width:0"><div class="t">${esc(plugName(bi))}</div><div class="s">${esc(BLOCKS[bi])} · Trust ${t}/100${w?' · '+w:''}</div></div><button class="btn go" data-a31="pu" data-i="${bi}" ${w?'disabled':''}>Pull up</button></div>`}).join('')+introRows(U)}
+const LV={Low:[100,1],Mid:[300,.5],Big:[800,.38]};
+const strangers=()=>BLOCKS.map((b,i)=>i).filter(bi=>!(S.known||[]).includes(bi)&&!gone(bi)&&!(S.burned&&S.burned[bi]));
+function voucher(bi){const ps=known().filter(i=>((S.trust||{})[i]||0)>=60).sort((a,b)=>S.trust[b]-S.trust[a]);if(ps.length)return{n:plugName(ps[0]),t:S.trust[ps[0]],plug:1};
+ const f=(S.friends||[])[0];if(f)return{n:f.name,t:50};try{const m=crewList()[0];if(m)return{n:m.name,t:50}}catch(e){}
+ const need=Math.round((LVL[PINFO[bi].lvl].rep||0)*.6);if((S.rep||0)>=Math.max(5,need))return{n:'Your name',t:40,rep:1};return null}
+function introWhy(bi){if((S.introD||-9)===S.day)return 'One link-up a day.';if((pk(bi).cold||0)>S.day)return `Not feeling you. Try again in ${pk(bi).cold-S.day} day${pk(bi).cold-S.day===1?'':'s'}.`;if(!voucher(bi))return 'Nobody to vouch for you yet. Make a friend, earn a plug\'s trust (60), or build more rep.';if(S.cash<LV[PINFO[bi].lvl][0])return 'Need '+money(LV[PINFO[bi].lvl][0])+'.';return ''}
+function introRows(U){if(!U.length)return '';return `<div class="sec">Plugs you have not met</div>`+U.map(bi=>{const P=PINFO[bi],w=introWhy(bi);return `<div class="row" style="padding:8px 12px"><div class="info" style="min-width:0"><div class="t">Somebody on ${esc(BLOCKS[bi])}</div><div class="s">${P.lvl} level · moves ${P.carries.map(id=>G(id).name).join(', ')}${w?' · '+w:''}</div></div><button class="btn" data-a31="in" data-i="${bi}" ${w?'disabled':''}>Get introduced ${money(LV[P.lvl][0])}</button></div>`}).join('')}
+function intro(bi){const w=introWhy(bi);if(w){say(w);return render()}const P=PINFO[bi],V=voucher(bi),fee=LV[P.lvl][0],nm=plugName(bi),fem=plugFem(bi),he=fem?'she':'he',He=fem?'She':'He';
+ const odds=Math.max(.2,Math.min(.9,LV[P.lvl][1]+((S.sk&&S.sk.talk)||0)*.04+(V.plug?(V.t>=80?.2:.1):0)));
+ modal(`${(()=>{try{return avatar(bi,72)}catch(e){return ''}})()}<div class="sec" style="margin:0;color:var(--accent)">The link-up</div><h2>Meet ${esc(nm)}</h2><p>${V.rep?'Your name has been ringing, so the meet got set up.':esc(V.n)+' made the call and vouched for you.'} ${esc(nm)} runs ${BLOCKS[bi]} and will meet you in a parked car around the corner. No day passes, but it costs ${money(fee)} to set up and some energy.</p><p class="s" style="color:var(--dim)">${P.lvl==='Low'?`${He} is small time. Show up with the money and you are in.`:`First impressions matter. Keep your face straight (Poker face) and ${he} locks your number in. Slip and ${he} will not deal with you for 4 days. Talk and a strong vouch help.`}</p><div class="btns"><button class="btn go" id="i31a">Pull up to the meet</button><button class="btn" id="i31b">Not yet</button></div>`);
+ el('i31b').onclick=close;
+ el('i31a').onclick=()=>{el('modal').hidden=true;if(typeof spendEn==='function'&&spendEn(8)===false)return;S.cash-=fee;try{cleanCash()}catch(e){}S.introD=S.day;
+  const win=()=>{if(!S.known.includes(bi))S.known.push(bi);S.trust[bi]=Math.max(S.trust[bi]||0,V.plug&&V.t>=80?25:15);try{addXP(3)}catch(e){}try{phoneMsg(nm,'"Lock my number in. Hit me when you need something."')}catch(e){}
+   say(`You met ${nm}. ${He} knows you now.`);modal(`${(()=>{try{return avatar(bi,72)}catch(e){return ''}})()}<h2 style="color:var(--money)">${esc(nm)} knows you now</h2><p>${He} looked you over, counted the money and nodded. "Lock my number in." Better prices, and once ${he} trusts you ${he} will call you and pull up on you.</p><div class="btns"><button class="btn go" id="ok">Bet</button></div>`);el('ok').onclick=close};
+  const lose=()=>{pk(bi).cold=S.day+4;try{addStress(4)}catch(e){}say(`${nm} was not feeling you. Try again in 4 days.`);modal(`<h2 style="color:var(--blood)">Not feeling you</h2><p>${esc(nm)} watched you sweat and rolled the window back up. The ${money(fee)} is gone. Give it 4 days.</p><div class="btns"><button class="btn go" id="ok">Continue</button></div>`);el('ok').onclick=close};
+  if(P.lvl==='Low')return win();pokerGame(odds,ok=>ok?win():lose())}}
+window.l31Intro=intro;
+/* crew pay warning */
+function crewWarn(){try{if(!S.soldiers||S.pr)return;const per=S.myGang?100:150,c=per*S.soldiers,have=S.cash+(S.safe||0),d=Math.floor(have/c);if(!S.cwSeen){S.cwSeen=1;say(`💸 Your crew costs ${money(c)} a day (${money(per)} each). Miss a day and they walk. See Expenses.`);return}if(d<=3&&(S.cwD||-9)+2<=S.day){S.cwD=S.day;say(`⚠️ Crew pay is ${money(c)} a day and you can only cover ${d} more day${d===1?'':'s'}. Make money or let somebody go.`)}}catch(e){}}
+try{WD.push(crewWarn)}catch(e){}
 paneBlock=function(){let h=_pb.apply(this,arguments);try{h+=callRows()}catch(e){console.error('sk31 rows',e)}return h};
-document.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.target.closest('[data-a31]');if(!b||b.disabled)return;if(b.dataset.a31==='pu')pullUp(+b.dataset.i)});
+document.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.target.closest('[data-a31]');if(!b||b.disabled)return;if(b.dataset.a31==='pu')pullUp(+b.dataset.i);else if(b.dataset.a31==='in')intro(+b.dataset.i)});
 /* keep the meet honest: it ends when the day moves, on a bust, or if you get locked up */
 const _rd=render;render=function(){try{if(S&&S.meet&&(locked()||gone(S.meet.bi)))endMeet(true)}catch(e){}const r=_rd.apply(this,arguments);try{if(S&&S.meet)drawMeet();else{const o=el('mt31');if(o)o.remove()}}catch(e){console.error('sk31 meet',e)}return r};
 const _nd=nextDay;nextDay=function(){try{if(S&&S.meet)endMeet(true)}catch(e){}return _nd.apply(this,arguments)};
@@ -9168,10 +9186,10 @@ function l31Day(){if(locked()||away()||window.FF||window.noL31)return;if((S.pcal
  const p=Math.min(.3,.07*L.length)*(held<500?1.6:1);if(Math.random()>=p)return;
  const bi=pick(L);setTimeout(()=>{try{if(!S||S.over||S.meet)return;plugCall(bi)}catch(e){console.error('sk31 call',e)}},500)}
 try{WD.push(l31Day)}catch(e){console.error('sk31 wd',e)}
-try{TUT.push(['Plugs call and pull up','Plugs are people, not places. Once a plug trusts you (40+), they call when a new load lands, with a discount that is only good that day. You can drive to their spot (takes the day) or have them pull up on you. Pulling up needs 50 trust (40 if they called you), costs 8% more, and no day passes. The Block tab lists every plug you know with a Pull up button. Nobody pulls up when your heat is 70 or more, when you are on the monitor, or out of town. One pull up per plug per day.'])}catch(e){}
-try{const _dp=devPanel;devPanel=function(){const r=_dp.apply(this,arguments);try{const mc=el('mcard');if(mc&&!el('modal').hidden&&!mc.querySelector('[data-d31]')){const d=document.createElement('div');d.innerHTML=`<div class="sec">Plugs call and pull up (new)</div><div class="btns"><button class="btn" data-d31="call">Plug call now</button><button class="btn" data-d31="pu">Pull up a plug</button><button class="btn" data-d31="end">End the meet</button></div>`;const h2=mc.querySelector('h2');if(h2&&h2.parentNode)h2.parentNode.insertBefore(d,h2.nextSibling);else mc.appendChild(d);
+try{TUT.push(['Plugs call and pull up','Plugs are people, not places. Once a plug trusts you (40+), they call when a new load lands, with a discount that is only good that day. You can drive to their spot (takes the day) or have them pull up on you. Pulling up needs 50 trust (40 if they called you), costs 8% more, and no day passes. The Block tab lists every plug you know with a Pull up button. Nobody pulls up when your heat is 70 or more, when you are on the monitor, or out of town. One pull up per plug per day. To meet a plug you do not know, use Get introduced on the Block tab: somebody has to vouch for you (a friend, a crew member, a plug who trusts you 60+, or enough rep), it costs a setup fee, and for Mid and Big plugs you have to keep a Poker face at the meet.'])}catch(e){}
+try{const _dp=devPanel;devPanel=function(){const r=_dp.apply(this,arguments);try{const mc=el('mcard');if(mc&&!el('modal').hidden&&!mc.querySelector('[data-d31]')){const d=document.createElement('div');d.innerHTML=`<div class="sec">Plugs call and pull up (new)</div><div class="btns"><button class="btn" data-d31="call">Plug call now</button><button class="btn" data-d31="pu">Pull up a plug</button><button class="btn" data-d31="end">End the meet</button><button class="btn" data-d31="intro">Intro test (forget a plug)</button></div>`;const h2=mc.querySelector('h2');if(h2&&h2.parentNode)h2.parentNode.insertBefore(d,h2.nextSibling);else mc.appendChild(d);
  d.querySelectorAll('[data-d31]').forEach(b=>b.onclick=ev=>{ev.stopPropagation();const k=b.dataset.d31;const pickB=()=>{for(let i=0;i<BLOCKS.length;i++){if(i!==S.at&&!gone(i)){if(!S.known.includes(i))S.known.push(i);S.trust[i]=Math.max(S.trust[i]||0,60);pk(i).pu=-9;return i}}return -1};
-  if(k==='end'){endMeet();el('modal').hidden=true;return render()}const bi=pickB();if(bi<0)return;S.heat=Math.min(S.heat,40);el('modal').hidden=true;if(k==='call')return plugCall(bi,true);pullUp(bi)})}}catch(e){console.error('sk31 dev',e)}return r}}catch(e){}
+  if(k==='end'){endMeet();el('modal').hidden=true;return render()}if(k==='intro'){const x=(S.known||[]).find(i=>i!==S.at&&!gone(i));if(x==null)return;S.known=S.known.filter(i=>i!==x);S.introD=-9;pk(x).cold=0;S.cash=Math.max(S.cash,2000);el('modal').hidden=true;try{tab='block'}catch(e){}render();return intro(x)}const bi=pickB();if(bi<0)return;S.heat=Math.min(S.heat,40);el('modal').hidden=true;if(k==='call')return plugCall(bi,true);pullUp(bi)})}}catch(e){console.error('sk31 dev',e)}return r}}catch(e){}
 })();
 </script>
 <script>if('serviceWorker' in navigator){addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}</script></body></html>

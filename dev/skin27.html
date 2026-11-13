@@ -131,13 +131,13 @@ const _op=openPlace;openPlace=function(id){const r=_op.apply(this,arguments);try
 function lootHTML(){const L=loot(),H=lootH();let h='';
  if(!L.length&&!H.length)return S.bag?'':`<div class="row"><div class="info"><div class="s" style="color:var(--dim)">No book bag: on a lick you only keep what fits in your pockets (cash, a phone, a chain). The mall sells one for $150.</div></div></div>`;
  const val=L.reduce((t,x)=>t+x.v,0);
- h+=`<div class="sec">Stolen goods · pockets ${cnt('p')}/${CAP.p}${S.bag?` · bag ${cnt('b')}/${CAP.b}`:''}${S.car?` · trunk ${cnt('c')}/${CAP.c}`:''}</div>`;
+ h+=`<div class="row" style="padding:6px 12px"><div class="info"><div class="t">Stolen goods · pockets ${cnt('p')}/${CAP.p}${S.bag?` · bag ${cnt('b')}/${CAP.b}`:''}${S.car?` · trunk ${cnt('c')}/${CAP.c}`:''}</div></div></div>`;
  if(L.length){const lp=L.find(x=>x.k==='phone'&&!x.u),E=L.filter(x=>LT[x.k].c==='e'),ph=plugHere();
   h+=`<div class="row" style="flex-wrap:wrap"><div class="info" style="flex:1 1 200px"><div class="t">On you: ${L.length} thing${L.length===1?'':'s'}, worth about ${money(val)}</div><div class="s">${L.map(x=>nameOf(x)+(x.w==='c'?' (trunk)':'')).join(', ')}. Jewelry only sells at the pawn shop. Electronics go to the pawn shop or a plug who trusts you. Cops can search you while you carry it.</div></div>
    <div class="btns">${lp?`<button class="btn" data-l27="unlock">Unlock a phone</button>`:''}${ph&&E.length?`<button class="btn go" data-l27="plug">Sell electronics to ${esc(plugName(S.at))} ${money(E.reduce((t,x)=>t+plugPay(x),0))}</button>`:''}${atHome()?`<button class="btn" data-l27="stash">Stash at home</button>`:''}<button class="btn red" data-l27="ditch">Ditch it all</button></div></div>`}
  if(H.length)h+=`<div class="row" style="flex-wrap:wrap"><div class="info" style="flex:1 1 200px"><div class="t">At home: ${H.length} thing${H.length===1?'':'s'}</div><div class="s">${H.map(nameOf).join(', ')}. Safe from a street search, but a raid takes it.</div></div>${atHome()?`<button class="btn" data-l27="grab">Pick it up</button>`:`<span class="s" style="color:var(--dim)">Go home to get it</span>`}</div>`;
  return h}
-const _pl=paneLicks;paneLicks=function(){let h=_pl.apply(this,arguments);try{h=lootHTML()+h}catch(e){console.error('l27 pane',e)}return h};
+const _pl=paneLicks;paneLicks=function(){let h=_pl.apply(this,arguments);try{const L=lootHTML(),k='takes the day</div>',i=h.indexOf(k);h=i>=0?h.slice(0,i+k.length)+L+h.slice(i+k.length):L+h}catch(e){console.error('l27 pane',e)}return h};
 function act(k){const L=loot();
  if(k==='ditch'){if(!L.length)return;S.loot=[];say(`Ditched ${L.length} stolen thing${L.length===1?'':'s'} in a dumpster.`);return render()}
  if(k==='stash'){if(!atHome())return;const H=lootH();let n=0;while(L.length&&H.length<HOMECAP){H.push(L.shift());n++}say(n?`Put ${n} thing${n===1?'':'s'} up at home.`:'No more room at home.');return render()}

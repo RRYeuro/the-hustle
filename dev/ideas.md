@@ -163,3 +163,8 @@ Order if built: 1, 2, 3 as one batch (~2 hrs), then 5. Leaderboard only after pe
 - Plug rework: plugs call you (trust 40+, new load at 10-15% off, good that day), pull up on you (trust 50, or 40 if they called; +8% price; no day passes; once per plug per day; not when heat 70+, on the monitor or out of town), or you drive to their spot. Block tab lists your plugs with Pull up. Meet screen reuses the normal buy/sell. Dev buttons, tutorial page. Test dev/t_plug.py.
 - Bug pass: 8,800 random clicks over 4 characters, 0 crashes, 0 broken popups, 0 money errors; clean-money audit of 28 big purchases found no leaks.
 - Balance left for Chris: Unc's wanted board pays 115% of a gun's price (buy from Unc, sell to the board = free money every 4 days). Businesses pay back in ~67 days vs 35-day run. Tank's crew cost has no warning.
+
+## Nov 13 12:15 (live silent)
+- Meet the plug: Get introduced on the Block tab (needs a vouch: friend, crew, plug at 60 trust, or rep; fee 100/300/800; Low = pay and you are in, Mid/Big = Poker face; fail = cold 4 days; one a day).
+- Balance: wanted board 115% -> 80%; businesses cheaper and pay about double (payback ~23 days); crew pay warning.
+- Duplicates removed: Nap (Time tile vs top bar), Licks (Heists tab vs Licks app; now only the app). Loot list sits inside the Licks app.
