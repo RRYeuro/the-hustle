@@ -1397,7 +1397,7 @@ function cityMap(){
 function placeAt(id){return PLACES.find(p=>p.id===id).bi}
 function openPlace(id){const P=PLACES.find(p=>p.id===id),bi=placeAt(id);
   if(bi!==S.at){modal(`<h2>${P.ic} ${P.name}</h2><p>That's on <b>${BLOCKS[bi]}</b>. You're on ${BLOCKS[S.at]}.</p><div class="btns"><button class="btn go" id="gt">Go to ${BLOCKS[bi]} (takes a day)</button><button class="btn" id="no">Not now</button></div>`);
-    $('no').onclick=close;$('gt').onclick=()=>{if(S.ha&&S.haOK!==S.day&&stuckHome())return;if(S.grounded>S.day&&S.sneakOK!==S.day&&!(bi===4&&S.school==='in'&&(!S.cal||schoolWeek()))){$('modal').hidden=true;say(`You're grounded. ${S.par?S.par.name:'They'} ain't letting you leave the house.`);render();return}$('modal').hidden=true;S.at=bi;say(`Pulled up to ${BLOCKS[bi]}.`);if(S.cal&&S.age&&S.age<18&&S.freeMv!==S.day){S.freeMv=S.day;say('First move of the day is free, so you can still make it to class.')}else{nextDay();checkEnd()}render();if($('modal').hidden)openPlace(id)};return}
+    $('no').onclick=close;$('gt').onclick=()=>{if(S.ha&&S.haOK!==S.day&&stuckHome())return;if(S.grounded>S.day&&S.sneakOK!==S.day&&!(bi===4&&S.school==='in'&&(!S.cal||schoolWeek()))){$('modal').hidden=true;say(`You're grounded. ${S.par?S.par.name:'They'} ain't letting you leave the house.`);render();return}$('modal').hidden=true;S.at=bi;say(`Pulled up to ${BLOCKS[bi]}.`);if(S.cal&&S.age&&S.age<18&&S.freeMv!==S.day){S.freeMv=S.day;say('First move of the day is free, so you can still make it to class.')}else if(window.l32Drive&&l32Drive()){}else{nextDay();checkEnd()}render();if($('modal').hidden)openPlace(id)};return}
   const row=(t,sub,btn)=>`<div class="row" style="padding:8px 12px;flex-wrap:wrap"><div class="info" style="flex:1 1 180px"><div class="t">${t}</div><div class="s">${sub}</div></div>${btn}</div>`;
   const b=(k,l,dis,c='go')=>`<button class="btn ${c}" data-pl="${k}" ${dis?'disabled':''}>${l}</button>`;
   let body='';
@@ -6535,7 +6535,7 @@ function act(a,el){
       if(caught){const P=S.par;if(P)P.trust=Math.max(0,P.trust-10);S.grounded=S.grounded+2;addStress(8);say(`${nm} heard you at the window. Caught. Trust −10 and two more days grounded.`);close();return}
       S.sneakOK=S.day;say('Out the window and gone.');$('modal').hidden=true;act(a,snap)})};
     return}
-  if(a==='go'){if(S.car==='stolen')S.heat=Math.min(100,S.heat+3);S.at=+el.dataset.i;say(`Pulled up to ${BLOCKS[S.at]}.`);if(S.cal&&S.age&&S.age<18&&S.freeMv!==S.day){S.freeMv=S.day;say('First move of the day is free, so you can still make it to class.')}else nextDay()}
+  if(a==='go'){if(S.car==='stolen')S.heat=Math.min(100,S.heat+3);S.at=+el.dataset.i;say(`Pulled up to ${BLOCKS[S.at]}.`);if(S.cal&&S.age&&S.age<18&&S.freeMv!==S.day){S.freeMv=S.day;say('First move of the day is free, so you can still make it to class.')}else if(window.l32Drive&&l32Drive()){}else nextDay()}
   if(a==='adv'){say('Let the day go by.');nextDay();return}
   if(a==='lay'){if(!atHome()){say('You gotta be at your place to lay low.');return render()}S.restDay=1;S.heat=Math.max(0,S.heat-15);S.hp=Math.min(100,S.hp+15);addStress(-25);{const sold=S.homeSale===S.day;S.quiet=sold?0:S.day+1;say(sold?'Laid low, but you were selling from the house today, so the block knows where you are.':'Laid low for a day. Nobody bothered you.')}nextDay()}
   if(a==='ladm'||a==='ladk'||a==='lads'||a==='ladb')return ladAct(a,el);
@@ -8766,7 +8766,7 @@ function nearest(x,y){let bi=0,m=1e9;SEED.forEach((p,i)=>{const d=(p[0]-x)**2+(p
 let last=-1,tmr=0;
 function show(i){const v=document.getElementById('fm26');if(!v)return;const z=document.getElementById('fm26z'),t=document.getElementById('fm26t');
  if(i!==last){last=i;const g=z.getContext('2d'),d=g.createImageData(160,120);for(let y=0;y<120;y++)for(let x=0;x<160;x++){if(nearest(x/1.6,y/1.2)!==i)d.data[(y*160+x)*4+3]=125}g.putImageData(d,0,0);
-  const b=bInfo(i);t.innerHTML=`<b>${b.name}</b><small><i style="background:${HC[b.lv]}"></i>${b.ol} · Heat ${b.lv}</small><small>${i===S.at?'You are here':'1 day to get here'}</small>${b.x.length?`<small>${b.x.join(' · ')}</small>`:''}`}
+  const b=bInfo(i);t.innerHTML=`<b>${b.name}</b><small><i style="background:${HC[b.lv]}"></i>${b.ol} · Heat ${b.lv}</small><small>${i===S.at?'You are here':(S.car?'A short drive, no day lost':'1 day to get here')}</small>${b.x.length?`<small>${b.x.join(' · ')}</small>`:''}`}
  z.classList.add('on');t.classList.add('on')}
 function hide(){last=-1;const z=document.getElementById('fm26z'),t=document.getElementById('fm26t');z&&z.classList.remove('on');t&&t.classList.remove('on')}
 function wire(v){
@@ -8778,10 +8778,10 @@ function wire(v){
 let tbI=null;
 function tabHTML(){if(tbI===null)tbI=S.at;const i=tbI;
  let h=`<div class="tb26" id="tb26"><div class="tbs26">`;
- BLOCKS.forEach((b,k)=>{const f=bInfo(k);h+=`<button data-t="${k}" class="${k===i?'on':''}"><span><i style="background:${HC[f.lv]}"></i>${b}</span><small>${k===S.at?'YOU ARE HERE':'1 DAY'}</small></button>`});
+ BLOCKS.forEach((b,k)=>{const f=bInfo(k);h+=`<button data-t="${k}" class="${k===i?'on':''}"><span><i style="background:${HC[f.lv]}"></i>${b}</span><small>${k===S.at?'YOU ARE HERE':(S.car?'DRIVE':'1 DAY')}</small></button>`});
  h+=`</div>`;const f=bInfo(i);
- h+=`<div class="bi"><b>${f.name}</b>${f.ol} · Heat ${f.lv} · ${i===S.at?'You are here':'1 day to get here'}${f.x.length?'<br>'+f.x.join(' · '):''}</div>`;
- const row=(id,k,n,sub)=>{const im=BADGE[k];return `<button class="mapp" data-p="${id}" aria-label="${n}"><span class="bd" style="--c:${IC[k][1]}${im?';background-image:url('+im+')':''}">${im?'':IC[k][0]}</span><span class="nm">${n}<small>${sub}</small></span><span class="go">${i===S.at?'GO IN':'1 DAY'}</span></button>`};
+ h+=`<div class="bi"><b>${f.name}</b>${f.ol} · Heat ${f.lv} · ${i===S.at?'You are here':(S.car?'A short drive, no day lost':'1 day to get here')}${f.x.length?'<br>'+f.x.join(' · '):''}</div>`;
+ const row=(id,k,n,sub)=>{const im=BADGE[k];return `<button class="mapp" data-p="${id}" aria-label="${n}"><span class="bd" style="--c:${IC[k][1]}${im?';background-image:url('+im+')':''}">${im?'':IC[k][0]}</span><span class="nm">${n}<small>${sub}</small></span><span class="go">${i===S.at?'GO IN':(S.car?'DRIVE':'1 DAY')}</span></button>`};
  PLACES.forEach(P=>{if(P.bi!==i||!IC[P.id])return;if(P.id==='studio'&&!S.rapOn)return;h+=row(P.id,P.id,P.name,P.id==='stadium'?'Open field':'')});
  try{if(i===5&&(S.biz||{}).club)h+=row('club24','club','Nightclub','Your club')}catch(e){}
  try{if(S.traps&&S.traps[i])h+=row('trap'+i,'trap','Trap house','Yours')}catch(e){}
@@ -9192,6 +9192,13 @@ try{TUT.push(['Plugs call and pull up','Plugs are people, not places. Once a plu
 try{const _dp=devPanel;devPanel=function(){const r=_dp.apply(this,arguments);try{const mc=el('mcard');if(mc&&!el('modal').hidden&&!mc.querySelector('[data-d31]')){const d=document.createElement('div');d.innerHTML=`<div class="sec">Plugs call and pull up (new)</div><div class="btns"><button class="btn" data-d31="call">Plug call now</button><button class="btn" data-d31="pu">Pull up a plug</button><button class="btn" data-d31="end">End the meet</button><button class="btn" data-d31="intro">Intro test (forget a plug)</button></div>`;const h2=mc.querySelector('h2');if(h2&&h2.parentNode)h2.parentNode.insertBefore(d,h2.nextSibling);else mc.appendChild(d);
  d.querySelectorAll('[data-d31]').forEach(b=>b.onclick=ev=>{ev.stopPropagation();const k=b.dataset.d31;const pickB=()=>{for(let i=0;i<BLOCKS.length;i++){if(i!==S.at&&!gone(i)){if(!S.known.includes(i))S.known.push(i);S.trust[i]=Math.max(S.trust[i]||0,60);pk(i).pu=-9;return i}}return -1};
   if(k==='end'){endMeet();el('modal').hidden=true;return render()}if(k==='intro'){const x=(S.known||[]).find(i=>i!==S.at&&!gone(i));if(x==null)return;S.known=S.known.filter(i=>i!==x);S.introD=-9;pk(x).cold=0;S.cash=Math.max(S.cash,2000);el('modal').hidden=true;try{tab='block'}catch(e){}render();return intro(x)}const bi=pickB();if(bi<0)return;S.heat=Math.min(S.heat,40);el('modal').hidden=true;if(k==='call')return plugCall(bi,true);pullUp(bi)})}}catch(e){console.error('sk31 dev',e)}return r}}catch(e){}
+})();
+</script>
+<script id="skin32js">
+(function(){if(window._sk32)return;window._sk32=1;
+/* a car means moving between blocks does not eat the day: a little gas and energy instead */
+window.l32Drive=function(){try{if(!S||!S.car)return false;if(S.en==null)S.en=enMax();if(S.en<3)return false;S.en-=3;const gas=Math.min(5,Math.max(0,S.cash));S.cash-=gas;try{cleanCash()}catch(e){}say(`You drove there. No day lost (${gas?'$'+gas+' gas, ':''}3 energy).`);return true}catch(e){return false}};
+try{TUT.push(['Driving','With a car, moving between blocks does not cost the day anymore. Each drive is $5 gas and 3 energy. With no car, or when you are too tired to drive, walking still takes the day. A stolen car still adds heat every time you ride it.'])}catch(e){}
 })();
 </script>
 <script>if('serviceWorker' in navigator){addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}</script></body></html>
