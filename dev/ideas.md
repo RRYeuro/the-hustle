@@ -246,3 +246,4 @@ Order if built: 1, 2, 3 as one batch (~2 hrs), then 5. Leaderboard only after pe
 - Undercover Js: now and then a "customer" is a cop. Street Smarts shows a tell ("asks too many questions", "new face, clean shoes") so you can walk away; selling to one is a bust. (~45 min)
 - Scanner texts: if you own a scanner, a short text when a patrol moves onto your current block. (~15 min)
 - Unlock guides: when a new system opens (crew, heists, scanner, plugs calling), a one-time 3-step mini guide like the first-day guide. (~1 hr)
+- Nov 14 art in (skin41): 50 new faces wired (F1 to F5, R1 to R3, S1 to S4, plus Big Ray and Uncle Sal for the city plugs, Mr. Dell and Sweets). Held back: La Reina (neon CAFE/BAR signs) and Ghost (looked like a famous rapper), redo in the art list. The realistic heist picture was not used; Chris wants all event art in the hood cartoon style, prompts E1 to E4 rewritten. Test dev/t_art.py.
