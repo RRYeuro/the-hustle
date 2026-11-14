@@ -10180,4 +10180,39 @@ try{const _dp=devPanel;devPanel=function(){const r=_dp.apply(this,arguments);try
  d.querySelectorAll('[data-d49]').forEach(b=>b.onclick=ev=>{ev.stopPropagation();el('modal').hidden=true;S.friends=S.friends||[];if(b.dataset.d49==='f')S.friends.push({name:pk(['Kash','Bean','Lil Mo','Trey','Nae']),trait:'loyal',role:'none',close:60});else{if(S.lvl<3){S.lvl=3;addXP(1)}if(!S.friends.length)S.friends.push({name:'Kash',trait:'loyal',role:'none',close:60});S.friends[0].close=Math.max(60,S.friends[0].close);putOn(0)}render()})}}catch(e){console.error('sk49 dev',e)}return r}}catch(e){}
 })();</script>
 
+<script id="skin50js">
+(function(){if(window._sk50)return;window._sk50=1;
+const E=x=>String(x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])),pk=a=>a[Math.floor(Math.random()*a.length)],cl=t=>window.l45cl?l45cl(t):t;
+/* friends are contacts */
+try{const _mc=window._MC;window._MC=function(){const o=_mc?_mc():[];try{(S.friends||[]).forEach(f=>{if(!o.some(x=>x.n===f.name))o.push({n:f.name,sub:'Friend · close '+Math.round(f.close||0)})})}catch(e){}return o}}catch(e){}
+try{const _ax=window._AVX;window._AVX=function(n,sz){const r=_ax?_ax(n,sz):null;try{if((!r||!r.pic)&&(S.friends||[]).some(f=>f.name===n)&&typeof faceImg==='function'){const h=faceImg(n,'c',sz);if(h)return {pic:h,ic:(r&&r.ic)||''}}}catch(e){}return r}}catch(e){}
+const fIdx=n=>(S.friends||[]).findIndex(f=>f.name===n);
+function opts(i){const f=S.friends[i],o=[],B=(t,a,says,dis,k)=>o.push(`<button class="mth-opt" data-a="${a}" data-i="${i}" data-says="${E(says)}" data-fr50="${k}" ${dis?'disabled':''}>${t}</button>`);
+ B(f.hang===S.day?'Already kicked it today':'Wanna kick it?','fhang','Wanna kick it today?',f.hang===S.day,'hang');
+ B(f.helped===S.day?'Looked out today':'You need anything? ($200)','fhelp','You straight? I got you, here go $200.',f.helped===S.day||S.cash<200,'help');
+ try{const B5=b5();if(window.l48rk&&l48rk()>=1&&adult()&&!(B5.dl||[]).some(d=>d.n===f.name)){const ok=(f.close||0)>=40;o.push(`<button class="mth-opt" data-a49="put" data-i="${i}" data-says="${E('You tryna make some money? I can put you on.')}" ${ok?'':'disabled'}>${ok?'Put them on (runner)':'Put them on (need 40 close)'}</button>`)}}catch(e){}
+ try{if(f.role&&f.role!=='none'&&typeof FROLES!=='undefined'&&FROLES[f.role]&&f.close>=50)B('About that thing you mentioned...','frole','About that thing you was talking about...',false,'role')}catch(e){}
+ try{if((S.myGang||S.gang)&&f.close>=60)B('Join the gang?','fjoin','You should roll with us.',f.asked===S.day,'join')}catch(e){}
+ B('We done. Lose my number.','fcut','We done. Lose my number.',false,'cut');
+ return `<div class="mth-kt">Text ${E(f.name)}</div>${o.join('')}`}
+function reply(f,k){const lo=(f.close||0)<40,T=f.trait;
+ if(k==='hang')return T==='wild'?pk(['Say less, I got a bottle 🍾','Pull up, it\'s lit over here']):T==='snake'?'Yeah yeah, where you at right now?':lo?pk(['I mean... aight, I guess.','Maybe. Where?']):pk(['Bet, pull up 🔥','Yessir, I\'m outside.']);
+ if(k==='help')return T==='snake'?'Appreciate it 😏':pk(['Good looks fr. I owe you one.','You real for that. Won\'t forget it.']);
+ if(k==='join')return '';if(k==='role')return '';return ''}
+let rf=0;
+function fix(){try{
+ const ct=document.querySelector('.phx[data-app="contacts"]');
+ if(ct){ct.querySelectorAll('[data-a="fhang"]').forEach(b=>{const card=b.closest('.row')||b.closest('.btns').parentNode;if(!card||card.dataset.f50)return;card.dataset.f50=1;const i=+b.dataset.i,f=(S.friends||[])[i];if(!f)return;const bt=card.querySelector('.btns');if(bt)bt.outerHTML=`<div class="btns"><button class="btn go" data-tx50="${E(encodeURIComponent(f.name))}">💬 Text ${E(f.name)}</button></div>`})}
+ const th=document.querySelector('.phx[data-app="messages"] .mth-th');
+ if(th&&window._mth){const i=fIdx(window._mth);if(i>=0){const kb=th.querySelector('.mth-kb');if(kb&&!kb.dataset.f50){kb.dataset.f50=1;kb.innerHTML=opts(i)}}}
+}catch(e){console.error('sk50 fix',e)}}
+try{const _r=render;render=function(){const r=_r.apply(this,arguments);try{fix()}catch(e){}return r}}catch(e){}
+document.addEventListener('click',e=>{
+ const t=e.target.closest&&e.target.closest('[data-tx50]');if(t){e.preventDefault();e.stopPropagation();const n=decodeURIComponent(t.dataset.tx50);window._rph='messages';window._mth=n;window._mcomp=false;render();return}
+ const b=e.target.closest&&e.target.closest('[data-fr50]');if(b&&!b.disabled){const n=window._mth,k=b.dataset.fr50,i=fIdx(n),f=S.friends[i];if(!f)return;
+  setTimeout(()=>{try{if((k==='hang'&&f.hang!==S.day)||(k==='help'&&f.helped!==S.day))return render();const msg=reply(f,k);if(!msg)return render();const kb=document.querySelector('.phx[data-app="messages"] .mth-kb');if(kb){const d=document.createElement('div');d.className='ty46';d.innerHTML='<i></i><i></i><i></i>';kb.parentNode.insertBefore(d,kb)}
+   setTimeout(()=>{S.inbox=S.inbox||[];S.inbox.unshift({d:S.day,f:n,t:cl(msg)});S.inbox=S.inbox.slice(0,150);render()},800)}catch(er){}},60)}
+},true);
+})();</script>
+
 <script>if('serviceWorker' in navigator){addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}</script></body></html>
