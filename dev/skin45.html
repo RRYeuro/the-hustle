@@ -1,0 +1,84 @@
+<style id="skin45">
+.vb45{background:rgba(255,255,255,.05);border-left:3px solid var(--accent,#f5b72a);border-radius:6px;padding:7px 10px;margin:0 0 8px;font-size:14px;line-height:1.35;text-align:left}
+.vb45 b{display:block;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent,#f5b72a);margin-bottom:2px}
+.vb45.j{border-left-color:#8fa3c9}.vb45.j b{color:#8fa3c9}
+.vb45.p{border-left-color:var(--blood,#e0475a)}.vb45.p b{color:var(--blood,#e0475a)}
+.vi45{display:block;color:var(--dim,#9d94b8);font-size:12.5px;margin-top:4px}
+.mt31w .vb45{margin:8px 10px 0}
+#mcard .btns .btn{white-space:normal;line-height:1.2}
+</style>
+<script id="skin45js">
+(function(){if(window._sk45)return;window._sk45=1;
+const pk=a=>a[Math.floor(Math.random()*a.length)];
+/* ---------- clean language ---------- */
+const CL=[[/\bmotherfuck(er|ers|in|ing)\b/gi,'mother-trucker'],[/\bfucking\b/gi,'freaking'],[/\bfuckin\b/gi,'freakin'],[/\bfucked\b/gi,'messed'],[/\bthe fuck\b/gi,'the heck'],[/\bfuck\b/gi,'forget'],[/\bbullshit\b/gi,'nonsense'],[/\bshit\b/gi,'stuff'],[/\bbitch(es)?\b/gi,'punk$1'],[/\bdamn\b/gi,'dang'],[/\bass\b/gi,'butt']];
+window.l45Clean=()=>{try{return localStorage.getItem('tl-clean')==='1'}catch(e){return false}};
+const cl=t=>{if(typeof t!=='string'||!l45Clean())return t;CL.forEach(([r,w])=>{t=t.replace(r,w)});return t};window.l45cl=cl;
+/* ---------- who is talking ---------- */
+function who(f){try{if(S.known)for(const bi of S.known){if(plugName(bi)===f){const P=PINFO[bi]||{};return{k:'plug',bi,lvl:P.lvl||'Low',tr:(S.trust&&S.trust[bi])||0}}}
+  const m=(typeof crewList==='function'?crewList():[]).find(x=>x.name===f);if(m)return{k:'crew',m,loy:m.loy||50};
+  if(S.par&&S.par.name===f)return{k:'par'};if(f==='School')return{k:'school'}}catch(e){}return{k:'x'}}
+const T=w=>w.tr>=60?'hi':w.tr<30?'lo':'mid';
+/* plug lines by level and trust */
+const PL={
+ hot:{Low:['Nah bro you hot as hell right now. Not today.','You got twelve on you. Don\'t come near me today.'],Mid:['You too hot right now. Not today.','Cool off first. I ain\'t moving with you like this.'],Big:['Not today.','You are hot. Fix that, then call.'],lo:['You bringing heat to my door? Hell no.']},
+ spot:{Low:{hi:'Bet, my boy 💯 I\'m on @B. Pull up.',mid:'Bet. I\'m on @B. Come through.',lo:'Aight. @B. Don\'t take all damn day.'},Mid:{hi:'Bet. @B. I got you.',mid:'Bet. I\'m at the spot on @B.',lo:'@B. Have the money right this time.'},Big:{hi:'@B. Come alone.',mid:'@B. Come alone.',lo:'@B. Be on time or don\'t come.'}},
+ lock:{Low:'Lock my number in. And text before you pull up, don\'t just show up at my shit.',Mid:'Lock my number in. Text first. Every time.',Big:'Lock it in. Text first. Don\'t make me regret this.'},
+ load:{Low:'Yo just got a fresh pack of @G 🔥 @P% off today only. Pull up or I\'ll slide on you.',Mid:'New @G just came in. @P% off for you today. You coming or I\'m coming to you?',Big:'Fresh @G. @P% off, today only. Your call where.'},
+ in:{Low:'"You good. Lock my number in, and don\'t be calling me with dumb shit."',Mid:'"Aight. Lock my number in. Text first, every time, and we straight."',Big:'"Lock it in. You don\'t talk about me, you don\'t bring nobody. Understood?"'},
+ no:{Low:'"Nah bro, you shaky as hell. Come back when you got your shit together."',Mid:'"You sweating like a damn cop. Not today."',Big:'"I don\'t do business with nervous people."'},
+ greet:{Low:{hi:['What\'s good, my boy. What you need?','Ayy, there go my favorite customer. Talk to me.'],mid:['What you need? Make it quick.','Yo. What we doing today?'],lo:['You got all my money this time? Don\'t waste my time.','Hurry up, I got people waiting.']},Mid:{hi:['Good to see you. Same as last time?','You been moving right. What you need?'],mid:['What you need?','Talk to me. What we doing?'],lo:['Let\'s make this quick.','I\'m watching you. Money first.']},Big:{hi:['Sit down. What can I do for you?','You\'ve been good business. Go ahead.'],mid:['Go ahead.','You got two minutes.'],lo:['Talk fast.','Money on the table first.']}}};
+const sub=(t,o)=>t.replace(/@B/g,o.b||'').replace(/@G/g,o.g||'').replace(/@P/g,o.p||'');
+window.l45pl=function(bi,k,g,p){try{const P=PINFO[bi]||{},L=P.lvl||'Low',w={tr:(S.trust&&S.trust[bi])||0},x=PL[k]&&PL[k][L];let t=x&&typeof x==='object'&&!Array.isArray(x)?x[T(w)]:x;if(Array.isArray(t))t=pk(t);return cl(sub(t||'',{b:BLOCKS[bi],g,p}))}catch(e){return ''}};
+window.l45greet=function(M){try{if(!M||M.bi==null)return '';if(!M._g45){const P=PINFO[M.bi]||{},L=P.lvl||'Low',w={tr:(S.trust&&S.trust[M.bi])||0};M._g45=pk(PL.greet[L][T(w)])}return `<div class="vb45"><b>${esc(plugName(M.bi))}</b>${esc(cl(M._g45))}</div>`}catch(e){return ''}};
+/* ---------- phone texts rewritten in each person's voice ---------- */
+const CON={'Too much heat on the streets right now. Do not text me.':'Streets hot as shit right now. Don\'t text me.','The package got grabbed. I am going dark for a while.':'They grabbed the pack. I\'m going dark for a minute.','Everybody is watching the road. Give it time.':'Everybody watching the highway. Give it a few days.','I am cooling off until things stop burning.':'I\'m sitting down til this shit cools off.','Some other crew hit my driver. Nothing moves until I know who.':'Some crew hit my driver. Nothing moves til I find out who.','Twelve is sitting on my lane. I will reach out when it clears.':'Twelve sitting on my lane. I\'ll hit you when it clears.'};
+const R=[
+ [/^Load picked up, boss\. (\$[\d,]+) made it to the stash\.$/,(m)=>pk([`Load picked up. ${m[1]} in the stash, boss.`,`Got it done. ${m[1]} put up. Easy.`,`Pickup smooth as hell. ${m[1]} in the stash.`])],
+ [/^Something went wrong with the load\.\.\.$/,()=>pk(['Load got fucked up. I\'ll explain later, not over the phone.','Bad news on the load. Call me. Not text.'])],
+ [/^Spot was hot, I waited it out\. Nothing today\.$/,()=>pk(['Spot was hot as hell so I sat back. Nothing today.','Twelve all over the spot. I ain\'t touch it today.'])],
+ [/^Drop made\. (\$[\d,]+) back to the stash\.$/,(m)=>pk([`Drop made. ${m[1]} back at the stash.`,`Done. ${m[1]} dropped off, all there.`])],
+ [/^Cops rolled through, I aborted the drop\.$/,()=>pk(['Cops rolled through so I pulled out. Drop is off today.','Damn, twelve pulled up right when I got there. I bounced. No drop.'])],
+ [/^"?(.+?)"?$/,(m)=>CON[m[1]]||null],
+ [/^"Your (.+?) just dropped\. (.+?) is in your stash\."$/,(m)=>pk([`Your ${m[1]} landed. ${m[2]} in the stash.`,`${m[1]} touched down. ${m[2]} sitting in your stash. We good.`])],
+ [/^"Your package is waiting but you got no room for it\. Clear your stash\."$/,()=>'Your pack is here but your stash full. Make some damn room.'],
+ [/^"Your (.+?) got caught\. You lost (.+?) and (\$[\d,]+)\."$/,(m)=>`They grabbed your ${m[1]}. ${m[2]} gone, ${m[3]} with it. Shit happens. Lay low.`],
+ [/^The school called\. They said you skipped\. (Grades [^\s]+)$/,(m,W)=>({t:'The school called. You skipped AGAIN? Your ass better be in class tomorrow.',tag:`📉 ${m[1]}`})],
+ [/^You missed too much school\. You are out\.$/,()=>'Attendance office: you have missed too many days and have been withdrawn from school.'],
+ [/^"You too hot right now\. Not today\."$/,(m,W)=>W.k==='plug'?(T(W)==='lo'?pk(PL.hot.lo):pk(PL.hot[W.lvl])):null],
+ [/^"Bet\. I am at the spot on (.+?)\. Come through\."$/,(m,W)=>W.k==='plug'?sub(PL.spot[W.lvl][T(W)],{b:m[1]}):null],
+ [/^"Lock my number in\. Text me before you pull up\."$/,(m,W)=>W.k==='plug'?PL.lock[W.lvl]:null],
+ [/^"Just got a new load of (.+?)\. (\d+)% off today\. Pull up or I come to you\."$/,(m,W)=>W.k==='plug'?sub(PL.load[W.lvl],{g:m[1],p:m[2]}):null],
+ [/^Watched the (.+?)\. Strength (\d+), beef (\d+)\/100\. (.*)$/,(m)=>({t:`Scoped out the ${m[1]}. `+({'They are stronger than you right now.':'They deep as hell right now. We ain\'t ready for that.','You could take them.':'Honestly? We could take them.','About even with you.':'It\'s about even. Could go either way.'}[m[4]]||m[4]),tag:`🔎 ${m[1]}: strength ${m[2]}, beef ${m[3]}/100`})],
+ [/^It was a trap\. They fed me bad info and now they know our spots\.$/,()=>'Shit was a trap. They fed me bad info and now they know where we at.'],
+ [/^Nobody to collect from\.$/,()=>'Ain\'t nobody owe us nothing right now.'],
+ [/^It was a setup\. Cops were already there when we pulled up\. Somebody talked\. They got all of us\.(?: I think it was (.+)\.)?$/,(m)=>`It was a fucking setup. Cops was already there when we pulled up. Somebody talked. They got all of us.${m[1]?` I'm telling you, it was ${m[1]}.`:''}`],
+ [/^We did it\. (.+?) went clean\. (.*)$/,(m)=>`We did that shit. ${m[1]} went clean. ${m[2]}`],
+ [/^It went bad\. (.*) We had to drop everything and split\. Some of us got picked up\.$/,(m)=>`Shit went bad. ${m[1]} We dropped everything and ran. Some of us got picked up.`]];
+function voice(f,t){const W=who(f);for(const [re,fn] of R){const m=re.exec(t);if(m){const o=fn(m,W);if(o)return typeof o==='string'?{t:o}:o}}return{t}}
+window.l45voice=voice;
+const _pm=phoneMsg;phoneMsg=function(f,t){let o={t};try{o=voice(f,String(t))}catch(e){console.error('sk45 v',e)}const r=_pm.call(this,f,cl(o.t));if(o.tag)try{say(o.tag)}catch(e){}return r};
+const _say=say;say=function(t){return _say.call(this,cl(t),...[].slice.call(arguments,1))};
+const _md=modal;modal=function(h){return _md.call(this,cl(h),...[].slice.call(arguments,1))};
+/* ---------- court: people talk, the facts sit under it ---------- */
+const VB=(who,cls,t)=>`<div class="vb45 ${cls}"><b>${who}</b>${cl(t)}</div>`;
+const JUDGE='Judge Harlan',SOL='Solicitor Price';
+function priors(){try{return (S.rec&&S.rec.n)||0}catch(e){return 0}}
+function courtLines(title,text){const C=crtCourt(),ch=((/Court:[^.]*\.[^.]*\.\s*([^.]+)\./.exec(text)||[])[1]||'').trim(),n=priors(),law=(w4()||{}).law;let h='';
+ if(title==='Court date'){
+  if(C.k==='juv')h+=VB(JUDGE,'j',pk(['I see kids like you in here every week. Most of them come back. Let\'s see if you\'re different.','You are not grown, so this is your one chance to act like it. Your family is going to hear about this.']));
+  else if(C.k==='fed')h+=VB(SOL,'p','Your honor, we have bank records, phone taps and a cooperating witness. This is not some corner case.')+VB(JUDGE,'j','Noted. The defendant should understand what he\'s facing.');
+  else if(C.k==='gs')h+=VB(JUDGE,'j',pk(['Next case. Let\'s move this along, I have forty more of you today.','Another one. Let\'s get this done.']))+VB(SOL,'p','The state is ready to offer a plea, your honor.');
+  else h+=VB(SOL,'p','The state is ready, your honor. We have the evidence and we have the witnesses.')+VB(JUDGE,'j','Then let\'s hear it.');
+  if(n>0)h+=VB(JUDGE,'j',n>=3?'I know your name by heart at this point. That is not a good thing.':'I\'ve seen your name before. That\'s not going to help you.');
+  if((w4()||{}).snitch)h+=VB(SOL,'p','Of course, if the defendant has something to tell us, the state would listen.')}
+ else if(title==='Trial day'){h+=VB('Bailiff','j','All rise.')+VB(JUDGE,'j',window._l43b&&window._l43b.amt?'You showed up. Most of y\'all don\'t. Is the defense ready?':'Is the defense ready?')}
+ else if(title==='Your strategy'){h+=VB('Your lawyer','',law==='pd'?'Look, I got two hundred cases. Give me something to work with or take the deal.':law==='top'?'Relax. They have holes in this case and I already found three. Tell me how you want to play it.':'The jury already made up half their mind when you walked in. Give me something to work with.')}
+ return h}
+const _wc=wCard;wCard=function(art,title,text,opts,tag){try{if(tag==='Court'&&['Court date','Trial day','Your strategy'].includes(title)){const h=courtLines(title,text||'');if(h)text=h+`<span class="vi45">${text}</span>`}}catch(e){console.error('sk45 court',e)}return _wc.call(this,art,title,cl(text),opts,tag)};
+/* remember which lawyer you picked so they talk like it */
+try{const _wcs=w4Counsel;w4Counsel=function(){const o=_wcs.apply(this,arguments);try{return o.map(x=>({...x,f:()=>{try{const X=w4();X.law=/Public defender/.test(x.l)?'pd':/Top attorney/.test(x.l)?'top':/Private lawyer/.test(x.l)?'mid':X.law}catch(e){}return x.f()}}))}catch(e){return o}}}catch(e){}
+/* ---------- clean language switch on the main menu ---------- */
+try{const _mm=mainMenu;mainMenu=function(c){const r=_mm.apply(this,arguments);try{const m=document.getElementById('mmus');if(m&&!document.getElementById('mcln')){m.insertAdjacentHTML('afterend',`<button class="btn" id="mcln">Language: ${l45Clean()?'Clean':'Raw'}</button>`);document.getElementById('mcln').onclick=()=>{try{localStorage.setItem('tl-clean',l45Clean()?'0':'1')}catch(e){}mainMenu(c)}}}catch(e){}return r}}catch(e){}
+try{TUT.push(['Talking','People talk like themselves now. Low plugs are loose, Big plugs say little, and the more a plug trusts you the warmer they get. In court the judge, the solicitor and your lawyer speak, and the facts sit under it in small text. There is cursing. Turn on Language: Clean on the main menu to swap it out.'])}catch(e){}
+})();</script>

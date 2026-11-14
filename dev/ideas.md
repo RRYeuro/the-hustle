@@ -267,3 +267,13 @@ Problem: everyone sounds the same, stats are inside speech, robot/system lines, 
 8. Rewrite pass on every robotic line, with Columbia SC street flavor.
 Cursing: Chris wants real cursing in the dialogue (shit, damn, ass, bitch, f-word where it fits; no slurs). Add a Settings toggle "Clean language" that swaps curses for clean words (default OFF = cursing on).
 Start with 2 + 8 on texting, court and plug talk (~5-8% usage). 3/4/5 are ~10-15% together.
+- Dialogue pass 1: BUILT Nov 14 (skin45). Plug voices by level + trust (texts, intro meet, calls, greeting at the meet), crew/heist/connect texts rewritten, numbers pulled out of texts into a tag, court talks (Judge Harlan, Solicitor Price, bailiff, your lawyer by tier), cursing + "Language: Raw/Clean" on the main menu. Still to do: 3 reply choices, 4 plug meet tones, 5 full court scenes, 6 callbacks.
+## Real phone (Nov 14, ideas only; wait for "build")
+1. Lock screen with time/day and stacked notification banners; tap to open the chat.
+2. Messages app: chat list (last line, unread dot, time) and full threads with bubbles, read receipts, typing dots.
+3. Reply choices in threads ("bet", "what's the number", "nah").
+4. Incoming call screen (face, Answer/Decline), missed call log; plugs get mad if you dodge.
+5. Home screen apps: Messages, Contacts, Bank (clean money only), Map, Camera (loot photos), Settings.
+6. Battery and signal: dead phone = unreachable, charge at home; unpaid phone bill shows "No Service".
+7. Burner phone for plug business: less heat, breaks, can lose contacts.
+8. Notification sounds + buzz on mobile.

@@ -894,7 +894,7 @@ function w4Verdict(p,R,len,charge,bail){const X=w4(),r=Math.random();
   const n=Math.round(len*1.2);say('You lost at trial and the judge added time.');if(R){R.len=n;R.until=R.start+n}else w4Sent(n,charge);wNote('trial','Guilty',`The judge gave you ${prLabel(n)}.`)}
 function w4Counsel(R,len,charge,bail){const X=w4(),extra=(S.lawPay?.1:0)+(S.fx&&S.fx.lawyer?.05:0);
   const go=(fee,base)=>{if(S.cash<fee)return;try{window.l43Fee&&l43Fee(fee)}catch(e){}S.cash-=fee;const wit=(p0)=>wCard('g_witness','Your strategy',`Your lawyer needs a plan for the jury. ${esc(charge)}. What do you do?`,crtWit(p0,R,len,charge,bail),'Court');wit(Math.min(.85,base+extra))};
-  return [{l:'Public defender (free, 200 other cases)',c:'',f:()=>go(0,.3)},{l:'Private lawyer ($2,500, solid)',c:'go',dis:S.cash<2500,f:()=>go(2500,.5)},{l:'Top attorney ($7,000, sharp)',c:'',dis:S.cash<7000,f:()=>go(7000,.68)}]}
+  return [{l:'Public defender (free)',c:'',f:()=>go(0,.3)},{l:'Private lawyer ($2,500)',c:'go',dis:S.cash<2500,f:()=>go(2500,.5)},{l:'Top attorney ($7,000)',c:'',dis:S.cash<7000,f:()=>go(7000,.68)}]}
 function w4Court(){const R=S.pr,X=w4();if(!R||R.cc)return;R.cc=1;const len=R.len,charge=R.charge,bail=1500+len*100;
   const opts=w4Counsel(R,len,charge,false).concat([crtPleaOpt(R,len)].concat(crtPTI(R,len)||[]).concat([...(window.l43BailOpts?l43BailOpts(len,charge,bail):[{l:`Post bail (${money(bail)})`,c:'',dis:S.cash<bail,f:()=>{S.cash-=bail;X.bail={d:S.day+8,len,charge};S.pr=null;S.inJail=0;say('Posted bail. Trial in 8 days. Show up and fight it.');if(ARTX('bail'))wNote('bail','Out on bail','You have eight days. Get your lawyer ready and do not miss your court date.')}}]),{l:'Give up a name (snitch)',c:'red',dis:!!X.snitch,f:()=>{X.snitch=1;X.snD=S.day;X.snLeak=0;w4Br(-35);S.rep=Math.max(0,S.rep-8);const n=Math.max(1,Math.round(len*.3));R.len=n;R.until=R.start+n;(S.crews||[]).forEach(c=>{if(c.alive)c.beef=Math.min(100,c.beef+10)});say(`You gave up a name. Sentence cut to ${prLabel(n)}, but the street knows.`);if(ARTX('snitch'))wNote('snitch','Marked','Word travels fast. You are a snitch now.')}}]));
   wCard(crtCourt().k==='fed'?'g_fed':'g_plea','Court date',`${esc(crtCourt().n)}: ${esc(crtCourt().t)} ${esc(charge)}. The judge is looking at ${prLabel(len)}. Hire counsel and fight it, take the plea, post bail and go home until trial, or give a name.${X.snitch?'':' The prosecutor hints a name could make this go away.'}`,opts,'Court')}
@@ -9164,7 +9164,7 @@ function textPlug(bi){const P=pk(bi);if(locked()||away()||!kn(bi)||gone(bi)||tr(
 window.l31PullUp=pullUp;window.l31End=endMeet;window.l31Meet=meet;window.l31Go=goSpot;window.l31Text=textPlug;
 function drawMeet(){const M=S.meet;if(!M)return;let o=el('mt31');if(!o){o=document.createElement('div');o.id='mt31';document.body.appendChild(o);o.addEventListener('click',e=>{const b=e.target.closest('button[data-a]');if(!b||b.disabled)return;try{sfx('tap')}catch(_){}try{act(b.dataset.a,b)}catch(err){console.error('sk31 act',err)}})}
  const sc=o.scrollTop,pull=M.how==='pull';
- o.innerHTML=`<div class="mt31w"><div class="mt31h"><div><b>${esc(plugName(M.bi))}${pull?' came to you':'\'s spot'}</b><small>${pull?`You are still on ${esc(BLOCKS[M.from])}. No day passes. ${tie(M.bi)?tie(M.bi)+': no delivery charge.':'Prices are 8% higher for the delivery.'}`:`On ${esc(BLOCKS[M.bi])}. The meet itself does not use the day.`} Sells by: ${lvlSells(M.bi)}.</small></div><button class="btn go" id="mt31x">Done</button></div><div class="pane" id="mt31p">${_pb()}</div><div class="btns" style="justify-content:center;margin-top:10px"><button class="btn" id="mt31y">Done dealing</button></div></div>`;
+ o.innerHTML=`<div class="mt31w">${window.l45greet?l45greet(M):''}<div class="mt31h"><div><b>${esc(plugName(M.bi))}${pull?' came to you':'\'s spot'}</b><small>${pull?`You are still on ${esc(BLOCKS[M.from])}. No day passes. ${tie(M.bi)?tie(M.bi)+': no delivery charge.':'Prices are 8% higher for the delivery.'}`:`On ${esc(BLOCKS[M.bi])}. The meet itself does not use the day.`} Sells by: ${lvlSells(M.bi)}.</small></div><button class="btn go" id="mt31x">Done</button></div><div class="pane" id="mt31p">${_pb()}</div><div class="btns" style="justify-content:center;margin-top:10px"><button class="btn" id="mt31y">Done dealing</button></div></div>`;
  o.scrollTop=sc;el('mt31x').onclick=el('mt31y').onclick=()=>{endMeet();render()}}
 /* ---------- Move map: plug spots ---------- */
 const LV={Low:[100,1],Mid:[300,.5],Big:[800,.38]};
@@ -9189,8 +9189,8 @@ function intro(bi){const w=introWhy(bi);if(w){say(w);return render()}const P=PIN
  el('i31b').onclick=close;
  el('i31a').onclick=()=>{el('modal').hidden=true;if(typeof spendEn==='function'&&spendEn(8)===false)return;S.cash-=fee;try{cleanCash()}catch(e){}S.introD=S.day;
   const win=()=>{if(!S.known.includes(bi))S.known.push(bi);S.trust[bi]=Math.max(S.trust[bi]||0,V.plug&&V.t>=80?FLOOR+10:FLOOR+2);pk(bi).open=S.day+1;try{addXP(3)}catch(e){}try{phoneMsg(nm,'"Lock my number in. Text me before you pull up."')}catch(e){}
-   say(`You met ${nm}. ${He} is in your phone now.`);modal(`${face(bi,72)}<h2 style="color:var(--money)">${esc(nm)} is in your phone</h2><p>${He} looked you over, counted the money and nodded. "Lock my number in." Text first and ${he} tells you when to come through. Get ${fem?'her':'him'} to 60 trust and you can pull up any time. ${fem?'Her':'His'} spot is open to you today and tomorrow.</p><div class="btns"><button class="btn go" id="ok">Bet</button></div>`);el('ok').onclick=close};
-  const lose=()=>{pk(bi).cold=S.day+4;try{addStress(4)}catch(e){}say(`${nm} was not feeling you. Try again in 4 days.`);modal(`<h2 style="color:var(--blood)">Not feeling you</h2><p>${esc(nm)} watched you sweat and rolled the window back up. The ${money(fee)} is gone. Give it 4 days.</p><div class="btns"><button class="btn go" id="ok">Continue</button></div>`);el('ok').onclick=close};
+   say(`You met ${nm}. ${He} is in your phone now.`);modal(`${face(bi,72)}<h2 style="color:var(--money)">${esc(nm)} is in your phone</h2><p>${He} looked you over, counted the money and nodded. ${window.l45pl?l45pl(bi,'in'):'"Lock my number in."'} Text first and ${he} tells you when to come through. Get ${fem?'her':'him'} to 60 trust and you can pull up any time. ${fem?'Her':'His'} spot is open to you today and tomorrow.</p><div class="btns"><button class="btn go" id="ok">Bet</button></div>`);el('ok').onclick=close};
+  const lose=()=>{pk(bi).cold=S.day+4;try{addStress(4)}catch(e){}say(`${nm} was not feeling you. Try again in 4 days.`);modal(`<h2 style="color:var(--blood)">Not feeling you</h2><p>${esc(nm)} watched you sweat. ${window.l45pl?l45pl(bi,'no'):''} Then the window rolled back up. The ${money(fee)} is gone. Give it 4 days.</p><div class="btns"><button class="btn go" id="ok">Continue</button></div>`);el('ok').onclick=close};
   if(P.lvl==='Low')return win();pokerGame(odds,ok=>ok?win():lose())}}
 window.l31Intro=intro;
 try{const _pm=paneMove;paneMove=function(){let h=_pm.apply(this,arguments);try{h=spotsHTML()+h}catch(e){console.error('sk31 spots',e)}return h}}catch(e){console.error('sk31 move',e)}
@@ -9222,7 +9222,7 @@ function plugCall(bi,force){if(!force&&window.l43PhoneOff&&l43PhoneOff())return 
  o.tip=disc;o.fake=false;if(o.real)o.q=o.real;try{o.stock=Math.max(l34U(bi,g)*3,Math.round(newStock(bi,g)*1.5))}catch(e){}
  S.pcall=S.day;pk(bi).call=S.day;pk(bi).open=S.day+1;const nm=plugName(bi),fem=plugFem(bi),w=whyPull(bi,true),pct=Math.round((1-disc)*100);
  try{phoneMsg(nm,`"Just got a new load of ${g.name}. ${pct}% off today. Pull up or I come to you."`)}catch(e){}
- modal(`${face(bi,72)}<div class="sec" style="margin:0;color:var(--accent)">Incoming call</div><h2>${esc(nm)} is calling</h2><p>"Just got a new load of ${g.name}. ${pct}% off today, for you. You coming to ${BLOCKS[bi]} or you want me to come to you?"</p><p class="s" style="color:var(--dim)">${fem?'Her':'His'} spot is open on the Move map today and tomorrow. Going there costs what any move costs (a day on foot, nothing with a car). ${fem?'She':'He'} can come to you for 8% more and no day passes. The discount is only good today.${w&&bi!==S.at?' '+w:''}</p><div class="btns" style="flex-direction:column;align-items:stretch"><button class="btn go" id="c31a" ${bi!==S.at&&w?'disabled':''}>${bi===S.at?'I am right here':'Come to me'}</button><button class="btn" id="c31b">I will pull up on you</button><button class="btn" id="c31c">Not today</button></div>`);
+ modal(`${face(bi,72)}<div class="sec" style="margin:0;color:var(--accent)">Incoming call</div><h2>${esc(nm)} is calling</h2><p>${window.l45pl?'"'+l45pl(bi,'load',g.name,pct)+'"':`"Just got a new load of ${g.name}. ${pct}% off today, for you. You coming to ${BLOCKS[bi]} or you want me to come to you?"`}</p><p class="s" style="color:var(--dim)">${fem?'Her':'His'} spot is open on the Move map today and tomorrow. Going there costs what any move costs (a day on foot, nothing with a car). ${fem?'She':'He'} can come to you for 8% more and no day passes. The discount is only good today.${w&&bi!==S.at?' '+w:''}</p><div class="btns" style="flex-direction:column;align-items:stretch"><button class="btn go" id="c31a" ${bi!==S.at&&w?'disabled':''}>${bi===S.at?'I am right here':'Come to me'}</button><button class="btn" id="c31b">I will pull up on you</button><button class="btn" id="c31c">Not today</button></div>`);
  el('c31a').onclick=()=>{el('modal').hidden=true;if(bi===S.at)return meet(bi);pullUp(bi,true)};
  el('c31b').onclick=()=>{say(`${nm}'s spot on ${BLOCKS[bi]} is open on the Move map.`);close()};
  el('c31c').onclick=()=>{close()};return true}
@@ -9830,8 +9830,8 @@ try{const _d=window.l32Drive;if(_d)window.l32Drive=function(){const r=_d.apply(t
 /* ---------- Bail and lawyer choice ---------- */
 window.l43BailOpts=function(len,charge,bail){const X=w4(),bond=Math.max(200,Math.round(bail*.1));
   const out=(how,amt)=>{X.bail={d:S.day+8,len,charge,amt,bond:how==='bond'};S.pr=null;S.inJail=0;if(ARTX('bail'))wNote('bail','Out on bail',how==='bond'?`The bondsman put up your bail for ${money(bond)}. That fee is gone. Miss court and he sends someone after you. Trial in eight days.`:`You put up ${money(bail)} in cash. Show up to court in eight days and you get it all back as clean money.`)};
-  return [{l:`Post cash bail (${money(bail)}, back when you show up)`,c:'',dis:S.cash<bail,f:()=>{const d=Math.min(bail,dirtyCash());S.cash-=bail;try{cleanCash()}catch(e){}if(d>=3000){S.heat=Math.min(100,S.heat+8);say(`Posted ${money(bail)} cash bail. The judge asked where ${money(d)} in street money came from. Heat +8. Trial in 8 days.`)}else say(`Posted ${money(bail)} cash bail. Show up in 8 days and you get it back.`);out('cash',bail)}},
-   {l:`Bail bondsman (${money(bond)} fee, not coming back)`,c:'',dis:S.cash<bond,f:()=>{S.cash-=bond;try{cleanCash()}catch(e){}say(`Paid a bondsman ${money(bond)} to post your bail. Trial in 8 days.`);out('bond',0)}}]};
+  return [{l:`Cash bail (${money(bail)}, comes back)`,c:'',dis:S.cash<bail,f:()=>{const d=Math.min(bail,dirtyCash());S.cash-=bail;try{cleanCash()}catch(e){}if(d>=3000){S.heat=Math.min(100,S.heat+8);say(`Posted ${money(bail)} cash bail. The judge asked where ${money(d)} in street money came from. Heat +8. Trial in 8 days.`)}else say(`Posted ${money(bail)} cash bail. Show up in 8 days and you get it back.`);out('cash',bail)}},
+   {l:`Bondsman (${money(bond)}, gone)`,c:'',dis:S.cash<bond,f:()=>{S.cash-=bond;try{cleanCash()}catch(e){}say(`Paid a bondsman ${money(bond)} to post your bail. Trial in 8 days.`);out('bond',0)}}]};
 window.l43Show=function(opts){const b=window._l43b;if(!b)return opts;return opts.map(o=>({...o,f:()=>{try{window._l43b=null;if(b.amt){cleanCash();S.cash+=b.amt;S.clean=(S.clean||0)+b.amt;say(`You showed up, so the court gave back your ${money(b.amt)} bail as clean money.`)}}catch(e){}return o.f()}}))};
 window.l43Skip=function(){const b=window._l43b;if(b&&b.bond){S.heat=Math.min(100,S.heat+10);addStress(8);say('The bondsman put a bounty hunter on you. Heat +10.')}else if(b&&b.amt)say(`You skipped court, so your ${money(b.amt)} bail is gone.`);window._l43b=null};
 window.l43Fee=function(fee){const d=Math.min(fee,dirtyCash());if(d>=5000){S.heat=Math.min(100,S.heat+5);say(`Your lawyer took ${money(d)} in cash and had to file a report on it. Heat +5.`)}};
@@ -9894,6 +9894,91 @@ window.l44Ready=function(el,bar){try{if(el.dataset.r44)return;el.dataset.r44=1;e
   document.addEventListener('keydown',kd,true);w.querySelector('#st44').addEventListener('click',e=>{e.stopPropagation();go()});
   setTimeout(()=>{try{w.querySelector('#st44').focus({preventScroll:true})}catch(e){}},80);
  }catch(e){console.error('sk44',e);el.remove()}};
+})();</script>
+
+<style id="skin45">
+.vb45{background:rgba(255,255,255,.05);border-left:3px solid var(--accent,#f5b72a);border-radius:6px;padding:7px 10px;margin:0 0 8px;font-size:14px;line-height:1.35;text-align:left}
+.vb45 b{display:block;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent,#f5b72a);margin-bottom:2px}
+.vb45.j{border-left-color:#8fa3c9}.vb45.j b{color:#8fa3c9}
+.vb45.p{border-left-color:var(--blood,#e0475a)}.vb45.p b{color:var(--blood,#e0475a)}
+.vi45{display:block;color:var(--dim,#9d94b8);font-size:12.5px;margin-top:4px}
+.mt31w .vb45{margin:8px 10px 0}
+#mcard .btns .btn{white-space:normal;line-height:1.2}
+</style>
+<script id="skin45js">
+(function(){if(window._sk45)return;window._sk45=1;
+const pk=a=>a[Math.floor(Math.random()*a.length)];
+/* ---------- clean language ---------- */
+const CL=[[/\bmotherfuck(er|ers|in|ing)\b/gi,'mother-trucker'],[/\bfucking\b/gi,'freaking'],[/\bfuckin\b/gi,'freakin'],[/\bfucked\b/gi,'messed'],[/\bthe fuck\b/gi,'the heck'],[/\bfuck\b/gi,'forget'],[/\bbullshit\b/gi,'nonsense'],[/\bshit\b/gi,'stuff'],[/\bbitch(es)?\b/gi,'punk$1'],[/\bdamn\b/gi,'dang'],[/\bass\b/gi,'butt']];
+window.l45Clean=()=>{try{return localStorage.getItem('tl-clean')==='1'}catch(e){return false}};
+const cl=t=>{if(typeof t!=='string'||!l45Clean())return t;CL.forEach(([r,w])=>{t=t.replace(r,w)});return t};window.l45cl=cl;
+/* ---------- who is talking ---------- */
+function who(f){try{if(S.known)for(const bi of S.known){if(plugName(bi)===f){const P=PINFO[bi]||{};return{k:'plug',bi,lvl:P.lvl||'Low',tr:(S.trust&&S.trust[bi])||0}}}
+  const m=(typeof crewList==='function'?crewList():[]).find(x=>x.name===f);if(m)return{k:'crew',m,loy:m.loy||50};
+  if(S.par&&S.par.name===f)return{k:'par'};if(f==='School')return{k:'school'}}catch(e){}return{k:'x'}}
+const T=w=>w.tr>=60?'hi':w.tr<30?'lo':'mid';
+/* plug lines by level and trust */
+const PL={
+ hot:{Low:['Nah bro you hot as hell right now. Not today.','You got twelve on you. Don\'t come near me today.'],Mid:['You too hot right now. Not today.','Cool off first. I ain\'t moving with you like this.'],Big:['Not today.','You are hot. Fix that, then call.'],lo:['You bringing heat to my door? Hell no.']},
+ spot:{Low:{hi:'Bet, my boy 💯 I\'m on @B. Pull up.',mid:'Bet. I\'m on @B. Come through.',lo:'Aight. @B. Don\'t take all damn day.'},Mid:{hi:'Bet. @B. I got you.',mid:'Bet. I\'m at the spot on @B.',lo:'@B. Have the money right this time.'},Big:{hi:'@B. Come alone.',mid:'@B. Come alone.',lo:'@B. Be on time or don\'t come.'}},
+ lock:{Low:'Lock my number in. And text before you pull up, don\'t just show up at my shit.',Mid:'Lock my number in. Text first. Every time.',Big:'Lock it in. Text first. Don\'t make me regret this.'},
+ load:{Low:'Yo just got a fresh pack of @G 🔥 @P% off today only. Pull up or I\'ll slide on you.',Mid:'New @G just came in. @P% off for you today. You coming or I\'m coming to you?',Big:'Fresh @G. @P% off, today only. Your call where.'},
+ in:{Low:'"You good. Lock my number in, and don\'t be calling me with dumb shit."',Mid:'"Aight. Lock my number in. Text first, every time, and we straight."',Big:'"Lock it in. You don\'t talk about me, you don\'t bring nobody. Understood?"'},
+ no:{Low:'"Nah bro, you shaky as hell. Come back when you got your shit together."',Mid:'"You sweating like a damn cop. Not today."',Big:'"I don\'t do business with nervous people."'},
+ greet:{Low:{hi:['What\'s good, my boy. What you need?','Ayy, there go my favorite customer. Talk to me.'],mid:['What you need? Make it quick.','Yo. What we doing today?'],lo:['You got all my money this time? Don\'t waste my time.','Hurry up, I got people waiting.']},Mid:{hi:['Good to see you. Same as last time?','You been moving right. What you need?'],mid:['What you need?','Talk to me. What we doing?'],lo:['Let\'s make this quick.','I\'m watching you. Money first.']},Big:{hi:['Sit down. What can I do for you?','You\'ve been good business. Go ahead.'],mid:['Go ahead.','You got two minutes.'],lo:['Talk fast.','Money on the table first.']}}};
+const sub=(t,o)=>t.replace(/@B/g,o.b||'').replace(/@G/g,o.g||'').replace(/@P/g,o.p||'');
+window.l45pl=function(bi,k,g,p){try{const P=PINFO[bi]||{},L=P.lvl||'Low',w={tr:(S.trust&&S.trust[bi])||0},x=PL[k]&&PL[k][L];let t=x&&typeof x==='object'&&!Array.isArray(x)?x[T(w)]:x;if(Array.isArray(t))t=pk(t);return cl(sub(t||'',{b:BLOCKS[bi],g,p}))}catch(e){return ''}};
+window.l45greet=function(M){try{if(!M||M.bi==null)return '';if(!M._g45){const P=PINFO[M.bi]||{},L=P.lvl||'Low',w={tr:(S.trust&&S.trust[M.bi])||0};M._g45=pk(PL.greet[L][T(w)])}return `<div class="vb45"><b>${esc(plugName(M.bi))}</b>${esc(cl(M._g45))}</div>`}catch(e){return ''}};
+/* ---------- phone texts rewritten in each person's voice ---------- */
+const CON={'Too much heat on the streets right now. Do not text me.':'Streets hot as shit right now. Don\'t text me.','The package got grabbed. I am going dark for a while.':'They grabbed the pack. I\'m going dark for a minute.','Everybody is watching the road. Give it time.':'Everybody watching the highway. Give it a few days.','I am cooling off until things stop burning.':'I\'m sitting down til this shit cools off.','Some other crew hit my driver. Nothing moves until I know who.':'Some crew hit my driver. Nothing moves til I find out who.','Twelve is sitting on my lane. I will reach out when it clears.':'Twelve sitting on my lane. I\'ll hit you when it clears.'};
+const R=[
+ [/^Load picked up, boss\. (\$[\d,]+) made it to the stash\.$/,(m)=>pk([`Load picked up. ${m[1]} in the stash, boss.`,`Got it done. ${m[1]} put up. Easy.`,`Pickup smooth as hell. ${m[1]} in the stash.`])],
+ [/^Something went wrong with the load\.\.\.$/,()=>pk(['Load got fucked up. I\'ll explain later, not over the phone.','Bad news on the load. Call me. Not text.'])],
+ [/^Spot was hot, I waited it out\. Nothing today\.$/,()=>pk(['Spot was hot as hell so I sat back. Nothing today.','Twelve all over the spot. I ain\'t touch it today.'])],
+ [/^Drop made\. (\$[\d,]+) back to the stash\.$/,(m)=>pk([`Drop made. ${m[1]} back at the stash.`,`Done. ${m[1]} dropped off, all there.`])],
+ [/^Cops rolled through, I aborted the drop\.$/,()=>pk(['Cops rolled through so I pulled out. Drop is off today.','Damn, twelve pulled up right when I got there. I bounced. No drop.'])],
+ [/^"?(.+?)"?$/,(m)=>CON[m[1]]||null],
+ [/^"Your (.+?) just dropped\. (.+?) is in your stash\."$/,(m)=>pk([`Your ${m[1]} landed. ${m[2]} in the stash.`,`${m[1]} touched down. ${m[2]} sitting in your stash. We good.`])],
+ [/^"Your package is waiting but you got no room for it\. Clear your stash\."$/,()=>'Your pack is here but your stash full. Make some damn room.'],
+ [/^"Your (.+?) got caught\. You lost (.+?) and (\$[\d,]+)\."$/,(m)=>`They grabbed your ${m[1]}. ${m[2]} gone, ${m[3]} with it. Shit happens. Lay low.`],
+ [/^The school called\. They said you skipped\. (Grades [^\s]+)$/,(m,W)=>({t:'The school called. You skipped AGAIN? Your ass better be in class tomorrow.',tag:`📉 ${m[1]}`})],
+ [/^You missed too much school\. You are out\.$/,()=>'Attendance office: you have missed too many days and have been withdrawn from school.'],
+ [/^"You too hot right now\. Not today\."$/,(m,W)=>W.k==='plug'?(T(W)==='lo'?pk(PL.hot.lo):pk(PL.hot[W.lvl])):null],
+ [/^"Bet\. I am at the spot on (.+?)\. Come through\."$/,(m,W)=>W.k==='plug'?sub(PL.spot[W.lvl][T(W)],{b:m[1]}):null],
+ [/^"Lock my number in\. Text me before you pull up\."$/,(m,W)=>W.k==='plug'?PL.lock[W.lvl]:null],
+ [/^"Just got a new load of (.+?)\. (\d+)% off today\. Pull up or I come to you\."$/,(m,W)=>W.k==='plug'?sub(PL.load[W.lvl],{g:m[1],p:m[2]}):null],
+ [/^Watched the (.+?)\. Strength (\d+), beef (\d+)\/100\. (.*)$/,(m)=>({t:`Scoped out the ${m[1]}. `+({'They are stronger than you right now.':'They deep as hell right now. We ain\'t ready for that.','You could take them.':'Honestly? We could take them.','About even with you.':'It\'s about even. Could go either way.'}[m[4]]||m[4]),tag:`🔎 ${m[1]}: strength ${m[2]}, beef ${m[3]}/100`})],
+ [/^It was a trap\. They fed me bad info and now they know our spots\.$/,()=>'Shit was a trap. They fed me bad info and now they know where we at.'],
+ [/^Nobody to collect from\.$/,()=>'Ain\'t nobody owe us nothing right now.'],
+ [/^It was a setup\. Cops were already there when we pulled up\. Somebody talked\. They got all of us\.(?: I think it was (.+)\.)?$/,(m)=>`It was a fucking setup. Cops was already there when we pulled up. Somebody talked. They got all of us.${m[1]?` I'm telling you, it was ${m[1]}.`:''}`],
+ [/^We did it\. (.+?) went clean\. (.*)$/,(m)=>`We did that shit. ${m[1]} went clean. ${m[2]}`],
+ [/^It went bad\. (.*) We had to drop everything and split\. Some of us got picked up\.$/,(m)=>`Shit went bad. ${m[1]} We dropped everything and ran. Some of us got picked up.`]];
+function voice(f,t){const W=who(f);for(const [re,fn] of R){const m=re.exec(t);if(m){const o=fn(m,W);if(o)return typeof o==='string'?{t:o}:o}}return{t}}
+window.l45voice=voice;
+const _pm=phoneMsg;phoneMsg=function(f,t){let o={t};try{o=voice(f,String(t))}catch(e){console.error('sk45 v',e)}const r=_pm.call(this,f,cl(o.t));if(o.tag)try{say(o.tag)}catch(e){}return r};
+const _say=say;say=function(t){return _say.call(this,cl(t),...[].slice.call(arguments,1))};
+const _md=modal;modal=function(h){return _md.call(this,cl(h),...[].slice.call(arguments,1))};
+/* ---------- court: people talk, the facts sit under it ---------- */
+const VB=(who,cls,t)=>`<div class="vb45 ${cls}"><b>${who}</b>${cl(t)}</div>`;
+const JUDGE='Judge Harlan',SOL='Solicitor Price';
+function priors(){try{return (S.rec&&S.rec.n)||0}catch(e){return 0}}
+function courtLines(title,text){const C=crtCourt(),ch=((/Court:[^.]*\.[^.]*\.\s*([^.]+)\./.exec(text)||[])[1]||'').trim(),n=priors(),law=(w4()||{}).law;let h='';
+ if(title==='Court date'){
+  if(C.k==='juv')h+=VB(JUDGE,'j',pk(['I see kids like you in here every week. Most of them come back. Let\'s see if you\'re different.','You are not grown, so this is your one chance to act like it. Your family is going to hear about this.']));
+  else if(C.k==='fed')h+=VB(SOL,'p','Your honor, we have bank records, phone taps and a cooperating witness. This is not some corner case.')+VB(JUDGE,'j','Noted. The defendant should understand what he\'s facing.');
+  else if(C.k==='gs')h+=VB(JUDGE,'j',pk(['Next case. Let\'s move this along, I have forty more of you today.','Another one. Let\'s get this done.']))+VB(SOL,'p','The state is ready to offer a plea, your honor.');
+  else h+=VB(SOL,'p','The state is ready, your honor. We have the evidence and we have the witnesses.')+VB(JUDGE,'j','Then let\'s hear it.');
+  if(n>0)h+=VB(JUDGE,'j',n>=3?'I know your name by heart at this point. That is not a good thing.':'I\'ve seen your name before. That\'s not going to help you.');
+  if((w4()||{}).snitch)h+=VB(SOL,'p','Of course, if the defendant has something to tell us, the state would listen.')}
+ else if(title==='Trial day'){h+=VB('Bailiff','j','All rise.')+VB(JUDGE,'j',window._l43b&&window._l43b.amt?'You showed up. Most of y\'all don\'t. Is the defense ready?':'Is the defense ready?')}
+ else if(title==='Your strategy'){h+=VB('Your lawyer','',law==='pd'?'Look, I got two hundred cases. Give me something to work with or take the deal.':law==='top'?'Relax. They have holes in this case and I already found three. Tell me how you want to play it.':'The jury already made up half their mind when you walked in. Give me something to work with.')}
+ return h}
+const _wc=wCard;wCard=function(art,title,text,opts,tag){try{if(tag==='Court'&&['Court date','Trial day','Your strategy'].includes(title)){const h=courtLines(title,text||'');if(h)text=h+`<span class="vi45">${text}</span>`}}catch(e){console.error('sk45 court',e)}return _wc.call(this,art,title,cl(text),opts,tag)};
+/* remember which lawyer you picked so they talk like it */
+try{const _wcs=w4Counsel;w4Counsel=function(){const o=_wcs.apply(this,arguments);try{return o.map(x=>({...x,f:()=>{try{const X=w4();X.law=/Public defender/.test(x.l)?'pd':/Top attorney/.test(x.l)?'top':/Private lawyer/.test(x.l)?'mid':X.law}catch(e){}return x.f()}}))}catch(e){return o}}}catch(e){}
+/* ---------- clean language switch on the main menu ---------- */
+try{const _mm=mainMenu;mainMenu=function(c){const r=_mm.apply(this,arguments);try{const m=document.getElementById('mmus');if(m&&!document.getElementById('mcln')){m.insertAdjacentHTML('afterend',`<button class="btn" id="mcln">Language: ${l45Clean()?'Clean':'Raw'}</button>`);document.getElementById('mcln').onclick=()=>{try{localStorage.setItem('tl-clean',l45Clean()?'0':'1')}catch(e){}mainMenu(c)}}}catch(e){}return r}}catch(e){}
+try{TUT.push(['Talking','People talk like themselves now. Low plugs are loose, Big plugs say little, and the more a plug trusts you the warmer they get. In court the judge, the solicitor and your lawyer speak, and the facts sit under it in small text. There is cursing. Turn on Language: Clean on the main menu to swap it out.'])}catch(e){}
 })();</script>
 
 <script>if('serviceWorker' in navigator){addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}</script></body></html>

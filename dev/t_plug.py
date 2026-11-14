@@ -53,7 +53,7 @@ with sync_playwright() as p:
     r2=J("(g)=>({inv:S.inv[g],cash:S.cash,clean:cleanCash(),used:used()})",gid)
     ck('bulk buy: one unit lands, stash space follows, cash stays dirty-first',abs((r2['inv']-inv0)-r['min'])<1e-6 and r2['cash']<c0 and r2['clean']==5000 and r2['used']>u0,json.dumps(r2))
     J("()=>{S.cash=40;render();const b=document.querySelector('#mt31 [data-a=\"buy\"]:not([disabled])');b&&b.click()}");pg.wait_for_timeout(300)
-    ck('cannot afford a bulk unit: clear message',J("()=>/only sells|Can't afford/.test(S.log[0].t)&&document.getElementById('modal').hidden"),J("()=>S.log[0].t"))
+    ck('cannot afford a bulk unit: clear message',J("()=>/only sells|Can't afford/.test(S.log[0].t)&&document.getElementById('modal').hidden"),J("()=>S.log[0].t+' MODAL:'+(document.getElementById('modal').hidden?'':document.querySelector('#mcard').textContent.slice(0,160))"))
     # next day ends a meet; bust ends a meet
     J("()=>{S.cash=20000;nextDay();render()}");ck('next day ends the meet',J("()=>!S.meet&&!document.getElementById('mt31')"));J("()=>{document.getElementById('modal').hidden=true}")
     # street sells only to the Js
