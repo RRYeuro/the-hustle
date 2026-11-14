@@ -1,0 +1,41 @@
+<style id="skin48">
+.rl48{background:linear-gradient(160deg,#241e33,#1a1625);border:1px solid #3a3350;border-radius:14px;padding:10px 12px;margin:6px 0}
+.rl48 h3{margin:0 0 6px;font:700 15px var(--label,inherit);display:flex;justify-content:space-between;align-items:center}
+.rl48 h3 small{font:400 12px inherit;color:var(--dim,#9d94b8)}
+.rl48 .bar{height:6px;border-radius:4px;background:rgba(255,255,255,.08);overflow:hidden;margin:2px 0 8px}.rl48 .bar i{display:block;height:100%;background:var(--accent,#f5b72a)}
+.rk48{display:flex;gap:10px;padding:7px 0;border-top:1px solid rgba(255,255,255,.06);align-items:flex-start}
+.rk48 .ic{width:26px;text-align:center;font-size:16px;flex:none}
+.rk48 b{font-size:14px}.rk48 .lv{font-size:11px;color:var(--dim,#9d94b8);margin-left:6px}
+.rk48 ul{margin:3px 0 0;padding-left:16px;font-size:12.5px;line-height:1.4;color:#cfc8e6}
+.rk48.lock{opacity:.55}.rk48.cur{background:rgba(245,183,42,.06);border-radius:8px;padding-left:4px}
+.nw48{font:700 10px inherit;background:#2fbf71;color:#04170c;border-radius:4px;padding:1px 5px;margin-left:6px;vertical-align:1px}
+</style>
+<script id="skin48js">
+(function(){if(window._sk48)return;window._sk48=1;
+const el=id=>document.getElementById(id);
+const UNL=[
+ ['Sell on your block to the Js','Low plugs (small amounts)','Side gigs and school'],
+ ['+25 stash space','Mid plugs will meet you (ounces, 50 pills)','Your runners start getting small orders'],
+ ['Big plugs will meet you (QPs, 500 pills, pints)','Runner orders get bigger (half a unit)','Big plugs serve you no matter your rep'],
+ ['Your workers sell 25% more','Runner orders: a full unit'],
+ ['Every plug you know trusts you more','Strangers know you after 1 deal','Runner orders: up to 2 units'],
+ ['Crews think twice: ambushes half as often','Runner orders: up to 3 units','Top of the street']];
+const rk=()=>{try{return Math.max(0,RANKS.indexOf(rank()))}catch(e){return S.rk||0}};
+window.l48rk=rk;
+window.l48new=function(i){try{const L=UNL[i]||[];return L.length?`<div style="text-align:left;margin:6px 0 2px"><div class="sec" style="margin:0 0 4px">Unlocked</div>${L.map(x=>`<div>🆕 ${x}</div>`).join('')}${UNL[i+1]?`<div class="s" style="color:var(--dim);margin-top:6px">Next: ${rname(i+1)} at level ${RANKS[i+1][0]}</div>`:''}</div>`:''}catch(e){return ''}};
+function ladder(){const r=rk(),nx=RANKS[r+1],lv=S.lvl||1,pct=nx?Math.max(0,Math.min(100,Math.round((lv-RANKS[r][0])/(nx[0]-RANKS[r][0])*100))):100,fresh=(S.rk48d!=null&&S.day-S.rk48d<=2)?S.rk48i:-1;
+ return `<div class="rl48"><h3>🏆 ${rname(r)}<small>${nx?`Next: ${rname(r+1)} at level ${nx[0]}`:'Max rank'}</small></h3><div class="bar"><i style="width:${pct}%"></i></div>`+
+  RANKS.map((x,i)=>`<div class="rk48 ${i<r?'done':i===r?'cur':'lock'}"><div class="ic">${i<=r?'✅':'🔒'}</div><div><b>${rname(i)}</b><span class="lv">Level ${x[0]}</span>${i===fresh?'<span class="nw48">NEW</span>':''}<ul>${(UNL[i]||[]).map(u=>`<li>${u}</li>`).join('')}</ul></div></div>`).join('')+`</div>`}
+window.l48ladder=ladder;
+try{const _pc=paneCrew;paneCrew=function(){let h=_pc.apply(this,arguments);try{const L=ladder(),i=h.indexOf('<div class="mest">');if(i>-1){const j=h.indexOf('</div></div>',h.indexOf('Plugs know you',i));if(j>-1){const k=j+12;h=h.slice(0,k)+L+h.slice(k)}else h=L+h}else h=L+h}catch(e){console.error('sk48 me',e)}return h}}catch(e){}
+/* mark the rank-up so the ladder shows NEW for 2 days */
+try{const _ax=addXP;addXP=function(){const b=S.rk||0;const r=_ax.apply(this,arguments);try{const a=S.rk||0;if(a>b){S.rk48d=S.day;S.rk48i=a}}catch(e){}return r}}catch(e){}
+/* runner orders follow your rank: none at Corner Boy, small at first */
+try{const _od=w5bOrderDay;w5bOrderDay=function(){const B=b5(),had=new Set((B.ord||[]).map(o=>o));const r=_od.apply(this,arguments);try{const R=rk();B.ord=(B.ord||[]).filter(o=>{if(had.has(o)||o.r48)return true;if(R<1)return false;const g=G(o.g),u=w5bUnit(g),mul=R===1?.25:R===2?.5:R===3?1:R===4?[1,2][Math.floor(Math.random()*2)]:[1,2,3][Math.floor(Math.random()*3)];o.n=Math.max(1,Math.round(u*mul));o.r48=1;return true})}catch(e){console.error('sk48 ord',e)}return r}}catch(e){}
+/* starting fresh: nobody begins with a Big plug, whatever their age */
+try{const _ts=teenStart;teenStart=function(ch,age){const r=_ts.apply(this,arguments);try{if(Array.isArray(S.known)&&rk()<2){S.known=S.known.map(bi=>{if(!PINFO[bi]||PINFO[bi].lvl!=='Big')return bi;const alt=PINFO.map((p,i)=>i).find(i=>PINFO[i].lvl==='Mid'&&!S.known.includes(i));if(alt==null)return bi;S.trust[alt]=Math.max(S.trust[alt]||0,S.trust[bi]||0);return alt});S.known=[...new Set(S.known)]}}catch(e){console.error('sk48 start',e)}return r}}catch(e){}
+/* tutorial + dev */
+try{TUT.push(['Rank ladder','Your rank comes from your level: Corner Boy, Petty Dealer (3), Middle Man (6), Supplier (10), The Connect (15), Kingpin (20). Each rank unlocks more: Mid plugs at Petty Dealer, Big plugs at Middle Man, and bigger runner orders as you climb. See it all on the Me tab.'])}catch(e){}
+try{const _dp=devPanel;devPanel=function(){const r=_dp.apply(this,arguments);try{const mc=el('mcard');if(mc&&!el('modal').hidden&&!mc.querySelector('[data-d48]')){const d=document.createElement('div');d.innerHTML=`<div class="sec">Rank ladder (new)</div><div class="btns">${RANKS.map((x,i)=>`<button class="btn" data-d48="${i}">${rname(i)}</button>`).join('')}</div>`;const h2=mc.querySelector('h2');if(h2&&h2.parentNode)h2.parentNode.insertBefore(d,h2.nextSibling);else mc.appendChild(d);
+ d.querySelectorAll('[data-d48]').forEach(b=>b.onclick=ev=>{ev.stopPropagation();const i=+b.dataset.d48;el('modal').hidden=true;S.lvl=Math.max(1,RANKS[i][0]);S.xp=0;S.rk=Math.min(S.rk||0,i);addXP(1);say('Dev: rank set to '+rname(i));render()})}}catch(e){console.error('sk48 dev',e)}return r}}catch(e){}
+})();</script>

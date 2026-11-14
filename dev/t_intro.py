@@ -6,7 +6,7 @@ def ck(n,c,x=''):
 with sync_playwright() as p:
     b=p.chromium.launch();pg=b.new_page(viewport={'width':420,'height':860});pg.on('pageerror',lambda e:errs.append(str(e)[:300]))
     pg.goto('file:///home/claude/the-hustle/index.html',wait_until='load');pg.wait_for_timeout(1800);J=pg.evaluate
-    J("()=>{startLife('lucky');document.getElementById('modal').hidden=true;window.noL31=1;window.noL27=1;S.age=19;S.cal=0;S.school='out';S.cash=5000;S.clean=1000;S.heat=10;S.rep=0;S.at=0;S.known=[0];S.trust[0]=30;S.friends=[];S.crewM=[];S.soldiers=0;S.en=100;tab='move';render()}")
+    J("()=>{startLife('lucky');document.getElementById('modal').hidden=true;window.noL31=1;window.noL27=1;S.age=19;S.cal=0;S.school='out';S.cash=5000;S.clean=1000;S.heat=10;S.rep=0;S.at=0;S.known=[0];S.trust[0]=30;S.lvl=20;S.rk=5;S.friends=[];S.crewM=[];S.soldiers=0;S.en=100;tab='move';render()}")
     r=J("()=>[...document.querySelectorAll('[data-a31=\"in\"]')].map(b=>b.dataset.i+':'+(b.disabled?'off':'on')+':'+PINFO[b.dataset.i].lvl)")
     ck('strangers listed, locked with nobody to vouch',len(r)==5 and all(':off:' in x for x in r),str(r))
     J("()=>{S.trust[0]=65;render()}")

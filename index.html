@@ -3209,7 +3209,7 @@ function missionUI(){
   if(lockPopUI())return;
   if(favorUI())return;if(polishTipsRun())return;
   if(S.rankPop!==undefined&&S.rankPop!==null&&$('modal').hidden&&!S.over){const r=RANKS[S.rankPop];S.rankPop=null;
-    modal(`<div class="sec" style="margin:0;color:var(--accent)">Rank up · Level ${S.lvl}</div><h2>You're a ${rname(S.rankPop)} now</h2><p>${r[2]}</p><div class="btns"><button class="btn go" id="ok">Let's get it</button></div>`);$('ok').onclick=close;return}
+    modal(`<div class="sec" style="margin:0;color:var(--accent)">Rank up · Level ${S.lvl}</div><h2>You're a ${rname(RANKS.indexOf(r))} now</h2><p>${r[2]}</p>${window.l48new?l48new(RANKS.indexOf(r)):''}<div class="btns"><button class="btn go" id="ok">Let's get it</button></div>`);$('ok').onclick=close;return}
   if(S.mode==='life'){$('mission').innerHTML=`<div class="info"><div class="sec" style="margin:0;color:var(--accent)">Life mode · Age ${S.age} · ${lifeStage()}${S.cal?' · '+calLabel():''}</div><div class="t">${lifeHint()}</div></div>`;return}
   if(S.mode==='sandbox'){const nx=RANKS.find(x=>x[0]>S.lvl);$('mission').innerHTML=`<div class="info"><div class="sec" style="margin:0;color:var(--accent)">Sandbox · ${rname()}</div><div class="t">No story, no day limit. Just get money.</div><div class="s">${nx?`Next rank: ${rname(RANKS.indexOf(nx))} at level ${nx[0]}`:'Top rank reached.'}</div></div>`;return}
   const list=mlist(),m=list[S.ms];
@@ -9172,7 +9172,7 @@ const strangers=()=>BLOCKS.map((b,i)=>i).filter(bi=>!gone(bi)&&!(S.burned&&S.bur
 function voucher(bi){const fam=known().find(i=>i!==bi&&tie(i)&&tr(i)>=30);if(fam!=null)return{n:plugName(fam)+' ('+tie(fam).toLowerCase()+')',t:Math.max(80,tr(fam)),plug:1};const ps=known().filter(i=>i!==bi&&tr(i)>=60).sort((a,b)=>tr(b)-tr(a));if(ps.length)return{n:plugName(ps[0]),t:tr(ps[0]),plug:1};
  const f=(S.friends||[])[0];if(f)return{n:f.name,t:50};try{const m=crewList()[0];if(m)return{n:m.name,t:50}}catch(e){}
  const need=Math.round((LVL[PINFO[bi].lvl].rep||0)*.6);if((S.rep||0)>=Math.max(5,need))return{n:'Your name',t:40,rep:1};return null}
-function introWhy(bi){if((S.introD||-9)===S.day)return 'One link-up a day.';if((pk(bi).cold||0)>S.day)return `Not feeling you. Try again in ${pk(bi).cold-S.day} day${pk(bi).cold-S.day===1?'':'s'}.`;if(!voucher(bi))return 'Nobody to vouch for you yet. Make a friend, earn a plug\'s trust (60), or build more rep.';if(S.cash<LV[PINFO[bi].lvl][0])return 'Need '+money(LV[PINFO[bi].lvl][0])+'.';return ''}
+function introWhy(bi){try{const L=PINFO[bi].lvl,R=window.l48rk?l48rk():9;if(L==='Big'&&R<2)return `Big plugs don't deal with nobodies. Reach ${rname(2)} (level ${RANKS[2][0]}) first.`;if(L==='Mid'&&R<1)return `Mid plugs want to see you move first. Reach ${rname(1)} (level ${RANKS[1][0]}).`}catch(e){}if((S.introD||-9)===S.day)return 'One link-up a day.';if((pk(bi).cold||0)>S.day)return `Not feeling you. Try again in ${pk(bi).cold-S.day} day${pk(bi).cold-S.day===1?'':'s'}.`;if(!voucher(bi))return 'Nobody to vouch for you yet. Make a friend, earn a plug\'s trust (60), or build more rep.';if(S.cash<LV[PINFO[bi].lvl][0])return 'Need '+money(LV[PINFO[bi].lvl][0])+'.';return ''}
 function goLabel(bi){if(bi===S.at)return 'Meet';if(S.car&&yo()>=16)return 'Drive there';try{if(S.cal&&S.age&&S.age<18&&S.freeMv!==S.day)return 'Go (free move)'}catch(e){}return 'Go · 1 day'}
 function spotsHTML(){if(locked()||away())return '';const L=known().filter(bi=>tie(bi)||tr(bi)>=FLOOR).sort((a,b)=>tr(b)-tr(a)),U=strangers();if(!L.length&&!U.length)return '';
  const fdOn=S.fd&&!S.fd.off&&!S.fd.x&&!S.fd.doneD;if(innerWidth<900&&!S.uiPs&&!fdOn){const op=L.filter(canGo).length;return `<div class="row" style="padding:6px 12px"><div class="info"><div class="t" style="font-size:14px">🔌 Plug spots · ${op} open today · ${L.length} in your phone</div></div><button class="btn go" data-a31="ps">Show</button></div>`}
@@ -10029,7 +10029,7 @@ function tone(k){const M=S.meet;if(!M||M.tone46)return;const bi=M.bi,L=lvl(bi),t
  if(k==='f'){if((S.rep||0)>=35){addTr(bi,3);r=pk(['Okay, I see you moving 👀','You eating out here, huh? Respect.'])}else{addTr(bi,-2);r=pk(['Flexing on me? With what?','Chill. You ain\'t that guy yet.'])}}
  if(k==='b'){if(Math.random()<Math.min(.7,.15+talk()*.06+bonus)){S.hg46={bi,d:S.day,p:.1};r='Another plug cheaper? ...Fine. 10% off today. Don\'t make it a habit.'}else{addTr(bi,-6);r=L==='Big'?'Then go buy from them.':'Then go buy from them then. Don\'t play with me.'}}
  M.r46=r;try{sfx('tap')}catch(e){}render()}
-try{const _pp=plugPrice;plugPrice=function(kind,g,raw){let p=_pp.apply(this,arguments);try{const H=S.hg46;if(H&&H.d===S.day&&kind==='buy'&&!raw&&S.meet&&S.meet.bi===H.bi)p=Math.round(p*(1-H.p))}catch(e){}return p}}catch(e){}
+try{const _pp=plugPrice;plugPrice=function(kind,g,raw){let p=_pp.apply(this,arguments);try{const H=S.hg46;if(H&&H.d===S.day&&kind==='buy'&&!raw&&S.meet&&S.meet.bi===H.bi){const q=Math.round(p*(1-H.p));p=p>=2?Math.min(p-1,q):q}}catch(e){}return p}}catch(e){}
 /* ---------- texting: voiced replies, haggling, typing dots ---------- */
 try{const K=window._KB;if(K){const set=(a,b)=>{a.splice(0,a.length,...b)};
  set(K.FL.plug,['You got work today?','Can you do better on the price?','I\'m good for now']);
@@ -10099,6 +10099,48 @@ try{const _wc=wCard;wCard=function(art,title,text,opts){const r=_wc.apply(this,a
 /* random street events wait for big moments to finish */
 window.l47Busy=function(){try{if(S.meet||S.pr||S.inJail)return 'meet/jail';const X=typeof w4==='function'?w4():null;if(X&&X.bail&&X.bail.d<=S.day)return 'trial';if(S.crt&&S.crt.due<=S.day)return 'court costs';if(S.picQ&&S.picQ.length)return 'queued';if(S.hc&&S.hc.d!=null&&S.hc.d<=S.day)return 'heist';if(document.getElementById('mt31'))return 'meet'}catch(e){}return ''};
 try{const _se=streetEvent;streetEvent=function(){if(window.l47Busy&&l47Busy())return;return _se.apply(this,arguments)}}catch(e){console.error('sk47 se',e)}
+})();</script>
+
+<style id="skin48">
+.rl48{background:linear-gradient(160deg,#241e33,#1a1625);border:1px solid #3a3350;border-radius:14px;padding:10px 12px;margin:6px 0}
+.rl48 h3{margin:0 0 6px;font:700 15px var(--label,inherit);display:flex;justify-content:space-between;align-items:center}
+.rl48 h3 small{font:400 12px inherit;color:var(--dim,#9d94b8)}
+.rl48 .bar{height:6px;border-radius:4px;background:rgba(255,255,255,.08);overflow:hidden;margin:2px 0 8px}.rl48 .bar i{display:block;height:100%;background:var(--accent,#f5b72a)}
+.rk48{display:flex;gap:10px;padding:7px 0;border-top:1px solid rgba(255,255,255,.06);align-items:flex-start}
+.rk48 .ic{width:26px;text-align:center;font-size:16px;flex:none}
+.rk48 b{font-size:14px}.rk48 .lv{font-size:11px;color:var(--dim,#9d94b8);margin-left:6px}
+.rk48 ul{margin:3px 0 0;padding-left:16px;font-size:12.5px;line-height:1.4;color:#cfc8e6}
+.rk48.lock{opacity:.55}.rk48.cur{background:rgba(245,183,42,.06);border-radius:8px;padding-left:4px}
+.nw48{font:700 10px inherit;background:#2fbf71;color:#04170c;border-radius:4px;padding:1px 5px;margin-left:6px;vertical-align:1px}
+</style>
+<script id="skin48js">
+(function(){if(window._sk48)return;window._sk48=1;
+const el=id=>document.getElementById(id);
+const UNL=[
+ ['Sell on your block to the Js','Low plugs (small amounts)','Side gigs and school'],
+ ['+25 stash space','Mid plugs will meet you (ounces, 50 pills)','Your runners start getting small orders'],
+ ['Big plugs will meet you (QPs, 500 pills, pints)','Runner orders get bigger (half a unit)','Big plugs serve you no matter your rep'],
+ ['Your workers sell 25% more','Runner orders: a full unit'],
+ ['Every plug you know trusts you more','Strangers know you after 1 deal','Runner orders: up to 2 units'],
+ ['Crews think twice: ambushes half as often','Runner orders: up to 3 units','Top of the street']];
+const rk=()=>{try{return Math.max(0,RANKS.indexOf(rank()))}catch(e){return S.rk||0}};
+window.l48rk=rk;
+window.l48new=function(i){try{const L=UNL[i]||[];return L.length?`<div style="text-align:left;margin:6px 0 2px"><div class="sec" style="margin:0 0 4px">Unlocked</div>${L.map(x=>`<div>🆕 ${x}</div>`).join('')}${UNL[i+1]?`<div class="s" style="color:var(--dim);margin-top:6px">Next: ${rname(i+1)} at level ${RANKS[i+1][0]}</div>`:''}</div>`:''}catch(e){return ''}};
+function ladder(){const r=rk(),nx=RANKS[r+1],lv=S.lvl||1,pct=nx?Math.max(0,Math.min(100,Math.round((lv-RANKS[r][0])/(nx[0]-RANKS[r][0])*100))):100,fresh=(S.rk48d!=null&&S.day-S.rk48d<=2)?S.rk48i:-1;
+ return `<div class="rl48"><h3>🏆 ${rname(r)}<small>${nx?`Next: ${rname(r+1)} at level ${nx[0]}`:'Max rank'}</small></h3><div class="bar"><i style="width:${pct}%"></i></div>`+
+  RANKS.map((x,i)=>`<div class="rk48 ${i<r?'done':i===r?'cur':'lock'}"><div class="ic">${i<=r?'✅':'🔒'}</div><div><b>${rname(i)}</b><span class="lv">Level ${x[0]}</span>${i===fresh?'<span class="nw48">NEW</span>':''}<ul>${(UNL[i]||[]).map(u=>`<li>${u}</li>`).join('')}</ul></div></div>`).join('')+`</div>`}
+window.l48ladder=ladder;
+try{const _pc=paneCrew;paneCrew=function(){let h=_pc.apply(this,arguments);try{const L=ladder(),i=h.indexOf('<div class="mest">');if(i>-1){const j=h.indexOf('</div></div>',h.indexOf('Plugs know you',i));if(j>-1){const k=j+12;h=h.slice(0,k)+L+h.slice(k)}else h=L+h}else h=L+h}catch(e){console.error('sk48 me',e)}return h}}catch(e){}
+/* mark the rank-up so the ladder shows NEW for 2 days */
+try{const _ax=addXP;addXP=function(){const b=S.rk||0;const r=_ax.apply(this,arguments);try{const a=S.rk||0;if(a>b){S.rk48d=S.day;S.rk48i=a}}catch(e){}return r}}catch(e){}
+/* runner orders follow your rank: none at Corner Boy, small at first */
+try{const _od=w5bOrderDay;w5bOrderDay=function(){const B=b5(),had=new Set((B.ord||[]).map(o=>o));const r=_od.apply(this,arguments);try{const R=rk();B.ord=(B.ord||[]).filter(o=>{if(had.has(o)||o.r48)return true;if(R<1)return false;const g=G(o.g),u=w5bUnit(g),mul=R===1?.25:R===2?.5:R===3?1:R===4?[1,2][Math.floor(Math.random()*2)]:[1,2,3][Math.floor(Math.random()*3)];o.n=Math.max(1,Math.round(u*mul));o.r48=1;return true})}catch(e){console.error('sk48 ord',e)}return r}}catch(e){}
+/* starting fresh: nobody begins with a Big plug, whatever their age */
+try{const _ts=teenStart;teenStart=function(ch,age){const r=_ts.apply(this,arguments);try{if(Array.isArray(S.known)&&rk()<2){S.known=S.known.map(bi=>{if(!PINFO[bi]||PINFO[bi].lvl!=='Big')return bi;const alt=PINFO.map((p,i)=>i).find(i=>PINFO[i].lvl==='Mid'&&!S.known.includes(i));if(alt==null)return bi;S.trust[alt]=Math.max(S.trust[alt]||0,S.trust[bi]||0);return alt});S.known=[...new Set(S.known)]}}catch(e){console.error('sk48 start',e)}return r}}catch(e){}
+/* tutorial + dev */
+try{TUT.push(['Rank ladder','Your rank comes from your level: Corner Boy, Petty Dealer (3), Middle Man (6), Supplier (10), The Connect (15), Kingpin (20). Each rank unlocks more: Mid plugs at Petty Dealer, Big plugs at Middle Man, and bigger runner orders as you climb. See it all on the Me tab.'])}catch(e){}
+try{const _dp=devPanel;devPanel=function(){const r=_dp.apply(this,arguments);try{const mc=el('mcard');if(mc&&!el('modal').hidden&&!mc.querySelector('[data-d48]')){const d=document.createElement('div');d.innerHTML=`<div class="sec">Rank ladder (new)</div><div class="btns">${RANKS.map((x,i)=>`<button class="btn" data-d48="${i}">${rname(i)}</button>`).join('')}</div>`;const h2=mc.querySelector('h2');if(h2&&h2.parentNode)h2.parentNode.insertBefore(d,h2.nextSibling);else mc.appendChild(d);
+ d.querySelectorAll('[data-d48]').forEach(b=>b.onclick=ev=>{ev.stopPropagation();const i=+b.dataset.d48;el('modal').hidden=true;S.lvl=Math.max(1,RANKS[i][0]);S.xp=0;S.rk=Math.min(S.rk||0,i);addXP(1);say('Dev: rank set to '+rname(i));render()})}}catch(e){console.error('sk48 dev',e)}return r}}catch(e){}
 })();</script>
 
 <script>if('serviceWorker' in navigator){addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}</script></body></html>

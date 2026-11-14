@@ -46,7 +46,7 @@ function tone(k){const M=S.meet;if(!M||M.tone46)return;const bi=M.bi,L=lvl(bi),t
  if(k==='f'){if((S.rep||0)>=35){addTr(bi,3);r=pk(['Okay, I see you moving 👀','You eating out here, huh? Respect.'])}else{addTr(bi,-2);r=pk(['Flexing on me? With what?','Chill. You ain\'t that guy yet.'])}}
  if(k==='b'){if(Math.random()<Math.min(.7,.15+talk()*.06+bonus)){S.hg46={bi,d:S.day,p:.1};r='Another plug cheaper? ...Fine. 10% off today. Don\'t make it a habit.'}else{addTr(bi,-6);r=L==='Big'?'Then go buy from them.':'Then go buy from them then. Don\'t play with me.'}}
  M.r46=r;try{sfx('tap')}catch(e){}render()}
-try{const _pp=plugPrice;plugPrice=function(kind,g,raw){let p=_pp.apply(this,arguments);try{const H=S.hg46;if(H&&H.d===S.day&&kind==='buy'&&!raw&&S.meet&&S.meet.bi===H.bi)p=Math.round(p*(1-H.p))}catch(e){}return p}}catch(e){}
+try{const _pp=plugPrice;plugPrice=function(kind,g,raw){let p=_pp.apply(this,arguments);try{const H=S.hg46;if(H&&H.d===S.day&&kind==='buy'&&!raw&&S.meet&&S.meet.bi===H.bi){const q=Math.round(p*(1-H.p));p=p>=2?Math.min(p-1,q):q}}catch(e){}return p}}catch(e){}
 /* ---------- texting: voiced replies, haggling, typing dots ---------- */
 try{const K=window._KB;if(K){const set=(a,b)=>{a.splice(0,a.length,...b)};
  set(K.FL.plug,['You got work today?','Can you do better on the price?','I\'m good for now']);

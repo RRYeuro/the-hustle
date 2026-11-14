@@ -10,7 +10,7 @@ with sync_playwright() as p:
     r=J("()=>{const o={};['slick','shade','val','tank'].forEach(ch=>{S=fresh(ch,'story');S.v5=1;teenStart(ch,14);roll();o[ch]=S.known.map(i=>PINFO[i].lvl+':'+S.trust[i])});return o}")
     ck('teens start with no Big plug (swapped for Mid)',all(not any(x.startswith('Big') for x in v) for v in r.values()) and any(x.startswith('Mid:50') for x in r['slick']),json.dumps(r))
     r=J("()=>{S=fresh('slick','story');S.v5=1;const k=S.known.slice();teenStart('slick',19);return [k.join(),S.known.join()]}")
-    ck('adult start keeps the plugs it had',r[0]==r[1],str(r))
+    ck('adult start: Big plug swapped for Mid (rank ladder)',J("()=>!S.known.some(i=>PINFO[i].lvl==='Big')"),str(r))
     # guide flow
     J("()=>{S=fresh('val','story');S.v5=1;S.safe=0;dcReseed();teenStart('val',14);S.cash=400;roll();tab='block';window.noL31=1;window.noL27=1;S._evDay=S.day;document.getElementById('modal').hidden=true;render()}")
     r=J("()=>({g:/Your first day/.test(document.getElementById('pane').textContent),step:document.querySelector('#pane .row[style*=\"accent\"] .t').textContent})")

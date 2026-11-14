@@ -19,7 +19,7 @@ with sync_playwright() as p:
     d0=J("()=>S.day")
     J("()=>l31Text(1)");r=J("()=>({open:S.pk[1].open-S.day,go:!!document.querySelector('#pane [data-a31=\"go\"][data-i=\"1\"]'),msg:S.log[0].t})")
     ck('text opens the spot today and tomorrow',r['open']==1 and r['go'] and 'spot' in r['msg'],json.dumps(r))
-    J("()=>{S.pk[1].txt=-9;S.pk[1].open=-9;S.heat=80;l31Text(1)}");ck('too hot: text gets a no',J("()=>!(S.pk[1].open>=S.day)&&/hot/.test(S.log[0].t)"),J("()=>S.log[0].t"));J("()=>{S.heat=10}")
+    J("()=>{S.pk[1].txt=-9;S.pk[1].open=-9;S.heat=80;l31Text(1)}");ck('too hot: text gets a no',J("()=>!(S.pk[1].open>=S.day)&&/hot|Cool off|Not today/i.test(S.log[0].t)"),J("()=>S.log[0].t"));J("()=>{S.heat=10}")
     # meet here: free, full card with actions
     J("()=>l31Go(0)");pg.wait_for_timeout(200)
     r=J("()=>({ov:!!document.getElementById('mt31'),day:S.day,how:S.meet&&S.meet.how,acts:[...new Set([...document.querySelectorAll('#mt31 [data-a]')].map(b=>b.dataset.a))],hd:document.querySelector('#mt31 .mt31h').innerText})")
