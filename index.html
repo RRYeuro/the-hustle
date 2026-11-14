@@ -10118,7 +10118,7 @@ try{const _se=streetEvent;streetEvent=function(){if(window.l47Busy&&l47Busy())re
 const el=id=>document.getElementById(id);
 const UNL=[
  ['Sell on your block to the Js','Low plugs (small amounts)','Side gigs and school'],
- ['+25 stash space','Mid plugs will meet you (ounces, 50 pills)','Your runners start getting small orders'],
+ ['+25 stash space','Mid plugs will meet you (ounces, 50 pills)','Runners (Dre, Moe, Tasha) start texting you small orders'],
  ['Big plugs will meet you (QPs, 500 pills, pints)','Runner orders get bigger (half a unit)','Big plugs serve you no matter your rep'],
  ['Your workers sell 25% more','Runner orders: a full unit'],
  ['Every plug you know trusts you more','Strangers know you after 1 deal','Runner orders: up to 2 units'],
@@ -10137,6 +10137,9 @@ try{const _ax=addXP;addXP=function(){const b=S.rk||0;const r=_ax.apply(this,argu
 try{const _od=w5bOrderDay;w5bOrderDay=function(){const B=b5(),had=new Set((B.ord||[]).map(o=>o));const r=_od.apply(this,arguments);try{const R=rk();B.ord=(B.ord||[]).filter(o=>{if(had.has(o)||o.r48)return true;if(R<1)return false;const g=G(o.g),u=w5bUnit(g),mul=R===1?.25:R===2?.5:R===3?1:R===4?[1,2][Math.floor(Math.random()*2)]:[1,2,3][Math.floor(Math.random()*3)];o.n=Math.max(1,Math.round(u*mul));o.r48=1;return true})}catch(e){console.error('sk48 ord',e)}return r}}catch(e){}
 /* starting fresh: nobody begins with a Big plug, whatever their age */
 try{const _ts=teenStart;teenStart=function(ch,age){const r=_ts.apply(this,arguments);try{if(Array.isArray(S.known)&&rk()<2){S.known=S.known.map(bi=>{if(!PINFO[bi]||PINFO[bi].lvl!=='Big')return bi;const alt=PINFO.map((p,i)=>i).find(i=>PINFO[i].lvl==='Mid'&&!S.known.includes(i));if(alt==null)return bi;S.trust[alt]=Math.max(S.trust[alt]||0,S.trust[bi]||0);return alt});S.known=[...new Set(S.known)]}}catch(e){console.error('sk48 start',e)}return r}}catch(e){}
+/* runners (Dre, Moe, Tasha) only show up once you reach Petty Dealer */
+try{const _wd=w5bDealers;w5bDealers=function(){const B=b5();if(rk()<1){if(B.ord&&B.ord.length)B.ord=[];return []}const had=!!B.dl;const r=_wd.apply(this,arguments);if(!had&&!S.rn48){S.rn48=1;try{phoneMsg('Dre','Heard you moving now. Me, Moe and Tasha can push some for you. We\'ll text you orders every week.')}catch(e){}}return r};
+ const _wo=w5bOrders;w5bOrders=function(){if(rk()<1)return (typeof adult==='function'&&!adult())?'':`<div class="sec">Dealer orders</div><div class="row"><div class="info"><div class="s">🔒 Nobody pushes for a Corner Boy. Runners start texting you orders at ${rname(1)} (level ${RANKS[1][0]}).</div></div></div>`;return _wo.apply(this,arguments)}}catch(e){console.error('sk48 dl',e)}
 /* tutorial + dev */
 try{TUT.push(['Rank ladder','Your rank comes from your level: Corner Boy, Petty Dealer (3), Middle Man (6), Supplier (10), The Connect (15), Kingpin (20). Each rank unlocks more: Mid plugs at Petty Dealer, Big plugs at Middle Man, and bigger runner orders as you climb. See it all on the Me tab.'])}catch(e){}
 try{const _dp=devPanel;devPanel=function(){const r=_dp.apply(this,arguments);try{const mc=el('mcard');if(mc&&!el('modal').hidden&&!mc.querySelector('[data-d48]')){const d=document.createElement('div');d.innerHTML=`<div class="sec">Rank ladder (new)</div><div class="btns">${RANKS.map((x,i)=>`<button class="btn" data-d48="${i}">${rname(i)}</button>`).join('')}</div>`;const h2=mc.querySelector('h2');if(h2&&h2.parentNode)h2.parentNode.insertBefore(d,h2.nextSibling);else mc.appendChild(d);

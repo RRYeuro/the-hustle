@@ -9,6 +9,10 @@ with sync_playwright() as p:
     pg.goto('http://127.0.0.1:8765/index.html',wait_until='load');pg.wait_for_timeout(1800);J=pg.evaluate
     J("()=>{startLife('lucky');document.getElementById('modal').hidden=true;window.noL31=1;window.noL27=1;S.age=19;S.cal=0;S.school='out';S.cash=5000;S._evDay=S.day;S.picQ=[];render()}")
     ck('fresh start: no Big plug known',J("()=>!S.known.some(i=>PINFO[i].lvl==='Big')"),J("()=>JSON.stringify(S.known.map(i=>PINFO[i].lvl))"))
+    r=J("()=>{S.lvl=1;S.rk=0;S.xp=0;const B=b5();delete B.dl;S.rn48=0;return {dl:w5bDealers().length,h:w5bOrders()}}")
+    ck('Corner Boy: no dealers, locked note',r['dl']==0 and '🔒' in r['h'],json.dumps(r)[:200])
+    r=J("()=>{S.lvl=3;addXP(1);S.inbox=[];const n=w5bDealers().length;return {n,m:(S.inbox[0]||{}).f}}")
+    ck('Petty Dealer: Dre texts and runners appear',r['n']==3 and r['m']=='Dre',json.dumps(r))
     r=J("()=>{const B=b5();B.ord=[];B.oweek=-9;window.weekTick0=window.weekTick;S.lvl=1;S.rk=0;try{weekTick=()=>true}catch(e){};w5bOrderDay();return (B.ord||[]).length}")
     ck('Corner Boy: no runner orders',r==0,str(r))
     r=J("()=>{const B=b5();B.ord=[];B.oweek=-9;S.lvl=3;addXP(1);w5bOrderDay();return B.ord.map(o=>[o.g,o.n,w5bUnit(G(o.g))])}")
