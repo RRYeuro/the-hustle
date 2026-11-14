@@ -85,11 +85,18 @@ with sync_playwright() as p:
     J("()=>{document.getElementById('modal').hidden=true}")
     ck('tutorial entries',J("()=>TUT.filter(t=>/Licks and loot|Sort and Pin/.test(t[0])).length")==2)
     # --- full flows (core mini games stubbed to a win)
-    J("()=>{window._l27force=true;seqGame=d=>d(true);grabGame=(d,o)=>d((o&&o.max)||6,false);sneakGame=d=>d(6,false);hotwireGame=d=>d(true);talkGame=d=>d(0);chase=d=>d(true);cut=()=>{};window.noTips=1}")
-    R="()=>{S._evDay=S.day;S.loot=[];S.bag=1;S.car=null;S.rob=S.rob||{};S.rob.fat=0;S.lcd={};S.cap=900;S.heat=0;S.cash=1000;S.clean=1000;S.hp=100;S.en=100;S.stress=0;S.over=false;document.getElementById('modal').hidden=true;"
+    J("()=>{window._l27force=true;window._m39no=1;seqGame=d=>d(true);grabGame=(d,o)=>d((o&&o.max)||6,false);sneakGame=d=>d(6,false);hotwireGame=d=>d(true);talkGame=d=>d(0);chase=d=>d(true);cut=()=>{};window.noTips=1}")
+    R="()=>{window.m39Vault=null;window._m39force=0;window._m39roof=0;S._evDay=S.day;S.loot=[];S.bag=1;S.car=null;S.rob=S.rob||{};S.rob.fat=0;S.lcd={};S.cap=900;S.heat=0;S.cash=1000;S.clean=1000;S.hp=100;S.en=100;S.stress=0;S.over=false;document.getElementById('modal').hidden=true;"
     txt=lambda:J("()=>document.getElementById('modal').hidden?'(hidden)':document.getElementById('mcard').innerText.slice(0,260)")
     def sort_win():
         pg.keyboard.press('Enter');pg.wait_for_timeout(200);J("()=>__srDbg.solve()");pg.wait_for_timeout(300)
+    def maybe_lock():
+        if J("()=>/Pick the back door lock/.test(document.getElementById('mcard').textContent)"):
+            pg.keyboard.press('Enter');pg.wait_for_timeout(200)
+            for _ in range(12):
+                if not J("()=>!!window.__lpDbg&&!document.getElementById('modal').hidden&&/pins|Pin/.test(document.getElementById('mcard').textContent)"):break
+                J("()=>{__lpDbg.aim();__lpDbg.press()}");pg.wait_for_timeout(450)
+            pg.wait_for_timeout(300)
     def pin(win=True):
         pg.keyboard.press('Enter');pg.wait_for_timeout(200);J("()=>__pcDbg.%s()"%('solve' if win else 'fail'));pg.wait_for_timeout(300)
     # store: kill alarm, register, crack safe
@@ -111,6 +118,7 @@ with sync_playwright() as p:
     # house: alarm panel -> sneak -> grab -> safe
     J(R+"S.at=3;lick('house')}");pg.wait_for_timeout(300)
     if J("()=>!!document.getElementById('sn')"): J("()=>document.getElementById('sn').click()");pg.wait_for_timeout(200)
+    maybe_lock()
     ck('house: alarm panel sort card',J("()=>/alarm panel/i.test(document.getElementById('mcard').innerText)&&!!document.getElementById('gst')"),txt())
     sort_win()
     ck('house: loot list shows',J("()=>!!document.getElementById('gg0')"),txt())
@@ -125,6 +133,7 @@ with sync_playwright() as p:
     # house: alarm panel fail
     J(R+"S.at=3;lick('house')}");pg.wait_for_timeout(300)
     if J("()=>!!document.getElementById('sn')"): J("()=>document.getElementById('sn').click()");pg.wait_for_timeout(200)
+    maybe_lock()
     pg.keyboard.press('Enter');pg.wait_for_timeout(200);pg.keyboard.press('Escape');pg.wait_for_timeout(300)
     ck('house: failed panel = alarm tripped',J("()=>/Alarm tripped/.test(document.querySelector('#mcard h2').textContent)"),txt());J("()=>{document.getElementById('modal').hidden=true}")
     # pharmacy cabinet

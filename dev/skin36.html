@@ -16,7 +16,7 @@ function patrols(){if(!S)return [];S.pat=S.pat||{};if(S.pat.d===S.day&&S.pat.c==
 const onPat=bi=>!away()&&patrols().includes(bi==null?S.at:bi);
 window.l36Pat=patrols;window.l36On=onPat;
 /* what patrols do (scanner or not) */
-try{const _st=srvTick;srvTick=function(n,g){const r=_st.apply(this,arguments);try{if(onPat()){S.heat=Math.min(100,S.heat+2);S.lh=S.lh||{};S.lh[S.at]=Math.min(100,(S.lh[S.at]||0)+2);if(S.patSaid!==S.day){S.patSaid=S.day;say(`🚓 A patrol car rolled through ${BLOCKS[S.at]} while you were serving. Heat +2 a sale here today.`)}}}catch(e){}return r}}catch(e){console.error('sk36 srv',e)}
+try{const _st=srvTick;srvTick=function(n,g){const r=_st.apply(this,arguments);try{if(onPat()){S.heat=Math.min(100,S.heat+2);S.lh=S.lh||{};S.lh[S.at]=Math.min(100,(S.lh[S.at]||0)+2);if(S.patSaid!==S.day){S.patSaid=S.day;say(`🚓 A patrol car rolled through ${BLOCKS[S.at]} while you were serving. Heat +2 a sale here today.${S.scan?'':' A police scanner from the pawn shop shows where patrols are.'}`)}}}catch(e){}return r}}catch(e){console.error('sk36 srv',e)}
 try{const _ld=lickDone;lickDone=function(title,text,good,noLick,img){try{if(good&&!noLick&&onPat()){S.heat=Math.min(100,S.heat+4);text+=' A patrol was on this block, so it got noticed. Heat +4.'}}catch(e){}return _ld.call(this,title,text,good,noLick,img)}}catch(e){console.error('sk36 lick',e)}
 try{const _s=window.l27Search;if(_s){const i=WD.findIndex(f=>f.name==='l27Day');if(i>=0){const _d=WD[i];WD[i]=function l27Day(){const R=Math.random;if(onPat())Math.random=()=>R()*.5;try{return _d.apply(this,arguments)}finally{Math.random=R}}}}}catch(e){console.error('sk36 search',e)}
 /* the scanner gives a heads-up on some raids */
@@ -30,10 +30,11 @@ function events(){const L=[];try{const B=b5();if(B.fc&&B.fc.t==='crack'){const d
  if(!L.length)L.push(['✅','Quiet on the radio. Nothing big coming.']);return L}
 function scanHTML(){if(!S||S.over||S.pr||S.prison||S.inJail)return '';if(away())return S.scan?`<div class="sec">Police scanner</div><div class="row" style="padding:6px 12px"><div class="info"><div class="s">Your scanner only picks up the channels back home.</div></div></div>`:'';
  if(!S.scan)return `<div class="row" style="padding:6px 12px"><div class="info"><div class="s">🚓 Cops patrol a few blocks every day. A police scanner from the pawn shop shows which ones.</div></div></div>`;
- const P=patrols(),lh=S.lh||{};let h=`<div class="sec">Police scanner · today</div>`;
+ const P=patrols(),lh=S.lh||{};if(innerWidth<900&&!S.uiSc)return `<div class="row" style="padding:6px 12px"><div class="info"><div class="t" style="font-size:14px">📻 Scanner: ${P.length?P.map(i=>'🚓 '+esc(BLOCKS[i])).join(', '):'no patrols heard'}</div></div><button class="btn" data-a36t="1">Details</button></div>`;let h=`<div class="sec">Police scanner · today <button class="btn" data-a36t="1" style="padding:2px 8px;font-size:11px;float:right">${innerWidth<900?'Hide':''}</button></div>`;
  h+=BLOCKS.map((b,i)=>{const p=P.includes(i),l=Math.round(lh[i]||0);return `<div class="row" style="padding:5px 12px"><div class="info" style="min-width:0"><div class="t" style="font-size:14px">${p?'🚓 ':''}${esc(b)}${i===S.at?' <span class="chip">You</span>':''}</div><div class="s">${p?'<span style="color:var(--heat)">Patrol on this block. Serving and licks here bring extra heat.</span>':'No patrol heard.'}${l>=15?` · local heat ${l}`:''}</div></div></div>`}).join('');
  h+=events().map(e=>`<div class="row" style="padding:5px 12px"><div class="info"><div class="s">${e[0]} ${e[1]}</div></div></div>`).join('');return h}
 window.l36HTML=scanHTML;
+document.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.target.closest('[data-a36t]');if(!b)return;e.preventDefault();e.stopPropagation();S.uiSc=!S.uiSc;render()},true);
 try{const _pm=paneMove;paneMove=function(){let h=_pm.apply(this,arguments);try{h=scanHTML()+h}catch(e){console.error('sk36 move',e)}return h}}catch(e){}
 /* 🚓 on the block tabs and the map */
 const _r=render;render=function(){const r=_r.apply(this,arguments);try{if(S&&S.scan&&!away()&&typeof tab!=='undefined'&&tab==='move'){const P=patrols();document.querySelectorAll('.tbs26 button[data-t]').forEach(b=>{const i=+b.dataset.t,sm=b.querySelector('small');if(sm&&P.includes(i)&&!/🚓/.test(sm.textContent))sm.textContent='🚓 '+sm.textContent});

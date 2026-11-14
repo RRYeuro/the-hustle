@@ -1,0 +1,33 @@
+<script id="skin40js">
+(function(){if(window._sk40)return;window._sk40=1;
+/* New player help: a first-day guide on the Block tab, teens start with plugs they can afford, and hidden rules say why. */
+const el=id=>document.getElementById(id);
+/* teens (under 18) do not start knowing a Big plug that only sells QPs: swap it for a Mid plug they have not met */
+try{const _ts=teenStart;teenStart=function(ch,age){const r=_ts.apply(this,arguments);try{if((age||14)<18&&Array.isArray(S.known)){S.known=S.known.map(bi=>{if(PINFO[bi].lvl!=='Big')return bi;const alt=PINFO.map((p,i)=>i).find(i=>PINFO[i].lvl==='Mid'&&!S.known.includes(i))??PINFO.map((p,i)=>i).find(i=>PINFO[i].lvl==='Low'&&!S.known.includes(i));if(alt==null)return null;S.trust[alt]=Math.max(S.trust[alt]||0,S.trust[bi]||0);return alt}).filter(x=>x!=null);S.known=[...new Set(S.known)]}}catch(e){console.error('sk39 teen',e)}return r}}catch(e){}
+/* first-day guide */
+const steps=()=>{const F=S.fd;return [
+ ['Text a plug','Move tab → Plug spots → Text: let me pull up.',!!F.t,'move'],
+ ['Meet them and buy','Tap Go or Meet on the open spot, then Buy a few grams.',!!F.b,'move'],
+ ['Serve the Js','Back on the Block tab, tap Sell next to what you bought.',(S.st&&S.st.sold||0)>(F.s0||0),'block'],
+ ['End the day','Tap Next day at the top when you are out of energy or product.',S.day>F.d0,null]]};
+function track(){if(!S||S.over)return;if(!S.fd){S.fd=S.day<=2&&!(S.st&&S.st.sold)?{d0:S.day,s0:0}:{off:1}}const F=S.fd;if(F.off)return;
+ if(!F.t&&Object.values(S.pk||{}).some(p=>p&&(p.txt>=0||p.open>=S.day)))F.t=1;if(S.meet)F.t=1;
+ if(!F.b&&GOODS.some(g=>S.inv[g.id]>0))F.b=1;
+ if(steps().every(s=>s[2])&&!F.doneD)F.doneD=S.day;if(F.doneD&&S.day>F.doneD+2)F.off=1}
+function guide(){track();const F=S.fd;if(!F||F.off||F.x)return '';const L=steps(),nx=L.findIndex(s=>!s[2]);
+ let h=`<div class="sec">Your first day</div>`;
+ if(nx<0)return h+`<div class="row" style="padding:8px 12px"><div class="info"><div class="t">✅ You know the loop</div><div class="s">Buy from a plug, serve the Js, stack it. More to find: licks and heists in Phone > Licks, legal gigs in Phone > Side hustles, a police scanner at the pawn shop, your crew in Phone > Crew.</div></div><button class="btn" data-a39="x">Got it</button></div>`;
+ h+=L.map((s,i)=>`<div class="row" style="padding:6px 12px${i===nx?';border-color:var(--accent)':''}"><div class="info"><div class="t" style="font-size:14px">${s[2]?'✅':i===nx?'👉':'▫️'} ${s[0]}</div>${i===nx?`<div class="s">${s[1]}</div>`:''}</div>${i===nx&&s[3]&&s[3]!==tab?`<button class="btn go" data-a39="go" data-t="${s[3]}">Show me</button>`:''}</div>`).join('');
+ return h+`<div class="row" style="padding:4px 12px"><div class="info"></div><button class="btn" data-a39="x">Hide guide</button></div>`}
+window.l39Guide=guide;
+try{const _pb=paneBlock;paneBlock=function(){let h=_pb.apply(this,arguments);try{if(!S.meet)h=guide()+h}catch(e){console.error('sk39 guide',e)}return h}}catch(e){}
+const _r=render;render=function(){try{track()}catch(e){}return _r.apply(this,arguments)};
+document.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.target.closest('[data-a39]');if(!b)return;e.preventDefault();e.stopPropagation();const k=b.dataset.a39;
+ if(k==='x'){S.fd.x=1;return render()}if(k==='go'){S.uiPs=1;try{tab=b.dataset.t}catch(x){}render();setTimeout(()=>{const s=document.querySelector('#pane [data-a31="tx"],#pane [data-a31="go"]');if(s)s.scrollIntoView({block:'center',behavior:'smooth'})},60)}},true);
+/* hidden rules say why */
+try{const _rb=window.l38Fake;if(_rb){const _say=say;window.__l39say=_say}}catch(e){}
+try{TUT.unshift(['Your first day','New game? The Block tab shows a short guide: text a plug on the Move tab, meet them and buy a few grams, come back to the Block tab and serve the Js, then end the day. Each step ticks off by itself. Hide it any time.'])}catch(e){}
+try{const _dp=devPanel;devPanel=function(){const r=_dp.apply(this,arguments);try{const mc=el('mcard');if(mc&&!el('modal').hidden&&!mc.querySelector('[data-d40]')){const d=document.createElement('div');d.innerHTML=`<div class="sec">New player help (new)</div><div class="btns"><button class="btn" data-d40="fd">Show first-day guide</button><button class="btn" data-d40="off">Turn guide off</button></div>`;const h2=mc.querySelector('h2');if(h2&&h2.parentNode)h2.parentNode.insertBefore(d,h2.nextSibling);else mc.appendChild(d);
+ d.querySelectorAll('[data-d40]').forEach(b=>b.onclick=ev=>{ev.stopPropagation();el('modal').hidden=true;if(b.dataset.d40==='fd'){S.fd={d0:S.day,s0:(S.st&&S.st.sold)||0};GOODS.forEach(g=>S.inv[g.id]=0)}else S.fd={off:1};try{tab='block'}catch(x){}render()})}}catch(e){}return r}}catch(e){}
+})();
+</script>

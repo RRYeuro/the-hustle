@@ -1,4 +1,4 @@
-# Art list (still missing: 13 face collages + 2 event collages)
+# Art list (still missing: 13 face collages + 4 event collages)
 Rules: 4-panel 2x2 collage, equal panels, thin black borders, no text, no brands, no logos, no signs with words. Every face must look like a different person.
 
 ## F1. New faces: Ana, Jess, Toya, Lala
@@ -45,3 +45,9 @@ Same style and background as F1. Panel 1 (Smurf): thin white man about 50, navy 
 
 ## E2. g_keypad (safes, locks and alarm panels)
 2x2 collage, four equal panels with thin black borders, gritty realistic style, dark moody lighting, no text, no brands, no logos, blank keypads with no readable numbers. Panel 1: a small steel safe with a glowing keypad inside a bedroom closet, gloved hand reaching for it. Panel 2: a wall alarm panel by a back door with its cover off and colored wires exposed, gloved hands holding wire cutters. Panel 3: a locked glass pharmacy cabinet with a keypad lock behind a counter, shelves of plain pill bottles. Panel 4: a cracked phone lit up in a car seat at night, a thumb over the lock screen.
+
+## E3. g_hcrew (heist crew: plan, send, payday, setup)
+2x2 collage, four equal panels with thin black borders, gritty realistic style, dark moody lighting, no text, no brands, no logos. Panel 1: four young men around a kitchen table at night studying a hand-drawn map with a pencil, a ski mask and car keys on the table. Panel 2: three of them in a dark sedan parked across from a jewelry store at night, watching, the driver gripping the wheel. Panel 3: a duffel bag of cash dumped on a bed, hands counting stacks, a phone lit up beside it. Panel 4: police cars with lights on already waiting in a parking lot as a crew's car pulls in, the crew's faces shocked through the windshield.
+
+## E4. g_scan (police scanner, patrols, raid tip-off)
+2x2 collage, four equal panels with thin black borders, gritty realistic style, night, no text, no brands, no logos, no readable screens. Panel 1: a small handheld police scanner glowing on a dark nightstand next to a phone, a hand turning the dial. Panel 2: a police cruiser rolling slowly down a quiet neighborhood block at night, a spotlight on the houses. Panel 3: a young man hurrying out the back door of a house at night carrying a black bag, glancing over his shoulder. Panel 4: a line of unmarked cars and officers in vests gathering at a street corner before dawn, a task force about to move.

@@ -3113,7 +3113,7 @@ function livCost(){const items=[];if(!S||S.inJail||S.pr)return{items,tot:0,bi:1,
 function wearDay(){S.fitB=S.fitB||{};const fl=[];
   Object.keys(S.fits||{}).forEach(k=>{if(k==='street'||!S.fits[k]||!FITS[k])return;if(!S.fitB[k]){S.fitB[k]=S.day;return}if(S.day-S.fitB[k]>=FITLIFE){S.fits[k]=0;delete S.fitB[k];if(FITS[k].rep)S.rep=Math.max(0,S.rep-FITS[k].rep);if(S.fit===k)S.fit='street';fl.push(FITS[k].n)}});
   if(fl.length){say(`Your ${fl.join(' and ')} wore out. Rebuy it at the mall to get the look and the rep back.`);if(ARTX('fitworn')&&$('modal').hidden){modal(`${a2('fitworn',340)}<h2>Your fit is worn out</h2><p>The ${esc(fl.join(' and '))} is done. Rep drops until you get something fresh from the mall.</p><div class="btns"><button class="btn go" id="ok">Damn</button></div>`);$('ok').onclick=close}}
-  const jo=jewOwn(),fk=!!(window.l38Fake&&l38Fake());if(jo.length&&(S.heat>=50||fk)&&Math.random()<(.12+.03*jo.length)*(fk?1.5:1)){const jk=jo.slice().sort((a,b)=>JEWEL[b].c-JEWEL[a].c)[0],J=JEWEL[jk];S.jew[jk]=0;S.rep=Math.max(0,S.rep-J.rep);addStress(8);say(`Somebody jumped you and took your ${J.n.toLowerCase()}. Rep -${J.rep}. Keep your heat down.`);if(ARTX('jewjack')&&$('modal').hidden){modal(`${a2('jewjack',340)}<h2 style="color:var(--blood)">Jumped for your jewelry</h2><p>They took the ${esc(J.n.toLowerCase())}. Flashy and hot is how you get picked.</p><div class="btns"><button class="btn go" id="ok">Damn</button></div>`);$('ok').onclick=close}}}
+  const jo=jewOwn(),fk=!!(window.l38Fake&&l38Fake());if(jo.length&&(S.heat>=50||fk)&&Math.random()<(.12+.03*jo.length)*(fk?1.5:1)){const jk=jo.slice().sort((a,b)=>JEWEL[b].c-JEWEL[a].c)[0],J=JEWEL[jk];S.jew[jk]=0;S.rep=Math.max(0,S.rep-J.rep);addStress(8);say(`Somebody jumped you and took your ${J.n.toLowerCase()}. Rep -${J.rep}. ${fk?'Your drip is bigger than your name, so you looked like an easy mark. Build rep before you wear that much.':'Keep your heat down.'}`);if(ARTX('jewjack')&&$('modal').hidden){modal(`${a2('jewjack',340)}<h2 style="color:var(--blood)">Jumped for your jewelry</h2><p>They took the ${esc(J.n.toLowerCase())}. Flashy and hot is how you get picked.</p><div class="btns"><button class="btn go" id="ok">Damn</button></div>`);$('ok').onclick=close}}}
 function livingDay(){if(!S.livDay){S.livDay=S.day+7;return}if(S.day<S.livDay)return;S.livDay=S.day+7;try{wearDay()}catch(e){console.error('wear',e)}const c=livCost();if(!c.tot)return;pullSafeCash(c.tot,'You');
   if(S.cash>=c.tot){S.cash-=c.tot;S.sl=Math.max(0,(S.sl||0)+(window._slAdd||0)-(window._slPay||0));say(`Paid ${money(c.tot)} for living costs this week (${c.items.map(x=>x[0].toLowerCase()).join(', ')}).`)}
   else{addStress(8);S.rep=Math.max(0,S.rep-1);say(`Couldn't cover ${money(c.tot)} in living costs this week. Stress up, rep −1. Get your bread right.`);if(ARTX('overdue')&&$('modal').hidden){modal(`${a2('overdue',340)}<h2 style="color:var(--blood)">Bills past due</h2><p>You couldn't cover ${money(c.tot)} this week. The notices are stacking up. Stress is up and your rep took a hit.</p><div class="btns"><button class="btn go" id="ok">Handle it</button></div>`);$('ok').onclick=close}}}
@@ -9175,7 +9175,8 @@ function voucher(bi){const fam=known().find(i=>i!==bi&&tie(i)&&tr(i)>=30);if(fam
 function introWhy(bi){if((S.introD||-9)===S.day)return 'One link-up a day.';if((pk(bi).cold||0)>S.day)return `Not feeling you. Try again in ${pk(bi).cold-S.day} day${pk(bi).cold-S.day===1?'':'s'}.`;if(!voucher(bi))return 'Nobody to vouch for you yet. Make a friend, earn a plug\'s trust (60), or build more rep.';if(S.cash<LV[PINFO[bi].lvl][0])return 'Need '+money(LV[PINFO[bi].lvl][0])+'.';return ''}
 function goLabel(bi){if(bi===S.at)return 'Meet';if(S.car&&yo()>=16)return 'Drive there';try{if(S.cal&&S.age&&S.age<18&&S.freeMv!==S.day)return 'Go (free move)'}catch(e){}return 'Go · 1 day'}
 function spotsHTML(){if(locked()||away())return '';const L=known().filter(bi=>tie(bi)||tr(bi)>=FLOOR).sort((a,b)=>tr(b)-tr(a)),U=strangers();if(!L.length&&!U.length)return '';
- let h=`<div class="sec">Plug spots</div>`;
+ const fdOn=S.fd&&!S.fd.off&&!S.fd.x&&!S.fd.doneD;if(innerWidth<900&&!S.uiPs&&!fdOn){const op=L.filter(canGo).length;return `<div class="row" style="padding:6px 12px"><div class="info"><div class="t" style="font-size:14px">🔌 Plug spots · ${op} open today · ${L.length} in your phone</div></div><button class="btn go" data-a31="ps">Show</button></div>`}
+ let h=`<div class="sec">Plug spots${innerWidth<900&&!fdOn?' <button class="btn" data-a31="ps" style="padding:2px 8px;font-size:11px;float:right">Hide</button>':''}</div>`;
  h+=L.map(bi=>{const t=tr(bi),P=PINFO[bi],go=canGo(bi),tx=pk(bi).txt===S.day,why=go?(tie(bi)?tie(bi):t>=ALWAYS?'Pull up any time':'Spot is open today'):(tx?'No answer today':'Text first, then the spot shows');
   const wp=tie(bi)&&bi!==S.at?whyPull(bi):'x';
   return `<div class="row" style="padding:8px 12px;flex-wrap:wrap">${face(bi,34)}<div class="info" style="flex:1 1 150px;min-width:0"><div class="t">${esc(plugName(bi))}</div><div class="s">${esc(BLOCKS[bi])} · ${P.lvl} level · ${lvlSells(bi)} · Trust ${t}/100 · ${why}</div></div><div class="btns">${go?`<button class="btn go" data-a31="go" data-i="${bi}">${goLabel(bi)}</button>${wp===''?`<button class="btn" data-a31="pu" data-i="${bi}">Come to me</button>`:''}`:`<button class="btn" data-a31="tx" data-i="${bi}" ${tx?'disabled':''}>${tx?'Texted':'Text: let me pull up'}</button>`}</div></div>`}).join('');
@@ -9209,7 +9210,7 @@ try{const _qm=qtyModal;qtyModal=function(kind,g,to,bl){const street=!S.meet&&!(S
  if(street&&kind==='sell')to='js';const r=_qm.call(this,kind,g,to,bl);
  if(street){try{const mc=el('mcard');mc.querySelectorAll('[data-to="plug"],#pl').forEach(x=>x.remove())}catch(e){}}return r}}catch(e){console.error('sk31 qty',e)}
 document.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.target.closest('[data-a31]');if(!b||b.disabled)return;const k=b.dataset.a31,i=+b.dataset.i;
- try{if(k==='go')goSpot(i);else if(k==='tx')textPlug(i);else if(k==='pu')pullUp(i);else if(k==='in')intro(i);else if(k==='mv'){tab='move';render()}}catch(err){console.error('sk31 click',err)}});
+ try{if(k==='go')goSpot(i);else if(k==='tx')textPlug(i);else if(k==='pu')pullUp(i);else if(k==='in')intro(i);else if(k==='mv'){S.uiPs=1;tab='move';render()}else if(k==='ps'){S.uiPs=!S.uiPs;render()}}catch(err){console.error('sk31 click',err)}});
 /* keep the meet honest: it ends when the day moves, on a bust, or if you get locked up */
 const _rd=render;render=function(){try{if(S&&S.meet&&(locked()||gone(S.meet.bi)))endMeet(true)}catch(e){}const r=_rd.apply(this,arguments);try{if(S&&S.meet)drawMeet();else{const o=el('mt31');if(o)o.remove()}}catch(e){console.error('sk31 meet',e)}return r};
 const _nd=nextDay;nextDay=function(){try{if(S&&S.meet)endMeet(true)}catch(e){}return _nd.apply(this,arguments)};
@@ -9401,7 +9402,7 @@ function patrols(){if(!S)return [];S.pat=S.pat||{};if(S.pat.d===S.day&&S.pat.c==
 const onPat=bi=>!away()&&patrols().includes(bi==null?S.at:bi);
 window.l36Pat=patrols;window.l36On=onPat;
 /* what patrols do (scanner or not) */
-try{const _st=srvTick;srvTick=function(n,g){const r=_st.apply(this,arguments);try{if(onPat()){S.heat=Math.min(100,S.heat+2);S.lh=S.lh||{};S.lh[S.at]=Math.min(100,(S.lh[S.at]||0)+2);if(S.patSaid!==S.day){S.patSaid=S.day;say(`🚓 A patrol car rolled through ${BLOCKS[S.at]} while you were serving. Heat +2 a sale here today.`)}}}catch(e){}return r}}catch(e){console.error('sk36 srv',e)}
+try{const _st=srvTick;srvTick=function(n,g){const r=_st.apply(this,arguments);try{if(onPat()){S.heat=Math.min(100,S.heat+2);S.lh=S.lh||{};S.lh[S.at]=Math.min(100,(S.lh[S.at]||0)+2);if(S.patSaid!==S.day){S.patSaid=S.day;say(`🚓 A patrol car rolled through ${BLOCKS[S.at]} while you were serving. Heat +2 a sale here today.${S.scan?'':' A police scanner from the pawn shop shows where patrols are.'}`)}}}catch(e){}return r}}catch(e){console.error('sk36 srv',e)}
 try{const _ld=lickDone;lickDone=function(title,text,good,noLick,img){try{if(good&&!noLick&&onPat()){S.heat=Math.min(100,S.heat+4);text+=' A patrol was on this block, so it got noticed. Heat +4.'}}catch(e){}return _ld.call(this,title,text,good,noLick,img)}}catch(e){console.error('sk36 lick',e)}
 try{const _s=window.l27Search;if(_s){const i=WD.findIndex(f=>f.name==='l27Day');if(i>=0){const _d=WD[i];WD[i]=function l27Day(){const R=Math.random;if(onPat())Math.random=()=>R()*.5;try{return _d.apply(this,arguments)}finally{Math.random=R}}}}}catch(e){console.error('sk36 search',e)}
 /* the scanner gives a heads-up on some raids */
@@ -9415,10 +9416,11 @@ function events(){const L=[];try{const B=b5();if(B.fc&&B.fc.t==='crack'){const d
  if(!L.length)L.push(['✅','Quiet on the radio. Nothing big coming.']);return L}
 function scanHTML(){if(!S||S.over||S.pr||S.prison||S.inJail)return '';if(away())return S.scan?`<div class="sec">Police scanner</div><div class="row" style="padding:6px 12px"><div class="info"><div class="s">Your scanner only picks up the channels back home.</div></div></div>`:'';
  if(!S.scan)return `<div class="row" style="padding:6px 12px"><div class="info"><div class="s">🚓 Cops patrol a few blocks every day. A police scanner from the pawn shop shows which ones.</div></div></div>`;
- const P=patrols(),lh=S.lh||{};let h=`<div class="sec">Police scanner · today</div>`;
+ const P=patrols(),lh=S.lh||{};if(innerWidth<900&&!S.uiSc)return `<div class="row" style="padding:6px 12px"><div class="info"><div class="t" style="font-size:14px">📻 Scanner: ${P.length?P.map(i=>'🚓 '+esc(BLOCKS[i])).join(', '):'no patrols heard'}</div></div><button class="btn" data-a36t="1">Details</button></div>`;let h=`<div class="sec">Police scanner · today <button class="btn" data-a36t="1" style="padding:2px 8px;font-size:11px;float:right">${innerWidth<900?'Hide':''}</button></div>`;
  h+=BLOCKS.map((b,i)=>{const p=P.includes(i),l=Math.round(lh[i]||0);return `<div class="row" style="padding:5px 12px"><div class="info" style="min-width:0"><div class="t" style="font-size:14px">${p?'🚓 ':''}${esc(b)}${i===S.at?' <span class="chip">You</span>':''}</div><div class="s">${p?'<span style="color:var(--heat)">Patrol on this block. Serving and licks here bring extra heat.</span>':'No patrol heard.'}${l>=15?` · local heat ${l}`:''}</div></div></div>`}).join('');
  h+=events().map(e=>`<div class="row" style="padding:5px 12px"><div class="info"><div class="s">${e[0]} ${e[1]}</div></div></div>`).join('');return h}
 window.l36HTML=scanHTML;
+document.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.target.closest('[data-a36t]');if(!b)return;e.preventDefault();e.stopPropagation();S.uiSc=!S.uiSc;render()},true);
 try{const _pm=paneMove;paneMove=function(){let h=_pm.apply(this,arguments);try{h=scanHTML()+h}catch(e){console.error('sk36 move',e)}return h}}catch(e){}
 /* 🚓 on the block tabs and the map */
 const _r=render;render=function(){const r=_r.apply(this,arguments);try{if(S&&S.scan&&!away()&&typeof tab!=='undefined'&&tab==='move'){const P=patrols();document.querySelectorAll('.tbs26 button[data-t]').forEach(b=>{const i=+b.dataset.t,sm=b.querySelector('small');if(sm&&P.includes(i)&&!/🚓/.test(sm.textContent))sm.textContent='🚓 '+sm.textContent});
@@ -9708,4 +9710,37 @@ try{const _dp=devPanel;devPanel=function(){const r=_dp.apply(this,arguments);try
 })();
 </script>
 
+<script id="skin40js">
+(function(){if(window._sk40)return;window._sk40=1;
+/* New player help: a first-day guide on the Block tab, teens start with plugs they can afford, and hidden rules say why. */
+const el=id=>document.getElementById(id);
+/* teens (under 18) do not start knowing a Big plug that only sells QPs: swap it for a Mid plug they have not met */
+try{const _ts=teenStart;teenStart=function(ch,age){const r=_ts.apply(this,arguments);try{if((age||14)<18&&Array.isArray(S.known)){S.known=S.known.map(bi=>{if(PINFO[bi].lvl!=='Big')return bi;const alt=PINFO.map((p,i)=>i).find(i=>PINFO[i].lvl==='Mid'&&!S.known.includes(i))??PINFO.map((p,i)=>i).find(i=>PINFO[i].lvl==='Low'&&!S.known.includes(i));if(alt==null)return null;S.trust[alt]=Math.max(S.trust[alt]||0,S.trust[bi]||0);return alt}).filter(x=>x!=null);S.known=[...new Set(S.known)]}}catch(e){console.error('sk39 teen',e)}return r}}catch(e){}
+/* first-day guide */
+const steps=()=>{const F=S.fd;return [
+ ['Text a plug','Move tab → Plug spots → Text: let me pull up.',!!F.t,'move'],
+ ['Meet them and buy','Tap Go or Meet on the open spot, then Buy a few grams.',!!F.b,'move'],
+ ['Serve the Js','Back on the Block tab, tap Sell next to what you bought.',(S.st&&S.st.sold||0)>(F.s0||0),'block'],
+ ['End the day','Tap Next day at the top when you are out of energy or product.',S.day>F.d0,null]]};
+function track(){if(!S||S.over)return;if(!S.fd){S.fd=S.day<=2&&!(S.st&&S.st.sold)?{d0:S.day,s0:0}:{off:1}}const F=S.fd;if(F.off)return;
+ if(!F.t&&Object.values(S.pk||{}).some(p=>p&&(p.txt>=0||p.open>=S.day)))F.t=1;if(S.meet)F.t=1;
+ if(!F.b&&GOODS.some(g=>S.inv[g.id]>0))F.b=1;
+ if(steps().every(s=>s[2])&&!F.doneD)F.doneD=S.day;if(F.doneD&&S.day>F.doneD+2)F.off=1}
+function guide(){track();const F=S.fd;if(!F||F.off||F.x)return '';const L=steps(),nx=L.findIndex(s=>!s[2]);
+ let h=`<div class="sec">Your first day</div>`;
+ if(nx<0)return h+`<div class="row" style="padding:8px 12px"><div class="info"><div class="t">✅ You know the loop</div><div class="s">Buy from a plug, serve the Js, stack it. More to find: licks and heists in Phone > Licks, legal gigs in Phone > Side hustles, a police scanner at the pawn shop, your crew in Phone > Crew.</div></div><button class="btn" data-a39="x">Got it</button></div>`;
+ h+=L.map((s,i)=>`<div class="row" style="padding:6px 12px${i===nx?';border-color:var(--accent)':''}"><div class="info"><div class="t" style="font-size:14px">${s[2]?'✅':i===nx?'👉':'▫️'} ${s[0]}</div>${i===nx?`<div class="s">${s[1]}</div>`:''}</div>${i===nx&&s[3]&&s[3]!==tab?`<button class="btn go" data-a39="go" data-t="${s[3]}">Show me</button>`:''}</div>`).join('');
+ return h+`<div class="row" style="padding:4px 12px"><div class="info"></div><button class="btn" data-a39="x">Hide guide</button></div>`}
+window.l39Guide=guide;
+try{const _pb=paneBlock;paneBlock=function(){let h=_pb.apply(this,arguments);try{if(!S.meet)h=guide()+h}catch(e){console.error('sk39 guide',e)}return h}}catch(e){}
+const _r=render;render=function(){try{track()}catch(e){}return _r.apply(this,arguments)};
+document.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.target.closest('[data-a39]');if(!b)return;e.preventDefault();e.stopPropagation();const k=b.dataset.a39;
+ if(k==='x'){S.fd.x=1;return render()}if(k==='go'){S.uiPs=1;try{tab=b.dataset.t}catch(x){}render();setTimeout(()=>{const s=document.querySelector('#pane [data-a31="tx"],#pane [data-a31="go"]');if(s)s.scrollIntoView({block:'center',behavior:'smooth'})},60)}},true);
+/* hidden rules say why */
+try{const _rb=window.l38Fake;if(_rb){const _say=say;window.__l39say=_say}}catch(e){}
+try{TUT.unshift(['Your first day','New game? The Block tab shows a short guide: text a plug on the Move tab, meet them and buy a few grams, come back to the Block tab and serve the Js, then end the day. Each step ticks off by itself. Hide it any time.'])}catch(e){}
+try{const _dp=devPanel;devPanel=function(){const r=_dp.apply(this,arguments);try{const mc=el('mcard');if(mc&&!el('modal').hidden&&!mc.querySelector('[data-d40]')){const d=document.createElement('div');d.innerHTML=`<div class="sec">New player help (new)</div><div class="btns"><button class="btn" data-d40="fd">Show first-day guide</button><button class="btn" data-d40="off">Turn guide off</button></div>`;const h2=mc.querySelector('h2');if(h2&&h2.parentNode)h2.parentNode.insertBefore(d,h2.nextSibling);else mc.appendChild(d);
+ d.querySelectorAll('[data-d40]').forEach(b=>b.onclick=ev=>{ev.stopPropagation();el('modal').hidden=true;if(b.dataset.d40==='fd'){S.fd={d0:S.day,s0:(S.st&&S.st.sold)||0};GOODS.forEach(g=>S.inv[g.id]=0)}else S.fd={off:1};try{tab='block'}catch(x){}render()})}}catch(e){}return r}}catch(e){}
+})();
+</script>
 <script>if('serviceWorker' in navigator){addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}</script></body></html>

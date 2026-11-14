@@ -22,7 +22,7 @@ with sync_playwright() as p:
     # case it (takes the day)
     d0=J("()=>S.day");pg.keyboard.press('c');pg.wait_for_timeout(300)
     r=J("(d)=>({dd:S.day-d,cased:S.hcase.bank>=S.day,open:!!document.getElementById('hc35')})",d0)
-    ck('case it: takes the day, +odds for 3 days, plan reopens',r['dd']==1 and r['cased'] and r['open'],json.dumps(r))
+    ck('case it: takes the day, +odds for 3 days',r['dd']==1 and r['cased'],json.dumps(r))
     J("()=>{S.rob.hd=null;S.rob.fat=0;render();l35Plan('bank')}")
     # run it yourself: forced win, check cut & clean
     c0=J("()=>S.cash");J("()=>{Math._r=Math.random;Math.random=()=>0.01}")

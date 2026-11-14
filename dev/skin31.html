@@ -65,7 +65,8 @@ function voucher(bi){const fam=known().find(i=>i!==bi&&tie(i)&&tr(i)>=30);if(fam
 function introWhy(bi){if((S.introD||-9)===S.day)return 'One link-up a day.';if((pk(bi).cold||0)>S.day)return `Not feeling you. Try again in ${pk(bi).cold-S.day} day${pk(bi).cold-S.day===1?'':'s'}.`;if(!voucher(bi))return 'Nobody to vouch for you yet. Make a friend, earn a plug\'s trust (60), or build more rep.';if(S.cash<LV[PINFO[bi].lvl][0])return 'Need '+money(LV[PINFO[bi].lvl][0])+'.';return ''}
 function goLabel(bi){if(bi===S.at)return 'Meet';if(S.car&&yo()>=16)return 'Drive there';try{if(S.cal&&S.age&&S.age<18&&S.freeMv!==S.day)return 'Go (free move)'}catch(e){}return 'Go · 1 day'}
 function spotsHTML(){if(locked()||away())return '';const L=known().filter(bi=>tie(bi)||tr(bi)>=FLOOR).sort((a,b)=>tr(b)-tr(a)),U=strangers();if(!L.length&&!U.length)return '';
- let h=`<div class="sec">Plug spots</div>`;
+ const fdOn=S.fd&&!S.fd.off&&!S.fd.x&&!S.fd.doneD;if(innerWidth<900&&!S.uiPs&&!fdOn){const op=L.filter(canGo).length;return `<div class="row" style="padding:6px 12px"><div class="info"><div class="t" style="font-size:14px">🔌 Plug spots · ${op} open today · ${L.length} in your phone</div></div><button class="btn go" data-a31="ps">Show</button></div>`}
+ let h=`<div class="sec">Plug spots${innerWidth<900&&!fdOn?' <button class="btn" data-a31="ps" style="padding:2px 8px;font-size:11px;float:right">Hide</button>':''}</div>`;
  h+=L.map(bi=>{const t=tr(bi),P=PINFO[bi],go=canGo(bi),tx=pk(bi).txt===S.day,why=go?(tie(bi)?tie(bi):t>=ALWAYS?'Pull up any time':'Spot is open today'):(tx?'No answer today':'Text first, then the spot shows');
   const wp=tie(bi)&&bi!==S.at?whyPull(bi):'x';
   return `<div class="row" style="padding:8px 12px;flex-wrap:wrap">${face(bi,34)}<div class="info" style="flex:1 1 150px;min-width:0"><div class="t">${esc(plugName(bi))}</div><div class="s">${esc(BLOCKS[bi])} · ${P.lvl} level · ${lvlSells(bi)} · Trust ${t}/100 · ${why}</div></div><div class="btns">${go?`<button class="btn go" data-a31="go" data-i="${bi}">${goLabel(bi)}</button>${wp===''?`<button class="btn" data-a31="pu" data-i="${bi}">Come to me</button>`:''}`:`<button class="btn" data-a31="tx" data-i="${bi}" ${tx?'disabled':''}>${tx?'Texted':'Text: let me pull up'}</button>`}</div></div>`}).join('');
@@ -99,7 +100,7 @@ try{const _qm=qtyModal;qtyModal=function(kind,g,to,bl){const street=!S.meet&&!(S
  if(street&&kind==='sell')to='js';const r=_qm.call(this,kind,g,to,bl);
  if(street){try{const mc=el('mcard');mc.querySelectorAll('[data-to="plug"],#pl').forEach(x=>x.remove())}catch(e){}}return r}}catch(e){console.error('sk31 qty',e)}
 document.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.target.closest('[data-a31]');if(!b||b.disabled)return;const k=b.dataset.a31,i=+b.dataset.i;
- try{if(k==='go')goSpot(i);else if(k==='tx')textPlug(i);else if(k==='pu')pullUp(i);else if(k==='in')intro(i);else if(k==='mv'){tab='move';render()}}catch(err){console.error('sk31 click',err)}});
+ try{if(k==='go')goSpot(i);else if(k==='tx')textPlug(i);else if(k==='pu')pullUp(i);else if(k==='in')intro(i);else if(k==='mv'){S.uiPs=1;tab='move';render()}else if(k==='ps'){S.uiPs=!S.uiPs;render()}}catch(err){console.error('sk31 click',err)}});
 /* keep the meet honest: it ends when the day moves, on a bust, or if you get locked up */
 const _rd=render;render=function(){try{if(S&&S.meet&&(locked()||gone(S.meet.bi)))endMeet(true)}catch(e){}const r=_rd.apply(this,arguments);try{if(S&&S.meet)drawMeet();else{const o=el('mt31');if(o)o.remove()}}catch(e){console.error('sk31 meet',e)}return r};
 const _nd=nextDay;nextDay=function(){try{if(S&&S.meet)endMeet(true)}catch(e){}return _nd.apply(this,arguments)};

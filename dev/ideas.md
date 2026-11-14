@@ -235,3 +235,4 @@ Order if built: 1, 2, 3 as one batch (~2 hrs), then 5. Leaderboard only after pe
 - SONNET: Memory tiles (30m), Rotating locks (30m), Unc's tire shop buys stolen cars (40m), Soldiers on licks (about 1h, wires into crew jobs), 3D printer (about 1h).
 - OPUS/FABLE: Reputation by block, Seasons and city events, Bills that bite, Bail and lawyer choice, Worker plugs pushing their old menu, Barber favors and the cousin at 16.
 - One builder on the repo at a time.
+- Nov 14 weak-point fixes (skin40): first-day guide on the Block tab (4 steps that tick off by themselves, then a where-things-are card; only new games, day 2 or less); teens start with a Mid plug instead of a Big one; on phones Plug spots and the scanner fold to one line after the guide (Show / Details); fake drip robbery and unseen patrol heat now say why. Test dev/t_help.py.

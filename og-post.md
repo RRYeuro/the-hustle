@@ -15,6 +15,7 @@ Thanks for all the bug reports. This one is big.
 - 📻 **Police scanner:** cops patrol a few blocks every day (more when you're hot). Serving or hitting licks on a patrolled block brings extra heat. Buy a scanner at the pawn shop ($350, 16+) to see the 🚓 blocks and what's coming (task force sweeps, raid risk, traffic stops) on the Move tab. It can tip you off before a raid.
 - 🚕 **Side gigs have mini games now:** Delivery (lane run, 16+), Tow truck (hook timing, 18+) and the new Rideshare driver (18+, your own car). Better runs pay more clean money. Phone > Side hustles.
 - 💎 **Drip status:** your chains and fit add up to Fresh, Flashy, Iced out or Untouchable. If your rep can back it, people snitch on you less and crews respect you more. Drip your rep can't carry gets you robbed. Tap your character card to see it.
+- 🧭 **New player help:** a first-day guide on the Block tab (text a plug, buy, serve the Js, end the day). Teens no longer start with a Big plug they can't afford. On phones, Plug spots and the scanner fold into one line (tap Show).
 - 👤 More faces, a loading screen, and 17 logic fixes (age limits, actions only where you are, car moves don't cost the day).
 
 **Test this:** Menu > Dev has buttons for it.
@@ -25,5 +26,6 @@ Thanks for all the bug reports. This one is big.
 - Scanner testers: "Give police scanner", "Put a patrol on this block", "Clear patrols today", "Task force forecast". Serve on a 🚓 block and tell me if the extra heat feels fair.
 - Gig testers: "Delivery run", "Tow shift", "Rideshare shift", "Reset gigs today". Play each on keyboard and on a phone. Is the pay worth the energy?
 - Drip testers: "Iced out, backed", "Fake drip (rep 0)", "Take off the drip", "Show my drip".
+- New player testers: start a fresh game and follow the first-day guide without help. Tell me where you got stuck. Dev: "Show first-day guide".
 - Phone testers: check Move and the bottom bar on a small screen.
 Found a bug? Drop it in #hustle-bugs with what you tapped and what city you were in.
