@@ -35,7 +35,7 @@ function doCase(){const k=P.k;if(typeof spendEn==='function'&&spendEn(10)===fals
 const roleOf=(pick,id)=>Object.keys(pick||{}).find(r=>pick[r]===id)||'look';
 function after(ok,k,ids,sp,net,pick){const ms=ids.map(byId).filter(Boolean);ms.forEach(m=>{m.loy=Math.max(0,Math.min(100,m.loy+SPL[sp][2]));try{crewGain(m,RL[roleOf(pick,m.id)][1])}catch(e){}});
  if(S.hcase)delete S.hcase[k];
- const rat=ms.find(m=>(m.loy<20||m.snake)&&Math.random()<.15);if(rat){S.heat=Math.min(100,S.heat+15);say(`Word got back that ${rat.name} has been running ${mHe(rat,'his')} mouth about the ${HEISTS[k].name.toLowerCase()}. Heat +15.`);try{newsPush('Talk on the block about a recent '+HEISTS[k].name.toLowerCase()+'.')}catch(e){}}}
+ const rat=ms.find(m=>(m.loy<20||m.snake)&&Math.random()<.15*(window.l38Sn?l38Sn():1));if(rat){S.heat=Math.min(100,S.heat+15);say(`Word got back that ${rat.name} has been running ${mHe(rat,'his')} mouth about the ${HEISTS[k].name.toLowerCase()}. Heat +15.`);try{newsPush('Talk on the block about a recent '+HEISTS[k].name.toLowerCase()+'.')}catch(e){}}}
 window.__hcAfter=null;
 function run(){const k=P.k,g=gate(false);if(g){say(g);return draw()}const ids=team().map(m=>m.id),sp=P.sp,B=bonus(k,P.pick),n=ids.length,pick={...P.pick};
  window.__hcB=B.b;window.__hcP=1+B.pay;window.__hcCut=SPL[sp][0]*n;
@@ -49,7 +49,7 @@ function send(){const k=P.k,g=gate(true);if(g){say(g);return draw()}const ms=tea
 function txt(m,t){try{phoneMsg(m.name,t)}catch(e){say(`📱 ${m.name}: "${t}"`)}}
 function resolveHC(){const J=S.hc;if(!J)return;S.hc=null;const k=J.k,H=HEISTS[k],ms=J.ids.map(byId).filter(Boolean);ms.forEach(m=>{m.busy=null;m.last=S.day});
  const lead=byId(J.lead)||ms[0];if(!lead)return;
- const rat=ms.find(m=>(m.loy<20||m.snake)&&Math.random()<.2);
+ const rat=ms.find(m=>(m.loy<20||m.snake)&&Math.random()<.2*(window.l38Sn?l38Sn():1));
  if(rat){S.heat=Math.min(100,S.heat+20);ms.forEach(m=>{m.hurt=S.day+rnd(5,8);m.loy=Math.max(0,m.loy-3)});try{newsPush('Police were waiting at a '+H.name.toLowerCase()+'. A crew got picked up.')}catch(e){}
   return txt(lead,`It was a setup. Cops were already there when we pulled up. Somebody talked. They got all of us.${rat!==lead?' I think it was '+rat.name+'.':''}`)}
  const odds=Math.max(.05,Math.min(.9,H.odds+J.B.b+(['rh','cap'].includes(lead.rank)?.05:0)+(S.rob.noto||0)/1000));

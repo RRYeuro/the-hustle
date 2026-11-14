@@ -1,0 +1,34 @@
+<script id="skin38js">
+(function(){if(window._sk38)return;window._sk38=1;
+/* Drip status, built on the jewelry and fits you already buy at the mall.
+   Drip = rep from the chains you own plus your fit. Backed drip (your rep can carry it) earns respect from your crew and the crews
+   whose blocks you stand on, and makes people think twice about snitching. Drip above your rep is fake: no respect, and robbers pick you. */
+const el=id=>document.getElementById(id);
+const TIERS=[[0,'No drip',1],[1,'Fresh',.9],[4,'Flashy',.8],[9,'Iced out',.65],[15,'Untouchable',.5]];
+function score(){let n=0;try{jewOwn().forEach(k=>n+=JEWEL[k].rep||0);n+=(FITS[S.fit||'street']||{}).rep||0}catch(e){}return n}
+function tierOf(n){let t=TIERS[0];TIERS.forEach(x=>{if(n>=x[0])t=x});return t}
+const need=n=>n*3;
+function drip(){const n=score(),t=tierOf(n),backed=n===0||(S.rep||0)>=need(n);return {n,name:t[1],idx:TIERS.indexOf(t),mul:backed?t[2]:1,backed,need:need(n)}}
+window.l38=drip;window.l38Sn=()=>{try{return drip().mul}catch(e){return 1}};window.l38Fake=()=>{try{const d=drip();return d.n>0&&!d.backed}catch(e){return false}};
+/* daily: respect from crews and your own crew's loyalty */
+function day(){try{if(!S||S.over||S.pr||S.prison||S.inJail)return;const d=drip();if(!d.backed||d.idx<2)return;const up=d.idx>=3?2:1;
+ const o=(S.owner||[])[S.at];if(o&&o!=='me'&&o!=='none'){const c=(S.crews||[]).find(x=>x.id===o);if(c&&c.alive!==false)c.respect=Math.min(100,(c.respect||0)+up)}
+ if(S.day%3===0)(S.crewM||[]).forEach(m=>{if(m.loy<75)m.loy=Math.min(75,m.loy+up)})}catch(e){console.error('sk38 day',e)}}
+try{WD.push(day)}catch(e){}
+/* status shows where you look at your fit (character card) and at the mall */
+function html(){const d=drip();if(!d.n&&!(S.jew&&Object.keys(S.jew).length))return `<div class="sec">Your drip</div><div class="row" style="padding:6px 12px"><div class="info"><div class="s">No drip yet. Chains and fits from the mall build your status once your rep can back them.</div></div></div>`;
+ const pct=Math.round((1-d.mul)*100);
+ return `<div class="sec">Your drip</div><div class="row" style="padding:8px 12px"><div class="info"><div class="t">💎 ${d.name}${d.n?` · drip ${d.n}`:''} ${d.n?(d.backed?'<span class="chip mine">Backed</span>':'<span class="chip" style="color:var(--blood);border-color:var(--blood)">Fake</span>'):''}</div><div class="s">${!d.n?'Nothing on.':d.backed?`${d.idx>=2?`Crews on the blocks you stand on respect you more every day and your crew stays loyal. `:''}People are ${pct}% less likely to snitch on you.`:`Your rep (${S.rep||0}) cannot carry this much drip yet (needs ${d.need}). No respect, and robbers pick you out even when you are not hot.`}</div></div></div>`}
+window.l38HTML=html;
+try{const _pb=paneBag;paneBag=function(){let h=_pb.apply(this,arguments);try{h=html()+h}catch(e){}return h}}catch(e){}
+try{const _o=openPlace;openPlace=function(id){const r=_o.apply(this,arguments);try{if(id==='mall'&&!el('modal').hidden){const p=el('mcard').querySelector('.pane');if(p&&!p.querySelector('.d38')){const w=document.createElement('div');w.className='d38';w.innerHTML=html();p.insertBefore(w,p.firstChild)}}}catch(e){console.error('sk38 mall',e)}return r}}catch(e){}
+try{TUT.push(['Drip and status','Chains and fits from the mall add up to your drip: Fresh, Flashy, Iced out, Untouchable. Drip only works when your rep can back it (rep at least 3 times your drip number). Backed drip makes people less likely to snitch on you (10% at Fresh up to 50% at Untouchable): crew in a heist, snakes in the crew and fake friends. From Flashy up, the crew that runs the block you stand on gives you more respect every day, and your crew\'s loyalty creeps up. Fake drip (more than your rep can carry) does nothing good: robbers pick you out even when your heat is low. Check your drip by tapping your character card or at the mall.'])}catch(e){}
+try{const _dp=devPanel;devPanel=function(){const r=_dp.apply(this,arguments);try{const mc=el('mcard');if(mc&&!el('modal').hidden&&!mc.querySelector('[data-d38]')){const B=(k,l)=>`<button class="btn" data-d38="${k}">${l}</button>`;const d=document.createElement('div');d.innerHTML=`<div class="sec">Drip (new)</div><div class="btns">${B('iced','Iced out, backed')}${B('fake','Fake drip (rep 0)')}${B('none','Take off the drip')}${B('show','Show my drip')}</div>`;const h2=mc.querySelector('h2');if(h2&&h2.parentNode)h2.parentNode.insertBefore(d,h2.nextSibling);else mc.appendChild(d);
+ d.querySelectorAll('[data-d38]').forEach(b=>b.onclick=ev=>{ev.stopPropagation();const k=b.dataset.d38;el('modal').hidden=true;
+  if(k==='iced'){S.jew=S.jew||{};['chain','grill','ring'].forEach(x=>S.jew[x]=1);S.fits=S.fits||{};S.fits.drip=1;S.fit='drip';S.rep=Math.max(S.rep||0,40);say('Dev: chain, grillz, ring, designer fit, rep 40.')}
+  if(k==='fake'){S.jew=S.jew||{};Object.keys(JEWEL).forEach(x=>S.jew[x]=1);S.rep=0;say('Dev: all jewelry, rep 0.')}
+  if(k==='none'){S.jew={};S.fit='street';say('Dev: drip off.')}
+  if(k==='show'){const x=drip();say(`Dev: drip ${x.n} (${x.name}), ${x.backed?'backed':'fake'}, snitch odds x${x.mul}.`)}
+  render()})}}catch(e){console.error('sk38 dev',e)}return r}}catch(e){}
+})();
+</script>
