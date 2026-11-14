@@ -204,4 +204,7 @@ Order if built: 1, 2, 3 as one batch (~2 hrs), then 5. Leaderboard only after pe
 
 ## Who builds what (Nov 14)
 - Me (Sonnet): Lockpick, Vault code, Roof run, Memory tiles, Rotating locks (self-contained mini games, each hooks into licks/heists, tutorial card + Start + keyboard).
-- Fable/Opus: 1) Heist crew, 2) Chop shop sales, 3) Burner phones + police scanner, 4) Legal side gigs, 5) Chains and clothes, 6) Jail upgrades. Each needs dev menu, tutorial, tests, clean/dirty cash.
+- Fable/Opus: 1) Heist crew, 2) Police scanner, 3) Legal side gigs, 4) Chains and clothes (status), 5) Jail upgrades. Each needs dev menu, tutorial, tests, clean/dirty cash.
+- Already exist, do NOT build: burner phones, chop shop (Strip it fast), car chase, hotwire, street race, crew jobs, Heists inside the Licks app.
+- Heist crew = NOT a new system. A Crew Boss tier of crew jobs plus the Licks app heists. Roles: driver, lookout, inside man (from your crew). Prep day to case the place, split of the take, bigger payout and heat, a low-loyalty member can skim or snitch. Two ways: you run it with mini games, or you send the crew (2-3 days, they text back).
+- Police scanner: see which block cops are on and heat events before you move. Legal side gigs: delivery, tow, taxi (clean money, mini games). Chains and clothes: rep-based drip raising respect, lowering snitch odds. Jail upgrades: prison already exists, only add jobs, fights, contraband, lawyer cuts sentence if they are not in yet.
