@@ -1,0 +1,66 @@
+<style id="skin51">
+.phx .bub.sys51{background:transparent!important;border:1px dashed rgba(255,255,255,.18);color:#9d94b8!important;font-size:12px;font-style:italic}
+</style>
+<script id="skin51js">
+(function(){if(window._sk51)return;window._sk51=1;
+const E=x=>String(x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])),pk=a=>a[Math.floor(Math.random()*a.length)],cl=t=>window.l45cl?l45cl(t):t;
+const lvl=bi=>(PINFO[bi]||{}).lvl||'Low',tr=bi=>(S.trust&&S.trust[bi])||0,addTr=(bi,d)=>{S.trust[bi]=Math.max(0,Math.min(100,tr(bi)+d))};
+const bOf=n=>{try{return (S.known||[]).find(bi=>plugName(bi)===n)}catch(e){return undefined}};
+const inbox=(f,t)=>{S.inbox=S.inbox||[];S.inbox.unshift({d:S.day,f,t:cl(t)});S.inbox=S.inbox.slice(0,150)};
+const note=(f,t)=>inbox(f,'ℹ️ '+t);
+const later=(fn,ms)=>setTimeout(()=>{try{fn();render()}catch(e){console.error('sk51',e)}},ms||850);
+/* every plug you know is a contact */
+try{const _mc=window._MC;window._MC=function(){const o=_mc?_mc():[];try{(S.known||[]).forEach(bi=>{const n=plugName(bi);if(!o.some(x=>x.n===n))o.push({n,sub:`${lvl(bi)} plug · ${BLOCKS[bi]}`})})}catch(e){}return o}}catch(e){}
+/* plug card: one Text button instead of a menu */
+const _pa=plugActions;
+plugActions=function(bi){try{if(S.recr&&S.recr[bi])return _pa(bi);if(!S.known.includes(bi))return _pa(bi);const n=plugName(bi),R=S.rb51,rob=R&&R.bi===bi&&S.day>=R.d&&S.at===bi;
+  return `<div class="btns" style="margin-top:6px"><button class="btn go" data-tx50="${E(encodeURIComponent(n))}">💬 Text ${E(n)}</button>${rob?`<button class="btn red" data-a="prob" data-i="${bi}" data-rb51="1">🔫 Rob ${plugFem(bi)?'her':'him'} now</button>`:''}</div>`}catch(e){return _pa(bi)}};
+/* what you can text a plug, built from the old buttons */
+const SAYS={pkick:'You around? Let\'s kick it.',pfront:'Can you front me a pack? I\'ll have you back.',phook:'You looking good today 👀',ppitch:'I got some work you might want. You interested?',pasks:'You got anything different? Something else?',pfav:'Them opps been bothering you? I can handle that.',pdate:'Let me take you out.',ppay:'Got your money. Where you want it?'};
+const LAB={pfav:'Offer to handle their opps'};
+function threadOpts(bi){const t=document.createElement('template');t.innerHTML=_pa(bi);const o=[];
+ t.content.querySelectorAll('button[data-a]').forEach(b=>{const a=b.dataset.a;if(a==='prob'||a==='wstash')return;const says=SAYS[a]||b.textContent.trim();
+  o.push(`<button class="mth-opt" data-a="${a}" data-i="${bi}"${b.dataset.k?` data-k="${b.dataset.k}"`:''} data-p51="${a}" data-says="${E(says)}" ${b.disabled?'disabled':''}>${E(LAB[a]||b.textContent.trim())}</button>`)});
+ const R=S.rb51;o.push(R&&R.bi===bi?`<button class="mth-opt" disabled>Buy set up for ${R.d===S.day?'today':'day '+R.d} (go rob)</button>`:`<button class="mth-opt" data-p51="setup" data-i="${bi}" data-says="${E('Let me grab a big order tomorrow. Same spot?')}">🔫 Set up a buy (to rob)</button>`);
+ return `<div class="mth-kt">Text ${E(plugName(bi))}</div>${o.join('')}`}
+function whyNot(bi){try{if(typeof debtOf==='function'&&debtOf(bi))return 'You still owe them from the last front.';const t=tr(bi);if(t<30)return `Trust ${t}/100. Fronts start at 30.`;if((S.pk[bi]||{}).ban>S.day)return 'They are not fronting you right now.';if(S.burned&&S.burned[bi]>S.day)return 'They are laying low.'}catch(e){}return 'They do not trust you with product yet.'}
+function remote(bi,a){const n=plugName(bi),L=lvl(bi),B=BLOCKS[bi];
+ if(a==='pfront'){let ok=false;try{ok=frontOk(bi)}catch(e){}
+  if(!ok){later(()=>{inbox(n,L==='Big'?'No.':pk(['Woah. I ain\'t giving you no front.','Front? Nah. Not yet.']));note(n,whyNot(bi))});return}
+  later(()=>{S.pk[bi]=S.pk[bi]||{};S.pk[bi].open=Math.max(S.pk[bi].open||0,S.day+1);let lim='';try{lim=money(frontLimit(bi))}catch(e){}inbox(n,L==='Big'?`Come see me on ${B}. Up to ${lim}.`:`Aight, I got you. Pull up to ${B}, I'll front you up to ${lim}.`);note(n,'Their spot is open on the Move map today and tomorrow. Ask again when you get there.')});return}
+ later(()=>{S.pk[bi]=S.pk[bi]||{};S.pk[bi].open=Math.max(S.pk[bi].open||0,S.day+1);inbox(n,L==='Big'?`Not over the phone. ${B}.`:pk([`Pull up to ${B} and we'll talk.`,`Come see me on ${B}. Not over text.`]));note(n,'That happens in person. Their spot is open on the Move map today and tomorrow.')})}
+function setup(bi){const n=plugName(bi),L=lvl(bi),B=BLOCKS[bi];S.rb51={bi,d:S.day+1};
+ later(()=>{inbox(n,L==='Big'?`Tomorrow. ${B}. Bring the full amount.`:`Bet. Tomorrow on ${B}. Come correct.`);note(n,`Go to ${B} tomorrow. When you're there, Rob shows on the plug card and at the meet. Bring backup: crew, a gun, and your strength all count. Miss it and they stop trusting you.`);S.pk[bi]=S.pk[bi]||{};S.pk[bi].open=Math.max(S.pk[bi].open||0,S.day+1)})}
+/* stood up */
+try{WD.push(()=>{try{const R=S.rb51;if(R&&S.day>R.d){const n=plugName(R.bi);addTr(R.bi,-5);inbox(n,'You stood me up. Don\'t play with my time.');S.rb51=null}}catch(e){}})}catch(e){}
+/* rob button at the meet */
+try{const _g=window.l45greet;window.l45greet=function(M){let h=_g?_g(M):'';try{const R=S.rb51;if(M&&R&&R.bi===M.bi&&S.day>=R.d)h+=`<div class="btns" style="margin:6px 10px 0"><button class="btn red" data-a="prob" data-i="${M.bi}" data-rb51="1">🔫 Rob ${plugFem(M.bi)?'her':'him'} now</button></div>`}catch(e){}return h}}catch(e){}
+document.addEventListener('click',e=>{
+ const r=e.target.closest&&e.target.closest('[data-rb51]');if(r)S.rb51=null;
+ const b=e.target.closest&&e.target.closest('[data-p51]');if(!b||b.disabled)return;const bi=+b.dataset.i,a=b.dataset.p51;
+ if(a==='setup'){e.preventDefault();e.stopPropagation();setup(bi);render();return}
+ if(S.at!==bi&&a!=='ppay'){e.preventDefault();e.stopPropagation();remote(bi,a);render();return}
+ /* you are there: the action runs, the plug answers */
+ const n=plugName(bi);later(()=>{const L=lvl(bi);const R={pkick:L==='Big'?'Good talk.':'That was cool. Come back through.',pfav:'Appreciate that. I owe you.',ppitch:'',pasks:'',pfront:'',phook:'😏',pdate:'',ppay:'We good.'}[a];if(R)inbox(n,R)},1200)},true);
+/* thread: plug options + gray game notes */
+try{const _r=render;render=function(){const r=_r.apply(this,arguments);try{const th=document.querySelector('.phx[data-app="messages"] .mth-th');if(th&&window._mth){const bi=bOf(window._mth),kb=th.querySelector('.mth-kb');
+  if(bi!=null&&kb&&!kb.dataset.p51&&!(S.texts||[]).some(x=>((S.custos||[])[x.ci]||{}).name===window._mth)){let pend=false;try{pend=(w4().act||[]).some(t=>t.f===window._mth&&S.day-t.d<=3)}catch(e){}if(!pend){kb.dataset.p51=1;kb.innerHTML=threadOpts(bi)}}
+  th.querySelectorAll('.bub').forEach(x=>{if(/^ℹ️ /.test(x.textContent)&&!x.classList.contains('sys51')){x.classList.add('sys51');x.textContent=x.textContent.replace(/^ℹ️ /,'')}})}}catch(e){console.error('sk51 r',e)}return r}}catch(e){}
+/* meet: slim plug line instead of the big card; street business stays on the Block tab */
+function slimMeet(){const p=document.getElementById('mt31p'),M=S.meet;if(!p||!M||p.dataset.s51)return;p.dataset.s51=1;const bi=M.bi;
+ try{const b=p.querySelector('[data-tx50]');if(b&&S.known.includes(bi)&&!(S.recr&&S.recr[bi])){let card=b.closest('.row')||b.parentNode.parentNode;while(card&&card.parentNode!==p&&card.parentNode&&card.parentNode.id!=='mt31p')card=card.parentNode;
+  if(card){const img=card.querySelector('img'),rob=card.querySelector('[data-rb51]'),w=document.createElement('div');w.className='row pc51';w.style.cssText='display:flex;gap:10px;align-items:center;flex-wrap:wrap';
+   w.innerHTML=`${img?`<img src="${img.getAttribute('src')}" alt="" style="width:44px;height:44px;border-radius:8px;object-fit:cover;flex:none">`:''}<div class="info" style="flex:1 1 140px;min-width:0"><div class="t">${E(plugName(bi))} <span class="chip">${lvl(bi)} plug</span></div><div class="s">Trust ${tr(bi)}/100 · tap Buy or Sell to talk price</div></div><div class="btns" style="margin:0">${b.outerHTML}${rob?rob.outerHTML:''}</div>`;card.replaceWith(w)}}}catch(e){console.error('sk51 meet',e)}
+ try{let blockHas=false;try{blockHas=/w4_post|w4_cook/.test(paneBlock())}catch(e){}if(blockHas){const sec=[...p.querySelectorAll('.sec')].find(x=>/street business/i.test(x.textContent));if(sec){let n=sec;const rm=[];while(n){rm.push(n);n=n.nextElementSibling}rm.forEach(x=>x.remove())}}}catch(e){}}
+try{const _r2=render;render=function(){const r=_r2.apply(this,arguments);try{slimMeet();const o=document.getElementById('mt31');if(o){const hide=window._mt51h&&tab==='phone'&&window._mth;if(!hide)window._mt51h=false;o.style.display=hide?'none':''}}catch(e){}return r}}catch(e){}
+document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('[data-tx50]');if(t&&S.meet){window._mt51h=true;tab='phone'}},true);
+/* plug card on the block: slim line, everything else is in the phone */
+try{const _pb=paneBlock;paneBlock=function(){let h=_pb.apply(this,arguments);try{const bi=S.at;if(!S.known||!S.known.includes(bi)||(S.recr&&S.recr[bi])||(S.enemies||{})[bi]||(S.burned&&S.burned[bi]>S.day))return h;const t=document.createElement('template');t.innerHTML=h;const b=t.content.querySelector('[data-tx50]');if(!b)return h;
+  let card=b.closest('.row')||b.closest('.pcard')||b.parentNode.parentNode;if(!card)return h;const img=card.querySelector('img'),rob=card.querySelector('[data-rb51]');
+  const wrap=document.createElement('div');wrap.className='row pc51';wrap.style.cssText='display:flex;gap:10px;align-items:center;flex-wrap:wrap';
+  wrap.innerHTML=`${img?img.outerHTML.replace(/width:\s*\d+px/,'width:44px').replace(/height:\s*\d+px/,'height:44px'):''}<div class="info" style="flex:1 1 140px;min-width:0"><div class="t">${E(plugName(bi))} <span class="chip">${lvl(bi)} plug</span></div><div class="s">Trust ${tr(bi)}/100 · tap Buy or Sell to talk price</div></div><div class="btns" style="margin:0">${b.outerHTML}${rob?rob.outerHTML:''}</div>`;
+  card.replaceWith(wrap);const d=document.createElement('div');d.appendChild(t.content.cloneNode(true));return d.innerHTML}catch(e){console.error('sk51 pb',e)}return h}}catch(e){}
+/* duplicate: "Texts to answer" lives in Messages now */
+try{w4Phone=function(){return ''}}catch(e){}
+try{TUT.push(['Texting plugs','The plug card has one button: Text. In the thread you can ask for a front, pitch your stuff, ask for something else, offer to handle their opps, or set up a buy. Most of it needs you in person, so they tell you to pull up and open their spot. If they say no, a gray line tells you why. To rob a plug, set up a buy first, go to their spot the next day, and hit Rob there.'])}catch(e){}
+})();</script>

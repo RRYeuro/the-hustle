@@ -22,8 +22,8 @@ with sync_playwright() as p:
     J("()=>{S.pk[1].txt=-9;S.pk[1].open=-9;S.heat=80;l31Text(1)}");ck('too hot: text gets a no',J("()=>!(S.pk[1].open>=S.day)&&/hot|Cool off|Not today/i.test(S.log[0].t)"),J("()=>S.log[0].t"));J("()=>{S.heat=10}")
     # meet here: free, full card with actions
     J("()=>l31Go(0)");pg.wait_for_timeout(200)
-    r=J("()=>({ov:!!document.getElementById('mt31'),day:S.day,how:S.meet&&S.meet.how,acts:[...new Set([...document.querySelectorAll('#mt31 [data-a]')].map(b=>b.dataset.a))],hd:document.querySelector('#mt31 .mt31h').innerText})")
-    ck('meet at the spot: plug card + actions, no day',r['ov'] and r['day']==d0 and r['how']=='spot' and 'buy' in r['acts'] and 'pkick' in r['acts'] and 'prob' in r['acts'],json.dumps(r))
+    r=J("()=>({ov:!!document.getElementById('mt31'),day:S.day,how:S.meet&&S.meet.how,acts:[...new Set([...document.querySelectorAll('#mt31 [data-a]')].map(b=>b.dataset.a))],tx:!!document.querySelector('#mt31 [data-tx50]'),hd:document.querySelector('#mt31 .mt31h').innerText})")
+    ck('meet at the spot: slim plug line + Text, buy/sell, no day',r['ov'] and r['day']==d0 and r['how']=='spot' and 'buy' in r['acts'] and r['tx'] and 'pkick' not in r['acts'],json.dumps(r))
     # no delivery tax at the spot
     r2=J("()=>{const g=G(PINFO[0].carries[0]);const a=plugPrice('buy',g);const M=S.meet;delete S.meet;const b=plugPrice('buy',g);S.meet=M;return [a,b]}")
     ck('no delivery charge at the spot',r2[0]==r2[1],str(r2))
