@@ -248,3 +248,10 @@ Order if built: 1, 2, 3 as one batch (~2 hrs), then 5. Leaderboard only after pe
 - Scanner texts: if you own a scanner, a short text when a patrol moves onto your current block. (~15 min)
 - Unlock guides: when a new system opens (crew, heists, scanner, plugs calling), a one-time 3-step mini guide like the first-day guide. (~1 hr)
 - Nov 14 art in (skin41): 50 new faces wired (F1 to F5, R1 to R3, S1 to S4, plus Big Ray and Uncle Sal for the city plugs, Mr. Dell and Sweets). Held back: La Reina (neon CAFE/BAR signs) and Ghost (looked like a famous rapper), redo in the art list. The realistic heist picture was not used; Chris wants all event art in the hood cartoon style, prompts E1 to E4 rewritten. Test dev/t_art.py.
+
+## Pounds in the inventory (Chris, Nov 14) - NOT BUILT, wait for "build" (Sonnet, about 2 to 3 hrs)
+- Keep the real count in grams (or pills). Only change how it shows and moves. Sizes: oz 28g, QP 112g, HP 224g, pound 448g (Chris's numbers, 1 lb = 16 oz of 28g). Pills: packs of 50, 100, boat 500.
+- Inventory shows the biggest pieces first, e.g. "1 lb, 1 oz, 6g".
+- Break down button per drug: lb to 2 HP or 4 QP, HP to 2 QP, QP to 4 oz, oz to grams.
+- Selling: a buyer who wants a pound, HP, QP or oz gets that piece in one tap instead of sliding all the grams.
+- All drugs use one shared setup. Quality and fake/cut product must carry through every split (test with cut and fake). Same stash space as the grams. Dev menu button, tutorial line, tests.
