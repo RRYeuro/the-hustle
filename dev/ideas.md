@@ -201,3 +201,7 @@ Order if built: 1, 2, 3 as one batch (~2 hrs), then 5. Leaderboard only after pe
 - Nov 13 7:35 PM (Chris corrected): size follows plug level only. Low 0.5 g / single pill / 1 oz Lean; Mid ounce (Weed, Coke, Molly) / 50 pills / 4 oz; Big QP / 500 pills / pint. The PRICE of the ounce follows quality (it already did): e.g. Mid plug ounce of Weed about $160 Reggie, $290 Mids, $530 Exotic; ounce of Coke about $1,200 Stepped On, $2,260 Mid, $4,200 Fish Scale. Test dev/t_unit.py.
 - Nov 13 7:45 PM balance: Big plugs 10% cheaper (was 15%); bulk discount cut (QP 5% was 10%, pound 9% was 16%, key 12% was 22%; pills and Lean cut the same way); Js money x1.5 plus 1% per rep point up to +50%. Big-plug QP profit to the Js now about 85% on Weed, about 115% on Coke (was 122% and 143%).
 - Nov 13 7:50 PM: Home button on the Move map (Rock Beno): 🏠 pin on the map and a Home row on the phone list. Tap = head home (normal move cost); at home it opens Next day / Lay low / Nap and your place. Test dev/t_home.py.
+
+## Who builds what (Nov 14)
+- Me (Sonnet): Lockpick, Vault code, Roof run, Memory tiles, Rotating locks (self-contained mini games, each hooks into licks/heists, tutorial card + Start + keyboard).
+- Fable/Opus: 1) Heist crew, 2) Chop shop sales, 3) Burner phones + police scanner, 4) Legal side gigs, 5) Chains and clothes, 6) Jail upgrades. Each needs dev menu, tutorial, tests, clean/dirty cash.
