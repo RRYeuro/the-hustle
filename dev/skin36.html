@@ -1,0 +1,50 @@
+<script id="skin36js">
+(function(){if(window._sk36)return;window._sk36=1;
+/* Police scanner. Cops now patrol a few blocks each day (more when you are hot or a task force is in).
+   Patrols always matter: serving or hitting licks on a patrolled block brings extra heat and cop searches.
+   The scanner (pawn shop, $350, 16+) shows which blocks have patrols and the heat events coming, before you move. */
+const el=id=>document.getElementById(id);
+const COST=350,AGE=16;
+const away=()=>{try{return typeof clCity==='function'&&!!clCity()}catch(e){return false}};
+const city=()=>{try{return (typeof W5BCITY!=='undefined'&&S.city!=null)?String(S.city):'home'}catch(e){return 'home'}};
+const crack=()=>{try{const B=b5();return B.crack&&S.day<=B.crack?B.crack:0}catch(e){return 0}};
+const homeB=()=>{try{return homeBlock()}catch(e){return 0}};
+function patrols(){if(!S)return [];S.pat=S.pat||{};if(S.pat.d===S.day&&S.pat.c===city()&&Array.isArray(S.pat.b))return S.pat.b;
+ const n=Math.min(4,1+(S.heat>=40?1:0)+(S.heat>=75?1:0)+(crack()?1:0)),lh=S.lh||{},hb=homeB(),w=BLOCKS.map((b,i)=>1+((lh[i]||0)/15)+(crack()&&i===hb?4:0)+(i===S.at&&S.heat>=50?1.5:0)),out=[];
+ for(let k=0;k<n&&out.length<BLOCKS.length;k++){let t=w.reduce((a,x,i)=>a+(out.includes(i)?0:x),0),r=Math.random()*t;for(let i=0;i<w.length;i++){if(out.includes(i))continue;r-=w[i];if(r<=0){out.push(i);break}}}
+ S.pat={d:S.day,c:city(),b:out};return out}
+const onPat=bi=>!away()&&patrols().includes(bi==null?S.at:bi);
+window.l36Pat=patrols;window.l36On=onPat;
+/* what patrols do (scanner or not) */
+try{const _st=srvTick;srvTick=function(n,g){const r=_st.apply(this,arguments);try{if(onPat()){S.heat=Math.min(100,S.heat+2);S.lh=S.lh||{};S.lh[S.at]=Math.min(100,(S.lh[S.at]||0)+2);if(S.patSaid!==S.day){S.patSaid=S.day;say(`🚓 A patrol car rolled through ${BLOCKS[S.at]} while you were serving. Heat +2 a sale here today.`)}}}catch(e){}return r}}catch(e){console.error('sk36 srv',e)}
+try{const _ld=lickDone;lickDone=function(title,text,good,noLick,img){try{if(good&&!noLick&&onPat()){S.heat=Math.min(100,S.heat+4);text+=' A patrol was on this block, so it got noticed. Heat +4.'}}catch(e){}return _ld.call(this,title,text,good,noLick,img)}}catch(e){console.error('sk36 lick',e)}
+try{const _s=window.l27Search;if(_s){const i=WD.findIndex(f=>f.name==='l27Day');if(i>=0){const _d=WD[i];WD[i]=function l27Day(){const R=Math.random;if(onPat())Math.random=()=>R()*.5;try{return _d.apply(this,arguments)}finally{Math.random=R}}}}}catch(e){console.error('sk36 search',e)}
+/* the scanner gives a heads-up on some raids */
+try{const _rd=raid;raid=function(){try{if(S.scan&&!window.FF&&Math.random()<.3&&S.scanD!==S.day){S.scanD=S.day;S.heat=Math.max(0,S.heat-3);modal(`<h2>The scanner went off</h2><p>"Units, stage two blocks from ${esc(BLOCKS[homeB()])}." You heard your street on the scanner and cleared everything out before they kicked the door. They found nothing.</p><div class="btns"><button class="btn go" id="ok">Close call</button></div>`);el('ok').onclick=()=>{close();render()};say('The scanner tipped you off before a raid. They found nothing.');return}}catch(e){}return _rd.apply(this,arguments)}}catch(e){console.error('sk36 raid',e)}
+/* what the scanner shows */
+function events(){const L=[];try{const B=b5();if(B.fc&&B.fc.t==='crack'){const d=B.fc.at-S.day;L.push(['🚨',`Chatter about a task force sweep ${d<=0?'today':d===1?'tomorrow':'in '+d+' days'}.`])}if(crack())L.push(['🚨',`Task force on the streets until day ${crack()}. Every block is hotter.`])}catch(e){}
+ if(S.heat>=70)L.push(['📻','Your name is coming up on the radio. Stops and raids are likely.']);
+ try{const hh=Math.max(S.heat,S.heatY||0);if(hh>=40){const r=HOMES[S.home].raid*(1.4-(S.comm??30)/80)*hh/100;L.push(['🏠',`Raid risk at your place: ${r>=.06?'High':r>=.03?'Medium':'Low'}.`])}}catch(e){}
+ try{if(dirtyCash()>=20000&&S.heat>=50)L.push(['🚗','Traffic stops: you fit the profile (20K+ dirty, heat 50+).'])}catch(e){}
+ try{if(Array.isArray(S.loot)&&S.loot.length)L.push(['🎒','You are carrying stolen goods. Patrolled blocks search more.'])}catch(e){}
+ if(!L.length)L.push(['✅','Quiet on the radio. Nothing big coming.']);return L}
+function scanHTML(){if(!S||S.over||S.pr||S.prison||S.inJail)return '';if(away())return S.scan?`<div class="sec">Police scanner</div><div class="row" style="padding:6px 12px"><div class="info"><div class="s">Your scanner only picks up the channels back home.</div></div></div>`:'';
+ if(!S.scan)return `<div class="row" style="padding:6px 12px"><div class="info"><div class="s">🚓 Cops patrol a few blocks every day. A police scanner from the pawn shop shows which ones.</div></div></div>`;
+ const P=patrols(),lh=S.lh||{};let h=`<div class="sec">Police scanner · today</div>`;
+ h+=BLOCKS.map((b,i)=>{const p=P.includes(i),l=Math.round(lh[i]||0);return `<div class="row" style="padding:5px 12px"><div class="info" style="min-width:0"><div class="t" style="font-size:14px">${p?'🚓 ':''}${esc(b)}${i===S.at?' <span class="chip">You</span>':''}</div><div class="s">${p?'<span style="color:var(--heat)">Patrol on this block. Serving and licks here bring extra heat.</span>':'No patrol heard.'}${l>=15?` · local heat ${l}`:''}</div></div></div>`}).join('');
+ h+=events().map(e=>`<div class="row" style="padding:5px 12px"><div class="info"><div class="s">${e[0]} ${e[1]}</div></div></div>`).join('');return h}
+window.l36HTML=scanHTML;
+try{const _pm=paneMove;paneMove=function(){let h=_pm.apply(this,arguments);try{h=scanHTML()+h}catch(e){console.error('sk36 move',e)}return h}}catch(e){}
+/* 🚓 on the block tabs and the map */
+const _r=render;render=function(){const r=_r.apply(this,arguments);try{if(S&&S.scan&&!away()&&typeof tab!=='undefined'&&tab==='move'){const P=patrols();document.querySelectorAll('.tbs26 button[data-t]').forEach(b=>{const i=+b.dataset.t,sm=b.querySelector('small');if(sm&&P.includes(i)&&!/🚓/.test(sm.textContent))sm.textContent='🚓 '+sm.textContent});
+ const m=el('fm26');if(m&&!m.querySelector('.pat36')){P.forEach(i=>{const q=(window._tp26&&window._tp26(i))||null;if(!q)return;const s=document.createElement('span');s.className='pat36';s.textContent='🚓';s.title='Patrol on '+BLOCKS[i];s.style.cssText=`position:absolute;left:${q[0]-4}%;top:${q[1]+5}%;font-size:clamp(14px,2.4vw,22px);pointer-events:none;filter:drop-shadow(0 0 3px #000);z-index:3`;m.appendChild(s)})}}}catch(e){}return r};
+/* buy it at the pawn shop */
+try{const _o=openPlace;openPlace=function(id){const r=_o.apply(this,arguments);try{if(id==='pawn'&&!S.scan&&!el('modal').hidden){const mc=el('mcard'),p=mc&&mc.querySelector('.pane');if(p&&!mc.querySelector('[data-a36]')){const young=(S.age||99)<AGE;p.insertAdjacentHTML('afterbegin',`<div class="row" style="padding:8px 12px"><div class="info" style="flex:1 1 180px"><div class="t">📻 Police scanner</div><div class="s">${young?'Unc will not sell one to a kid. 16 and up.':'Hear where the patrols are and what is coming before you move. Shows on the Move tab.'}</div></div><button class="btn go" data-a36="buy" ${young||S.cash<COST?'disabled':''}>${money(COST)}</button></div>`);p.querySelector('[data-a36]').onclick=ev=>{ev.stopPropagation();buy()}}}}catch(e){console.error('sk36 pawn',e)}return r}}catch(e){}
+function buy(){if(S.scan||(S.age||99)<AGE||S.cash<COST)return;try{if(placeAt('pawn')!==S.at){say('The scanner is at the pawn shop.');return}}catch(e){}S.cash-=COST;try{cleanCash()}catch(e){}S.scan=1;say('Bought a police scanner. Patrols and heat events show on the Move tab now.');el('modal').hidden=true;try{tab='move'}catch(e){}render()}
+try{TUT.push(['Police scanner','Cops patrol a few blocks every day: one when you are cool, up to four when you are hot or a task force is in. Serving the Js on a patrolled block adds 2 heat a sale, a lick there adds 4 heat, and cops search people carrying stolen goods twice as often there. You cannot see the patrols without a police scanner. Buy one at the pawn shop for $350 (16 and up). It shows a 🚓 on every patrolled block on the Move tab and the map, plus what is coming: task force sweeps, your raid risk, traffic stop risk. It also tips you off before some raids. It only picks up channels in your home city.'])}catch(e){}
+try{const _dp=devPanel;devPanel=function(){const r=_dp.apply(this,arguments);try{const mc=el('mcard');if(mc&&!el('modal').hidden&&!mc.querySelector('[data-d36]')){const B=(k,l)=>`<button class="btn" data-d36="${k}">${l}</button>`;const d=document.createElement('div');d.innerHTML=`<div class="sec">Police scanner (new)</div><div class="btns">${B('give','Give police scanner')}${B('here','Put a patrol on this block')}${B('none','Clear patrols today')}${B('crack','Task force forecast')}</div>`;const h2=mc.querySelector('h2');if(h2&&h2.parentNode)h2.parentNode.insertBefore(d,h2.nextSibling);else mc.appendChild(d);
+ d.querySelectorAll('[data-d36]').forEach(b=>b.onclick=ev=>{ev.stopPropagation();const k=b.dataset.d36;el('modal').hidden=true;patrols();
+  if(k==='give'){S.scan=1;say('Dev: police scanner given.')}if(k==='here'){if(!S.pat.b.includes(S.at))S.pat.b.push(S.at);say('Dev: patrol on '+BLOCKS[S.at]+'.')}if(k==='none'){S.pat.b=[];say('Dev: no patrols today.')}if(k==='crack'){try{b5().fc={t:'crack',at:S.day+2};say('Dev: task force in 2 days.')}catch(e){}}
+  try{tab='move'}catch(e){}render()})}}catch(e){console.error('sk36 dev',e)}return r}}catch(e){}
+})();
+</script>

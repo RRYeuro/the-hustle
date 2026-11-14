@@ -86,7 +86,7 @@ with sync_playwright() as p:
     ck('tutorial entries',J("()=>TUT.filter(t=>/Licks and loot|Sort and Pin/.test(t[0])).length")==2)
     # --- full flows (core mini games stubbed to a win)
     J("()=>{window._l27force=true;seqGame=d=>d(true);grabGame=(d,o)=>d((o&&o.max)||6,false);sneakGame=d=>d(6,false);hotwireGame=d=>d(true);talkGame=d=>d(0);chase=d=>d(true);cut=()=>{};window.noTips=1}")
-    R="()=>{S.loot=[];S.bag=1;S.car=null;S.rob=S.rob||{};S.rob.fat=0;S.lcd={};S.cap=900;S.heat=0;S.cash=1000;S.clean=1000;S.hp=100;S.en=100;S.stress=0;S.over=false;document.getElementById('modal').hidden=true;"
+    R="()=>{S._evDay=S.day;S.loot=[];S.bag=1;S.car=null;S.rob=S.rob||{};S.rob.fat=0;S.lcd={};S.cap=900;S.heat=0;S.cash=1000;S.clean=1000;S.hp=100;S.en=100;S.stress=0;S.over=false;document.getElementById('modal').hidden=true;"
     txt=lambda:J("()=>document.getElementById('modal').hidden?'(hidden)':document.getElementById('mcard').innerText.slice(0,260)")
     def sort_win():
         pg.keyboard.press('Enter');pg.wait_for_timeout(200);J("()=>__srDbg.solve()");pg.wait_for_timeout(300)
