@@ -17,7 +17,7 @@ with sync_playwright() as p:
     r=J("()=>{phoneMsg('Some guy','Random text that is not in the table.');return S.inbox[0].t}")
     ck('unknown texts pass through',r=='Random text that is not in the table.',r)
     # court
-    J("()=>{S.picQ=[];document.getElementById('modal').hidden=true;S.strikes=1;S.rec={n:2,f:1,last:0};prStart();S.pr.cc=0;document.getElementById('modal').hidden=true;w4Court()}")
+    J("()=>{S.picQ=[];document.getElementById('modal').hidden=true;S.strikes=1;S.rec={n:2,f:1,last:0};prStart();S.pr.cc=0;S.pr._sc46=1;document.getElementById('modal').hidden=true;w4Court()}")
     r=J("()=>({v:document.querySelectorAll('#mcard .vb45').length,t:document.querySelector('#mcard').textContent.slice(0,400),btn:document.querySelectorAll('#mcard button').length})")
     ck('court has people talking + facts under',r['v']>=2 and 'seen your name' in r['t'] and r['btn']>=4,json.dumps(r))
     pg.screenshot(path='/tmp/claude-0/s43/court.png')

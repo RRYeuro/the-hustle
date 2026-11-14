@@ -1,0 +1,100 @@
+<style id="skin46">
+.t46{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.t46 button{flex:1 1 70px;padding:6px 8px;border-radius:8px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.06);color:inherit;font:600 12px inherit;cursor:pointer}
+.t46 button:hover{border-color:var(--accent,#f5b72a)}
+.ty46{display:inline-flex;gap:4px;padding:10px 12px;border-radius:16px;background:rgba(255,255,255,.08);margin:4px 0;align-self:flex-start}
+.ty46 i{width:7px;height:7px;border-radius:50%;background:#aaa;animation:ty46 1s infinite}.ty46 i:nth-child(2){animation-delay:.15s}.ty46 i:nth-child(3){animation-delay:.3s}
+@keyframes ty46{0%,60%,100%{opacity:.3;transform:translateY(0)}30%{opacity:1;transform:translateY(-3px)}}
+.ph-bat.b46{position:relative;display:inline-block}.ph-bat.b46 i{display:block;height:100%}
+.ph-sb .ns46{color:#e0475a;font-weight:700}
+#mcard:has(#c31a) #c31a{background:#2fbf71;border-color:#2fbf71;color:#04170c}
+#mcard:has(#c31a) #c31c{background:#e0475a;border-color:#e0475a;color:#fff}
+#mcard:has(#c31a) .sec{animation:rg46 1s ease-in-out infinite}
+@keyframes rg46{50%{opacity:.35}}
+@media (prefers-reduced-motion:reduce){.ty46 i,#mcard:has(#c31a) .sec{animation:none}}
+</style>
+<script id="skin46js">
+(function(){if(window._sk46)return;window._sk46=1;
+const el=id=>document.getElementById(id),pk=a=>a[Math.floor(Math.random()*a.length)],cl=t=>window.l45cl?l45cl(t):t;
+const CB=()=>{S.cb46=S.cb46||{m:{}};S.cb46.m=S.cb46.m||{};return S.cb46};
+const bOf=n=>{try{return (S.known||[]).find(bi=>plugName(bi)===n)}catch(e){return undefined}};
+const trO=bi=>(S.trust&&S.trust[bi])||0;
+const addTr=(bi,d)=>{S.trust=S.trust||{};S.trust[bi]=Math.max(0,Math.min(100,trO(bi)+d))};
+const lvl=bi=>(PINFO[bi]||{}).lvl||'Low';
+const talk=()=>{try{return skv('talk')||0}catch(e){return 0}};
+/* ---------- callbacks: people remember ---------- */
+try{const _b=busted;busted=function(){const r=_b.apply(this,arguments);try{CB().pop=S.day}catch(e){}return r}}catch(e){}
+function callback(bi){const C=CB(),last=C.m[bi],L=lvl(bi),o=[];
+ if(C.pop!=null&&S.day-C.pop<=7)o.push(L==='Big'?'I heard you got picked up. You didn\'t say my name, did you?':'Heard you got popped. You good? You ain\'t been talking, right?');
+ try{if(window.l43Owe&&l43Owe()>300)o.push('Word is you behind on your bills. Don\'t come to me short.')}catch(e){}
+ if(last!=null&&S.day-last>=14)o.push(L==='Big'?'It has been a while.':'Damn, been a minute. Thought you got locked up.');
+ if(last!=null&&S.day-last<=1)o.push('Back already? Business must be good.');
+ try{if((S.heat||0)>=60)o.push('You hot right now. Make this quick and don\'t park out front.')}catch(e){}
+ return o.length?pk(o):null}
+/* ---------- plug meet: greeting, callback, pick a tone ---------- */
+const TONE=[['r','🤝 Respect'],['h','💸 Haggle'],['f','💎 Flex'],['b','🃏 Bluff']];
+const _g45=window.l45greet;
+window.l45greet=function(M){try{if(!M||M.bi==null)return _g45?_g45(M):'';const bi=M.bi,C=CB();
+  if(!M._g45){const c=Math.random()<.6?callback(bi):null;if(c)M._g45=c;C.m[bi]=S.day}
+  let h=_g45?_g45(M):'';
+  if(M.r46)h+=`<div class="vb45"><b>${esc(plugName(bi))}</b>${esc(cl(M.r46))}</div>`;
+  else if(!M.tone46)h=h.replace(/<\/div>$/,`<div class="t46">${TONE.filter(t=>t[0]!=='b'||talk()>=5).map(t=>`<button data-t46="${t[0]}">${t[1]}</button>`).join('')}</div></div>`);
+  return h}catch(e){console.error('sk46 greet',e);return _g45?_g45(M):''}};
+function tone(k){const M=S.meet;if(!M||M.tone46)return;const bi=M.bi,L=lvl(bi),t=trO(bi),bonus=t>=60?.15:0;M.tone46=k;let r='';
+ if(k==='r'){addTr(bi,2);r=L==='Big'?'Good. Respect keeps people alive.':pk(['Respect. I fuck with that.','Appreciate that. Real recognize real.'])}
+ if(k==='h'){if(Math.random()<Math.min(.75,.2+talk()*.05+bonus)){S.hg46={bi,d:S.day,p:.05};r=L==='Big'?'Five percent. Once.':'Aight, I\'ll knock 5% off today. Don\'t tell nobody.'}else{addTr(bi,-3);r=L==='Big'?'The price is the price.':'Price is the price. Buy or bounce.'}}
+ if(k==='f'){if((S.rep||0)>=35){addTr(bi,3);r=pk(['Okay, I see you moving 👀','You eating out here, huh? Respect.'])}else{addTr(bi,-2);r=pk(['Flexing on me? With what?','Chill. You ain\'t that guy yet.'])}}
+ if(k==='b'){if(Math.random()<Math.min(.7,.15+talk()*.06+bonus)){S.hg46={bi,d:S.day,p:.1};r='Another plug cheaper? ...Fine. 10% off today. Don\'t make it a habit.'}else{addTr(bi,-6);r=L==='Big'?'Then go buy from them.':'Then go buy from them then. Don\'t play with me.'}}
+ M.r46=r;try{sfx('tap')}catch(e){}render()}
+try{const _pp=plugPrice;plugPrice=function(kind,g,raw){let p=_pp.apply(this,arguments);try{const H=S.hg46;if(H&&H.d===S.day&&kind==='buy'&&!raw&&S.meet&&S.meet.bi===H.bi)p=Math.round(p*(1-H.p))}catch(e){}return p}}catch(e){}
+/* ---------- texting: voiced replies, haggling, typing dots ---------- */
+try{const K=window._KB;if(K){const set=(a,b)=>{a.splice(0,a.length,...b)};
+ set(K.FL.plug,['You got work today?','Can you do better on the price?','I\'m good for now']);
+ set(K.FL.fam,['I\'m good, love you','I\'m at work','Can\'t talk right now']);
+ set(K.FL.any,['What\'s good?','I\'m busy right now','Talk later']);
+ set(K.RP.fam,['Okay. Be careful out there, I mean it.','Call me when you can. Don\'t make me worry.','Love you too. Eat something.']);
+ set(K.RP.any,['Yeah.','Bet.','Aight, later.'])}}catch(e){}
+function plugReply(bi,i){const L=lvl(bi),t=trO(bi),T=t>=60?'hi':t<30?'lo':'mid';
+ if(i===0)return {hi:pk(['Always got something for you. Pull up.','Yeah, fresh too. Come see me.']),mid:pk(['Yeah. Come see.','Depends what you need. Come through.']),lo:pk(['Got it if you got the money.','Maybe. Bring cash this time.'])}[T];
+ if(i===1){if((S.hg46&&S.hg46.d===S.day&&S.hg46.bi===bi)||(CB().tx||{})[bi]===S.day)return 'I already told you my price today.';CB().tx=CB().tx||{};CB().tx[bi]=S.day;
+  if(Math.random()<Math.min(.7,.2+talk()*.05+(t>=60?.15:0))){S.hg46={bi,d:S.day,p:.05};return L==='Big'?'Five off. Today only.':'Aight. 5% off if you pull up today.'}addTr(bi,-2);return L==='Big'?'No.':'Hell no. Price is the price.'}
+ return {hi:'Bet. Hit me when you ready.',mid:'Aight.',lo:'Whatever.'}[T]}
+document.addEventListener('click',e=>{
+ const tb=e.target.closest&&e.target.closest('[data-t46]');if(tb){e.preventDefault();e.stopPropagation();tone(tb.dataset.t46);return}
+ const f=e.target.closest&&e.target.closest('[data-flav]');if(!f)return;
+ setTimeout(()=>{try{const n=window._mth,i=+f.dataset.flav,k=f.dataset.fk,m=S.inbox&&S.inbox[0];if(!m||m.f!==n)return;
+  if(k==='plug'){const bi=bOf(n);if(bi!=null)m.t=plugReply(bi,i)}
+  m.t=cl(m.t);bat(-2);const held=S.inbox.shift();render();
+  const v=document.querySelector('.phx[data-app="messages"] .mth-kb');if(v){const d=document.createElement('div');d.className='ty46';d.innerHTML='<i></i><i></i><i></i>';v.parentNode.insertBefore(d,v)}
+  setTimeout(()=>{S.inbox.unshift(held);try{ping()}catch(e){}render()},900)}catch(er){console.error('sk46 flav',er)}},0)},true);
+/* ---------- battery + signal ---------- */
+function bat(d){S.bat=Math.max(0,Math.min(100,(S.bat==null?100:S.bat)+d));if(d<0&&S.bat<=15&&S.bat-d>15)say('🔋 Phone at '+S.bat+'%. Charge it at home tonight.');if(d<0&&S.bat===0)say('📵 Your phone died. Nobody can reach you until you charge it at home.')}
+window.l46bat=bat;
+const _po=window.l43PhoneOff;window.l43PhoneOff=function(){try{if(S&&S.bat!=null&&S.bat<=0)return true}catch(e){}return _po?_po():false};
+window.l46sb=function(){try{const off=window.l43PhoneOff&&l43PhoneOff(),b=S.bat==null?100:S.bat,c=b<=15?'#e0475a':b<=40?'#f5b72a':'#5fd38a';return `${off?'<span class="ns46">No Service</span>':'5G'} <span class="ph-bat b46" title="${b}%"><i style="width:${Math.max(4,b)}%;background:${c}"></i></span>`}catch(e){return '5G <span class="ph-bat"><i></i></span>'}};
+try{WD.push(()=>{try{const B=S.bb||{},power=!B.lights&&!S.pr&&!S.inJail&&S.home&&S.home!=='street';if(power)S.bat=100;else bat(-30)}catch(e){}})}catch(e){}
+document.addEventListener('click',e=>{const p=e.target.closest&&e.target.closest('[data-a31="tx"],[data-a31="pu"]');if(p&&!(window.l43PhoneOff&&l43PhoneOff()))bat(-4)},true);
+/* missed calls + dodging */
+window.l46miss=function(bi){try{const n=plugName(bi);S.inbox=S.inbox||[];S.inbox.unshift({d:S.day,f:n,t:'📞 Missed call'});S.inbox=S.inbox.slice(0,150);addTr(bi,-1)}catch(e){}};
+window.l46ring=function(){try{setTimeout(()=>{try{sfx('tap');setTimeout(()=>sfx('tap'),180)}catch(e){}try{navigator.vibrate&&navigator.vibrate([200,100,200])}catch(e){}},50);bat(-3)}catch(e){}return ''};
+window.l46dodge=function(bi){try{addTr(bi,-2);const L=lvl(bi);S.inbox=S.inbox||[];S.inbox.unshift({d:S.day,f:plugName(bi),t:cl(L==='Big'?'Noted.':'Oh you sending me to voicemail now? Aight.')});S.inbox=S.inbox.slice(0,150)}catch(e){}};
+/* text ping */
+let lp=0;function ping(){const n=Date.now();if(n-lp<1200||!S||!S.char)return;lp=n;try{sfx('tap')}catch(e){}try{navigator.vibrate&&navigator.vibrate(25)}catch(e){}}
+const _pm=phoneMsg;phoneMsg=function(){const r=_pm.apply(this,arguments);try{ping()}catch(e){}return r};
+/* ---------- court in session: 3 beats before the court card ---------- */
+try{const _wc=w4Court;w4Court=function(){const R=S.pr;if(!R||R.cc||R._sc46)return _wc.apply(this,arguments);R._sc46=1;const X=w4(),C=crtCourt(),juv=C.k==='juv';let ch=(R.charge||'the charge').replace(/\s*\(Class [^)]*\)/,'');
+  const vb=(w,c,t)=>`<div class="vb45 ${c}"><b>${w}</b>${cl(t)}</div>`;
+  const pre=juv?vb('Judge Harlan','j','Your parent or guardian is here? Good. They should hear this too.')+vb('Solicitor Price','p',`The state is asking for probation and community service on ${ch}.`)+vb('Public defender','','He is young, your honor. He can turn this around.'):
+   vb('Solicitor Price','p',C.k==='fed'?`The defendant ran product across county lines. We have the records. The state asks for real time on ${ch}.`:`The defendant was caught red-handed. ${ch}. The state asks for the full sentence.`)+vb('Public defender','','My client pleads not guilty, your honor.')+vb('Judge Harlan','j','Anything you want to say before we set this?');
+  const go=jr=>{X.jr=(X.jr||0)+jr;_wc.call(this)};
+  wCard('g_court','Court is in session',pre+`<span class="vi45">How you carry yourself here shifts your odds at trial.</span>`,[
+   {l:'"Yes, your honor."',c:'go',f:()=>{say('Judge Harlan: "Polite. That counts for something in my courtroom."');go(.04)}},
+   {l:'Speak up for yourself',c:'',f:()=>{if(Math.random()<Math.min(.8,.3+talk()*.07)){say('Judge Harlan: "Hm. Noted." The room got quiet. That landed.');go(.08)}else{const f=Math.min(S.cash||0,250);S.cash-=f;try{cleanCash()}catch(e){}say(`Judge Harlan: "One more word and you're in contempt." Fined ${money(f)}.`);go(-.06)}}},
+   {l:'Stay quiet',c:'',f:()=>{say('Judge Harlan: "Smart."');go(0)}}],'Court')}}catch(e){console.error('sk46 court',e)}
+try{const _wv=w4Verdict;w4Verdict=function(p){const X=w4(),a=[].slice.call(arguments);try{if(X.jr){a[0]=Math.max(.02,Math.min(.92,p+X.jr));X.jr=0}}catch(e){}return _wv.apply(this,a)}}catch(e){}
+/* ---------- tutorial + dev ---------- */
+try{TUT.push(['Phone and people','Your phone has a battery: texts and calls drain it, and it charges when you sleep at home with the lights on. Dead phone or unpaid bill means No Service, so plugs cannot reach you (you get a Missed call). Decline a plug call and they remember. At a meet, pick a tone: Respect builds trust, Haggle can get 5% off, Flex works if your rep backs it up, Bluff (Talk 5+) can get 10% off but can blow up. Texting "Can you do better on the price?" can also get you a discount once a day. People remember what happened: getting popped, owing bills, long gaps. In court, how you talk to the judge shifts your trial odds.'])}catch(e){}
+try{const _dp=devPanel;devPanel=function(){const r=_dp.apply(this,arguments);try{const mc=el('mcard');if(mc&&!el('modal').hidden&&!mc.querySelector('[data-d46]')){const d=document.createElement('div');d.innerHTML=`<div class="sec">Phone and talk (new)</div><div class="btns"><button class="btn" data-d46="b5">Battery 5%</button><button class="btn" data-d46="b0">Phone dead</button><button class="btn" data-d46="b100">Charge phone</button><button class="btn" data-d46="pop">Just got popped (callbacks)</button><button class="btn" data-d46="ct">Court scene</button></div>`;const h2=mc.querySelector('h2');if(h2&&h2.parentNode)h2.parentNode.insertBefore(d,h2.nextSibling);else mc.appendChild(d);
+ d.querySelectorAll('[data-d46]').forEach(b=>b.onclick=ev=>{ev.stopPropagation();const k=b.dataset.d46;el('modal').hidden=true;if(k==='b5')S.bat=5;if(k==='b0')S.bat=0;if(k==='b100')S.bat=100;if(k==='pop')CB().pop=S.day;
+  if(k==='ct'){S.age=Math.max(S.age||0,18);S.strikes=Math.max(1,S.strikes||0);S.picQ=[];prStart();if(S.pr){S.pr.cc=0;S.pr._sc46=0;w4Court()}return}render()})}}catch(e){console.error('sk46 dev',e)}return r}}catch(e){}
+})();</script>

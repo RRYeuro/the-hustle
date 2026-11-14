@@ -277,3 +277,4 @@ Start with 2 + 8 on texting, court and plug talk (~5-8% usage). 3/4/5 are ~10-15
 6. Battery and signal: dead phone = unreachable, charge at home; unpaid phone bill shows "No Service".
 7. Burner phone for plug business: less heat, breaks, can lose contacts.
 8. Notification sounds + buzz on mobile.
+- Dialogue pass 2 + real phone: BUILT Nov 14 (skin46). Meet tones (Respect +2 trust, Haggle 5% off, Flex needs 35 rep, Bluff Talk 5+ 10% off), text haggle once a day, typing dots, callbacks (popped, owing bills, long gap, back already, hot), court in session scene (Yes your honor +4%, Speak up +8%/-6% + $250 contempt, Stay quiet), battery (texts -4, calls -3, replies -2, recharge at home with lights on, -30 a day without), No Service when dead/cut, missed calls, Decline = trust -2 + voicemail text, ring + buzz, text ping. Lock screen, Messages threads, reply choices and apps already existed.

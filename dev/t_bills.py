@@ -44,7 +44,7 @@ with sync_playwright() as p:
     ck('under 18: guardian covers it, takes the phone 3 days, trust -8',r['poff']==r['d']+3 and r['tr']==52 and r['owe']==0 and r['off'],json.dumps(r))
     J("()=>{S.age=19;S.bb={owe:{},miss:{}};S.picQ=[];document.getElementById('modal').hidden=true}")
     # bail
-    J("()=>{S.cash=20000;S.clean=0;S.picQ=[];document.getElementById('modal').hidden=true;S.strikes=1;prStart();S.pr.cc=0;document.getElementById('modal').hidden=true;w4Court()}")
+    J("()=>{S.cash=20000;S.clean=0;S.picQ=[];document.getElementById('modal').hidden=true;S.strikes=1;prStart();S.pr.cc=0;S.pr._sc46=1;document.getElementById('modal').hidden=true;w4Court()}")
     t=J("()=>document.getElementById('mcard').textContent")
     ck('court shows cash bail, bondsman and lawyer tiers',('Cash bail' in t) and ('Bondsman' in t) and ('Top attorney' in t),t[:300])
     J("()=>{[...document.querySelectorAll('#mcard button')].find(b=>/Cash bail/.test(b.textContent)).click()}")
@@ -56,7 +56,7 @@ with sync_playwright() as p:
     J("()=>{[...document.querySelectorAll('#mcard button')].find(b=>/Public defender/.test(b.textContent)).click()}")
     c1=J("()=>({c:S.cash,cl:cleanCash()})")
     ck('show up: bail back as clean money',c1['c']-c0['c']==amt and c1['cl']-c0['cl']==amt,json.dumps([c0,c1,amt]))
-    J("()=>{document.getElementById('modal').hidden=true;S.picQ=[];S.pr=null;S.inJail=0;w4().bail=null;S.cash=20000;S.picQ=[];document.getElementById('modal').hidden=true;S.strikes=1;prStart();S.pr.cc=0;document.getElementById('modal').hidden=true;w4Court()}")
+    J("()=>{document.getElementById('modal').hidden=true;S.picQ=[];S.pr=null;S.inJail=0;w4().bail=null;S.cash=20000;S.picQ=[];document.getElementById('modal').hidden=true;S.strikes=1;prStart();S.pr.cc=0;S.pr._sc46=1;document.getElementById('modal').hidden=true;w4Court()}")
     J("()=>{const b=[...document.querySelectorAll('#mcard button')].find(b=>/Cash bail|Court date/.test(b.textContent))}")
     c0=J("()=>S.cash");J("()=>{[...document.querySelectorAll('#mcard button')].find(b=>/Bondsman/.test(b.textContent)).click()}")
     r=J("(c)=>({paid:c-S.cash,bail:w4().bail})",c0);ck('bondsman: 10% fee, nothing to get back',r['bail'] and r['bail']['bond'] and r['bail']['amt']==0 and r['paid']>=200,json.dumps(r))
