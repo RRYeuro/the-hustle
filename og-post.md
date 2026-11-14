@@ -1,8 +1,9 @@
-🚨 **THE HUSTLE: v211 IS LIVE** 🚨
+🚨 **THE HUSTLE: v212 IS LIVE** 🚨
 Thanks for all the bug reports. This one is big.
-📲 **Get it first:** PC **Ctrl+Shift+R** (Mac Cmd+Shift+R). iPhone: Safari **aA > Reload Page**; Home Screen app: swipe it closed and reopen (twice if still old). Check it says **v211**. Saves carry over.
+📲 **Get it first:** PC **Ctrl+Shift+R** (Mac Cmd+Shift+R). iPhone: Safari **aA > Reload Page**; Home Screen app: swipe it closed and reopen (twice if still old). Check it says **v212**. Saves carry over.
 
 **New**
+- 🗣️ Dialogue redo: plugs talk by level and trust, crew texts sound real, court has the judge, solicitor and your lawyer talking. Cursing is in (Language: Clean on the main menu turns it off).
 - 🗺️ **A night map for every city** (all 8). Hover a district to see the block. On phones it's block tabs.
 - 🏚️ **Full scene screen for every spot** (barber, gym, pawn shop, trap house...). Actions sit on the picture.
 - 🎒 **Real loot from licks:** you need a book bag. Pockets hold 4 small things, bag 8 more, TVs and speakers need a car trunk. Jewelry only sells at the pawn shop (40 to 60%). Check the Licks app.
