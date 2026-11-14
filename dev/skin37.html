@@ -1,0 +1,83 @@
+<style id="skin37">
+.ln37{position:relative;height:300px;max-width:300px;margin:8px auto;background:#15131b;border-radius:10px;overflow:hidden;display:grid;grid-template-columns:repeat(3,1fr)}
+.ln37 .lane{border-right:2px dashed #2a2732}.ln37 .lane:last-of-type{border-right:0}
+.ln37 .it{position:absolute;width:33.3%;text-align:center;font-size:28px;line-height:1;pointer-events:none}
+.ln37 .me{position:absolute;bottom:8px;width:33.3%;text-align:center;font-size:34px;transition:left .08s;pointer-events:none}
+.tw37{position:relative;height:34px;max-width:320px;margin:14px auto;background:#15131b;border-radius:8px;overflow:hidden}
+.tw37 .z{position:absolute;top:0;bottom:0;background:rgba(79,211,106,.35);border-left:2px solid #4fd36a;border-right:2px solid #4fd36a}
+.tw37 .m{position:absolute;top:-2px;bottom:-2px;width:4px;background:var(--accent);border-radius:2px}
+</style>
+<script id="skin37js">
+(function(){if(window._sk37)return;window._sk37=1;
+/* Legal side gigs with mini games: delivery (lane run), tow truck (hook timing), taxi (fare run). All pay clean money, once a day each.
+   Delivery: 16+, tow and taxi: 18+. Taxi needs your own car (not a stolen one). The two delivery shifts share one daily slot. */
+const el=id=>document.getElementById(id);
+const GIG={dv:{n:'Delivery run',age:16,en:8,lo:50,hi:150,car:25,flag:'dv'},tow:{n:'Tow truck night shift',age:18,en:10,lo:70,hi:200,flag:'tow'},taxi:{n:'Rideshare driver',age:18,en:12,lo:90,hi:230,flag:'taxi'}};
+const gate=(t,x,go,k)=>{try{if(typeof gateGame==='function')return gateGame(t,x,go,k&&typeof ARTX==='function'&&ARTX(k)?k:null)}catch(e){}go()};
+const stuck=()=>{try{return typeof stuckHome==='function'&&stuckHome()}catch(e){return false}};
+/* ---------- lane run: delivery and taxi ---------- */
+function laneGame(o,done){const T=(o.sec||20)*1000,ttl=o.title;
+ gate(ttl,o.txt+' Keyboard: left and right arrows (or A and D) switch lanes, Esc ends the shift early. On a phone, tap the left or right side of the road.',()=>{
+  mgOn=true;let lane=1,good=0,bad=0,over=false,raf=0,last=performance.now(),spawnT=0;const t0=last,items=[];
+  modal(`<h2>${ttl}</h2><div class="bar" style="height:8px"><i id="lnt" style="width:100%;background:var(--heat)"></i></div><p class="s" style="text-align:center" id="lns">${o.goodN}: 0 · ${o.badN}: 0</p><div class="ln37" id="ln"><div class="lane"></div><div class="lane"></div><div class="lane"></div><div class="me" id="lnm" style="left:33.3%">${o.me}</div></div><div class="btns" style="justify-content:center"><button class="btn" id="lnl">◀ Left</button><button class="btn" id="lnr">Right ▶</button><button class="btn" id="lnx">End shift</button></div>`);
+  const box=el('ln'),me=el('lnm');
+  const mv=d=>{lane=Math.max(0,Math.min(2,lane+d));me.style.left=(lane*33.3)+'%'};
+  const stop=()=>{over=true;mgOn=false;document.removeEventListener('keydown',kd,true);cancelAnimationFrame(raf)};
+  const fin=()=>{if(over)return;stop();el('modal').hidden=true;const p=Math.max(0,Math.min(1,(good-bad*1.5)/(o.target||10)));done({p,good,bad})};
+  function kd(e){if(e.ctrlKey||e.metaKey||e.altKey)return;if(!el('ln')){stop();return}const k=e.key;if(k==='ArrowLeft'||k==='a'||k==='A')mv(-1);else if(k==='ArrowRight'||k==='d'||k==='D')mv(1);else if(k==='Escape')fin();else return;e.preventDefault();e.stopPropagation()}
+  document.addEventListener('keydown',kd,true);el('lnl').onclick=()=>mv(-1);el('lnr').onclick=()=>mv(1);el('lnx').onclick=fin;
+  box.addEventListener('pointerdown',e=>{const r=box.getBoundingClientRect();mv(e.clientX<r.left+r.width/2?-1:1)});
+  const H=300;
+  const tick=now=>{if(over)return;if(!el('ln')){stop();return}const dt=Math.min(50,now-last);last=now;const el2=now-t0,left=T-el2;el('lnt').style.width=Math.max(0,left/T*100)+'%';if(left<=0)return fin();
+   spawnT-=dt;if(spawnT<=0){spawnT=Math.max(380,700-el2/60);const g=Math.random()<.58,L=rnd(0,2),d=document.createElement('div');d.className='it';d.textContent=g?o.good:pick(o.bad);d.style.left=(L*33.3)+'%';d.style.top='-34px';box.appendChild(d);items.push({d,L,g,y:-34})}
+   const sp=(.16+el2/90000)*dt;for(let i=items.length-1;i>=0;i--){const it=items[i];it.y+=sp;it.d.style.top=it.y+'px';
+    if(it.y>H-60&&it.y<H-20&&it.L===lane){if(it.g)good++;else{bad++;box.style.outline='3px solid var(--blood)';setTimeout(()=>{if(box)box.style.outline=''},150)}it.d.remove();items.splice(i,1);el('lns').textContent=`${o.goodN}: ${good} · ${o.badN}: ${bad}`;if(bad>=3)return fin();continue}
+    if(it.y>H){it.d.remove();items.splice(i,1)}}
+   raf=requestAnimationFrame(tick)};raf=requestAnimationFrame(tick);
+  window.__gig37={done:(g,b)=>{good=g;bad=b;fin()},lane:()=>lane};
+ },o.art)}
+/* ---------- hook timing: tow truck ---------- */
+function towGame(o,done){const N=4,Z=Math.min(.32,.18+((S.sk&&S.sk.muscle)||0)*.012);
+ gate(o.title,o.txt+' Keyboard: Space or Enter hooks, Esc ends the shift early.',()=>{
+  mgOn=true;let car=0,hits=0,perf=0,over=false,raf=0,x=0,dir=1,z0=.2+Math.random()*(.6-Z),last=performance.now(),cool=0;
+  modal(`<h2>${o.title}</h2><p class="s" style="text-align:center" id="tws">Car 1 of ${N} · hooked 0</p><div class="tw37" id="tw"><div class="z" id="twz"></div><div class="m" id="twm"></div></div><p class="s" style="text-align:center;color:var(--dim)">Hook it when the marker is in the green. Dead center is a clean hook.</p><div class="btns" style="justify-content:center"><button class="btn go" id="twh">Hook it</button><button class="btn" id="twx">End shift</button></div>`);
+  const zEl=el('twz'),mEl=el('twm');const place=()=>{zEl.style.left=(z0*100)+'%';zEl.style.width=(Z*100)+'%'};place();
+  const stop=()=>{over=true;mgOn=false;document.removeEventListener('keydown',kd,true);cancelAnimationFrame(raf)};
+  const fin=()=>{if(over)return;stop();el('modal').hidden=true;done({p:Math.min(1,(hits+perf*.25)/N),good:hits,bad:car-hits})};
+  const hook=()=>{if(over||cool>0)return;const inZ=x>=z0&&x<=z0+Z;if(inZ){hits++;if(Math.abs(x-(z0+Z/2))<Z*.18)perf++}car++;zEl.style.background=inZ?'rgba(79,211,106,.7)':'rgba(232,80,74,.5)';cool=350;
+   if(car>=N)return setTimeout(fin,250);setTimeout(()=>{if(over)return;zEl.style.background='';z0=.08+Math.random()*(.84-Z);place();el('tws').textContent=`Car ${car+1} of ${N} · hooked ${hits}`},300)};
+  function kd(e){if(e.ctrlKey||e.metaKey||e.altKey)return;if(!el('tw')){stop();return}const k=e.key;if(k===' '||k==='Enter'){if(!e.repeat)hook()}else if(k==='Escape')fin();else return;e.preventDefault();e.stopPropagation()}
+  document.addEventListener('keydown',kd,true);el('twh').onclick=hook;el('twx').onclick=fin;
+  const tick=now=>{if(over)return;if(!el('tw')){stop();return}const dt=Math.min(50,now-last);last=now;cool=Math.max(0,cool-dt);x+=dir*dt*(.0009+car*.00025);if(x>=1){x=1;dir=-1}if(x<=0){x=0;dir=1}mEl.style.left=`calc(${x*100}% - 2px)`;raf=requestAnimationFrame(tick)};raf=requestAnimationFrame(tick);
+  window.__gig37={done:(g,b)=>{hits=g;car=g+b;fin()},hook};
+ },o.art)}
+window.l37Lane=laneGame;window.l37Tow=towGame;
+/* ---------- running a shift ---------- */
+function why(k){const G=GIG[k],X=w4();if(S.age&&S.age<G.age)return k==='dv'?'You have to be 16 to deliver.':'You need to be 18 with a license.';if(X[G.flag]===S.day)return 'Done today';
+ if(k==='taxi'){if(!S.car)return 'You need your own car.';if(S.car==='stolen')return 'No app takes a stolen car.'}if(stuck())return 'Not while you are on the monitor.';return ''}
+function payOut(k,r){const G=GIG[k],X=w4();let pay=Math.round(G.lo+(G.hi-G.lo)*r.p);let note='';
+ if(k==='dv'&&S.car){pay+=G.car;note=' (+'+money(G.car)+' for the car)'}
+ if(k==='taxi'){const tip=r.p>=.7?rnd(15,45):0;if(tip){pay+=tip;note=` with ${money(tip)} in tips`}}
+ if(k==='tow'&&Math.random()<.1){const q=rnd(150,350);S.cash+=q;note+=`. One owner left the glovebox open: ${money(q)} extra, dirty`}
+ S.cash+=pay;legit(pay);X[G.flag]=S.day;if(k==='dv')S.gigD=S.day;
+ if(k!=='tow')S.heat=Math.max(0,S.heat-(S.car?2:1));
+ if(k==='taxi'){let load=0;try{load=GOODS.reduce((a,g)=>a+S.inv[g.id]*(g.unit==='pills'?.25:g.unit==='g'?1:2),0)}catch(e){}if(load>=50&&Math.random()<.15){S.heat=Math.min(100,S.heat+6);note+='. A rider smelled what was in the trunk. Heat +6'}}
+ if(r.bad>=3){note+='. You wrecked too much and the app docked you'}
+ const stars=r.p>=.8?5:r.p>=.55?4:r.p>=.3?3:2;
+ say(`${G.n}: ${money(pay)} clean${note}. ${'⭐'.repeat(stars)}`);render()}
+function shift(k){const w=why(k);if(w){say(w);return render()}const G=GIG[k];if(typeof spendEn==='function'&&spendEn(G.en)===false)return;
+ const go=r=>{try{payOut(k,r)}catch(e){console.error('sk37 pay',e)}};
+ if(k==='dv')return laneGame({title:'Delivery run',txt:'Grab the orders (📦) and dodge the potholes and cars. More orders, more pay. Three wrecks and the shift is over.',me:S.car?'🚗':'🛵',good:'📦',bad:['🕳️','🚙','🚧'],goodN:'Orders',badN:'Wrecks',target:10,art:'sidejob'},go);
+ if(k==='taxi')return laneGame({title:'Rideshare shift',txt:'Pick up riders (🙋) and keep the ride smooth: dodge potholes and traffic. Good ratings mean tips.',me:'🚕',good:'🙋',bad:['🕳️','🚙','🚧'],goodN:'Riders',badN:'Bumps',target:9,sec:22},go);
+ if(k==='tow')return towGame({title:'Tow truck night shift',txt:'Line up the hook and grab each car clean. Four cars a shift. Muscle makes the window bigger.'},go)}
+window.l37Shift=shift;
+try{const _a=act;act=function(a,e){try{if(a==='w4_dv'||a==='md_gig')return shift('dv');if(a==='w4_tow')return shift('tow');if(a==='gig_taxi')return shift('taxi')}catch(x){console.error('sk37',x)}return _a.apply(this,arguments)}}catch(e){console.error('sk37 act',e)}
+/* Business tab: the taxi row, and both delivery buttons share one slot */
+try{const _wb=w4Biz;w4Biz=function(){let h=_wb.apply(this,arguments);try{const w=why('taxi'),X=w4();const row=w4row('🚕 Rideshare driver',S.age&&S.age<18?'The app only takes drivers 18 and up.':'Drive riders around in your own car. $90 to $230 clean plus tips. Once a day.','gig_taxi',X.taxi===S.day?'Done today':w&&w!=='Done today'?(w.length>18?'Locked':w):'Drive',!!w);const i=h.indexOf('<div class="row" style="flex-wrap:wrap"><div class="info" style="flex:1 1 200px;min-width:0"><div class="t">💈');h=i>=0?h.slice(0,i)+row+h.slice(i):h+row;
+ if(w4().dv===S.day)h=h.replace(/(data-a="w4_dv")([^>]*)>Ride</,'$1$2 disabled>Done today<')}catch(e){console.error('sk37 biz',e)}return h}}catch(e){}
+try{const _mb=mdBiz;mdBiz=function(){let h=_mb.apply(this,arguments);try{if(w4().dv===S.day)S.gigD=S.day}catch(e){}return h}}catch(e){}
+try{TUT.push(['Side gigs','Legal side work pays clean money, once a day each, and costs energy. Delivery run (16+): a lane run, grab the orders and dodge potholes and cars, more orders means more pay, $50 to $150 plus $25 with a car. Tow truck night shift (18+): hook four cars when the marker is in the green, Muscle makes the window bigger, $70 to $200. Rideshare driver (18+, your own car, not a stolen one): pick up riders and keep it smooth, $90 to $230 plus tips for a good rating. Three wrecks ends a lane run early. You cannot work a gig on the ankle monitor. Keys: arrows or A and D for lanes, Space or Enter to hook, Esc ends the shift.'])}catch(e){}
+try{const _dp=devPanel;devPanel=function(){const r=_dp.apply(this,arguments);try{const mc=el('mcard');if(mc&&!el('modal').hidden&&!mc.querySelector('[data-d37]')){const B=(k,l)=>`<button class="btn" data-d37="${k}">${l}</button>`;const d=document.createElement('div');d.innerHTML=`<div class="sec">Side gigs (new)</div><div class="btns">${B('dv','Delivery run')}${B('tow','Tow shift')}${B('taxi','Rideshare shift')}${B('reset','Reset gigs today')}</div>`;const h2=mc.querySelector('h2');if(h2&&h2.parentNode)h2.parentNode.insertBefore(d,h2.nextSibling);else mc.appendChild(d);
+ d.querySelectorAll('[data-d37]').forEach(b=>b.onclick=ev=>{ev.stopPropagation();const k=b.dataset.d37,X=w4();el('modal').hidden=true;if(k==='reset'){X.dv=X.tow=X.taxi=-9;S.gigD=-9;say('Dev: gigs reset for today.');return render()}S.age=Math.max(S.age||0,18);if(k==='taxi'&&(!S.car||S.car==='stolen'))S.car='civic';X[GIG[k].flag]=-9;S.en=Math.max(S.en||0,40);shift(k)})}}catch(e){console.error('sk37 dev',e)}return r}}catch(e){}
+})();
+</script>
