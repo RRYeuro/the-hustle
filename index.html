@@ -3934,13 +3934,13 @@ function heist(k){const H=HEISTS[k];if(proStop())return;if(typeof stuckHome==='f
     <div class="btns"><button class="btn" id="no">Back out</button></div>`);
   $('no').onclick=close;
   const go=loud=>{const st=stressed()?.1:0;S.rob.hd=S.day;S.rob.c0=S.cash;S.rob.fat=(S.rob.fat||0)+2;
-    const odds=(friendWith('rob')?.06:0)+H.odds+(loud?(S.sk.muscle-3)*.03+(S.soldiers-H.need.crew)*.04:(S.sk.smarts-3)*.04)+(S.rob.mask?.05:0)+S.rob.noto/1000-st+(!loud&&window.__safeOdds||0);
+    const odds=(window.__hcB||0)+(friendWith('rob')?.06:0)+H.odds+(loud?(S.sk.muscle-3)*.03+(S.soldiers-H.need.crew)*.04:(S.sk.smarts-3)*.04)+(S.rob.mask?.05:0)+S.rob.noto/1000-st+(!loud&&window.__safeOdds||0);
     const heat=Math.round(H.heat*(loud?1.2:.8));S.heat=Math.min(100,S.heat+heat);
-    if(Math.random()<odds){const gross=Math.round(rnd(H.pay[0],H.pay[1])*(loud?1.2:1)*.65);const cut=Math.round(gross*.1*S.soldiers);const net=gross-cut;
+    if(Math.random()<odds){const gross=Math.round(rnd(H.pay[0],H.pay[1])*(loud?1.2:1)*.65*(window.__hcP||1));const cut=Math.round(gross*(window.__hcCut!=null?window.__hcCut:.1*S.soldiers));const net=gross-cut;
       S.cash+=net;S.rob.heists++;S.rob.noto+=k==='bank'?40:20;if(k==='bank')S.rob.bank=1;addXP(15);addStress(12);
-      say(`Pulled off the ${H.name.toLowerCase()}. ${money(gross)} total, ${money(cut)} to the crew, ${money(net)} for you.`);
+      say(`Pulled off the ${H.name.toLowerCase()}. ${money(gross)} total, ${money(cut)} to the crew, ${money(net)} for you.`);try{window.__hcAfter&&window.__hcAfter(true,net)}catch(e){}
       return lickDone('Clean getaway',`The ${H.name.toLowerCase()} went how y'all planned. ${money(gross)} total. Crew took ${money(cut)}. You kept ${money(net)}.`,true)}
-    addStress(15);
+    addStress(15);try{window.__hcAfter&&window.__hcAfter(false,0)}catch(e){}
     if(S.soldiers&&Math.random()<.4){S.soldiers--;say('One of your crew got caught.')}
     modal(`<h2 style="color:var(--blood)">It went bad</h2><p>${loud?'Somebody pulled the silent alarm.':'A guard spotted y\'all.'} Cops are coming.</p><div class="btns"><button class="btn red" id="r">Run</button></div>`);
     $('r').onclick=()=>chase(c=>{addStress(8);caughtOrNot(c,'You got away','No money, but you made it out.')})};
@@ -9295,6 +9295,92 @@ try{const _o=openPlace;openPlace=function(id){if(id!=='home')return _o.apply(thi
  modal(`<h2>🏠 Home</h2><p class="s" style="color:var(--dim)">You are at your place on ${BLOCKS[hb]}.</p><div class="btns"><button class="btn go" id="h34a">Next day</button><button class="btn" id="h34b">Lay low</button><button class="btn" id="h34c">Nap</button><button class="btn" id="h34x">Close</button></div><div class="pane">${body}</div>`);
  const go=a=>()=>{el('modal').hidden=true;try{act(a,{dataset:{}})}catch(e){console.error('sk34',e)}};
  el('h34a').onclick=go('adv');el('h34b').onclick=go('lay');el('h34c').onclick=go('nap');el('h34x').onclick=()=>{el('modal').hidden=true;render()}}}catch(e){console.error('sk34',e)}
+})();
+</script>
+<script id="skin35js">
+(function(){if(window._sk35)return;window._sk35=1;
+/* Heist crew: the Crew Boss tier of crew jobs. Same members, ranks, 2-3 day timer and skim risk as crew jobs, on the existing heists.
+   Roles: driver (drive), lookout (look), inside man (scam). Case the place first, pick the split, then run it yourself or send the crew. */
+const el=id=>document.getElementById(id);
+const ROLES={jewel:['inside'],truck:['drive','look'],bank:['drive','look','inside']};
+const RL={drive:['Driver','drive'],look:['Lookout','look'],inside:['Inside man','scam']};
+const RNK={sol:'Soldier',rh:'Right Hand',enf:'Enforcer',stash:'Stash Leader',cap:'Block Captain'};
+const LEAD={jewel:['enf','rh','cap'],truck:['rh','cap'],bank:['rh','cap']};
+const DAYS={jewel:2,truck:3,bank:3},SENDDAY={jewel:0,truck:15,bank:30};
+const SPL=[[.1,'Low',-4],[.15,'Fair',1],[.2,'Big',5]];
+const CASE=.12,CASEDAYS=3;
+let P=null;
+const byId=id=>crewList().find(m=>m.id===id);
+const free=()=>crewOk();
+const skill=(m,r)=>m?(m.sk[RL[r][1]]||0):0;
+function pickBest(k){const pool=free(),used=new Set(),out={};ROLES[k].forEach(r=>{const c=pool.filter(m=>!used.has(m.id)).sort((a,b)=>skill(b,r)-skill(a,r))[0];if(c){out[r]=c.id;used.add(c.id)}});return out}
+function swap(r){const k=P.k,taken=new Set(Object.entries(P.pick).filter(([x])=>x!==r).map(([,v])=>v)),pool=free().filter(m=>!taken.has(m.id));if(!pool.length)return;const i=pool.findIndex(m=>m.id===P.pick[r]);P.pick[r]=pool[(i+1)%pool.length].id;draw()}
+const team=()=>Object.values(P.pick).map(byId).filter(Boolean);
+const cased=k=>((S.hcase||{})[k]||-9)>=S.day;
+function bonus(k,pick){let b=0,pay=0;ROLES[k].forEach(r=>{const m=byId(pick[r]);if(!m)return;const s=skill(m,r);if(r==='drive')b+=(s-3)*.02;if(r==='look')b+=(s-3)*.02;if(r==='inside'){b+=(s-3)*.025;pay+=s*.02}});if(cased(k))b+=CASE;return{b,pay}}
+function gate(send){if(S.age&&S.age<16)return 'Too young for a heist. Come back at 16.';if((S.rob.hd!=null)&&S.day-S.rob.hd<3)return `The streets are hot from the last job. Wait ${3-(S.day-S.rob.hd)} more day${3-(S.day-S.rob.hd)===1?'':'s'}.`;if((S.rob.fat||0)>=6)return 'Marks and cops are all on alert. Lay off for a few days.';if(S.hc)return 'Your crew is already out on a job.';
+ const k=P.k,H=HEISTS[k],miss=[];if(team().length<ROLES[k].length)miss.push(`${ROLES[k].length} crew free`);if(H.need.mask&&!S.rob.mask)miss.push('a ski mask');if(H.need.car&&!S.rob.car)miss.push('a getaway car');if(miss.length)return 'Need '+miss.join(', ')+'.';
+ if(send){const lead=team().find(m=>LEAD[k].includes(m.rank||'sol'));if(!lead)return `Sending them needs a ${LEAD[k].map(x=>RNK[x]).join(' or ')} on the job.`;if(S.day<SENDDAY[k])return `Your crew is not ready to do this one alone until day ${SENDDAY[k]}.`}return ''}
+function draw(){const k=P.k,H=HEISTS[k],B=bonus(k,P.pick),g1=gate(false),g2=gate(true),sp=SPL[P.sp];
+ const rows=ROLES[k].map((r,i)=>{const m=byId(P.pick[r]);return `<div class="row" style="padding:8px 12px">${m?(()=>{try{return faceImg(m.name,'c',36)}catch(e){return ''}})():''}<div class="info" style="min-width:0"><div class="t">${RL[r][0]}: ${m?esc(m.name):'nobody free'}</div><div class="s">${m?`${RNK[m.rank||'sol']} · ${RL[r][1]==='scam'?'talk':RL[r][1]} skill ${skill(m,r)} · loyalty ${m.loy}${m.loy<30?' · <span style="color:var(--blood)">might skim or talk</span>':''}`:'Hire or free up a crew member'}</div></div><button class="btn" data-h35="sw" data-r="${r}">${i+1} Swap</button></div>`}).join('');
+ const base=Math.round(Math.min(.95,Math.max(.05,H.odds+B.b))*100);
+ modal(`<div id="hc35"></div><div class="sec" style="margin:0;color:var(--accent)">Heist crew</div><h2>${H.name}</h2><p class="s" style="color:var(--dim)">${money(H.pay[0])} to ${money(H.pay[1])} before cuts · heat +${H.heat}. Pick who does what, case it first, and choose the split.</p>${rows}
+ <div class="row" style="padding:8px 12px"><div class="info"><div class="t">Case the place ${cased(k)?'<span class="chip mine">Done</span>':''}</div><div class="s">${cased(k)?`+12% odds, good through day ${S.hcase[k]}.`:'Spend a day watching it: +12% odds for 3 days. Takes the day and 10 energy.'}</div></div>${cased(k)?'':`<button class="btn" data-h35="case">C Case it</button>`}</div>
+ <div class="row" style="padding:8px 12px;flex-wrap:wrap"><div class="info" style="flex:1 1 160px"><div class="t">Split: ${sp[1]}, ${Math.round(sp[0]*100)}% each</div><div class="s">Crew on the job takes ${Math.round(sp[0]*100*team().length)}% total. Low split costs loyalty, a big one builds it.</div></div><div class="btns">${SPL.map((x,i)=>`<button class="btn ${i===P.sp?'go':''}" data-h35="sp" data-i="${i}">${x[1]}</button>`).join('')}</div></div>
+ <p class="s">Base odds with this crew: <b>${base}%</b>${B.pay?` · inside man adds ${Math.round(B.pay*100)}% to the take`:''}. Running it yourself adds your mini game and gear on top.</p>
+ <div class="btns" style="flex-direction:column;align-items:stretch"><button class="btn red" data-h35="run" ${g1?'disabled':''}>R Run it yourself (takes the day)</button>${g1?`<div class="s" style="color:var(--blood)">${g1}</div>`:''}<button class="btn" data-h35="send" ${g2?'disabled':''}>S Send the crew (${DAYS[k]} days, they text you)</button>${g2&&!g1?`<div class="s" style="color:var(--blood)">${g2}</div>`:''}<button class="btn" data-h35="x">Back out</button></div>`)}
+function plan(k){if(proStop())return;window.__hcB=0;window.__hcP=1;window.__hcCut=null;window.__hcAfter=null;P={k,pick:pickBest(k),sp:1};draw()}
+function doCase(){const k=P.k;if(typeof spendEn==='function'&&spendEn(10)===false)return;S.hcase=S.hcase||{};S.hcase[k]=S.day+CASEDAYS;say(`You spent the day watching the ${HEISTS[k].name.toLowerCase()}. Guard changes, cameras, the back door. +12% odds for 3 days.`);el('modal').hidden=true;nextDay();try{checkEnd()}catch(e){}render();if(!S.over&&el('modal').hidden)plan(k)}
+const roleOf=(pick,id)=>Object.keys(pick||{}).find(r=>pick[r]===id)||'look';
+function after(ok,k,ids,sp,net,pick){const ms=ids.map(byId).filter(Boolean);ms.forEach(m=>{m.loy=Math.max(0,Math.min(100,m.loy+SPL[sp][2]));try{crewGain(m,RL[roleOf(pick,m.id)][1])}catch(e){}});
+ if(S.hcase)delete S.hcase[k];
+ const rat=ms.find(m=>(m.loy<20||m.snake)&&Math.random()<.15);if(rat){S.heat=Math.min(100,S.heat+15);say(`Word got back that ${rat.name} has been running ${mHe(rat,'his')} mouth about the ${HEISTS[k].name.toLowerCase()}. Heat +15.`);try{newsPush('Talk on the block about a recent '+HEISTS[k].name.toLowerCase()+'.')}catch(e){}}}
+window.__hcAfter=null;
+function run(){const k=P.k,g=gate(false);if(g){say(g);return draw()}const ids=team().map(m=>m.id),sp=P.sp,B=bonus(k,P.pick),n=ids.length,pick={...P.pick};
+ window.__hcB=B.b;window.__hcP=1+B.pay;window.__hcCut=SPL[sp][0]*n;
+ window.__hcAfter=(ok,net)=>{window.__hcB=0;window.__hcP=1;window.__hcCut=null;window.__hcAfter=null;try{after(ok,k,ids,sp,net,pick)}catch(e){console.error('sk35 after',e)}};
+ el('modal').hidden=true;_heist(k)}
+function send(){const k=P.k,g=gate(true);if(g){say(g);return draw()}const ms=team(),d=DAYS[k];
+ ms.forEach(m=>{m.busy={r:'heist:'+k,until:S.day+d};m.last=S.day});
+ const lead=ms.find(m=>LEAD[k].includes(m.rank||'sol'));
+ S.hc={k,ids:ms.map(m=>m.id),pick:{...P.pick},sp:P.sp,cased:cased(k),lead:lead.id,B:bonus(k,P.pick),from:S.day};S.rob.hd=S.day;S.rob.fat=(S.rob.fat||0)+2;if(S.hcase)delete S.hcase[k];
+ say(`${lead.name} is running the ${HEISTS[k].name.toLowerCase()} with ${ms.length-1?ms.filter(m=>m!==lead).map(m=>m.name).join(' and '):'nobody else'}. Back in ${d} days.`);el('modal').hidden=true;render()}
+function txt(m,t){try{phoneMsg(m.name,t)}catch(e){say(`📱 ${m.name}: "${t}"`)}}
+function resolveHC(){const J=S.hc;if(!J)return;S.hc=null;const k=J.k,H=HEISTS[k],ms=J.ids.map(byId).filter(Boolean);ms.forEach(m=>{m.busy=null;m.last=S.day});
+ const lead=byId(J.lead)||ms[0];if(!lead)return;
+ const rat=ms.find(m=>(m.loy<20||m.snake)&&Math.random()<.2);
+ if(rat){S.heat=Math.min(100,S.heat+20);ms.forEach(m=>{m.hurt=S.day+rnd(5,8);m.loy=Math.max(0,m.loy-3)});try{newsPush('Police were waiting at a '+H.name.toLowerCase()+'. A crew got picked up.')}catch(e){}
+  return txt(lead,`It was a setup. Cops were already there when we pulled up. Somebody talked. They got all of us.${rat!==lead?' I think it was '+rat.name+'.':''}`)}
+ const odds=Math.max(.05,Math.min(.9,H.odds+J.B.b+(['rh','cap'].includes(lead.rank)?.05:0)+(S.rob.noto||0)/1000));
+ if(Math.random()<odds){const gross=Math.round(rnd(H.pay[0],H.pay[1])*.65*(1+J.B.pay)*.85),cut=Math.round(gross*SPL[J.sp][0]*ms.length);let net=gross-cut,skim=[];
+  ms.forEach(m=>{if(m.loy<30&&Math.random()<.35){const s=Math.round(gross*SPL[J.sp][0]);net-=s;skim.push(m.name)}});net=Math.max(0,net);
+  S.cash+=net;try{cleanCash()}catch(e){}S.heat=Math.min(100,S.heat+Math.round(H.heat*.5));S.rob.heists++;S.rob.noto+=k==='bank'?30:15;if(k==='bank')S.rob.bank=1;
+  ms.forEach(m=>{m.loy=Math.max(0,Math.min(100,m.loy+SPL[J.sp][2]));m.trust=Math.min(100,m.trust+3);try{crewGain(m,RL[roleOf(J.pick,m.id)][1])}catch(e){}});
+  txt(lead,`We did it. ${H.name} went clean. ${money(gross)} total, the crew took ${money(cut)}${skim.length?', and the count came up short (watch '+skim.join(' and ')+')':''}. Your end: ${money(net)}.`);
+  return say(`💰 Your crew pulled off the ${H.name.toLowerCase()} without you. +${money(net)} dirty. Heat +${Math.round(H.heat*.5)}.${skim.length?` You think ${skim.join(' and ')} skimmed.`:''}`)}
+ S.heat=Math.min(100,S.heat+Math.round(H.heat*.4));ms.forEach(m=>{if(Math.random()<.5){m.hurt=S.day+rnd(2,4)}else{m.hurt=S.day+rnd(5,8)}m.loy=Math.max(0,m.loy-2)});
+ txt(lead,`It went bad. ${pick(['A guard pulled the alarm.','The driver panicked at the light.','Cops rolled up as we came out.'])} We had to drop everything and split. Some of us got picked up.`);
+ say(`Your crew's ${H.name.toLowerCase()} went bad. No money. Heat +${Math.round(H.heat*.4)}.`)}
+window.l35Resolve=resolveHC;window.l35Plan=plan;
+const _heist=heist;heist=function(k){return plan(k)};
+try{const _cr=cmResolve;cmResolve=function(m){if(m&&m.busy&&String(m.busy.r).indexOf('heist:')===0){if(S.hc&&S.hc.ids.includes(m.id))return resolveHC();m.busy=null;m.last=S.day;return}return _cr.apply(this,arguments)}}catch(e){console.error('sk35 cm',e)}
+try{CROUTE['heist:jewel']||['jewel','truck','bank'].forEach(k=>Object.defineProperty(CROUTE,'heist:'+k,{value:{n:'Heist: '+HEISTS[k].name,sk:'look',t:'ran a heist'},enumerable:false,configurable:true}))}catch(e){}
+document.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.target.closest('[data-h35]');if(!b||b.disabled||!P)return;e.preventDefault();e.stopPropagation();const a=b.dataset.h35;
+ try{if(a==='sw')swap(b.dataset.r);else if(a==='sp'){P.sp=+b.dataset.i;draw()}else if(a==='case')doCase();else if(a==='run')run();else if(a==='send')send();else if(a==='x'){el('modal').hidden=true;P=null;render()}}catch(err){console.error('sk35',err)}},true);
+document.addEventListener('keydown',e=>{if(!P||!el('hc35')||el('modal').hidden||e.ctrlKey||e.metaKey||e.altKey||e.repeat)return;const k=e.key.toLowerCase(),R=ROLES[P.k];let hit=true;
+ if(/^[1-3]$/.test(k)&&R[+k-1])swap(R[+k-1]);else if(k==='c'&&!cased(P.k))doCase();else if(k==='r'&&!gate(false))run();else if(k==='s'&&!gate(true))send();else if(k==='escape'){el('modal').hidden=true;P=null;render()}else hit=false;if(hit){e.preventDefault();e.stopPropagation()}},true);
+/* Licks app: a door to the heists */
+try{const _pl=paneLicks;paneLicks=function(){let h=_pl.apply(this,arguments);try{if(S.robOn){const J=S.hc;h+=`<div class="row" style="padding:8px 12px"><div class="info"><div class="t">Heists with your crew</div><div class="s">${J?`${esc((byId(J.lead)||{name:'Your crew'}).name)} is on the ${HEISTS[J.k].name.toLowerCase()}.`:'Jewelry store, armored truck, bank. Pick a driver, lookout and inside man.'}</div></div><button class="btn red" data-h35go="1">Open heists</button></div>`}}catch(e){}return h}}catch(e){}
+document.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.target.closest('[data-h35go]');if(!b)return;e.preventDefault();e.stopPropagation();try{tab='rob'}catch(x){}render()},true);
+try{TUT.push(['Heist crew','Heists use your crew now. Plan a heist and pick who does what: a driver (driving skill), a lookout (watching skill) and an inside man (talk skill, also adds to the take). The jewelry store needs an inside man, the armored truck a driver and lookout, the bank all three. Case the place first: it takes the day and 10 energy and gives +12% odds for 3 days. Pick the split: Low (10% each) costs loyalty, Fair (15%) keeps them happy, Big (20%) builds loyalty. Then run it yourself with the mini games, or send the crew: they are gone 2 or 3 days and text you how it went, you get less heat but a smaller take, and it needs a Right Hand or Block Captain on the job (an Enforcer can lead the jewelry store). Crew with loyalty under 30 can skim, and under 20 they can talk and set the whole crew up. All heist money is dirty. Keys: 1 to 3 swap a role, C case, R run, S send, Esc back.'])}catch(e){}
+try{const _dp=devPanel;devPanel=function(){const r=_dp.apply(this,arguments);try{const mc=el('mcard');if(mc&&!el('modal').hidden&&!mc.querySelector('[data-d35]')){const B=(k,l)=>`<button class="btn" data-d35="${k}">${l}</button>`;const d=document.createElement('div');d.innerHTML=`<div class="sec">Heist crew (new)</div><div class="btns">${B('setup','Set up a heist crew')}${B('rat','Put a snitch in the crew')}${B('done','Finish crew heist now')}${B('cool','Clear heist cooldown')}${B('open','Open heists')}</div>`;const h2=mc.querySelector('h2');if(h2&&h2.parentNode)h2.parentNode.insertBefore(d,h2.nextSibling);else mc.appendChild(d);
+ d.querySelectorAll('[data-d35]').forEach(b=>b.onclick=ev=>{ev.stopPropagation();const k=b.dataset.d35;el('modal').hidden=true;
+  if(k==='setup'){S.robOn=1;S.age=Math.max(S.age||0,18);S.soldiers=Math.max(S.soldiers||0,3);const M=crewList();M.forEach((m,i)=>{m.busy=null;m.hurt=0;m.loy=70;m.rank=i===0?'rh':i===1?'enf':'sol';m.sk.drive=Math.max(m.sk.drive,6);m.sk.look=Math.max(m.sk.look,6);m.sk.scam=Math.max(m.sk.scam,6)});S.rob.mask=1;S.rob.car=1;S.rob.hd=null;S.rob.fat=0;S.hc=null;S.day=Math.max(S.day,30);say('Dev: 3 crew (Right Hand, Enforcer, Soldier), skills 6, loyalty 70, mask and getaway car, day 30.')}
+  if(k==='rat'){const M=crewList();if(M.length){const m=M[M.length-1];m.loy=10;say(`Dev: ${m.name} is at loyalty 10.`)}}
+  if(k==='done'){if(S.hc){S.hc.ids.map(byId).filter(Boolean).forEach(m=>{if(m.busy)m.busy.until=S.day});resolveHC()}else say('Dev: no crew heist out.')}
+  if(k==='cool'){S.rob.hd=null;S.rob.fat=0;say('Dev: heist cooldown cleared.')}
+  if(k==='open'){try{tab='rob'}catch(x){}}
+  render()})}}catch(e){console.error('sk35 dev',e)}return r}}catch(e){}
 })();
 </script>
 <script>if('serviceWorker' in navigator){addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}</script></body></html>
