@@ -211,7 +211,7 @@ const PINFO=[
  {lvl:'Mid',carries:['bars','percs','phones','kicks'],skin:'#6b4429',shirt:'#2c5d8f',hat:'long',glasses:1,bio:'College dropout who runs it like a business. Pills and lean are her thing.'},
  {lvl:'Big',carries:['snow','kicks','loud'],skin:'#e6c09a',shirt:'#b8860b',hat:'bun',bio:'Owns a nail shop downtown. Nobody knows how much she really moves, and nobody asks.'},
 ];
-const LVL={Low:{mult:1.1,g:28,pills:100,oz:4,rep:0,col:'var(--dim)'},Mid:{mult:1,g:112,pills:500,oz:16,rep:0,col:'var(--heat)'},Big:{mult:.85,g:1000,pills:2000,oz:64,rep:25,col:'var(--accent)'}};
+const LVL={Low:{mult:1.1,g:28,pills:100,oz:4,rep:0,col:'var(--dim)'},Mid:{mult:1,g:112,pills:500,oz:16,rep:0,col:'var(--heat)'},Big:{mult:.9,g:1000,pills:2000,oz:64,rep:25,col:'var(--accent)'}};
 const lvlMax=(bi,g)=>{const L=LVL[PINFO[bi].lvl];return g.unit==='g'?L.g:g.unit==='pills'?L.pills:L.oz};
 const OPPPICS=['art/74d35c31d80d.png','art/96487c134700.png','art/ea42d06cfd9f.png'];
 const WARBAN='art/b32a2f9d41f1.jpg';
@@ -430,7 +430,7 @@ function paneBlock(){
   let h=`<div class="row" style="align-items:flex-start;border-color:${L.col}">${avatar(S.at)}<div class="info"><div class="t" style="font-family:var(--display);font-size:20px;font-weight:400">${plugName(S.at)}</div>
     <div class="btns" style="margin:2px 0 4px">${recd?'<span class="chip mine">Your worker</span>':''}<span class="chip" style="color:${L.col};border-color:${L.col}">${P.lvl} level${recd?'':' plug'}</span>${(S.fell||{})[S.at]!==undefined?'<span class="chip mine">Works under you</span>':''}${recd?'':kn?'<span class="chip mine">Knows you</span>':'<span class="chip">Stranger</span>'}${is('lucky')&&S.at===S.ex?`<span class="chip">${S.age&&S.age<18?'Your cousin\'s homeboy':'Your ex'}</span>`:''}</div>
     <div class="s" style="font-style:italic">${S.pbio[S.at]||P.bio}</div>${bkChip(S.at)}
-    <div class="s">${recd?`You're ${plugFem(S.at)?'her':'his'} connect now. ${plugFem(S.at)?'She':'He'} only moves what you front ${plugFem(S.at)?'her':'him'}, hand to hand on ${BLOCKS[S.at]}${(S.traps&&Object.values(S.traps).some(t=>RW&&t.w===RW.id))?' and out the trap house':''}.`:`Carries ${P.carries.map(id=>G(id).name).join(', ')} · ${P.lvl==='Big'?'moves keys, 15% cheaper':P.lvl==='Mid'?'moves pounds, normal prices':'small stock, 10% higher'}`}</div>
+    <div class="s">${recd?`You're ${plugFem(S.at)?'her':'his'} connect now. ${plugFem(S.at)?'She':'He'} only moves what you front ${plugFem(S.at)?'her':'him'}, hand to hand on ${BLOCKS[S.at]}${(S.traps&&Object.values(S.traps).some(t=>RW&&t.w===RW.id))?' and out the trap house':''}.`:`Carries ${P.carries.map(id=>G(id).name).join(', ')} · ${P.lvl==='Big'?'moves keys, 10% cheaper':P.lvl==='Mid'?'moves pounds, normal prices':'small stock, 10% higher'}`}</div>
     ${recd?`<div class="s" style="color:var(--accent)"><b>Your worker.</b> ${plugFem(S.at)?'She':'He'} sells what you front ${plugFem(S.at)?'her':'him'} right here on the block every day. Put ${plugFem(S.at)?'her':'him'} in a trap house for less heat. Leave ${plugFem(S.at)?'her':'him'} with no work for a week and ${plugFem(S.at)?'she':'he'} moves on.${RW&&RW.dry>=4?` <b style="color:var(--blood)">${RW.dry} days with no work.</b>`:''}</div>${RW?`<div class="s">Holding for you: ${wStashTxt(RW)}.</div><div class="btns" style="margin-top:4px"><button class="btn" data-a="wstash" data-i="${RWi}">${plugFem(S.at)?'Her':'His'} stash</button></div>`:''}`:locked&&!burnt?`<div class="s" style="color:var(--blood)">Won't serve you until you got ${L.rep} rep.</div>`:''}
     ${(S.enemies||{})[S.at]?`<div class="s" style="color:var(--blood)"><b>Enemy.</b> ${plugName(S.at)} wants you hurt. ${plugFem(S.at)?'Her':'His'} people will come for you until somebody new takes over.</div>`:''}
     ${(S.enemies||{})[S.at]&&burnt?revengeHTML(S.at):''}
@@ -6169,7 +6169,7 @@ const GCOL=['var(--blood)','var(--dim)','var(--accent)'];
 function gchip(q,g){const c=GCOL[tier(q)];return `<span class="chip" style="color:${c};border-color:${c}">${grade(q,g)}</span>`}
 function street(g){return Math.round((g.lo+g.hi)/2)}
 function jTryOdds(){return Math.min(90,Math.round(25+S.rep*.8+(S.rapOn&&S.rap.fans>=1000?15:0)))}
-function bulk(n,g){const t=g.unit==='g'?[[1000,.78],[448,.84],[112,.9],[28,.95],[14,.98]]:g.unit==='pills'?[[2000,.8],[500,.86],[100,.93],[50,.97]]:[[32,.82],[16,.88],[4,.95]];const f=t.find(x=>n>=x[0]);return f?f[1]:1}
+function bulk(n,g){const t=g.unit==='g'?[[1000,.88],[448,.91],[112,.95],[28,.97],[14,.99]]:g.unit==='pills'?[[2000,.88],[500,.92],[100,.96],[50,.98]]:[[32,.9],[16,.93],[4,.97]];const f=t.find(x=>n>=x[0]);return f?f[1]:1}
 function plugPrice(kind,g,raw){let p=plugPrice0(kind,g,raw);if(kind==='buy'&&S.short&&S.short.g===g.id&&S.short.u>S.day)p=Math.round(p*1.4);if(kind==='sell'&&!raw){const lb=(S.lb||{})[S.at+':'+g.id];if(lb&&S.day-lb.d<=4)p=Math.min(p,Math.max(1,Math.round(lb.u*.85)))}return p}
 function plugsHear(){if(!S.known||!S.trust||S.age&&S.age<14)return;BLOCKS.forEach((b,i)=>{if(S.known.includes(i)||S.burned&&S.burned[i]>S.day)return;const L=PINFO[i].lvl,need=L==='Low'?4:L==='Mid'?15:40;if((S.rep||0)>=need){S.known.push(i);S.trust[i]=Math.max(S.trust[i]||0,12);say(`${plugName(i)} on ${b} heard about you. They know your name now.`)}})}
 const PERS=['Greedy','Loyal','Paranoid','Flashy'],PERSX={Greedy:{m:1.04,h:-.05,t:'Charges a little extra and hates being pushed.'},Loyal:{m:1,h:.05,t:'Cuts you a break once the trust is there (3% off at trust 50+).'},Paranoid:{m:1,h:-.1,t:'Hard to haggle with. Gets spooked fast.'},Flashy:{m:1.02,h:.05,t:'Likes a smooth talker, a bit pricier.'}};
@@ -9230,6 +9230,8 @@ function l31Day(){if(locked()||away()||window.FF||window.noL31)return;if((S.pcal
  const p=Math.min(.3,.07*L.length)*(held<500?1.6:1);if(Math.random()>=p)return;
  const bi=pick(L);setTimeout(()=>{try{if(!S||S.over||S.meet)return;plugCall(bi)}catch(e){console.error('sk31 call',e)}},500)}
 try{WD.push(l31Day)}catch(e){console.error('sk31 wd',e)}
+/* the Js have more to spend, and more once your name rings: x1.5, plus 1% per rep point up to +50% */
+try{const _jb=jsBudget;jsBudget=function(bi){return Math.round(_jb.apply(this,arguments)*1.5*(1+Math.min(50,Math.max(0,S.rep||0))/100))}}catch(e){console.error('sk31 js',e)}
 /* crew pay warning */
 function crewWarn(){try{if(!S.soldiers||S.pr)return;const per=S.myGang?100:150,c=per*S.soldiers,have=S.cash+(S.safe||0),d=Math.floor(have/c);if(!S.cwSeen){S.cwSeen=1;say(`💸 Your crew costs ${money(c)} a day (${money(per)} each). Miss a day and they walk. See Expenses.`);return}if(d<=3&&(S.cwD||-9)+2<=S.day){S.cwD=S.day;say(`⚠️ Crew pay is ${money(c)} a day and you can only cover ${d} more day${d===1?'':'s'}. Make money or let somebody go.`)}}catch(e){}}
 try{WD.push(crewWarn)}catch(e){}
