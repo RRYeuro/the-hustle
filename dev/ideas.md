@@ -255,3 +255,15 @@ Order if built: 1, 2, 3 as one batch (~2 hrs), then 5. Leaderboard only after pe
 - Break down button per drug: lb to 2 HP or 4 QP, HP to 2 QP, QP to 4 oz, oz to grams.
 - Selling: a buyer who wants a pound, HP, QP or oz gets that piece in one tap instead of sliding all the grams.
 - All drugs use one shared setup. Quality and fake/cut product must carry through every split (test with cut and fake). Same stash space as the grams. Dev menu button, tutorial line, tests.
+## Dialogue fix (Nov 14, not built yet; wait for "build")
+Problem: everyone sounds the same, stats are inside speech, robot/system lines, no back-and-forth, no memory.
+1. A voice for each character: Low plugs loose and slangy, Big plugs short and calm, lawyer formal, judge cold, guardian worried and mad.
+2. Numbers out of speech: dialogue is the line, and a small tag under it shows the effect (🔥 Heat +8).
+3. Real text threads: chat bubbles with history, typing dots, 2-3 reply choices that change price or trust.
+4. Plug meet as a short talk: pick a tone (respect, haggle, flex); Poker face unlocks a bluff line; a bad pick can make the plug walk.
+5. Courtroom as 3 scenes: the prosecutor, then your lawyer (quality shows), then the judge rules; choices like "Yes your honor", "Speak up" or "Stay quiet"; the judge brings up your record.
+6. Callbacks: people bring up what happened before (short money, getting popped).
+7. Trust changes the tone ("my boy 💯" vs "u got my money or nah").
+8. Rewrite pass on every robotic line, with Columbia SC street flavor.
+Cursing: Chris wants real cursing in the dialogue (shit, damn, ass, bitch, f-word where it fits; no slurs). Add a Settings toggle "Clean language" that swaps curses for clean words (default OFF = cursing on).
+Start with 2 + 8 on texting, court and plug talk (~5-8% usage). 3/4/5 are ~10-15% together.
