@@ -1,6 +1,6 @@
-🚨 **THE HUSTLE: v210 IS LIVE** 🚨
+🚨 **THE HUSTLE: v211 IS LIVE** 🚨
 Thanks for all the bug reports. This one is big.
-📲 **Get it first:** PC **Ctrl+Shift+R** (Mac Cmd+Shift+R). iPhone: Safari **aA > Reload Page**; Home Screen app: swipe it closed and reopen (twice if still old). Check it says **v210**. Saves carry over.
+📲 **Get it first:** PC **Ctrl+Shift+R** (Mac Cmd+Shift+R). iPhone: Safari **aA > Reload Page**; Home Screen app: swipe it closed and reopen (twice if still old). Check it says **v211**. Saves carry over.
 
 **New**
 - 🗺️ **A night map for every city** (all 8). Hover a district to see the block. On phones it's block tabs.
@@ -16,11 +16,15 @@ Thanks for all the bug reports. This one is big.
 - 🚕 **Side gigs have mini games now:** Delivery (lane run, 16+), Tow truck (hook timing, 18+) and the new Rideshare driver (18+, your own car). Better runs pay more clean money. Phone > Side hustles.
 - 💎 **Drip status:** your chains and fit add up to Fresh, Flashy, Iced out or Untouchable. If your rep can back it, people snitch on you less and crews respect you more. Drip your rep can't carry gets you robbed. Tap your character card to see it.
 - 🧭 **New player help:** a first-day guide on the Block tab (text a plug, buy, serve the Js, end the day). Teens no longer start with a Big plug they can't afford. On phones, Plug spots and the scanner fold into one line (tap Show).
+- 🔓 **Lockpick, Vault logic and Roof run:** three new mini games. Lockpick on house back doors (stop the needle in the green, 3 picks). Vault logic on safes (read the clues, work out the 4 digit code, 3 tries). Roof run when an alarm trips and you run with no car (jump gaps and AC units). Keyboard works on all three.
+- 💸 **Bills that bite:** miss your weekly bills and they stack with a 10% late fee. Phone cut off, lights off, insurance lapses (tow risk). Under 18 a guardian bails you out once per 14 days. Catch up on Expenses.
+- ⚖️ **Bail and lawyer:** lawyer tiers are labeled now. Bail comes back when you show up. Skip court and a bounty hunter comes looking.
+- 🚪 **New start screen:** tap HIT THE BLOCK (or Enter) after loading.
 - 👤 More faces, a loading screen, and 17 logic fixes (age limits, actions only where you are, car moves don't cost the day).
 
 **Test this:** Menu > Dev has buttons for it.
 - Loot and cops testers: "Bag + loot", "Toggle book bag", "Cop search now", "Clear loot".
-- Mini game testers: "Sort game", "Pin Cracker", "Always alarm + safe", "House tip + reset".
+- Mini game testers: "Sort game", "Pin Cracker", "Always alarm + safe", "House tip + reset" and the new "Lockpick", "Vault logic", "Roof run", "Always use new ones".
 - Plug and story testers: "Open Plug spots", "All plugs 25 trust (text first)", "All plugs 65 trust (pull up any time)", "Meet the plug here", "Plug call now", "Intro test". Buy from a Low, a Mid and a Big plug and tell me if the sizes and prices feel right. Also "Meet the connect", "Date the plug here". Try every city (switch city in the dev menu).
 - Heist testers: "Set up a heist crew", "Put a snitch in the crew", "Finish crew heist now", "Clear heist cooldown". Try all 3 heists both ways and tell me if the odds and the split feel right.
 - Scanner testers: "Give police scanner", "Put a patrol on this block", "Clear patrols today", "Task force forecast". Serve on a 🚓 block and tell me if the extra heat feels fair.
