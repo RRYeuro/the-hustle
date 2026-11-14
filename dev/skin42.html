@@ -10,7 +10,7 @@ const show=()=>{try{const Q=S.picQ;if(!Q||!Q.length||!el('modal').hidden||docume
 const _r=render;render=function(){const r=_r.apply(this,arguments);try{
  const B=typeof b5==='function'?b5():null;if(B&&B.crack===S.day+5&&S.p42c!==S.day){S.p42c=S.day;l42q('g_raidup','🚨 Task force','A police task force hit the neighborhood. Every block is hotter for 5 days. Stay low.')}
  if(S.patSaid===S.day&&!S.p42p){S.p42p=1;l42q('g_patrol','🚓 Patrol on your block','A patrol car rolled through while you were serving. Each sale here costs more heat today. Move blocks or wait it out.')}
- show()}catch(e){console.error('sk42 r',e)}return r};
+ if(S.picQ&&S.picQ.length&&!window._t42){window._t42=setTimeout(()=>{window._t42=0;show()},700)}}catch(e){console.error('sk42 r',e)}return r};
 /* jewelry picture at the pawn shop */
 try{const _op=openPlace;openPlace=function(id){const r=_op.apply(this,arguments);try{if(id==='pawn'){const b=document.querySelector('#mcard [data-l27="pj"]'),row=b&&b.closest('.row');if(row&&!document.querySelector('#mcard .p42j')){row.insertAdjacentHTML('beforebegin',`<div class="p42j" style="padding:0 12px">${l42a('g_jewel',90)}</div>`)}}}catch(e){}return r}}catch(e){}
 /* dev */

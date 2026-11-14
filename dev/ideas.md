@@ -13,8 +13,9 @@ All done and live (v201). Nothing left here.
 
 ## 2B. Money and world
 - INTERACTIVE CITIES: BUILT (walk around out-of-town cities, places per city; depth inside each place unchecked, Nov 11). The world in 2B is INTERACTIVE. When you travel to another city or block, you can walk into places there and do things inside (shops, houses, the pawn spot, the garage, a bar, the courthouse), not just read a pop-up. Each city or block gets its own places to enter, with its own people and things to do inside. Anything in 2B (debtors, pawn and fence, stash spots, impound, bills, bail and lawyers) should live in those places.
-- Bills that bite (rent, phone, insurance, repo, guardian steps in).
-- Bail and lawyer choice (cheap, average, sharp).
+- Bills that bite: BUILT Nov 14 (skin43). Missed weekly bills paid in order (food, phone, car, lights, health...), unpaid ones owed +10% late fee. Phone cut off (no plug texts/calls), lights off after 2 weeks (energy -10/day), insurance lapses after 2 weeks (20% tow + $200 ticket on each drive), fronts permits heat, collections. Under 18: guardian covers once per 14 days, takes phone 3 days, trust -8. Catch up on Expenses. Repo swapped for insurance lapse + tow since cars are bought outright.
+- Bail and lawyer choice: BUILT Nov 14 (skin43). Lawyer tiers already existed (free / $2,500 / $7,000), now labeled. Cash bail comes back as clean money when you show up; bondsman 10% fee gone; skip with bondsman = bounty hunter heat +10; cash bail with $3k+ street money heat +8; lawyer fee with $5k+ street money heat +5.
+- Start screen: BUILT Nov 14 (skin44). HIT THE BLOCK button after loading, siren glow, tips while loading, Enter key, flash on press, starts music.
 - Worker plugs push their old menu harder.
 - Favors from the barber, cousin on the block at 16.
 

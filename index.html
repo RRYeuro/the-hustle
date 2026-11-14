@@ -893,13 +893,13 @@ function w4Verdict(p,R,len,charge,bail){const X=w4(),r=Math.random();
     const n=Math.max(2,Math.round(len*.5));say(`Reduced to ${prLabel(n)}.`);if(R){R.len=n;R.until=R.start+n}else w4Sent(n,charge);return wNote('trial','Sentence reduced',`The judge cut it to ${prLabel(n)}.`)}
   const n=Math.round(len*1.2);say('You lost at trial and the judge added time.');if(R){R.len=n;R.until=R.start+n}else w4Sent(n,charge);wNote('trial','Guilty',`The judge gave you ${prLabel(n)}.`)}
 function w4Counsel(R,len,charge,bail){const X=w4(),extra=(S.lawPay?.1:0)+(S.fx&&S.fx.lawyer?.05:0);
-  const go=(fee,base)=>{if(S.cash<fee)return;S.cash-=fee;const wit=(p0)=>wCard('g_witness','Your strategy',`Your lawyer needs a plan for the jury. ${esc(charge)}. What do you do?`,crtWit(p0,R,len,charge,bail),'Court');wit(Math.min(.85,base+extra))};
-  return [{l:'Public defender (free)',c:'',f:()=>go(0,.3)},{l:'Private lawyer ($2,500)',c:'go',dis:S.cash<2500,f:()=>go(2500,.5)},{l:'Top attorney ($7,000)',c:'',dis:S.cash<7000,f:()=>go(7000,.68)}]}
+  const go=(fee,base)=>{if(S.cash<fee)return;try{window.l43Fee&&l43Fee(fee)}catch(e){}S.cash-=fee;const wit=(p0)=>wCard('g_witness','Your strategy',`Your lawyer needs a plan for the jury. ${esc(charge)}. What do you do?`,crtWit(p0,R,len,charge,bail),'Court');wit(Math.min(.85,base+extra))};
+  return [{l:'Public defender (free, 200 other cases)',c:'',f:()=>go(0,.3)},{l:'Private lawyer ($2,500, solid)',c:'go',dis:S.cash<2500,f:()=>go(2500,.5)},{l:'Top attorney ($7,000, sharp)',c:'',dis:S.cash<7000,f:()=>go(7000,.68)}]}
 function w4Court(){const R=S.pr,X=w4();if(!R||R.cc)return;R.cc=1;const len=R.len,charge=R.charge,bail=1500+len*100;
-  const opts=w4Counsel(R,len,charge,false).concat([crtPleaOpt(R,len)].concat(crtPTI(R,len)||[]).concat([{l:`Post bail (${money(bail)})`,c:'',dis:S.cash<bail,f:()=>{S.cash-=bail;X.bail={d:S.day+8,len,charge};S.pr=null;S.inJail=0;say('Posted bail. Trial in 8 days. Show up and fight it.');if(ARTX('bail'))wNote('bail','Out on bail','You have eight days. Get your lawyer ready and do not miss your court date.')}},{l:'Give up a name (snitch)',c:'red',dis:!!X.snitch,f:()=>{X.snitch=1;X.snD=S.day;X.snLeak=0;w4Br(-35);S.rep=Math.max(0,S.rep-8);const n=Math.max(1,Math.round(len*.3));R.len=n;R.until=R.start+n;(S.crews||[]).forEach(c=>{if(c.alive)c.beef=Math.min(100,c.beef+10)});say(`You gave up a name. Sentence cut to ${prLabel(n)}, but the street knows.`);if(ARTX('snitch'))wNote('snitch','Marked','Word travels fast. You are a snitch now.')}}]));
+  const opts=w4Counsel(R,len,charge,false).concat([crtPleaOpt(R,len)].concat(crtPTI(R,len)||[]).concat([...(window.l43BailOpts?l43BailOpts(len,charge,bail):[{l:`Post bail (${money(bail)})`,c:'',dis:S.cash<bail,f:()=>{S.cash-=bail;X.bail={d:S.day+8,len,charge};S.pr=null;S.inJail=0;say('Posted bail. Trial in 8 days. Show up and fight it.');if(ARTX('bail'))wNote('bail','Out on bail','You have eight days. Get your lawyer ready and do not miss your court date.')}}]),{l:'Give up a name (snitch)',c:'red',dis:!!X.snitch,f:()=>{X.snitch=1;X.snD=S.day;X.snLeak=0;w4Br(-35);S.rep=Math.max(0,S.rep-8);const n=Math.max(1,Math.round(len*.3));R.len=n;R.until=R.start+n;(S.crews||[]).forEach(c=>{if(c.alive)c.beef=Math.min(100,c.beef+10)});say(`You gave up a name. Sentence cut to ${prLabel(n)}, but the street knows.`);if(ARTX('snitch'))wNote('snitch','Marked','Word travels fast. You are a snitch now.')}}]));
   wCard(crtCourt().k==='fed'?'g_fed':'g_plea','Court date',`${esc(crtCourt().n)}: ${esc(crtCourt().t)} ${esc(charge)}. The judge is looking at ${prLabel(len)}. Hire counsel and fight it, take the plea, post bail and go home until trial, or give a name.${X.snitch?'':' The prosecutor hints a name could make this go away.'}`,opts,'Court')}
 function w4Trial(len,charge){const X=w4();
-  wCard(crtCourt().k==='fed'?'g_fed':'trial','Trial day',`You made your court date. ${esc(crtCourt().n)}: ${esc(crtCourt().t)} ${esc(charge)}. Hire counsel or skip court.`,w4Counsel(null,len,charge,true).concat([{l:'Skip court',c:'red',f:()=>{S.heat=Math.min(100,S.heat+25);say('You skipped court. They added a charge.');w4Sent(Math.round(len*1.4),'Failure to appear')}}]),'Court')}
+  wCard(crtCourt().k==='fed'?'g_fed':'trial','Trial day',`You made your court date. ${esc(crtCourt().n)}: ${esc(crtCourt().t)} ${esc(charge)}. Hire counsel or skip court.`,(window.l43Show?l43Show(w4Counsel(null,len,charge,true)):w4Counsel(null,len,charge,true)).concat([{l:'Skip court',c:'red',f:()=>{S.heat=Math.min(100,S.heat+25);say('You skipped court. They added a charge.');try{l43Skip()}catch(e){}w4Sent(Math.round(len*1.4),'Failure to appear')}}]),'Court')}
 function w4Sent(len,charge){const X=w4();X.noCourt=1;S.strikes=Math.max(1,S.strikes||0);try{prStart()}catch(e){console.error(e)}X.noCourt=0;if(S.pr){S.pr.len=Math.max(2,len);S.pr.until=S.day+S.pr.len;S.pr.charge=charge;S.pr.cc=1;say(`Sentenced to ${prLabel(S.pr.len)}.`)}}
 /* ---------- SC law: charge classes, court costs (+107.5%), bench warrant ---------- */
 const CRT={C:{n:'Class C misdemeanor',f:150},A:{n:'Class A misdemeanor',f:400},F:{n:'Class F felony',f:600},E:{n:'Class E felony',f:1000},D:{n:'Class D felony',f:1500},X:{n:'Class A felony',f:3500}};
@@ -1263,7 +1263,7 @@ function w4Day(){const X=w4();if(S.pr){X.br=Math.max(0,X.br-.1);return}
       wCard('snitch','Somebody is looking for you','Word got around that you gave up a name. A couple of guys have been asking where you stay.',[{l:'Fight them',c:'red',f:()=>{fightGame(myStr(),rnd(10,20),'The guys from the block',win=>{if(win){S.rep+=2;addXP(4);say('You handled it. They will think twice.')}else{S.hp=Math.max(5,S.hp-rnd(15,30));S.cash=Math.round(S.cash*.92);say('They caught you and took some cash.')}render()})}},{l:'Pay them $500',c:'',dis:S.cash<500,f:()=>{S.cash-=500;say('You paid them off. For now.')}},{l:'Run for it',c:'',f:()=>{copSpd=.9;window.chaseWho='The block';chase(ok=>{copSpd=1;close();if(ok){S.heat=Math.min(100,S.heat+3);say('You got away.')}else{S.hp=Math.max(5,S.hp-rnd(8,18));say('They caught up and roughed you up.')}try{checkEnd()}catch(e){}render()})}}],'Snitch')}}
   if(!window.FF&&$('modal').hidden&&Math.random()<.04)w4Drama();
   if(!window.FF&&$('modal').hidden&&X.br<=30&&S.heat>=30&&!X.snitch&&Math.random()<.015){wCard('snitch','Somebody is talking','A kid on the block is telling people he saw you. The police might hear it.',[{l:'Pay him $400 to stay quiet',dis:S.cash<400,f:()=>{S.cash-=400;say('Paid the kid off.')}},{l:'Scare him',c:'red',f:()=>{S.heat=Math.min(100,S.heat+5);w4Br(-5);say('Scared him. The block saw it.')}},{l:'Ignore it',c:'',f:()=>{if(Math.random()<.3){S.heat=Math.min(100,S.heat+12);say('He talked. Heat is up.')}}}],'Block')}
-  if(X.bail&&S.day>=X.bail.d&&!S.pr&&$('modal').hidden){const b=X.bail;X.bail=null;w4Trial(b.len,b.charge)}}
+  if(X.bail&&S.day>=X.bail.d&&!S.pr&&$('modal').hidden){const b=X.bail;X.bail=null;window._l43b=b;w4Trial(b.len,b.charge)}}
 /* ---------- wiring ---------- */
 const _w4Bi=paneBiz;paneBiz=function(){return _w4Bi()+sfn('w4Biz')};
 const _w4Sp=paneSpots;paneSpots=function(){return _w4Sp()+sfn('w4Spots')};
@@ -9101,10 +9101,10 @@ try{const c=ART3.c,g=ART3.g,b=ART3.b,set=(o,k,v)=>{if(v)o[k]=v};
 (function(){if(window._sk30)return;window._sk30=1;
 /* loading screen: title art + bar while the first pictures come in */
 const el=document.getElementById('ld30');if(!el)return;const bar=document.getElementById('ld30b'),t0=performance.now();let done=false;
-const out=()=>{if(done)return;done=true;const w=Math.max(0,900-(performance.now()-t0));setTimeout(()=>{if(bar)bar.style.width='100%';el.style.opacity='0';el.style.pointerEvents='none';setTimeout(()=>el.remove(),500)},w)};
+const out=()=>{if(done)return;done=true;if(window.l44Ready&&!navigator.webdriver){const w0=Math.max(0,900-(performance.now()-t0));if(bar)bar.style.width='100%';return setTimeout(()=>l44Ready(el,bar),w0)}const w=Math.max(0,900-(performance.now()-t0));setTimeout(()=>{if(bar)bar.style.width='100%';el.style.opacity='0';el.style.pointerEvents='none';setTimeout(()=>el.remove(),500)},w)};
 let L=[];try{L=[SPLASHP].concat(Object.values(PORTRAITS)).concat(Object.values(BLOCKART)).filter(Boolean)}catch(e){}
 let n=0;const step=()=>{n++;if(bar)bar.style.width=Math.min(96,8+n/Math.max(1,L.length)*88)+'%';if(n>=L.length)out()};
-if(!L.length)out();L.forEach(u=>{const i=new Image();i.onload=i.onerror=step;i.src=u});
+if(!L.length)setTimeout(out,0);L.forEach(u=>{const i=new Image();i.onload=i.onerror=step;i.src=u});
 setTimeout(out,6000);el.addEventListener('click',out);
 })();
 </script>
@@ -9217,7 +9217,7 @@ const _nd=nextDay;nextDay=function(){try{if(S&&S.meet)endMeet(true)}catch(e){}re
 try{const _b=busted;busted=function(){try{if(S&&S.meet)endMeet(true)}catch(e){}return _b.apply(this,arguments)}}catch(e){}
 try{const _pp=plugPrice;plugPrice=function(kind,g,raw){let p=_pp.apply(this,arguments);try{if(S.meet&&S.meet.how==='pull'&&kind==='buy'&&!raw&&!tie(S.meet.bi))p=Math.round(p*TAX)}catch(e){}return p}}catch(e){}
 /* ---------- plugs call you ---------- */
-function plugCall(bi,force){if(!force&&(!el('modal').hidden||window.FF))return false;const P=PINFO[bi],gs=P.carries.map(G).filter(Boolean);if(!gs.length)return false;
+function plugCall(bi,force){if(!force&&window.l43PhoneOff&&l43PhoneOff())return false;if(!force&&(!el('modal').hidden||window.FF))return false;const P=PINFO[bi],gs=P.carries.map(G).filter(Boolean);if(!gs.length)return false;
  const g=pick(gs),o=S.offer[bi]&&S.offer[bi][g.id];if(!o)return false;const disc=pick([.88,.9,.85]);
  o.tip=disc;o.fake=false;if(o.real)o.q=o.real;try{o.stock=Math.max(l34U(bi,g)*3,Math.round(newStock(bi,g)*1.5))}catch(e){}
  S.pcall=S.day;pk(bi).call=S.day;pk(bi).open=S.day+1;const nm=plugName(bi),fem=plugFem(bi),w=whyPull(bi,true),pct=Math.round((1-disc)*100);
@@ -9765,11 +9765,135 @@ const show=()=>{try{const Q=S.picQ;if(!Q||!Q.length||!el('modal').hidden||docume
 const _r=render;render=function(){const r=_r.apply(this,arguments);try{
  const B=typeof b5==='function'?b5():null;if(B&&B.crack===S.day+5&&S.p42c!==S.day){S.p42c=S.day;l42q('g_raidup','🚨 Task force','A police task force hit the neighborhood. Every block is hotter for 5 days. Stay low.')}
  if(S.patSaid===S.day&&!S.p42p){S.p42p=1;l42q('g_patrol','🚓 Patrol on your block','A patrol car rolled through while you were serving. Each sale here costs more heat today. Move blocks or wait it out.')}
- show()}catch(e){console.error('sk42 r',e)}return r};
+ if(S.picQ&&S.picQ.length&&!window._t42){window._t42=setTimeout(()=>{window._t42=0;show()},700)}}catch(e){console.error('sk42 r',e)}return r};
 /* jewelry picture at the pawn shop */
 try{const _op=openPlace;openPlace=function(id){const r=_op.apply(this,arguments);try{if(id==='pawn'){const b=document.querySelector('#mcard [data-l27="pj"]'),row=b&&b.closest('.row');if(row&&!document.querySelector('#mcard .p42j')){row.insertAdjacentHTML('beforebegin',`<div class="p42j" style="padding:0 12px">${l42a('g_jewel',90)}</div>`)}}}catch(e){}return r}}catch(e){}
 /* dev */
 try{const _dp=devPanel;devPanel=function(){const r=_dp.apply(this,arguments);try{const mc=el('mcard');if(mc&&!el('modal').hidden&&!mc.querySelector('[data-d42]')){const d=document.createElement('div');d.innerHTML=`<div class="sec">Event pictures (new)</div><div class="btns"><button class="btn" data-d42="pay">Heist payday</button><button class="btn" data-d42="set">Heist setup</button><button class="btn" data-d42="tf">Task force</button><button class="btn" data-d42="pat">Patrol</button><button class="btn" data-d42="scan">Scanner</button></div>`;const h2=mc.querySelector('h2');if(h2&&h2.parentNode)h2.parentNode.insertBefore(d,h2.nextSibling);else mc.appendChild(d);
  d.querySelectorAll('[data-d42]').forEach(b=>b.onclick=ev=>{ev.stopPropagation();const k=b.dataset.d42;el('modal').hidden=true;const T={pay:['g_hpay','💰 Crew heist: payday','Dev test.'],set:['g_hsetup','🚨 It was a setup','Dev test.'],tf:['g_raidup','🚨 Task force','Dev test.'],pat:['g_patrol','🚓 Patrol on your block','Dev test.'],scan:['g_scan1','📻 Police scanner','Dev test.']}[k];l42q(...T);render()})}}catch(e){console.error('sk42 dev',e)}return r}}catch(e){}
 })();</script>
+<script id="skin43js">
+(function(){if(window._sk43)return;window._sk43=1;
+const el=id=>document.getElementById(id);
+/* ---------- Bills that bite ---------- */
+const KIND=n=>/^Food/.test(n)?'food':/^Phone/.test(n)?'phone':/^Utilities/.test(n)?'util':/^Car insurance/.test(n)?'car':/^Health/.test(n)?'health':/^Student loan/.test(n)?'loan':/^Permits/.test(n)?'front':'other';
+const NAME={food:'Food',phone:'Phone and internet',util:'Lights and water',car:'Car insurance',health:'Health insurance',loan:'Student loan',front:'Permits on your fronts',other:'Other bills',ticket:'No-insurance ticket'};
+const ORDER=['food','phone','car','util','health','loan','front','other'];
+const LATE=1.1;
+const bb=()=>{S.bb=S.bb||{owe:{},miss:{}};S.bb.owe=S.bb.owe||{};S.bb.miss=S.bb.miss||{};return S.bb};
+const oweTot=()=>Object.values(bb().owe).reduce((a,v)=>a+(v||0),0);
+window.l43PhoneOff=()=>{try{const B=S&&S.bb;return !!(B&&(B.phoneCut||(B.poff||0)>S.day))}catch(e){return false}};
+window.l43Owe=oweTot;
+function cuts(){const B=bb(),L=[];if(B.phoneCut)L.push('📵 Phone cut off: plugs cannot reach you and you cannot text them.');else if((B.poff||0)>S.day)L.push(`📵 ${S.par?S.par.name:'Your guardian'} has your phone until day ${B.poff}.`);if(B.lights)L.push('💡 Lights and water off: you wake up with less energy.');if(B.noIns)L.push('🚗 No car insurance: a cop can pull you over and tow it.');if(B.noHealth)L.push('🏥 No health coverage.');return L}
+window.l43Cuts=cuts;
+function guardianCovers(c){const P=S.par;if(!P||(S.age||18)>=18)return false;const B=bb();if((B.gd||-99)+14>S.day)return false;B.gd=S.day;B.poff=S.day+3;P.trust=Math.max(0,(P.trust||60)-8);addStress(6);
+  say(`${P.name} covered your ${money(c.tot)} in bills, but took your phone for 3 days. Trust −8.`);
+  try{l42q('overdue',`${P.name} stepped in`,`You couldn't cover ${money(c.tot)} this week, so ${P.name} paid it. Your phone is gone for 3 days and trust dropped. Next time it is on you.`)}catch(e){}return true}
+const _ld=livingDay;
+livingDay=function(){try{if(!S.livDay||S.day<S.livDay)return _ld.apply(this,arguments);const c=livCost();if(!c.tot)return _ld.apply(this,arguments);pullSafeCash(c.tot,'You');
+  if(S.cash>=c.tot){const r=_ld.apply(this,arguments);const B=bb();c.items.forEach(x=>{B.miss[KIND(x[0])]=0});return r}
+  S.livDay=S.day+7;try{wearDay()}catch(e){}
+  if(guardianCovers(c))return;
+  const B=bb(),it=c.items.map(x=>({n:x[0],k:KIND(x[0]),v:x[1]})).sort((a,b)=>ORDER.indexOf(a.k)-ORDER.indexOf(b.k));const paid=[],miss=[];
+  it.forEach(x=>{if(S.cash>=x.v){S.cash-=x.v;paid.push(x);B.miss[x.k]=0;if(x.k==='loan')S.sl=Math.max(0,(S.sl||0)-(window._slPay||0))}else{miss.push(x);B.miss[x.k]=(B.miss[x.k]||0)+1;B.owe[x.k]=Math.round((B.owe[x.k]||0)+x.v*LATE)}});
+  try{cleanCash()}catch(e){}S.sl=Math.max(0,(S.sl||0)+(window._slAdd||0));
+  const hit=[];
+  miss.forEach(x=>{const n=B.miss[x.k];
+    if(x.k==='phone'&&!B.phoneCut){B.phoneCut=1;hit.push('Your phone got cut off. Plugs cannot call you and you cannot text them until you catch up.')}
+    if(x.k==='food'){S.en=Math.max(0,(S.en||0)-20);hit.push('Ramen all week. Energy −20.')}
+    if(x.k==='util'&&n>=2&&!B.lights){B.lights=1;hit.push('Two weeks behind: they shut off the lights and water. You wake up tired.')}
+    if(x.k==='util'&&n===1)hit.push('Lights and water are past due. Miss another week and they shut it off.');
+    if(x.k==='car'&&n>=2&&!B.noIns){B.noIns=1;hit.push('Your car insurance lapsed. Drive without it and a cop can tow your car.')}
+    if(x.k==='car'&&n===1)hit.push('Car insurance is past due. Miss another week and it lapses.');
+    if(x.k==='health'&&!B.noHealth){B.noHealth=1;hit.push('Your health coverage dropped.')}
+    if(x.k==='front'&&n>=2){S.heat=Math.min(100,S.heat+10);hit.push('Unpaid permits on your fronts got the city asking questions. Heat +10.')}});
+  if(oweTot()>=1000&&Math.max(...Object.values(B.miss))>=3){addStress(5);S.rep=Math.max(0,S.rep-1);hit.push('Collections are calling. Stress up, rep −1.')}
+  addStress(6);S.rep=Math.max(0,S.rep-1);
+  say(`Bills: paid ${paid.length?paid.map(x=>x.n.toLowerCase()).join(', '):'nothing'}. Missed ${miss.map(x=>x.n.toLowerCase()).join(', ')}. You owe ${money(oweTot())} with late fees. Catch up on the Money tab, under Expenses.`);
+  try{l42q('overdue','Bills past due',`You owe ${money(oweTot())} with 10% late fees. ${hit.join(' ')} Catch up under Expenses.`)}catch(e){}
+ }catch(e){console.error('sk43 bills',e);return _ld.apply(this,arguments)}};
+function catchUp(){const t=oweTot();if(!t||S.cash<t)return;S.cash-=t;try{cleanCash()}catch(e){}const B=bb();B.owe={};B.miss={};const back=[];if(B.phoneCut)back.push('phone');if(B.lights)back.push('lights and water');if(B.noIns)back.push('car insurance');if(B.noHealth)back.push('health coverage');B.phoneCut=0;B.lights=0;B.noIns=0;B.noHealth=0;addStress(-4);sfx&&sfx('cash');say(`Caught up on ${money(t)} in bills.${back.length?' Back on: '+back.join(', ')+'.':''}`);render()}
+window.l43CatchUp=catchUp;
+function owedHTML(){const B=bb(),t=oweTot(),L=cuts();if(!t&&!L.length)return '';
+  let h=`<div class="sec" style="color:var(--blood)">Behind on bills</div>`;
+  Object.keys(B.owe).filter(k=>B.owe[k]>0).forEach(k=>{h+=`<div class="row" style="flex-wrap:wrap"><div class="info" style="flex:1 1 200px;min-width:0"><div class="t">${NAME[k]||k}</div><div class="s">${B.miss[k]?`${B.miss[k]} week${B.miss[k]===1?'':'s'} behind. `:''}Includes the 10% late fee.</div></div><span class="chip" style="color:var(--blood);border-color:var(--blood)">${money(B.owe[k])}</span></div>`});
+  if(L.length)h+=`<div class="row"><div class="info"><div class="s">${L.join('<br>')}</div></div></div>`;
+  if(t)h+=`<div class="btns" style="padding:4px 12px 10px"><button class="btn go" data-a43="catch" ${S.cash<t?'disabled':''}>Catch up (${money(t)})</button></div>`;return h}
+window.l43HTML=owedHTML;
+const _pe=paneExp;paneExp=function(){let h=_pe.apply(this,arguments);try{const o=owedHTML();if(o){const i=h.indexOf('<div class="sec" style="color:var(--blood)">Money going out</div>');h=i>-1?h.slice(0,i)+o+h.slice(i):o+h}}catch(e){console.error('sk43 exp',e)}return h};
+document.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.target.closest('[data-a43]');if(b&&!b.disabled&&b.dataset.a43==='catch'){e.stopPropagation();catchUp()}
+  const p=e.target&&e.target.closest&&e.target.closest('[data-a31="tx"],[data-a31="pu"]');if(p&&l43PhoneOff()){e.stopPropagation();e.preventDefault();say(bb().phoneCut?'Your phone is cut off. Catch up on your bills (Money tab, Expenses) to text plugs again.':'You do not have your phone right now.');render()}},true);
+/* lights off: less energy each morning */
+try{WD.push(()=>{try{const B=S.bb;if(B&&B.lights&&S.home!=='family'&&!S.pr&&!S.inJail){S.en=Math.max(0,(S.en||0)-10);if(S.day%3===0)say('No lights or hot water at your place. Energy −10 a day until you catch up on bills.')}}catch(e){}})}catch(e){}
+/* no insurance: a stop can tow the car */
+try{const _d=window.l32Drive;if(_d)window.l32Drive=function(){const r=_d.apply(this,arguments);try{const B=S.bb;if(r&&B&&B.noIns&&S.car&&S.car!=='stolen'&&CARS[S.car]&&Math.random()<.2){const c=S.car;S.imp={car:c,d:S.day};S.cap-=CARS[c].trunk;S.car=null;if(S.rob)S.rob.car=0;B.owe.ticket=(B.owe.ticket||0)+200;S.heat=Math.min(100,S.heat+3);say(`Pulled over with no insurance. They towed your ${CARS[c].name} to the impound lot and wrote you a $200 ticket.`);l42q('g_copstop','Pulled over: no insurance',`They ran your plate and your insurance came back lapsed. Your ${CARS[c].name} is at the impound lot (Move, Street business) and a $200 ticket went on your bills.`)}}catch(e){}return r}}catch(e){}
+/* ---------- Bail and lawyer choice ---------- */
+window.l43BailOpts=function(len,charge,bail){const X=w4(),bond=Math.max(200,Math.round(bail*.1));
+  const out=(how,amt)=>{X.bail={d:S.day+8,len,charge,amt,bond:how==='bond'};S.pr=null;S.inJail=0;if(ARTX('bail'))wNote('bail','Out on bail',how==='bond'?`The bondsman put up your bail for ${money(bond)}. That fee is gone. Miss court and he sends someone after you. Trial in eight days.`:`You put up ${money(bail)} in cash. Show up to court in eight days and you get it all back as clean money.`)};
+  return [{l:`Post cash bail (${money(bail)}, back when you show up)`,c:'',dis:S.cash<bail,f:()=>{const d=Math.min(bail,dirtyCash());S.cash-=bail;try{cleanCash()}catch(e){}if(d>=3000){S.heat=Math.min(100,S.heat+8);say(`Posted ${money(bail)} cash bail. The judge asked where ${money(d)} in street money came from. Heat +8. Trial in 8 days.`)}else say(`Posted ${money(bail)} cash bail. Show up in 8 days and you get it back.`);out('cash',bail)}},
+   {l:`Bail bondsman (${money(bond)} fee, not coming back)`,c:'',dis:S.cash<bond,f:()=>{S.cash-=bond;try{cleanCash()}catch(e){}say(`Paid a bondsman ${money(bond)} to post your bail. Trial in 8 days.`);out('bond',0)}}]};
+window.l43Show=function(opts){const b=window._l43b;if(!b)return opts;return opts.map(o=>({...o,f:()=>{try{window._l43b=null;if(b.amt){cleanCash();S.cash+=b.amt;S.clean=(S.clean||0)+b.amt;say(`You showed up, so the court gave back your ${money(b.amt)} bail as clean money.`)}}catch(e){}return o.f()}}))};
+window.l43Skip=function(){const b=window._l43b;if(b&&b.bond){S.heat=Math.min(100,S.heat+10);addStress(8);say('The bondsman put a bounty hunter on you. Heat +10.')}else if(b&&b.amt)say(`You skipped court, so your ${money(b.amt)} bail is gone.`);window._l43b=null};
+window.l43Fee=function(fee){const d=Math.min(fee,dirtyCash());if(d>=5000){S.heat=Math.min(100,S.heat+5);say(`Your lawyer took ${money(d)} in cash and had to file a report on it. Heat +5.`)}};
+/* tutorial + dev */
+try{TUT.push(['Bills and bail','Living costs come out every week. Miss them and they bite: 10% late fees, phone cut off (plugs cannot reach you), lights off (less energy), insurance lapses (cops can tow your car), collections. Catch up on the Money tab under Expenses. Under 18, your guardian covers it once but takes your phone. In court: cash bail comes back as clean money when you show up; a bondsman costs 10% and it is gone. Public defender is free, private lawyer is solid, top attorney is sharp. Paying a lawyer $5,000+ in street money adds heat.'])}catch(e){}
+try{const _dp=devPanel;devPanel=function(){const r=_dp.apply(this,arguments);try{const mc=el('mcard');if(mc&&!el('modal').hidden&&!mc.querySelector('[data-d43]')){const d=document.createElement('div');d.innerHTML=`<div class="sec">Bills and bail (new)</div><div class="btns"><button class="btn" data-d43="miss">Miss this week's bills</button><button class="btn" data-d43="all">Cut phone, lights, insurance</button><button class="btn" data-d43="clear">Clear bills owed</button><button class="btn" data-d43="court">Court date now</button></div>`;const h2=mc.querySelector('h2');if(h2&&h2.parentNode)h2.parentNode.insertBefore(d,h2.nextSibling);else mc.appendChild(d);
+ d.querySelectorAll('[data-d43]').forEach(b=>b.onclick=ev=>{ev.stopPropagation();const k=b.dataset.d43;el('modal').hidden=true;
+  if(k==='miss'){if(S.home==='family'){S.home='studio'in HOMES?'studio':Object.keys(HOMES).find(h=>HOMES[h].rent>0)}S.livDay=S.day;const c=S.cash;S.cash=0;livingDay();S.cash+=c;say('Dev: missed this week\'s bills with $0.')}
+  if(k==='all'){const B=bb();B.phoneCut=1;B.lights=1;B.noIns=1;B.owe.phone=(B.owe.phone||0)+60;B.owe.util=(B.owe.util||0)+60;B.owe.car=(B.owe.car||0)+120;B.miss={phone:1,util:2,car:2};say('Dev: phone, lights and insurance cut.')}
+  if(k==='clear'){S.bb={owe:{},miss:{}};say('Dev: bills cleared.')}
+  if(k==='court'){try{S.age=Math.max(S.age||0,18);S.strikes=Math.max(1,S.strikes||0);S.picQ=[];prStart();if(S.pr){S.pr.cc=0;el('modal').hidden=true;w4Court()}return}catch(e){say('Dev: court failed '+e)}}
+  render()})}}catch(e){console.error('sk43 dev',e)}return r}}catch(e){}
+})();</script>
+
+<style id="skin44">
+#ld30 .tip44{color:#9d94b8;font:12px -apple-system,BlinkMacSystemFont,sans-serif;max-width:min(86vw,420px);text-align:center;min-height:32px;opacity:.9}
+#ld30 .sir44{position:absolute;inset:0;pointer-events:none;animation:sir44 1.6s linear infinite;opacity:0;transition:opacity .6s}
+#ld30.rdy44 .sir44{opacity:1}
+@keyframes sir44{0%,100%{box-shadow:inset 60px 0 90px -60px rgba(255,40,60,.55),inset -60px 0 90px -60px rgba(40,90,255,.15)}50%{box-shadow:inset 60px 0 90px -60px rgba(255,40,60,.15),inset -60px 0 90px -60px rgba(40,90,255,.55)}}
+#ld30 .wrap44{display:flex;flex-direction:column;align-items:center;gap:10px;position:relative;z-index:1}
+#ld30 .st44{position:relative;overflow:hidden;font:900 26px/1 'Arial Black',Impact,sans-serif;letter-spacing:.16em;padding:18px 38px 16px;color:#1a1408;
+ background:linear-gradient(100deg,#b9790c 0%,#f5b72a 35%,#fff1b8 50%,#f5b72a 65%,#b9790c 100%);background-size:300% 100%;border:3px solid #1a1408;border-radius:8px;
+ box-shadow:0 0 0 2px #f5b72a,0 0 30px rgba(245,183,42,.55),7px 7px 0 #000;transform:skew(-7deg);cursor:pointer;animation:sh44 2.8s linear infinite,in44 .55s cubic-bezier(.2,1.7,.4,1) both,gl44 1.8s ease-in-out .6s infinite}
+#ld30 .st44 span{display:inline-block;transform:skew(7deg)}
+#ld30 .st44:hover,#ld30 .st44:focus-visible{outline:none;filter:brightness(1.1);transform:skew(-7deg) translateY(-2px)}
+#ld30 .st44:active{transform:skew(-7deg) translate(4px,4px);box-shadow:0 0 0 2px #f5b72a,0 0 30px rgba(245,183,42,.55),3px 3px 0 #000}
+#ld30 .sub44{font:700 11px/1 -apple-system,BlinkMacSystemFont,sans-serif;letter-spacing:.32em;color:#f5b72a;text-transform:uppercase;opacity:.85}
+#ld30 .key44{font:11px -apple-system,BlinkMacSystemFont,sans-serif;color:#7d7496;letter-spacing:.08em}
+#ld30 .key44 b{border:1px solid #4a4258;border-bottom-width:2px;border-radius:4px;padding:1px 6px;color:#c9c0e0;font-weight:600}
+#ld30 .fl44{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:3}
+#ld30.go44 .fl44{animation:fl44 .5s ease-out forwards}
+#ld30.go44 .st44{animation:pop44 .45s ease-out forwards}
+@keyframes sh44{to{background-position:-300% 0}}
+@keyframes in44{from{opacity:0;transform:skew(-7deg) scale(.4)}to{opacity:1;transform:skew(-7deg) scale(1)}}
+@keyframes gl44{0%,100%{box-shadow:0 0 0 2px #f5b72a,0 0 22px rgba(245,183,42,.4),7px 7px 0 #000}50%{box-shadow:0 0 0 2px #f5b72a,0 0 46px rgba(245,183,42,.85),7px 7px 0 #000}}
+@keyframes fl44{0%{opacity:.85}100%{opacity:0}}
+@keyframes pop44{0%{transform:skew(-7deg) scale(1)}40%{transform:skew(-7deg) scale(1.15)}100%{transform:skew(-7deg) scale(.9);opacity:0}}
+@keyframes shk44{0%,100%{transform:translate(0,0)}20%{transform:translate(-6px,3px)}40%{transform:translate(5px,-4px)}60%{transform:translate(-4px,2px)}80%{transform:translate(3px,-2px)}}
+#ld30.go44 .wrap44,#ld30.go44 img{animation:shk44 .35s linear}
+@media (prefers-reduced-motion:reduce){#ld30 .st44,#ld30 .sir44,#ld30.go44 .wrap44,#ld30.go44 img{animation:none!important}}
+</style>
+<script id="skin44js">
+(function(){if(window._sk44)return;window._sk44=1;
+const el=document.getElementById('ld30');if(!el)return;
+const TIPS=['Clean money pays bills. Dirty money draws heat.','Text a plug to open their spot for today and tomorrow.','A patrol on your block makes every sale hotter.','Miss your bills and they bite: phone off, lights off.','Show up to court and your cash bail comes back clean.','Real drip needs real rep. Fake drip gets you robbed.','Your crew can run a heist without you. Pick them right.','Effort costs energy. Rest before you push.'];
+let ti=Math.floor(Math.random()*TIPS.length);const t=document.getElementById('ld30t');let tip=null;
+try{tip=document.createElement('div');tip.className='tip44';tip.textContent='💡 '+TIPS[ti];(t||el).insertAdjacentElement('afterend',tip)}catch(e){}
+const iv=setInterval(()=>{if(!tip||!document.body.contains(el))return clearInterval(iv);ti=(ti+1)%TIPS.length;tip.textContent='💡 '+TIPS[ti]},2600);
+window.l44Ready=function(el,bar){try{if(el.dataset.r44)return;el.dataset.r44=1;el.classList.add('rdy44');
+  const b=bar&&bar.parentNode;if(b)b.style.display='none';if(t)t.style.display='none';
+  el.insertAdjacentHTML('afterbegin','<div class="sir44"></div><div class="fl44"></div>');
+  const w=document.createElement('div');w.className='wrap44';w.innerHTML='<button class="st44" id="st44" aria-label="Start"><span>HIT THE BLOCK</span></button><div class="sub44">Columbia, SC · No days off</div><div class="key44">Tap it or press <b>Enter</b></div>';
+  (tip||el.lastChild).insertAdjacentElement('beforebegin',w);
+  let gone=false;const go=()=>{if(gone)return;gone=true;clearInterval(iv);document.removeEventListener('keydown',kd,true);
+    try{if(typeof sfx==='function'){sfx('cash');setTimeout(()=>sfx('siren'),120)}if(typeof SND!=='undefined'&&SND.music&&typeof musicStart==='function')musicStart()}catch(e){}
+    try{navigator.vibrate&&navigator.vibrate(40)}catch(e){}
+    const s=el.querySelector('#st44 span');if(s)s.textContent="LET'S GET IT";el.classList.add('go44');
+    setTimeout(()=>{el.style.opacity='0';el.style.pointerEvents='none';setTimeout(()=>el.remove(),500)},520)};
+  const kd=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();e.stopPropagation();go()}};
+  document.addEventListener('keydown',kd,true);w.querySelector('#st44').addEventListener('click',e=>{e.stopPropagation();go()});
+  setTimeout(()=>{try{w.querySelector('#st44').focus({preventScroll:true})}catch(e){}},80);
+ }catch(e){console.error('sk44',e);el.remove()}};
+})();</script>
+
 <script>if('serviceWorker' in navigator){addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}</script></body></html>

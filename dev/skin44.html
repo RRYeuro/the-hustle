@@ -1,0 +1,49 @@
+<style id="skin44">
+#ld30 .tip44{color:#9d94b8;font:12px -apple-system,BlinkMacSystemFont,sans-serif;max-width:min(86vw,420px);text-align:center;min-height:32px;opacity:.9}
+#ld30 .sir44{position:absolute;inset:0;pointer-events:none;animation:sir44 1.6s linear infinite;opacity:0;transition:opacity .6s}
+#ld30.rdy44 .sir44{opacity:1}
+@keyframes sir44{0%,100%{box-shadow:inset 60px 0 90px -60px rgba(255,40,60,.55),inset -60px 0 90px -60px rgba(40,90,255,.15)}50%{box-shadow:inset 60px 0 90px -60px rgba(255,40,60,.15),inset -60px 0 90px -60px rgba(40,90,255,.55)}}
+#ld30 .wrap44{display:flex;flex-direction:column;align-items:center;gap:10px;position:relative;z-index:1}
+#ld30 .st44{position:relative;overflow:hidden;font:900 26px/1 'Arial Black',Impact,sans-serif;letter-spacing:.16em;padding:18px 38px 16px;color:#1a1408;
+ background:linear-gradient(100deg,#b9790c 0%,#f5b72a 35%,#fff1b8 50%,#f5b72a 65%,#b9790c 100%);background-size:300% 100%;border:3px solid #1a1408;border-radius:8px;
+ box-shadow:0 0 0 2px #f5b72a,0 0 30px rgba(245,183,42,.55),7px 7px 0 #000;transform:skew(-7deg);cursor:pointer;animation:sh44 2.8s linear infinite,in44 .55s cubic-bezier(.2,1.7,.4,1) both,gl44 1.8s ease-in-out .6s infinite}
+#ld30 .st44 span{display:inline-block;transform:skew(7deg)}
+#ld30 .st44:hover,#ld30 .st44:focus-visible{outline:none;filter:brightness(1.1);transform:skew(-7deg) translateY(-2px)}
+#ld30 .st44:active{transform:skew(-7deg) translate(4px,4px);box-shadow:0 0 0 2px #f5b72a,0 0 30px rgba(245,183,42,.55),3px 3px 0 #000}
+#ld30 .sub44{font:700 11px/1 -apple-system,BlinkMacSystemFont,sans-serif;letter-spacing:.32em;color:#f5b72a;text-transform:uppercase;opacity:.85}
+#ld30 .key44{font:11px -apple-system,BlinkMacSystemFont,sans-serif;color:#7d7496;letter-spacing:.08em}
+#ld30 .key44 b{border:1px solid #4a4258;border-bottom-width:2px;border-radius:4px;padding:1px 6px;color:#c9c0e0;font-weight:600}
+#ld30 .fl44{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:3}
+#ld30.go44 .fl44{animation:fl44 .5s ease-out forwards}
+#ld30.go44 .st44{animation:pop44 .45s ease-out forwards}
+@keyframes sh44{to{background-position:-300% 0}}
+@keyframes in44{from{opacity:0;transform:skew(-7deg) scale(.4)}to{opacity:1;transform:skew(-7deg) scale(1)}}
+@keyframes gl44{0%,100%{box-shadow:0 0 0 2px #f5b72a,0 0 22px rgba(245,183,42,.4),7px 7px 0 #000}50%{box-shadow:0 0 0 2px #f5b72a,0 0 46px rgba(245,183,42,.85),7px 7px 0 #000}}
+@keyframes fl44{0%{opacity:.85}100%{opacity:0}}
+@keyframes pop44{0%{transform:skew(-7deg) scale(1)}40%{transform:skew(-7deg) scale(1.15)}100%{transform:skew(-7deg) scale(.9);opacity:0}}
+@keyframes shk44{0%,100%{transform:translate(0,0)}20%{transform:translate(-6px,3px)}40%{transform:translate(5px,-4px)}60%{transform:translate(-4px,2px)}80%{transform:translate(3px,-2px)}}
+#ld30.go44 .wrap44,#ld30.go44 img{animation:shk44 .35s linear}
+@media (prefers-reduced-motion:reduce){#ld30 .st44,#ld30 .sir44,#ld30.go44 .wrap44,#ld30.go44 img{animation:none!important}}
+</style>
+<script id="skin44js">
+(function(){if(window._sk44)return;window._sk44=1;
+const el=document.getElementById('ld30');if(!el)return;
+const TIPS=['Clean money pays bills. Dirty money draws heat.','Text a plug to open their spot for today and tomorrow.','A patrol on your block makes every sale hotter.','Miss your bills and they bite: phone off, lights off.','Show up to court and your cash bail comes back clean.','Real drip needs real rep. Fake drip gets you robbed.','Your crew can run a heist without you. Pick them right.','Effort costs energy. Rest before you push.'];
+let ti=Math.floor(Math.random()*TIPS.length);const t=document.getElementById('ld30t');let tip=null;
+try{tip=document.createElement('div');tip.className='tip44';tip.textContent='💡 '+TIPS[ti];(t||el).insertAdjacentElement('afterend',tip)}catch(e){}
+const iv=setInterval(()=>{if(!tip||!document.body.contains(el))return clearInterval(iv);ti=(ti+1)%TIPS.length;tip.textContent='💡 '+TIPS[ti]},2600);
+window.l44Ready=function(el,bar){try{if(el.dataset.r44)return;el.dataset.r44=1;el.classList.add('rdy44');
+  const b=bar&&bar.parentNode;if(b)b.style.display='none';if(t)t.style.display='none';
+  el.insertAdjacentHTML('afterbegin','<div class="sir44"></div><div class="fl44"></div>');
+  const w=document.createElement('div');w.className='wrap44';w.innerHTML='<button class="st44" id="st44" aria-label="Start"><span>HIT THE BLOCK</span></button><div class="sub44">Columbia, SC · No days off</div><div class="key44">Tap it or press <b>Enter</b></div>';
+  (tip||el.lastChild).insertAdjacentElement('beforebegin',w);
+  let gone=false;const go=()=>{if(gone)return;gone=true;clearInterval(iv);document.removeEventListener('keydown',kd,true);
+    try{if(typeof sfx==='function'){sfx('cash');setTimeout(()=>sfx('siren'),120)}if(typeof SND!=='undefined'&&SND.music&&typeof musicStart==='function')musicStart()}catch(e){}
+    try{navigator.vibrate&&navigator.vibrate(40)}catch(e){}
+    const s=el.querySelector('#st44 span');if(s)s.textContent="LET'S GET IT";el.classList.add('go44');
+    setTimeout(()=>{el.style.opacity='0';el.style.pointerEvents='none';setTimeout(()=>el.remove(),500)},520)};
+  const kd=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();e.stopPropagation();go()}};
+  document.addEventListener('keydown',kd,true);w.querySelector('#st44').addEventListener('click',e=>{e.stopPropagation();go()});
+  setTimeout(()=>{try{w.querySelector('#st44').focus({preventScroll:true})}catch(e){}},80);
+ }catch(e){console.error('sk44',e);el.remove()}};
+})();</script>

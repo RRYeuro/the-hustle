@@ -1,0 +1,73 @@
+<script id="skin43js">
+(function(){if(window._sk43)return;window._sk43=1;
+const el=id=>document.getElementById(id);
+/* ---------- Bills that bite ---------- */
+const KIND=n=>/^Food/.test(n)?'food':/^Phone/.test(n)?'phone':/^Utilities/.test(n)?'util':/^Car insurance/.test(n)?'car':/^Health/.test(n)?'health':/^Student loan/.test(n)?'loan':/^Permits/.test(n)?'front':'other';
+const NAME={food:'Food',phone:'Phone and internet',util:'Lights and water',car:'Car insurance',health:'Health insurance',loan:'Student loan',front:'Permits on your fronts',other:'Other bills',ticket:'No-insurance ticket'};
+const ORDER=['food','phone','car','util','health','loan','front','other'];
+const LATE=1.1;
+const bb=()=>{S.bb=S.bb||{owe:{},miss:{}};S.bb.owe=S.bb.owe||{};S.bb.miss=S.bb.miss||{};return S.bb};
+const oweTot=()=>Object.values(bb().owe).reduce((a,v)=>a+(v||0),0);
+window.l43PhoneOff=()=>{try{const B=S&&S.bb;return !!(B&&(B.phoneCut||(B.poff||0)>S.day))}catch(e){return false}};
+window.l43Owe=oweTot;
+function cuts(){const B=bb(),L=[];if(B.phoneCut)L.push('📵 Phone cut off: plugs cannot reach you and you cannot text them.');else if((B.poff||0)>S.day)L.push(`📵 ${S.par?S.par.name:'Your guardian'} has your phone until day ${B.poff}.`);if(B.lights)L.push('💡 Lights and water off: you wake up with less energy.');if(B.noIns)L.push('🚗 No car insurance: a cop can pull you over and tow it.');if(B.noHealth)L.push('🏥 No health coverage.');return L}
+window.l43Cuts=cuts;
+function guardianCovers(c){const P=S.par;if(!P||(S.age||18)>=18)return false;const B=bb();if((B.gd||-99)+14>S.day)return false;B.gd=S.day;B.poff=S.day+3;P.trust=Math.max(0,(P.trust||60)-8);addStress(6);
+  say(`${P.name} covered your ${money(c.tot)} in bills, but took your phone for 3 days. Trust −8.`);
+  try{l42q('overdue',`${P.name} stepped in`,`You couldn't cover ${money(c.tot)} this week, so ${P.name} paid it. Your phone is gone for 3 days and trust dropped. Next time it is on you.`)}catch(e){}return true}
+const _ld=livingDay;
+livingDay=function(){try{if(!S.livDay||S.day<S.livDay)return _ld.apply(this,arguments);const c=livCost();if(!c.tot)return _ld.apply(this,arguments);pullSafeCash(c.tot,'You');
+  if(S.cash>=c.tot){const r=_ld.apply(this,arguments);const B=bb();c.items.forEach(x=>{B.miss[KIND(x[0])]=0});return r}
+  S.livDay=S.day+7;try{wearDay()}catch(e){}
+  if(guardianCovers(c))return;
+  const B=bb(),it=c.items.map(x=>({n:x[0],k:KIND(x[0]),v:x[1]})).sort((a,b)=>ORDER.indexOf(a.k)-ORDER.indexOf(b.k));const paid=[],miss=[];
+  it.forEach(x=>{if(S.cash>=x.v){S.cash-=x.v;paid.push(x);B.miss[x.k]=0;if(x.k==='loan')S.sl=Math.max(0,(S.sl||0)-(window._slPay||0))}else{miss.push(x);B.miss[x.k]=(B.miss[x.k]||0)+1;B.owe[x.k]=Math.round((B.owe[x.k]||0)+x.v*LATE)}});
+  try{cleanCash()}catch(e){}S.sl=Math.max(0,(S.sl||0)+(window._slAdd||0));
+  const hit=[];
+  miss.forEach(x=>{const n=B.miss[x.k];
+    if(x.k==='phone'&&!B.phoneCut){B.phoneCut=1;hit.push('Your phone got cut off. Plugs cannot call you and you cannot text them until you catch up.')}
+    if(x.k==='food'){S.en=Math.max(0,(S.en||0)-20);hit.push('Ramen all week. Energy −20.')}
+    if(x.k==='util'&&n>=2&&!B.lights){B.lights=1;hit.push('Two weeks behind: they shut off the lights and water. You wake up tired.')}
+    if(x.k==='util'&&n===1)hit.push('Lights and water are past due. Miss another week and they shut it off.');
+    if(x.k==='car'&&n>=2&&!B.noIns){B.noIns=1;hit.push('Your car insurance lapsed. Drive without it and a cop can tow your car.')}
+    if(x.k==='car'&&n===1)hit.push('Car insurance is past due. Miss another week and it lapses.');
+    if(x.k==='health'&&!B.noHealth){B.noHealth=1;hit.push('Your health coverage dropped.')}
+    if(x.k==='front'&&n>=2){S.heat=Math.min(100,S.heat+10);hit.push('Unpaid permits on your fronts got the city asking questions. Heat +10.')}});
+  if(oweTot()>=1000&&Math.max(...Object.values(B.miss))>=3){addStress(5);S.rep=Math.max(0,S.rep-1);hit.push('Collections are calling. Stress up, rep −1.')}
+  addStress(6);S.rep=Math.max(0,S.rep-1);
+  say(`Bills: paid ${paid.length?paid.map(x=>x.n.toLowerCase()).join(', '):'nothing'}. Missed ${miss.map(x=>x.n.toLowerCase()).join(', ')}. You owe ${money(oweTot())} with late fees. Catch up on the Money tab, under Expenses.`);
+  try{l42q('overdue','Bills past due',`You owe ${money(oweTot())} with 10% late fees. ${hit.join(' ')} Catch up under Expenses.`)}catch(e){}
+ }catch(e){console.error('sk43 bills',e);return _ld.apply(this,arguments)}};
+function catchUp(){const t=oweTot();if(!t||S.cash<t)return;S.cash-=t;try{cleanCash()}catch(e){}const B=bb();B.owe={};B.miss={};const back=[];if(B.phoneCut)back.push('phone');if(B.lights)back.push('lights and water');if(B.noIns)back.push('car insurance');if(B.noHealth)back.push('health coverage');B.phoneCut=0;B.lights=0;B.noIns=0;B.noHealth=0;addStress(-4);sfx&&sfx('cash');say(`Caught up on ${money(t)} in bills.${back.length?' Back on: '+back.join(', ')+'.':''}`);render()}
+window.l43CatchUp=catchUp;
+function owedHTML(){const B=bb(),t=oweTot(),L=cuts();if(!t&&!L.length)return '';
+  let h=`<div class="sec" style="color:var(--blood)">Behind on bills</div>`;
+  Object.keys(B.owe).filter(k=>B.owe[k]>0).forEach(k=>{h+=`<div class="row" style="flex-wrap:wrap"><div class="info" style="flex:1 1 200px;min-width:0"><div class="t">${NAME[k]||k}</div><div class="s">${B.miss[k]?`${B.miss[k]} week${B.miss[k]===1?'':'s'} behind. `:''}Includes the 10% late fee.</div></div><span class="chip" style="color:var(--blood);border-color:var(--blood)">${money(B.owe[k])}</span></div>`});
+  if(L.length)h+=`<div class="row"><div class="info"><div class="s">${L.join('<br>')}</div></div></div>`;
+  if(t)h+=`<div class="btns" style="padding:4px 12px 10px"><button class="btn go" data-a43="catch" ${S.cash<t?'disabled':''}>Catch up (${money(t)})</button></div>`;return h}
+window.l43HTML=owedHTML;
+const _pe=paneExp;paneExp=function(){let h=_pe.apply(this,arguments);try{const o=owedHTML();if(o){const i=h.indexOf('<div class="sec" style="color:var(--blood)">Money going out</div>');h=i>-1?h.slice(0,i)+o+h.slice(i):o+h}}catch(e){console.error('sk43 exp',e)}return h};
+document.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.target.closest('[data-a43]');if(b&&!b.disabled&&b.dataset.a43==='catch'){e.stopPropagation();catchUp()}
+  const p=e.target&&e.target.closest&&e.target.closest('[data-a31="tx"],[data-a31="pu"]');if(p&&l43PhoneOff()){e.stopPropagation();e.preventDefault();say(bb().phoneCut?'Your phone is cut off. Catch up on your bills (Money tab, Expenses) to text plugs again.':'You do not have your phone right now.');render()}},true);
+/* lights off: less energy each morning */
+try{WD.push(()=>{try{const B=S.bb;if(B&&B.lights&&S.home!=='family'&&!S.pr&&!S.inJail){S.en=Math.max(0,(S.en||0)-10);if(S.day%3===0)say('No lights or hot water at your place. Energy −10 a day until you catch up on bills.')}}catch(e){}})}catch(e){}
+/* no insurance: a stop can tow the car */
+try{const _d=window.l32Drive;if(_d)window.l32Drive=function(){const r=_d.apply(this,arguments);try{const B=S.bb;if(r&&B&&B.noIns&&S.car&&S.car!=='stolen'&&CARS[S.car]&&Math.random()<.2){const c=S.car;S.imp={car:c,d:S.day};S.cap-=CARS[c].trunk;S.car=null;if(S.rob)S.rob.car=0;B.owe.ticket=(B.owe.ticket||0)+200;S.heat=Math.min(100,S.heat+3);say(`Pulled over with no insurance. They towed your ${CARS[c].name} to the impound lot and wrote you a $200 ticket.`);l42q('g_copstop','Pulled over: no insurance',`They ran your plate and your insurance came back lapsed. Your ${CARS[c].name} is at the impound lot (Move, Street business) and a $200 ticket went on your bills.`)}}catch(e){}return r}}catch(e){}
+/* ---------- Bail and lawyer choice ---------- */
+window.l43BailOpts=function(len,charge,bail){const X=w4(),bond=Math.max(200,Math.round(bail*.1));
+  const out=(how,amt)=>{X.bail={d:S.day+8,len,charge,amt,bond:how==='bond'};S.pr=null;S.inJail=0;if(ARTX('bail'))wNote('bail','Out on bail',how==='bond'?`The bondsman put up your bail for ${money(bond)}. That fee is gone. Miss court and he sends someone after you. Trial in eight days.`:`You put up ${money(bail)} in cash. Show up to court in eight days and you get it all back as clean money.`)};
+  return [{l:`Post cash bail (${money(bail)}, back when you show up)`,c:'',dis:S.cash<bail,f:()=>{const d=Math.min(bail,dirtyCash());S.cash-=bail;try{cleanCash()}catch(e){}if(d>=3000){S.heat=Math.min(100,S.heat+8);say(`Posted ${money(bail)} cash bail. The judge asked where ${money(d)} in street money came from. Heat +8. Trial in 8 days.`)}else say(`Posted ${money(bail)} cash bail. Show up in 8 days and you get it back.`);out('cash',bail)}},
+   {l:`Bail bondsman (${money(bond)} fee, not coming back)`,c:'',dis:S.cash<bond,f:()=>{S.cash-=bond;try{cleanCash()}catch(e){}say(`Paid a bondsman ${money(bond)} to post your bail. Trial in 8 days.`);out('bond',0)}}]};
+window.l43Show=function(opts){const b=window._l43b;if(!b)return opts;return opts.map(o=>({...o,f:()=>{try{window._l43b=null;if(b.amt){cleanCash();S.cash+=b.amt;S.clean=(S.clean||0)+b.amt;say(`You showed up, so the court gave back your ${money(b.amt)} bail as clean money.`)}}catch(e){}return o.f()}}))};
+window.l43Skip=function(){const b=window._l43b;if(b&&b.bond){S.heat=Math.min(100,S.heat+10);addStress(8);say('The bondsman put a bounty hunter on you. Heat +10.')}else if(b&&b.amt)say(`You skipped court, so your ${money(b.amt)} bail is gone.`);window._l43b=null};
+window.l43Fee=function(fee){const d=Math.min(fee,dirtyCash());if(d>=5000){S.heat=Math.min(100,S.heat+5);say(`Your lawyer took ${money(d)} in cash and had to file a report on it. Heat +5.`)}};
+/* tutorial + dev */
+try{TUT.push(['Bills and bail','Living costs come out every week. Miss them and they bite: 10% late fees, phone cut off (plugs cannot reach you), lights off (less energy), insurance lapses (cops can tow your car), collections. Catch up on the Money tab under Expenses. Under 18, your guardian covers it once but takes your phone. In court: cash bail comes back as clean money when you show up; a bondsman costs 10% and it is gone. Public defender is free, private lawyer is solid, top attorney is sharp. Paying a lawyer $5,000+ in street money adds heat.'])}catch(e){}
+try{const _dp=devPanel;devPanel=function(){const r=_dp.apply(this,arguments);try{const mc=el('mcard');if(mc&&!el('modal').hidden&&!mc.querySelector('[data-d43]')){const d=document.createElement('div');d.innerHTML=`<div class="sec">Bills and bail (new)</div><div class="btns"><button class="btn" data-d43="miss">Miss this week's bills</button><button class="btn" data-d43="all">Cut phone, lights, insurance</button><button class="btn" data-d43="clear">Clear bills owed</button><button class="btn" data-d43="court">Court date now</button></div>`;const h2=mc.querySelector('h2');if(h2&&h2.parentNode)h2.parentNode.insertBefore(d,h2.nextSibling);else mc.appendChild(d);
+ d.querySelectorAll('[data-d43]').forEach(b=>b.onclick=ev=>{ev.stopPropagation();const k=b.dataset.d43;el('modal').hidden=true;
+  if(k==='miss'){if(S.home==='family'){S.home='studio'in HOMES?'studio':Object.keys(HOMES).find(h=>HOMES[h].rent>0)}S.livDay=S.day;const c=S.cash;S.cash=0;livingDay();S.cash+=c;say('Dev: missed this week\'s bills with $0.')}
+  if(k==='all'){const B=bb();B.phoneCut=1;B.lights=1;B.noIns=1;B.owe.phone=(B.owe.phone||0)+60;B.owe.util=(B.owe.util||0)+60;B.owe.car=(B.owe.car||0)+120;B.miss={phone:1,util:2,car:2};say('Dev: phone, lights and insurance cut.')}
+  if(k==='clear'){S.bb={owe:{},miss:{}};say('Dev: bills cleared.')}
+  if(k==='court'){try{S.age=Math.max(S.age||0,18);S.strikes=Math.max(1,S.strikes||0);S.picQ=[];prStart();if(S.pr){S.pr.cc=0;el('modal').hidden=true;w4Court()}return}catch(e){say('Dev: court failed '+e)}}
+  render()})}}catch(e){console.error('sk43 dev',e)}return r}}catch(e){}
+})();</script>
