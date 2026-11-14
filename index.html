@@ -9012,7 +9012,7 @@ function addDrug(id,n){try{const g2=G(id),rm=Math.floor((S.cap-used())/g2.sp);n=
 function safeAsk(title,txt,o,win,lose,skip){
  modal(`${art(o.art||'g_vault')}<h2>${title}</h2><p>${txt}</p><p class="s" style="color:var(--dim)">Crack the keypad and the big money is yours. Run out of tries and ${window._l27q?'it locks up. You killed the alarm, so nobody hears it.':'the alarm goes off.'}</p><div class="btns"><button class="btn red" id="l27c">Crack it</button><button class="btn" id="l27n">Leave it</button></div>`);
  el('l27n').onclick=()=>{el('modal').hidden=true;skip()};
- el('l27c').onclick=()=>{el('modal').hidden=true;pinGame(o,ok=>ok?win():lose())}}
+ el('l27c').onclick=()=>{el('modal').hidden=true;(window.m39Vault&&(window._m39force||Math.random()<.5)?window.m39Vault:pinGame)(o,ok=>ok?win():lose())}}
 window.l27Safe=function(type,inv,fin,alarm){if(inv||!(forced()||ch({reg:.3,trap:.55,plug:1}[type]||0)))return fin('');
  safeAsk('There is a safe','You find a safe with a keypad in the bedroom closet.',{title:'Crack the safe',tries:type==='plug'?5:6},()=>{
   const v=type==='plug'?rnd(5000,15000):type==='trap'?rnd(2000,7000):rnd(800,3000),pay=S.bag?v:Math.round(v*.5);S.cash+=pay;addXP(3);let x=` The safe had ${money(pay)} dirty in it.${S.bag?'':' No bag, so you left half of it.'}`;
@@ -9550,4 +9550,162 @@ try{const _dp=devPanel;devPanel=function(){const r=_dp.apply(this,arguments);try
   render()})}}catch(e){console.error('sk38 dev',e)}return r}}catch(e){}
 })();
 </script>
+<style id="skin39">
+.lp39p{display:flex;gap:8px;justify-content:center;margin:10px 0}
+.lp39p span{width:34px;height:46px;border-radius:6px;background:#2a2630;border:2px solid #3a3440;display:flex;align-items:flex-end;justify-content:center;font-size:11px;color:var(--dim)}
+.lp39p span.cur{border-color:var(--gold,#f5b72a)}
+.lp39p span.ok{background:#1f5a34;border-color:#3fbf6a;color:#fff}
+.lp39b{position:relative;height:30px;background:#1a1720;border:2px solid #3a3440;border-radius:8px;overflow:hidden;margin:6px 0}
+.lp39b i{position:absolute;top:0;bottom:0;background:rgba(63,191,106,.55);border-left:2px solid #3fbf6a;border-right:2px solid #3fbf6a}
+.lp39b b{position:absolute;top:-2px;bottom:-2px;width:5px;margin-left:-2px;background:#f5b72a;border-radius:2px}
+.vc39c{margin:8px 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:5px}
+.vc39c li{background:#1a1720;border:1px solid #3a3440;border-radius:6px;padding:6px 10px;font-size:14px}
+.vd39{display:flex;gap:8px;justify-content:center;margin:10px 0}
+.vd39 span{width:44px;height:54px;border-radius:8px;background:#14121a;border:2px solid #3a3440;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:700;cursor:pointer}
+.vd39 span.cu{border-color:var(--gold,#f5b72a)}
+.vh39{font-size:12px;color:var(--dim);text-align:center;min-height:16px}
+.vk39{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;max-width:260px;margin:8px auto}
+.vk39 .btn{padding:12px 0;font-size:18px}
+</style>
+<script id="skin39js">
+(function(){if(window._sk39)return;window._sk39=1;
+/* Three self-contained mini games: Lockpick (back doors), Vault logic (safes), Roof run (rooftop getaway on foot). */
+const el=id=>document.getElementById(id);
+const SM=()=>{try{return S.sk.smarts||0}catch(e){return 0}};
+const ST=()=>{try{return stressed()?1:0}catch(e){return 0}};
+const heatUp=n=>{S.heat=Math.max(0,Math.min(100,S.heat+n))};
+const gate=(t,x,go)=>{try{if(typeof gateGame==='function')return gateGame(t,x,go,null)}catch(e){console.error('m39 gate',e)}go()};
+const rr=(a,b)=>a+Math.random()*(b-a);
+const ri=(a,b)=>Math.floor(rr(a,b+1));
+
+/* ---------- Lockpick: stop the needle in the green zone, pin by pin ---------- */
+function lockGame(o,done){o=o||{};const sm=SM(),N=o.pins||4,PK=(o.picks||3)+(sm>=6?1:0),ttl=o.title||'Pick the lock';
+ gate(ttl,(o.txt?o.txt+' ':'')+'There are '+N+' pins. A needle sweeps across each one. Hit Set (Space, Enter or tap) while the needle is inside the green zone. Miss and you snap a pick. You have '+PK+' picks. Pins you already set stay set. Esc gives up. Street Smarts makes the zone wider, stress makes it faster.',()=>{
+  mgOn=true;let pin=0,picks=PK,pos=rr(5,95),dir=1,over=false,raf=0,last=performance.now(),zl=0,zw=0,spd=0,lastP=0;
+  modal(`<h2>${ttl}</h2><div class="lp39p" id="lpp"></div><div class="lp39b" id="lpb"><i id="lpz"></i><b id="lpc"></b></div><p id="lpm" class="s" style="text-align:center"></p>
+   <div class="btns" style="justify-content:center"><button class="btn go" id="lps" style="padding:14px 34px;font-size:18px">Set pin</button></div><div class="btns" style="justify-content:center"><button class="btn" id="lpx">Give up</button></div>`);
+  const stop=()=>{over=true;mgOn=false;document.removeEventListener('keydown',kd,true);cancelAnimationFrame(raf)};
+  const fin=ok=>{if(over)return;stop();el('modal').hidden=true;done(!!ok)};
+  const draw=()=>{const p=el('lpp');if(!p)return;p.innerHTML=Array.from({length:N},(_,i)=>`<span class="${i<pin?'ok':i===pin?'cur':''}">${i<pin?'✓':i+1}</span>`).join('');
+   el('lpm').innerHTML=`Picks left: <b>${picks}</b>`+(el('lpm').dataset.t?` · ${el('lpm').dataset.t}`:'')};
+  const newPin=()=>{zw=Math.max(9,26-pin*3+sm*1.2-ST()*3);zl=rr(6,94-zw);spd=(38+pin*10)*(ST()?1.1:1);pos=rr(5,95);dir=Math.random()<.5?1:-1;const z=el('lpz');if(z){z.style.left=zl+'%';z.style.width=zw+'%'};draw()};
+  const press=()=>{if(over)return;const n=performance.now();if(n-lastP<150)return;lastP=n;
+   if(pos>=zl-1&&pos<=zl+zw+1){pin++;el('lpm').dataset.t='Click. Pin set.';if(pin>=N){draw();return fin(true)}newPin()}
+   else{picks--;el('lpm').dataset.t='Snap! Pick broke.';if(picks<=0){draw();return fin(false)}newPin()}};
+  function kd(e){if(e.ctrlKey||e.metaKey||e.altKey)return;if(!el('lpb')){stop();return}e.preventDefault();e.stopPropagation();
+   if(e.repeat)return;if(e.key==='Enter'||e.key===' ')press();else if(e.key==='Escape')fin(false)}
+  el('lps').onclick=press;el('lpx').onclick=()=>fin(false);
+  document.addEventListener('keydown',kd,true);newPin();
+  const tick=t=>{if(over)return;const c=el('lpc');if(!c){stop();return}const dt=Math.min(.05,(t-last)/1000);last=t;pos+=dir*spd*dt;if(pos>=100){pos=100;dir=-1}if(pos<=0){pos=0;dir=1}c.style.left=pos+'%';raf=requestAnimationFrame(tick)};raf=requestAnimationFrame(tick);
+  window.__lpDbg={pos:()=>pos,zone:()=>[zl,zw],pin:()=>pin,picks:()=>picks,aim:()=>{pos=zl+zw/2},press,fail:()=>fin(false)};
+ })}
+
+/* ---------- Vault logic: work the code out from the clues ---------- */
+const ALL=[];for(let n=0;n<10000;n++)ALL.push([Math.floor(n/1000),Math.floor(n/100)%10,Math.floor(n/10)%10,n%10]);
+const shuf=a=>a.map(x=>[Math.random(),x]).sort((p,q)=>p[0]-q[0]).map(p=>p[1]);
+function cluePool(d){const s=d[0]+d[1]+d[2]+d[3],P=[];
+ P.push({t:`The four digits add up to ${s}`,f:c=>c[0]+c[1]+c[2]+c[3]===s});
+ for(let i=0;i<4;i++){P.push({t:`Digit ${i+1} is ${d[i]%2?'odd':'even'}`,f:c=>c[i]%2===d[i]%2});P.push({t:`Digit ${i+1} is ${d[i]>4?'5 or more':'4 or less'}`,f:c=>(c[i]>4)===(d[i]>4)})}
+ for(let i=0;i<4;i++)for(let j=i+1;j<4;j++){
+  if(d[i]>d[j])P.push({t:`Digit ${i+1} is bigger than digit ${j+1}`,f:c=>c[i]>c[j]});else if(d[i]<d[j])P.push({t:`Digit ${i+1} is smaller than digit ${j+1}`,f:c=>c[i]<c[j]});else P.push({t:`Digit ${i+1} and digit ${j+1} match`,f:c=>c[i]===c[j]});
+  P.push({t:`Digit ${i+1} plus digit ${j+1} makes ${d[i]+d[j]}`,f:c=>c[i]+c[j]===d[i]+d[j]})}
+ shuf([0,1,2,3,4,5,6,7,8,9]).slice(0,3).forEach(k=>{const has=d.includes(k);P.push({t:has?`There is a ${k} in the code`:`No ${k} anywhere in the code`,f:c=>c.includes(k)===has})});
+ const mx=Math.max(...d);if(d.filter(x=>x===mx).length===1){const mi=d.indexOf(mx);P.push({t:`Digit ${mi+1} is the biggest`,f:c=>c.every((x,j)=>j===mi||x<c[mi])})}
+ return P}
+function genVault(target){const d=[0,0,0,0].map(()=>ri(0,9)),P=shuf(cluePool(d));let c=ALL,used=[];
+ while(c.length>target&&used.length<7){let best=null,bn=1e9;P.forEach(p=>{if(used.includes(p))return;const n=c.filter(p.f).length;if(n<bn&&n<c.length){bn=n;best=p}});if(!best)break;used.push(best);c=c.filter(best.f)}
+ let ex=0;shuf([0,1,2,3]).forEach(i=>{if(c.length>target&&ex<2){const p={t:`Digit ${i+1} is ${d[i]}`,f:cc=>cc[i]===d[i]};used.push(p);c=c.filter(p.f);ex++}});
+ return{code:d,clues:shuf(used).map(p=>p.t),left:c.length}}
+function vaultGame(o,done){o=o||{};const sm=SM(),TR=3+(sm>=6?1:0),TL=Math.max(25,70+sm*3-ST()*10)*1000,ttl=o.title||'Vault logic';
+ gate(ttl,(o.txt?o.txt+' ':'')+'The vault code is 4 digits and digits can repeat. These clues are all true, work out the code from them. Type 4 digits and hit Open (Enter). You get '+TR+' tries before the vault locks. Backspace clears, arrows move, Esc gives up. Street Smarts gives you more time and sharper clues.',()=>{
+  mgOn=true;const V=genVault(sm>=6?1:2),code=V.code;let g=[null,null,null,null],cur=0,tries=0,over=false,raf=0;const bad=[],t0=performance.now();
+  modal(`<h2>${ttl}</h2><div class="bar" style="height:8px"><i id="vct" style="width:100%;background:var(--heat)"></i></div>
+   <ul class="vc39c">${V.clues.map(t=>`<li>${t}</li>`).join('')}</ul><div class="vd39" id="vds"></div><div class="vh39" id="vhs"></div><p id="vcm" class="s" style="text-align:center">Tries left: <b>${TR}</b></p>
+   <div class="vk39">${[1,2,3,4,5,6,7,8,9].map(n=>`<button class="btn" data-vk="${n}">${n}</button>`).join('')}<button class="btn" data-vk="b">⌫</button><button class="btn" data-vk="0">0</button><button class="btn go" data-vk="c">Open</button></div>
+   <div class="btns" style="justify-content:center"><button class="btn" id="vcx">Give up</button></div>`);
+  const stop=()=>{over=true;mgOn=false;document.removeEventListener('keydown',kd,true);cancelAnimationFrame(raf)};
+  const fin=ok=>{if(over)return;stop();el('modal').hidden=true;done(!!ok)};
+  const draw=()=>{const s=el('vds');if(!s)return;s.innerHTML=g.map((d,i)=>`<span class="${i===cur?'cu':''}" data-vs="${i}">${d==null?'·':d}</span>`).join('');[...s.children].forEach((x,i)=>x.onclick=()=>{cur=i;draw()});el('vhs').textContent=bad.length?'Not these: '+bad.slice(-3).join('  '):''};
+  const put=d=>{if(over)return;g[cur]=d;if(cur<3)cur++;draw()};
+  const back=()=>{if(over)return;if(g[cur]==null&&cur>0)cur--;g[cur]=null;draw()};
+  const open=()=>{if(over)return;if(g.some(x=>x==null)){el('vcm').textContent='Fill in all 4 digits first.';return}
+   tries++;if(g.every((d,i)=>d===code[i])){draw();return fin(true)}
+   bad.push(g.join(''));if(tries>=TR)return fin(false);g=[null,null,null,null];cur=0;el('vcm').innerHTML='Wrong. Tries left: <b>'+(TR-tries)+'</b>';draw()};
+  function kd(e){if(e.ctrlKey||e.metaKey||e.altKey)return;if(!el('vds')){stop();return}e.preventDefault();e.stopPropagation();const k=e.key;
+   if(k==='ArrowLeft'){cur=(cur+3)%4;draw()}else if(k==='ArrowRight'){cur=(cur+1)%4;draw()}
+   else if(e.repeat)return;else if(/^[0-9]$/.test(k))put(+k);else if(k==='Backspace'||k==='Delete')back();else if(k==='Enter')open();else if(k==='Escape')fin(false)}
+  let lastT=0;el('mcard').querySelectorAll('[data-vk]').forEach(b=>b.onclick=()=>{const n=performance.now();if(n-lastT<120)return;lastT=n;const k=b.dataset.vk;if(k==='b')back();else if(k==='c')open();else put(+k)});
+  el('vcx').onclick=()=>fin(false);document.addEventListener('keydown',kd,true);draw();
+  const tick=()=>{if(over)return;const t=el('vct');if(!t){stop();return}const left=TL-(performance.now()-t0);t.style.width=Math.max(0,left/TL*100)+'%';if(left<=0)return fin(false);raf=requestAnimationFrame(tick)};tick();
+  window.__vcDbg={code:()=>code,clues:()=>V.clues,left:()=>V.left,tries:()=>tries,fail:()=>fin(false)};
+ })}
+
+/* ---------- Roof run: jump the gaps and the AC units, rooftop to rooftop ---------- */
+function roofGame(o,done){o=o||{};const CHW=window.chaseWho||null;window.chaseWho=null;
+ gate('Over the roofs',(CHW?CHW+' are':'Twelve is')+' covering the street, so you take the roofs. You run on your own. Jump the gaps and the AC units. Tap and let go for a short jump, hold for a long one. Space, Up or W jump, or tap the screen. Fall and you slip back onto the next roof, but every slip costs a life. Street Smarts gives you an extra life.',()=>{
+  mgOn=true;const W=320,H=210,GY=150,PX=70,sm=SM(),sp=Math.max(.8,Math.min(1.25,(1-(sm-3)*.03)*(ST()?1.1:1))),v=3.3*sp,L=3300*sp,JV=8.4;
+  let lives=3+(sm>=6?1:0);const plats=[{x:-300,w:620}],obs=[];let px=320;
+  while(px<L){const gap=rr(42,78)*(v/3.3),w=ri(120,210);px+=gap;const p={x:px,w};plats.push(p);if(w>=175&&Math.random()<.6)obs.push({x:ri(p.x+85,p.x+w-62)});px+=w}
+  plats.push({x:px+60,w:600});
+  const sky=[];for(let i=0;i<14;i++)sky.push({x:i*44,w:rr(26,40),h:rr(30,80)});
+  let wx=40,y=0,vy=0,held=0,jh=0,coy=0,inv=0,flash=0,over=false,gr=true,last=performance.now(),t0=last;
+  modal(`<h2>${CHW?CHW+' on your tail':'Twelve on your tail'}</h2><canvas id="cv" width="${W}" height="${H}" style="width:100%;max-width:${W}px;align-self:center;background:#14121a;border-radius:6px;touch-action:none"></canvas>
+   <div class="btns" style="justify-content:center"><button class="btn go" id="rjb" style="padding:14px 50px;font-size:18px">▲ Jump</button></div><p id="cs" style="text-align:center;margin-top:6px"></p>`);
+  const cv=el('cv'),x=cv.getContext('2d');
+  const jump=()=>{if(over)return;if(gr||coy>0){vy=JV;y=Math.max(y,0)+.01;jh=0;held=1;coy=0;gr=false}};const rel=()=>{held=0};
+  const isJ=k=>k===' '||k==='ArrowUp'||k==='w'||k==='W';
+  const kd=e=>{if(e.repeat)return;if(isJ(e.key)){jump();e.preventDefault()}};const ku=e=>{if(isJ(e.key))rel()};
+  document.addEventListener('keydown',kd);document.addEventListener('keyup',ku);
+  const jb=el('rjb');jb.onmousedown=e=>e.preventDefault();jb.onpointerdown=e=>{e.preventDefault();jump()};jb.onpointerup=jb.onpointerleave=jb.onpointercancel=rel;
+  cv.onpointerdown=e=>{e.preventDefault();jump()};cv.onpointerup=cv.onpointerleave=cv.onpointercancel=rel;
+  const fin=ok=>{if(over)return;over=true;mgOn=false;document.removeEventListener('keydown',kd);document.removeEventListener('keyup',ku);
+   modal(`<h2>${ok?'You lost em':'They caught you'}</h2><p>${ok?'Dropped down a fire escape and walked off like nothing happened. You good.':CHW?'They got a hand on you on the last roof.':'Twelve got a hand on you on the last roof.'}</p><div class="btns"><button class="btn go" id="ok">Continue</button></div>`);let cd=0;el('ok').onclick=()=>{if(cd)return;cd=1;el('modal').hidden=true;done(ok)}};
+  const man=(qx,qy,col)=>{x.fillStyle=col;x.fillRect(qx-7,qy-30,14,22);x.fillRect(qx-7,qy-8,6,8);x.fillRect(qx+1,qy-8,6,8);x.beginPath();x.arc(qx,qy-36,7,0,7);x.fill()};
+  const slip=()=>{lives--;flash=12;if(lives<=0)return fin(false);const nx=plats.find(p=>p.x>wx+10);if(!nx)return fin(true);wx=nx.x+16;y=0;vy=0;gr=true;inv=60};
+  window.__rfDbg={st:()=>({wx,y,lives,L,over,gr}),plats,obs,jump,rel,tp:()=>{wx=L-50}};
+  const loop=t=>{if(over||!mgOn||!cv.isConnected)return;const dt=Math.min(3,(t-last)/16.7);last=t;const el2=t-t0;
+   wx+=v*dt;const onP=plats.some(p=>wx>=p.x-2&&wx<=p.x+p.w+2);
+   if(y<=0&&vy<=0&&onP&&y>-10){y=0;vy=0;gr=true;coy=8}
+   else{gr=false;const g=(held&&vy>0&&jh<14)?.3:.55;if(held&&vy>0)jh+=dt;y+=vy*dt;vy-=g*dt;coy-=dt}
+   if(inv>0)inv-=dt;
+   if(inv<=0)obs.forEach(o=>{if(!o.done&&Math.abs(wx-o.x)<15&&y<16){o.done=1;inv=45;lives--;flash=12;if(lives<=0)fin(false)}});
+   if(over)return;
+   if(y<-60){slip();if(over)return}
+   if(wx>=L)return fin(true);
+   x.fillStyle='#14121a';x.fillRect(0,0,W,H);x.fillStyle='#1d1a26';sky.forEach(b=>{const sx=((b.x*1-wx*.25)%(W+60)+W+60)%(W+60)-30;x.fillRect(sx,GY-b.h-30,b.w,b.h+30)});
+   if(S.heat>=70){x.fillStyle='rgba(255,255,255,.07)';x.beginPath();x.moveTo(40+Math.sin(el2/800)*60,0);x.lineTo(180+Math.sin(el2/800)*60,0);x.lineTo(150+Math.cos(el2/900)*80,GY);x.lineTo(110+Math.cos(el2/900)*80,GY);x.fill()}
+   const cam=wx-PX;
+   plats.forEach(p=>{const sx=p.x-cam;if(sx>W+10||sx+p.w<-10)return;x.fillStyle='#2a2630';x.fillRect(sx,GY,p.w,H-GY);x.fillStyle='#3a3440';x.fillRect(sx,GY,p.w,5);x.fillStyle='#e8c46a22';for(let wy=GY+18;wy<H-8;wy+=24)for(let wxx=sx+12;wxx<sx+p.w-12;wxx+=30)x.fillRect(wxx,wy,10,12)});
+   obs.forEach(o=>{if(o.done)return;const sx=o.x-cam;if(sx<-20||sx>W+20)return;x.fillStyle='#7a8794';x.fillRect(sx-11,GY-18,22,18);x.fillStyle='#5a6672';x.fillRect(sx-8,GY-14,16,3);x.fillRect(sx-8,GY-8,16,3)});
+   if(!(inv>0&&Math.floor(t/90)%2))man(PX,GY-y,'#f5b72a');
+   if(flash>0){flash-=dt;x.fillStyle='rgba(232,80,74,.18)';x.fillRect(0,0,W,H)}
+   el('cs').textContent=`${Math.min(100,Math.round(wx/L*100))}% across · ${lives} li${lives===1?'fe':'ves'} left`;
+   requestAnimationFrame(loop)};
+  requestAnimationFrame(loop);
+ })}
+
+window.m39Lock=lockGame;window.m39Vault=vaultGame;window.m39Roof=roofGame;
+
+/* ---------- hooks ---------- */
+/* Back door: lockpick first (about a third of the time), then the normal alarm panel check */
+try{const _al=window.l27Alarm;if(_al)window.l27Alarm=function(go,fail){const F=window._m39force;if(!(F||Math.random()<.35))return _al(go,fail);
+ lockGame({title:'Pick the back door lock',txt:'The back door is locked tight.'},ok=>{if(ok){say('The lock popped quiet. You are in.');_al(go,fail)}else{heatUp(6);say('You snapped your picks and the lock made noise.');fail()}})}}catch(e){console.error('m39 lock',e)}
+/* Safes: half the time it is Vault logic instead of Pin Cracker (see safeAsk) */
+/* Alarm run on foot: roof run about half the time */
+try{const _lk=lick;lick=function(k){window._m39roof=Date.now();return _lk.apply(this,arguments)}}catch(e){}
+try{const _ld=lickDone;lickDone=function(){window._m39roof=0;return _ld.apply(this,arguments)}}catch(e){}
+try{const _ch=chase;chase=function(done){const f=window._m39roof;window._m39roof=0;
+ if(f&&Date.now()-f<180000&&!S.car&&!window.__laneChase&&(window._m39force||Math.random()<.5))return roofGame({},done);return _ch.apply(this,arguments)}}catch(e){console.error('m39 roof',e)}
+
+/* ---------- tutorial + dev menu ---------- */
+try{TUT.push(['Lockpick, Vault logic, Roof run','Three more mini games on licks. Lockpick: a needle sweeps over each pin and you hit Set in the green zone, you have 3 picks and a miss snaps one. It can show up on a house back door. Vault logic: a safe sometimes has a logic code, read the clues, work out the 4 digits and you get 3 tries. Roof run: when an alarm goes off and you run with no car, you may take the rooftops, jump gaps and AC units and keep your lives. Street Smarts helps in all three and stress makes them harder.'])}catch(e){console.error('m39 tut',e)}
+function devAct(k){const done=m=>{say('Dev: '+m);render();devPanel()};
+ if(k==='lock'){el('modal').hidden=true;return lockGame({title:'Lockpick test'},ok=>done('lockpick '+(ok?'opened':'failed')))}
+ if(k==='vault'){el('modal').hidden=true;return vaultGame({title:'Vault logic test'},ok=>done('vault '+(ok?'cracked':'failed')))}
+ if(k==='roof'){el('modal').hidden=true;return roofGame({},ok=>done('roof run '+(ok?'escaped':'caught')))}
+ if(k==='force'){const n=window._m39force?0:1;window._m39force=n?'on':0;return done('always use new mini games: '+(n?'ON (lock on back doors, roof on alarm runs; vault via Always alarm + safe)':'off'))}}
+try{const _dp=devPanel;devPanel=function(){const r=_dp.apply(this,arguments);try{const mc=el('mcard');if(mc&&!el('modal').hidden&&!mc.querySelector('[data-d39]')){const B=(k,l)=>`<button class="btn" data-d39="${k}">${l}</button>`;const d=document.createElement('div');d.innerHTML=`<div class="sec">Lockpick, Vault, Roof run (new)</div><div class="btns">${B('lock','Lockpick')}${B('vault','Vault logic')}${B('roof','Roof run')}${B('force','Always use new ones')}</div>`;const h2=mc.querySelector('h2');if(h2&&h2.parentNode)h2.parentNode.insertBefore(d,h2.nextSibling);else mc.appendChild(d);d.querySelectorAll('[data-d39]').forEach(b=>b.onclick=ev=>{ev.stopPropagation();devAct(b.dataset.d39)})}}catch(e){console.error('m39 dev',e)}return r}}catch(e){}
+})();
+</script>
+
 <script>if('serviceWorker' in navigator){addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}</script></body></html>
