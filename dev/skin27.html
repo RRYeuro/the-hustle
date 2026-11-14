@@ -158,7 +158,7 @@ function safeAsk(title,txt,o,win,lose,skip){
  el('l27n').onclick=()=>{el('modal').hidden=true;skip()};
  el('l27c').onclick=()=>{el('modal').hidden=true;(window.m39Vault&&(window._m39force||Math.random()<.5)?window.m39Vault:pinGame)(o,ok=>ok?win():lose())}}
 window.l27Safe=function(type,inv,fin,alarm){if(inv||!(forced()||ch({reg:.3,trap:.55,plug:1}[type]||0)))return fin('');
- safeAsk('There is a safe','You find a safe with a keypad in the bedroom closet.',{title:'Crack the safe',tries:type==='plug'?5:6},()=>{
+ safeAsk('There is a safe','You find a safe with a keypad in the bedroom closet.',{title:'Crack the safe',tries:type==='plug'?5:6,art:'g_safe'},()=>{
   const v=type==='plug'?rnd(5000,15000):type==='trap'?rnd(2000,7000):rnd(800,3000),pay=S.bag?v:Math.round(v*.5);S.cash+=pay;addXP(3);let x=` The safe had ${money(pay)} dirty in it.${S.bag?'':' No bag, so you left half of it.'}`;
   if(type==='reg'&&ch(.4)){const it=mk('watch',1.5);if(takeIt(it))x+=' And a nice watch.'}fin(x)},
   ()=>{heatUp(12);addStress(6);if(window._l27q)return fin(' The safe locked you out, but the alarm was already dead.');alarm('The keypad locked up and the safe alarm started screaming.')},()=>fin(''))};
@@ -185,7 +185,7 @@ try{const _sg=safeGame;safeGame=function(o,done){if(o&&o.title&&!o.dial&&(forced
 
 /* ---------- cops can search you ---------- */
 function search(){const L=loot(),n=L.length,val=L.reduce((t,x)=>t+x.v,0),odds=Math.max(.1,Math.min(.85,.4+((S.sk&&S.sk.talk)||0)*.05-S.heat/300-n*.03));
- modal(`${art('g_copstop')}<h2>Stopped and searched</h2><p>Twelve rolls up slow and hops out. "Hands where I can see them. What you got on you?" You are carrying ${n} stolen thing${n===1?'':'s'}, worth about ${money(val)}.</p><p class="s" style="color:var(--dim)">Play it cool: about ${Math.round(odds*100)}% they let you walk. Talk helps, heat and a full bag hurt. Under $2,000 they take it and write you up. $2,000 or more is a felony and you go in.</p><div class="btns"><button class="btn go" id="l27a">Play it cool</button><button class="btn red" id="l27b">Run</button></div>`);
+ modal(`${art(S.car&&loot().some(x=>LT[x.k].c!=='j')?'g_trunk':'g_copstop')}<h2>Stopped and searched</h2><p>Twelve rolls up slow and hops out. "Hands where I can see them. What you got on you?" You are carrying ${n} stolen thing${n===1?'':'s'}, worth about ${money(val)}.</p><p class="s" style="color:var(--dim)">Play it cool: about ${Math.round(odds*100)}% they let you walk. Talk helps, heat and a full bag hurt. Under $2,000 they take it and write you up. $2,000 or more is a felony and you go in.</p><div class="btns"><button class="btn go" id="l27a">Play it cool</button><button class="btn red" id="l27b">Run</button></div>`);
  const found=run=>{S.loot=[];heatUp(12);addStress(8);
   if(val>=2000||run){say(`They found ${money(val)} of stolen goods on you.`);el('modal').hidden=true;busted();if(el('modal').hidden)render();return}
   try{newsPush('Stop and search turns up stolen goods.')}catch(e){}say('They took everything you had on you and wrote you up. Heat +12.');
