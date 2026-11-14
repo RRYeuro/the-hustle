@@ -10199,16 +10199,20 @@ function reply(f,k){const lo=(f.close||0)<40,T=f.trait;
  if(k==='hang')return T==='wild'?pk(['Say less, I got a bottle 🍾','Pull up, it\'s lit over here']):T==='snake'?'Yeah yeah, where you at right now?':lo?pk(['I mean... aight, I guess.','Maybe. Where?']):pk(['Bet, pull up 🔥','Yessir, I\'m outside.']);
  if(k==='help')return T==='snake'?'Appreciate it 😏':pk(['Good looks fr. I owe you one.','You real for that. Won\'t forget it.']);
  if(k==='join')return '';if(k==='role')return '';return ''}
+const W4R={rent:['Here, I got you ($200)','I can\'t right now','I got you. Sending $200 now ❤️','I can\'t right now, I\'m sorry.'],job:['I\'m in. Send the address.','Nah, I\'m good.','I\'m in. Send the address.','Nah, I\'m good on that.'],fav:['On my way.','Can\'t today.','Say less, on my way.','Can\'t today, my bad.'],raid:['Good looks. Laying low.','Ignore it','Good looks. I\'m laying low.','']};
+const W4B={'rent:y':'Thank you baby. I love you. Be safe out there.','rent:n':'Okay... I\'ll figure it out.','job:y':'Address coming. Don\'t be late and don\'t open nothing.','job:n':'Aight, I\'ll find somebody else.','fav:y':'Bet, I\'m outside.','fav:n':'Damn. Aight.','raid:y':'Smart. Stay off the block a couple days.','raid:n':''};
 let rf=0;
 function fix(){try{
  const ct=document.querySelector('.phx[data-app="contacts"]');
  if(ct){ct.querySelectorAll('[data-a="fhang"]').forEach(b=>{const card=b.closest('.row')||b.closest('.btns').parentNode;if(!card||card.dataset.f50)return;card.dataset.f50=1;const i=+b.dataset.i,f=(S.friends||[])[i];if(!f)return;const bt=card.querySelector('.btns');if(bt)bt.outerHTML=`<div class="btns"><button class="btn go" data-tx50="${E(encodeURIComponent(f.name))}">💬 Text ${E(f.name)}</button></div>`})}
  const th=document.querySelector('.phx[data-app="messages"] .mth-th');
+ if(th&&window._mth){try{const X=w4(),q=(X.act||[]).filter(t=>t.f===window._mth&&S.day-t.d<=3)[0],kb=th.querySelector('.mth-kb');if(q&&kb&&!kb.dataset.f50){kb.dataset.f50=1;const L=W4R[q.k]||W4R.fav;kb.innerHTML=`<div class="mth-kt">Reply</div><button class="mth-opt hot" data-a="w4_ty" data-i="${q.id}" data-says="${E(L[2])}" data-w4r="${q.k}:y" ${q.k==='rent'&&S.cash<200?'disabled':''}>${L[0]}</button><button class="mth-opt" data-a="w4_tn" data-i="${q.id}" data-says="${E(L[3])}" data-w4r="${q.k}:n">${L[1]}</button>`}}catch(e){}}
  if(th&&window._mth){const i=fIdx(window._mth);if(i>=0){const kb=th.querySelector('.mth-kb');if(kb&&!kb.dataset.f50){kb.dataset.f50=1;kb.innerHTML=opts(i)}}}
 }catch(e){console.error('sk50 fix',e)}}
 try{const _r=render;render=function(){const r=_r.apply(this,arguments);try{fix()}catch(e){}return r}}catch(e){}
 document.addEventListener('click',e=>{
  const t=e.target.closest&&e.target.closest('[data-tx50]');if(t){e.preventDefault();e.stopPropagation();const n=decodeURIComponent(t.dataset.tx50);window._rph='messages';window._mth=n;window._mcomp=false;render();return}
+ const w=e.target.closest&&e.target.closest('[data-w4r]');if(w&&!w.disabled){const n=window._mth,msg=W4B[w.dataset.w4r];if(msg)setTimeout(()=>{S.inbox=S.inbox||[];S.inbox.unshift({d:S.day,f:n,t:cl(msg)});S.inbox=S.inbox.slice(0,150);render()},900)}
  const b=e.target.closest&&e.target.closest('[data-fr50]');if(b&&!b.disabled){const n=window._mth,k=b.dataset.fr50,i=fIdx(n),f=S.friends[i];if(!f)return;
   setTimeout(()=>{try{if((k==='hang'&&f.hang!==S.day)||(k==='help'&&f.helped!==S.day))return render();const msg=reply(f,k);if(!msg)return render();const kb=document.querySelector('.phx[data-app="messages"] .mth-kb');if(kb){const d=document.createElement('div');d.className='ty46';d.innerHTML='<i></i><i></i><i></i>';kb.parentNode.insertBefore(d,kb)}
    setTimeout(()=>{S.inbox=S.inbox||[];S.inbox.unshift({d:S.day,f:n,t:cl(msg)});S.inbox=S.inbox.slice(0,150);render()},800)}catch(er){}},60)}
