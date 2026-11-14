@@ -224,3 +224,9 @@ Order if built: 1, 2, 3 as one batch (~2 hrs), then 5. Leaderboard only after pe
 - 3D printer (expansion of the ghost gun kit, which is a $350 pawn shop pistol for 18+ today): at 18 buy a 3D printer at the pawn shop, or get offered one on the block in a random street event. Print switches and sell them for a small profit (dirty cash). Should carry real risk: a big charge if you are caught holding them, heat on every sale, raid risk where the printer sits, buyers can be undercover. Needs a place to keep it (your home or a property).
 - Send soldiers on licks, not just heists. Heists already have "Send the crew" (built Nov 14). Licks would work the same way through crew jobs: pick a soldier for a house, store or car lick, they are gone 1 day, bring back cash or stolen goods (into your stash), skim risk under 30 loyalty, can get caught (hurt or picked up), you get part of the heat.
 - Nov 14: Sam is a she (Chris). Added to the female name lists for crew, friends and workers. Mission check: all 6 characters' story missions still work after the plug move; first buy works for everyone (text the plug, meet, buy grams).
+
+## Unc's tire shop as the stolen car buyer (Chris, Nov 14) - NOT BUILT, wait for "build"
+- Today a stolen car just sells on the spot ("Sell it to the chop shop") or you keep it. Change: no instant sale. You drive the stolen car to Unc's tire shop (he is shady) and he strips it down for you, for a cut. Fits the map: Unc's tire shop is already a place on the Block map.
+- Unc's strip pays less (he keeps a cut, say 50 to 60%), takes a day or has a cop-roll heat risk, and trust with Unc can raise his cut.
+- When you own your own chop shop ($8,000 clean, already built) you strip it yourself with Strip it fast and keep all of it, so it pays MORE (today 1,500 to 3,000 flip, parts by score). That is the reason to upgrade.
+- Needs: dev menu button, tutorial line, dirty cash only, age 18+ for the chop shop, keyboard on any new mini game.
