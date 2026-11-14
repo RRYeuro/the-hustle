@@ -15,11 +15,11 @@
 const el=id=>document.getElementById(id);
 const UNL=[
  ['Sell on your block to the Js','Low plugs (small amounts)','Side gigs and school'],
- ['+25 stash space','Mid plugs will meet you (ounces, 50 pills)','Runners (Dre, Moe, Tasha) start texting you small orders'],
- ['Big plugs will meet you (QPs, 500 pills, pints)','Runner orders get bigger (half a unit)','Big plugs serve you no matter your rep'],
- ['Your workers sell 25% more','Runner orders: a full unit'],
- ['Every plug you know trusts you more','Strangers know you after 1 deal','Runner orders: up to 2 units'],
- ['Crews think twice: ambushes half as often','Runner orders: up to 3 units','Top of the street']];
+ ['+25 stash space','Mid plugs will meet you (ounces, 50 pills)','Put a friend on as a runner (1 runner), small orders'],
+ ['Big plugs will meet you (QPs, 500 pills, pints)','2 runners, orders get bigger (half a unit)','Big plugs serve you no matter your rep'],
+ ['Your workers sell 25% more','3 runners, orders: a full unit'],
+ ['Every plug you know trusts you more','Strangers know you after 1 deal','4 runners, orders: up to 2 units'],
+ ['Crews think twice: ambushes half as often','5 runners, orders: up to 3 units','Top of the street']];
 const rk=()=>{try{return Math.max(0,RANKS.indexOf(rank()))}catch(e){return S.rk||0}};
 window.l48rk=rk;
 window.l48new=function(i){try{const L=UNL[i]||[];return L.length?`<div style="text-align:left;margin:6px 0 2px"><div class="sec" style="margin:0 0 4px">Unlocked</div>${L.map(x=>`<div>🆕 ${x}</div>`).join('')}${UNL[i+1]?`<div class="s" style="color:var(--dim);margin-top:6px">Next: ${rname(i+1)} at level ${RANKS[i+1][0]}</div>`:''}</div>`:''}catch(e){return ''}};

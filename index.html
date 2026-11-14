@@ -1923,7 +1923,7 @@ function w5bClubDay(){const B=b5();if(!(S.biz&&S.biz.club))return;if(weekTick())
 function w5bDealers(){const B=b5();if(!B.dl)B.dl=['Dre','Moe','Tasha'].map(n=>({n,loy:50}));return B.dl}
 function w5bOrderDay(){const B=b5();w5bDealers();if(!weekTick()||B.oweek===S.day)return;B.oweek=S.day;
   B.ord=B.ord.filter(o=>{if(o.by<S.day){const d=B.dl[o.d];d.loy=Math.max(0,d.loy-8);say(`You missed ${d.n}'s order.`);return false}return true});
-  if(!(S.known||[]).length)return;while(B.ord.length<3){const g=pick(GOODS),d=rnd(0,2);if(B.ord.find(o=>o.d===d))break;B.ord.push({d,g:g.id,n:w5bUnit(g)*pick([1,1,2]),by:S.day+7})}
+  if(!(S.known||[]).length)return;while(B.ord.length<Math.min(3,(B.dl||[]).length)){const g=pick(GOODS),d=rnd(0,Math.max(0,B.dl.length-1));if(B.ord.find(o=>o.d===d))break;B.ord.push({d,g:g.id,n:w5bUnit(g)*pick([1,1,2]),by:S.day+7})}
   B.dl.forEach(d=>{if(d.loy<20&&Math.random()<.1){S.heat=Math.min(100,S.heat+18);say(`${d.n} got picked up and gave your name. Heat up.`);d.loy=40}})}
 /* ---- travel ---- */
 function w5bRun(i){const B=b5(),C=W5BCITY[i];if(!C||B.ctrip>S.day-4||S.cash<C.cost)return;const best=GOODS.map(g=>({g,v:(S.inv[g.id]||0)*street(g)})).sort((a,b)=>b.v-a.v)[0];if(!best||best.v<=0||(S.inv[best.g.id]||0)<w5bUnit(best.g)/2)return say('You need something to take with you first.');if(spendEn(C.e)===false)return;
@@ -5631,10 +5631,10 @@ function paneGuns(){const here=S.at===2;if(!here)return '';
 function friendBack(){return Math.min(15,(S.friends||[]).filter(f=>f.close>=60).reduce((a,f)=>a+(f.trait==='wild'?5:3),0))}
 function meetFriend(manual){S.friends=S.friends||[];const taken=takenNames();const role=pick(['setup','scam','rob','connect','none','none']);
   const _np=(role==='setup'?FNAMES_F:FNAMES).filter(n=>!taken.includes(n));if(!_np.length)return;const name=pick(_np);const trait=pick(['loyal','loyal','hustler','wild','snake']);
-  const where=pick(['at the court','at the corner store','in the barbershop','at the cookout','outside the gas station','in class']);
+  const where=window._mf49w||pick(['at the court','at the corner store','in the barbershop','at the cookout','outside the gas station','in class']);
   modal(`<h2>New face</h2><p>You met <b>${name}</b> ${where}. ${manual?'Y\'all got to talking.':'They been around, and y\'all clicked.'}${role!=='none'?` ${FROLES[role].meet}`:''}</p><p class="s" style="color:var(--dim)">Friends back you up in fights, look out for you, and might need help sometimes.</p>
     <div class="btns"><button class="btn go" id="y">Add ${name}</button><button class="btn" id="n">Nah</button></div>`);
-  $('y').onclick=()=>{S.friends.push({name,trait,role,close:25});say(`You and ${name} are cool now.`);close()};$('n').onclick=close}
+  window._mf49w=null;$('y').onclick=()=>{S.friends.push({name,trait,role,close:25});say(`You and ${name} are cool now.`);close()};$('n').onclick=close}
 function friendDay(){(S.friends||[]).forEach(f=>{f.close=Math.max(0,f.close-(f.trait==='loyal'?.5:1));if(f.trait==='wild'&&f.close>=60)S.heat=Math.min(100,S.heat+1);
   if(f.trait==='hustler'&&f.close>=50&&Math.random()<.06){const v=rnd(100,400);S.cash+=v;say(`${f.name} broke you off ${money(v)}.`)}});
   S.friends=(S.friends||[]).filter(f=>{if(f.close<=0){say(`You and ${f.name} don't talk no more.`);return false}return true})}
@@ -10118,11 +10118,11 @@ try{const _se=streetEvent;streetEvent=function(){if(window.l47Busy&&l47Busy())re
 const el=id=>document.getElementById(id);
 const UNL=[
  ['Sell on your block to the Js','Low plugs (small amounts)','Side gigs and school'],
- ['+25 stash space','Mid plugs will meet you (ounces, 50 pills)','Runners (Dre, Moe, Tasha) start texting you small orders'],
- ['Big plugs will meet you (QPs, 500 pills, pints)','Runner orders get bigger (half a unit)','Big plugs serve you no matter your rep'],
- ['Your workers sell 25% more','Runner orders: a full unit'],
- ['Every plug you know trusts you more','Strangers know you after 1 deal','Runner orders: up to 2 units'],
- ['Crews think twice: ambushes half as often','Runner orders: up to 3 units','Top of the street']];
+ ['+25 stash space','Mid plugs will meet you (ounces, 50 pills)','Put a friend on as a runner (1 runner), small orders'],
+ ['Big plugs will meet you (QPs, 500 pills, pints)','2 runners, orders get bigger (half a unit)','Big plugs serve you no matter your rep'],
+ ['Your workers sell 25% more','3 runners, orders: a full unit'],
+ ['Every plug you know trusts you more','Strangers know you after 1 deal','4 runners, orders: up to 2 units'],
+ ['Crews think twice: ambushes half as often','5 runners, orders: up to 3 units','Top of the street']];
 const rk=()=>{try{return Math.max(0,RANKS.indexOf(rank()))}catch(e){return S.rk||0}};
 window.l48rk=rk;
 window.l48new=function(i){try{const L=UNL[i]||[];return L.length?`<div style="text-align:left;margin:6px 0 2px"><div class="sec" style="margin:0 0 4px">Unlocked</div>${L.map(x=>`<div>🆕 ${x}</div>`).join('')}${UNL[i+1]?`<div class="s" style="color:var(--dim);margin-top:6px">Next: ${rname(i+1)} at level ${RANKS[i+1][0]}</div>`:''}</div>`:''}catch(e){return ''}};
@@ -10144,6 +10144,40 @@ try{const _wd=w5bDealers;w5bDealers=function(){const B=b5();if(rk()<1){if(B.ord&
 try{TUT.push(['Rank ladder','Your rank comes from your level: Corner Boy, Petty Dealer (3), Middle Man (6), Supplier (10), The Connect (15), Kingpin (20). Each rank unlocks more: Mid plugs at Petty Dealer, Big plugs at Middle Man, and bigger runner orders as you climb. See it all on the Me tab.'])}catch(e){}
 try{const _dp=devPanel;devPanel=function(){const r=_dp.apply(this,arguments);try{const mc=el('mcard');if(mc&&!el('modal').hidden&&!mc.querySelector('[data-d48]')){const d=document.createElement('div');d.innerHTML=`<div class="sec">Rank ladder (new)</div><div class="btns">${RANKS.map((x,i)=>`<button class="btn" data-d48="${i}">${rname(i)}</button>`).join('')}</div>`;const h2=mc.querySelector('h2');if(h2&&h2.parentNode)h2.parentNode.insertBefore(d,h2.nextSibling);else mc.appendChild(d);
  d.querySelectorAll('[data-d48]').forEach(b=>b.onclick=ev=>{ev.stopPropagation();const i=+b.dataset.d48;el('modal').hidden=true;S.lvl=Math.max(1,RANKS[i][0]);S.xp=0;S.rk=Math.min(S.rk||0,i);addXP(1);say('Dev: rank set to '+rname(i));render()})}}catch(e){console.error('sk48 dev',e)}return r}}catch(e){}
+})();</script>
+
+<script id="skin49js">
+(function(){if(window._sk49)return;window._sk49=1;
+const el=id=>document.getElementById(id),rk=()=>window.l48rk?l48rk():(S.rk||0);
+const maxR=()=>[0,1,2,3,4,5][Math.min(5,rk())];
+/* runners are recruited, never handed out */
+function mig(){try{const B=b5();if(S.dl49)return;S.dl49=1;if(B.dl&&B.dl.length===3&&B.dl.map(d=>d.n).join()==='Dre,Moe,Tasha'&&!B.dl.some(d=>d.fr)){B.dl=[];B.ord=[]}}catch(e){}}
+w5bDealers=function(){const B=b5();mig();if(!B.dl)B.dl=[];if(rk()<1){if(B.ord&&B.ord.length)B.ord=[];return []}return B.dl};
+function canPut(f){const B=b5();return rk()>=1&&adult()&&(B.dl||[]).length<maxR()&&(f.close||0)>=40&&!(B.dl||[]).some(d=>d.n===f.name)}
+function putOn(i){const f=(S.friends||[])[i];if(!f||!canPut(f))return;const B=b5();B.dl=B.dl||[];B.dl.push({n:f.name,loy:Math.round(f.close),fr:1});
+ try{phoneMsg(f.name,f.trait==='snake'?'Say less. I got you. 👀':pk(['Bet. I got you. Send me what you want moved.','Finally. Put me on, I\'ll move it.','Say less. I\'ll push it for you.']))}catch(e){}say(`You put ${f.name} on. ${f.trait==='snake'?'Keep an eye on that one.':'Orders start next week.'}`);render()}
+function cutOff(n){const B=b5(),old=B.dl||[];B.ord=(B.ord||[]).filter(o=>(old[o.d]||{}).n&&old[o.d].n!==n).map(o=>({...o,nm:old[o.d].n}));B.dl=old.filter(d=>d.n!==n);B.ord.forEach(o=>{o.d=B.dl.findIndex(d=>d.n===o.nm);delete o.nm});const f=(S.friends||[]).find(x=>x.name===n);if(f)f.close=Math.max(0,f.close-10);say(`You cut ${n} off from pushing for you.`);render()}
+const pk=a=>a[Math.floor(Math.random()*a.length)];
+function runnersHTML(){if(rk()<1||!adult())return '';const B=b5(),dl=B.dl||[],fr=(S.friends||[]).map((f,i)=>[f,i]).filter(([f])=>!dl.some(d=>d.n===f.name));
+ let h=`<div class="sec">Your runners (${dl.length}/${maxR()})</div>`;
+ if(!dl.length)h+=`<div class="row"><div class="info"><div class="s">Nobody pushes for you yet. Put a friend on: they need to be close to you (40+). Meet people at school, the court, the barbershop.</div></div></div>`;
+ dl.forEach(d=>{h+=`<div class="row"><div class="info"><div class="t">${esc(d.n)}</div><div class="s">Loyalty ${Math.round(d.loy)}. Low loyalty runners skim and can snitch.</div></div><button class="btn" data-a49="cut" data-n="${esc(d.n)}">Cut off</button></div>`});
+ fr.slice(0,6).forEach(([f,i])=>{const ok=canPut(f);h+=`<div class="row"><div class="info"><div class="t">${esc(f.name)}</div><div class="s">Close ${Math.round(f.close||0)}/100${(f.close||0)<40?' · need 40':''}${f.sch?' · from school':''}</div></div><button class="btn ${ok?'go':''}" data-a49="put" data-i="${i}" ${ok?'':'disabled'}>Put on</button></div>`});
+ if(dl.length>=maxR()&&maxR()<5)h+=`<div class="row"><div class="info"><div class="s">🔒 More runners at ${rname(rk()+1)} (level ${RANKS[rk()+1][0]}).</div></div></div>`;
+ return h}
+try{const _wo=w5bOrders;w5bOrders=function(){let h=_wo.apply(this,arguments);try{h=runnersHTML()+h}catch(e){console.error('sk49 ro',e)}return h}}catch(e){}
+/* school: meet people at lunch */
+try{const _ps=paneSchool;paneSchool=function(){let h=_ps.apply(this,arguments);try{const inS=S.school==='in'||S.college==='in';if(inS){const went=S.classDay===S.day,done=S.lunch49===S.day;h+=`<div class="row" style="flex-wrap:wrap"><div class="info" style="flex:1 1 200px;min-width:0"><div class="t">🍔 Lunch</div><div class="s">${went?'Sit somewhere new and meet people. Classmates can become friends, and friends can push for you later.':'Go to class first.'}</div></div><button class="btn go" data-a49="lunch" ${went&&!done?'':'disabled'}>${done?'Ate today':'Sit with new people'}</button></div>`}}catch(e){console.error('sk49 sch',e)}return h}}catch(e){}
+function lunch(){if(S.lunch49===S.day||S.classDay!==S.day)return;S.lunch49=S.day;
+ if((S.friends||[]).length>=8||Math.random()<.3){say('Nobody new today. You ate with the usual people.');return render()}
+ window._mf49w=S.college==='in'?'in the student center':'at lunch';meetFriend(true);
+ const y=el('y');if(y){const o=y.onclick;y.onclick=()=>{o&&o();try{const f=S.friends[S.friends.length-1];if(f){f.sch=1;f.close=Math.max(f.close||0,30)}}catch(e){}}}}
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-a49]');if(!b||b.disabled)return;e.preventDefault();e.stopPropagation();const k=b.dataset.a49;
+ if(k==='put')putOn(+b.dataset.i);if(k==='cut')cutOff(b.dataset.n);if(k==='lunch')lunch()},true);
+/* tutorial + dev */
+try{TUT.push(['Runners','Nobody pushes for you until you put them on. Reach Petty Dealer, get a friend to 40+ close, then hit Put on in the Phone (Dealer orders). One runner at Petty Dealer, one more each rank. Meet people at lunch after class, at the court, the barbershop.'])}catch(e){}
+try{const _dp=devPanel;devPanel=function(){const r=_dp.apply(this,arguments);try{const mc=el('mcard');if(mc&&!el('modal').hidden&&!mc.querySelector('[data-d49]')){const d=document.createElement('div');d.innerHTML=`<div class="sec">Runners (new)</div><div class="btns"><button class="btn" data-d49="f">Add a close friend</button><button class="btn" data-d49="p">Put a friend on now</button></div>`;const h2=mc.querySelector('h2');if(h2&&h2.parentNode)h2.parentNode.insertBefore(d,h2.nextSibling);else mc.appendChild(d);
+ d.querySelectorAll('[data-d49]').forEach(b=>b.onclick=ev=>{ev.stopPropagation();el('modal').hidden=true;S.friends=S.friends||[];if(b.dataset.d49==='f')S.friends.push({name:pk(['Kash','Bean','Lil Mo','Trey','Nae']),trait:'loyal',role:'none',close:60});else{if(S.lvl<3){S.lvl=3;addXP(1)}if(!S.friends.length)S.friends.push({name:'Kash',trait:'loyal',role:'none',close:60});S.friends[0].close=Math.max(60,S.friends[0].close);putOn(0)}render()})}}catch(e){console.error('sk49 dev',e)}return r}}catch(e){}
 })();</script>
 
 <script>if('serviceWorker' in navigator){addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}</script></body></html>
