@@ -236,3 +236,13 @@ Order if built: 1, 2, 3 as one batch (~2 hrs), then 5. Leaderboard only after pe
 - OPUS/FABLE: Reputation by block, Seasons and city events, Bills that bite, Bail and lawyer choice, Worker plugs pushing their old menu, Barber favors and the cousin at 16.
 - One builder on the repo at a time.
 - Nov 14 weak-point fixes (skin40): first-day guide on the Block tab (4 steps that tick off by themselves, then a where-things-are card; only new games, day 2 or less); teens start with a Mid plug instead of a Big one; on phones Plug spots and the scanner fold to one line after the guide (Show / Details); fake drip robbery and unseen patrol heat now say why. Test dev/t_help.py.
+- Nov 14 balance run (6 characters, 35 days, simple buy-and-serve bot, 3 runs each): with the Nov 13 Js boost (x1.5, +1%/rep to +50%) day-35 cash was about double the old budgets ($46k to $73k vs $27k to $35k). Lowered to x1.2, +1% per rep up to +25%: now about $37k to $54k, so the $45k and $54k missions are reachable but not easy. Old save (made on the pre-Nov-13 build) loads clean in the new build: all tabs and apps draw, 6 days play, no errors. Tests: dev/sim.py, dev/t_oldsave.py.
+
+## Extra ideas from Opus (Nov 14) - NOT BUILT, wait for "build"
+- Js left today: show "Js on this block have about $X left today" on the Block tab so players know when a block is dry and it is time to move. (~20 min)
+- Serving heat check: in the balance run, heat stayed under about 12 even while serving hundreds of units a day. Check the real sell path; heat per sale may need to grow with volume so big days on one block feel risky. (~30 min to check, then tune)
+- Pawn buyback: jewelry you pawn can be bought back within 7 days for the price plus 20%, like a real pawn ticket. Gives drip players a way to get cash fast without losing the chain for good. (~30 min)
+- Plug family tier: at 90 trust a plug gives family price (5% off), holds a load for you for a day, and warns you when a task force is coming. Lose it if you get caught snitching. (~45 min)
+- Undercover Js: now and then a "customer" is a cop. Street Smarts shows a tell ("asks too many questions", "new face, clean shoes") so you can walk away; selling to one is a bust. (~45 min)
+- Scanner texts: if you own a scanner, a short text when a patrol moves onto your current block. (~15 min)
+- Unlock guides: when a new system opens (crew, heists, scanner, plugs calling), a one-time 3-step mini guide like the first-day guide. (~1 hr)
