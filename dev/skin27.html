@@ -156,7 +156,7 @@ function addDrug(id,n){try{const g2=G(id),rm=Math.floor((S.cap-used())/g2.sp);n=
 function safeAsk(title,txt,o,win,lose,skip){
  modal(`${art('g_safe')}<h2>${title}</h2><p>${txt}</p><p class="s" style="color:var(--dim)">Crack the keypad and the big money is yours. Run out of tries and ${window._l27q?'it locks up. You killed the alarm, so nobody hears it.':'the alarm goes off.'}</p><div class="btns"><button class="btn red" id="l27c">Crack it</button><button class="btn" id="l27n">Leave it</button></div>`);
  el('l27n').onclick=()=>{el('modal').hidden=true;skip()};
- el('l27c').onclick=()=>{el('modal').hidden=true;(window.m39Vault&&(window._m39force||Math.random()<.5)?window.m39Vault:pinGame)(o,ok=>ok?win():lose())}}
+ el('l27c').onclick=()=>{el('modal').hidden=true;pinGame(o,ok=>ok?win():lose())}}
 window.l27Safe=function(type,inv,fin,alarm){if(inv||!(forced()||ch({reg:.3,trap:.55,plug:1}[type]||0)))return fin('');
  safeAsk('There is a safe','You find a safe with a keypad in the bedroom closet.',{title:'Crack the safe',tries:type==='plug'?5:6},()=>{
   const v=type==='plug'?rnd(5000,15000):type==='trap'?rnd(2000,7000):rnd(800,3000),pay=S.bag?v:Math.round(v*.5);S.cash+=pay;addXP(3);let x=` The safe had ${money(pay)} dirty in it.${S.bag?'':' No bag, so you left half of it.'}`;

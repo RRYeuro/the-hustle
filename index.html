@@ -3338,7 +3338,7 @@ function freshCands(){if(S.candDay>S.day-7&&S.cands.length)return;S.candDay=S.da
     const hustle=rnd(2,9),loyal=rnd(2,9);S.cands.push({id:name+S.day,name,hustle,loyal,wage:40+hustle*25+loyal*10})}}
 const myBlock=bi=>S.owner[bi]==='me'||S.owner[bi]==='none';
 const wCap=w=>[0,40,90,160][wLv(w)];
-const WFEM=['Rosa','Kim','Lupe','Kesha','Nae Nae','Tink','Mya','Bri','Keke','Trina','Mari','Jada','Nae','Lexi','Tiana','Mei','Linh'];
+const WFEM=['Rosa','Kim','Lupe','Kesha','Nae Nae','Tink','Mya','Bri','Keke','Trina','Mari','Jada','Nae','Lexi','Tiana','Mei','Linh','Sam'];
 const wHer=w=>!!w&&(w.f||WFEM.includes(w.name));
 const wStashUsed=w=>GOODS.reduce((a,g)=>a+((w.stash&&w.stash[g.id])||0)*g.sp,0);
 function wStashTxt(w){const e=GOODS.filter(g=>w.stash&&w.stash[g.id]>0).map(g=>`${amt(w.stash[g.id],g)} ${g.name}`);return e.length?e.join(', '):'nothing'}
@@ -5563,7 +5563,7 @@ function devDo(k){
 /* ---------- friendships ---------- */
 const FNAMES=['Dame','Peanut','Lil Kev','Rico','Bri','Tay','Jojo','Nate','Mook','Ty','Ant','Keke','Mari','Zo','Benny','Trina','Marcus','Diego','Sam','Linh'];
 const FTRAITS={loyal:{name:'Loyal',sub:'Sticks with you. Closeness drops slower.'},hustler:{name:'Hustler',sub:'Sometimes breaks you off a little money.'},wild:{name:'Wild',sub:'Extra backup in fights, but brings heat.'},snake:{name:'Shady',sub:'Something about them. Keep them close or they turn.'}};
-const FNAMES_F=['Bri','Keke','Trina','Mari','Jada','Nae','Lexi','Tiana','Rosa','Mei'];
+const FNAMES_F=['Bri','Keke','Trina','Mari','Jada','Nae','Lexi','Tiana','Rosa','Mei','Sam'];
 const FROLES={
  setup:{name:'Sets people up',meet:'She knows how to get people where she wants them.',on:'she can set somebody up for you to rob. The closer y\'all are, the better it goes. She also scouts plugs and lures fake gun buyers, so those go better too.',off:'she\'ll help you set people up.'},
  scam:{name:'Scammer',meet:'He stays on his laptop doing something.',on:'he put you on to scamming, and your card punching hits more often.',off:'he\'ll put you on to scamming.'},
