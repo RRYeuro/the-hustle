@@ -230,3 +230,8 @@ Order if built: 1, 2, 3 as one batch (~2 hrs), then 5. Leaderboard only after pe
 - Unc's strip pays less (he keeps a cut, say 50 to 60%), takes a day or has a cop-roll heat risk, and trust with Unc can raise his cut.
 - When you own your own chop shop ($8,000 clean, already built) you strip it yourself with Strip it fast and keep all of it, so it pays MORE (today 1,500 to 3,000 flip, parts by score). That is the reason to upgrade.
 - Needs: dev menu button, tutorial line, dirty cash only, age 18+ for the chop shop, keyboard on any new mini game.
+
+## Who builds what, round 2 (Nov 14, Sonnet's suggestion, Chris to confirm)
+- SONNET: Memory tiles (30m), Rotating locks (30m), Unc's tire shop buys stolen cars (40m), Soldiers on licks (about 1h, wires into crew jobs), 3D printer (about 1h).
+- OPUS/FABLE: Reputation by block, Seasons and city events, Bills that bite, Bail and lawyer choice, Worker plugs pushing their old menu, Barber favors and the cousin at 16.
+- One builder on the repo at a time.
