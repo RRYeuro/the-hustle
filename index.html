@@ -8739,7 +8739,7 @@ function inside24(){
 <script id="skin25js">
 (function(){
 if(window._sk25)return;window._sk25=1;
-const EMJ={park:'🌳',gym:'🏋️',store:'🏪',barber:'💈',studio:'🎤',rec:'🏀',tire:'🔫',stadium:'🏟️',carlot:'🚗',pawn:'💍',pharm:'💊',hosp:'🏥',school:'🏫',mall:'🛍️',lawyer:'⚖️',airport:'✈️',realty:'🏠',club:'🪩',trap:'🏚️'};
+const EMJ={park:'🌳',gym:'🏋️',store:'🏪',barber:'💈',studio:'🎤',rec:'🏀',tire:'🔫',stadium:'🏟️',carlot:'🚗',pawn:'💍',pharm:'💊',hosp:'🏥',school:'🏫',mall:'🛍️',lawyer:'⚖️',airport:'✈️',realty:'🏢',club:'🪩',trap:'🏚️',home:'🏠'};
 const IMG="art/89ac8d844072.jpg";
 const MAPS={Miami:"art/521d92b56fea.jpg","New York":"art/b92472d84781.jpg","Los Angeles":"art/3ae08770b242.jpg",Chicago:"art/ea424fa37d28.jpg",Houston:"art/34d379028331.jpg",Atlanta:"art/6244dc85d385.jpg",Charlotte:"art/cef3bed7ee29.jpg"};
 const IC={trap:['TR','#ff3b30'],club:['NC','#c084fc'],park:['PK','#34d399'],gym:['GY','#fb923c'],barber:['BR','#22d3ee'],store:['S','#facc15'],studio:['ST','#f472b6'],rec:['RC','#2dd4bf'],tire:['GD','#e5e7eb'],stadium:['FD','#84cc16'],carlot:['CL','#ef4444'],pawn:['PS','#fbbf24'],pharm:['P','#e879f9'],hosp:['H','#fb7185'],school:['SC','#d4d4d4'],mall:['M','#eab308'],lawyer:['L','#3b82f6'],airport:['AP','#38bdf8'],realty:['RE','#4ade80']};
@@ -8761,6 +8761,7 @@ function bInfo(i){const o=S.owner[i],ol=o==='me'?'Yours':o==='none'?'Open':(()=>
 function mapHTML(){
  let h=`<div class="fm26" id="fm26" style="background-image:url(${img()})"><canvas id="fm26z" width="160" height="120"></canvas>`;
  const btn=(id,k,x,y,n)=>{const im=null;return `<button class="mapp${im?'':' nb'}" data-p="${id}" data-n="${n}" aria-label="${n}" style="left:${x}%;top:${y}%;--c:${IC[k][1]}${im?';background-image:url('+im+')':''}">${EMJ[k]||IC[k][0]}</button>`};
+ try{IC.home=IC.home||['HM','#8be28b'];if(!away()){const hb=homeBlock(),q=(TPOS[hb]||[50,50]);h+=btn('home','home',Math.min(95,q[0]+7),Math.max(5,q[1]-8),hb===S.at?'Home':'Go home')}}catch(e){}
  PLACES.forEach(P=>{if(P.id==='studio'&&!S.rapOn)return;const q=pos(P.id);if(!q||!IC[P.id])return;h+=btn(P.id,P.id,q[0],q[1],P.name)});
  try{if((S.biz||{}).club)h+=btn('club24','club',pos('club')[0],pos('club')[1],'Nightclub')}catch(e){}
  try{BLOCKS.forEach((b,i)=>{if(S.traps&&S.traps[i])h+=btn('trap'+i,'trap',tp(i)[0],tp(i)[1],'Trap house')})}catch(e){}
@@ -8786,6 +8787,7 @@ function tabHTML(){if(tbI===null)tbI=S.at;const i=tbI;
  h+=`<div class="bi"><b>${f.name}</b>${f.ol} · Heat ${f.lv} · ${i===S.at?'You are here':(S.car?'A short drive, no day lost':'1 day to get here')}${f.x.length?'<br>'+f.x.join(' · '):''}</div>`;
  const row=(id,k,n,sub)=>{const im=null;return `<button class="mapp" data-p="${id}" aria-label="${n}"><span class="bd" style="--c:${IC[k][1]}${im?';background-image:url('+im+')':''}">${EMJ[k]||IC[k][0]}</span><span class="nm">${n}<small>${sub}</small></span><span class="go">${i===S.at?'GO IN':(S.car?'DRIVE':'1 DAY')}</span></button>`};
  PLACES.forEach(P=>{if(P.bi!==i||!IC[P.id])return;if(P.id==='studio'&&!S.rapOn)return;h+=row(P.id,P.id,P.name,P.id==='stadium'?'Open field':'')});
+ try{IC.home=IC.home||['HM','#8be28b'];if(i===homeBlock())h+=row('home','home','Home','Lay low, nap, your place')}catch(e){}
  try{if(i===5&&(S.biz||{}).club)h+=row('club24','club','Nightclub','Your club')}catch(e){}
  try{if(S.traps&&S.traps[i])h+=row('trap'+i,'trap','Trap house','Yours')}catch(e){}
  return h+`</div>`}
@@ -9280,6 +9282,19 @@ try{const _p=placeAct;placeAct=function(k,id){try{if(blocked(k,{}))return}catch(
 try{const _d=window.l32Drive;window.l32Drive=function(){if(yo()<16)return false;return _d.apply(this,arguments)}}catch(e){}
 try{const _c=clCarry;clCarry=function(){try{if(Array.isArray(S.loot)&&S.loot.length){say('You cannot travel with stolen goods on you. Sell them, stash them at home or ditch them.');return true}}catch(e){}return _c.apply(this,arguments)}}catch(e){}
 try{const _o=openPlace;openPlace=function(id){const r=_o.apply(this,arguments);try{if(id==='pawn'){const b=document.querySelector('#mcard [data-pl="lhouse"]');if(b&&!window.noTips&&!(S.lt&&S.lt.house>=S.day)){b.disabled=true;b.textContent='Need a tip'}}}catch(e){}return r}}catch(e){}
+})();
+</script>
+<script id="skin34js">
+(function(){if(window._sk34)return;window._sk34=1;
+/* Home button on the Move map: tap it to head home, or open your place when you are already there */
+const el=id=>document.getElementById(id);
+try{const _o=openPlace;openPlace=function(id){if(id!=='home')return _o.apply(this,arguments);
+ let hb=0;try{hb=homeBlock()}catch(e){}
+ if(S.at!==hb){try{act('go',{dataset:{i:String(hb)}})}catch(e){console.error('sk34',e)}if(!S||S.over||S.at!==hb||!el('modal').hidden)return}
+ let body='';try{const d=document.createElement('div');d.innerHTML=paneHome();const r=d.querySelector('.row');if(r){r.querySelectorAll('button').forEach(x=>x.remove());body=r.outerHTML}}catch(e){}
+ modal(`<h2>🏠 Home</h2><p class="s" style="color:var(--dim)">You are at your place on ${BLOCKS[hb]}.</p><div class="btns"><button class="btn go" id="h34a">Next day</button><button class="btn" id="h34b">Lay low</button><button class="btn" id="h34c">Nap</button><button class="btn" id="h34x">Close</button></div><div class="pane">${body}</div>`);
+ const go=a=>()=>{el('modal').hidden=true;try{act(a,{dataset:{}})}catch(e){console.error('sk34',e)}};
+ el('h34a').onclick=go('adv');el('h34b').onclick=go('lay');el('h34c').onclick=go('nap');el('h34x').onclick=()=>{el('modal').hidden=true;render()}}}catch(e){console.error('sk34',e)}
 })();
 </script>
 <script>if('serviceWorker' in navigator){addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}</script></body></html>
