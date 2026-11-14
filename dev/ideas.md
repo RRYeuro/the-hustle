@@ -278,3 +278,9 @@ Start with 2 + 8 on texting, court and plug talk (~5-8% usage). 3/4/5 are ~10-15
 7. Burner phone for plug business: less heat, breaks, can lose contacts.
 8. Notification sounds + buzz on mobile.
 - Dialogue pass 2 + real phone: BUILT Nov 14 (skin46). Meet tones (Respect +2 trust, Haggle 5% off, Flex needs 35 rep, Bluff Talk 5+ 10% off), text haggle once a day, typing dots, callbacks (popped, owing bills, long gap, back already, hot), court in session scene (Yes your honor +4%, Speak up +8%/-6% + $250 contempt, Stay quiet), battery (texts -4, calls -3, replies -2, recharge at home with lights on, -30 a day without), No Service when dead/cut, missed calls, Decline = trust -2 + voicemail text, ring + buzz, text ping. Lock screen, Messages threads, reply choices and apps already existed.
+## Plug actions move to the phone + Street business redo (Nov 14, idea from Chris; wait for "build")
+- The plug card buttons (Kick it, Ask for a front, Pitch him your stuff, Ask for something else, Slide on his opps, Rob him) become texts in that plug's Messages thread, sent as reply choices.
+- The plug answers in his voice ("Woah, I ain't giving you no front"), then a small gray line from the game says why (trust 47/100, need 60; you still owe him; you're too new, under 10 days with him).
+- Rob him: you can't just tap Rob. Text to set up a meet ("let me grab a QP"), pick the day and the spot, then the robbery happens at the meet (bring crew or a gun for better odds, the plug can bring backup, and if it fails the plug is now an enemy and puts word out).
+- The plug card at the spot keeps only Buy/Sell plus the prices.
+- Street business moves to the Block tab as its own clean card: corner cred and block rep bars on top, then the actions (Pass out your number, Post up, Cookout, Guard dog) as small buttons with cost and effect, with no repeat of info shown elsewhere.

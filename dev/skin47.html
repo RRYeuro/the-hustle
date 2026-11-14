@@ -1,0 +1,18 @@
+<style id="skin47">
+body:has(#modal:not([hidden])) #sms{opacity:0!important;transform:translateY(-120%)!important;pointer-events:none}
+#mcard.long47>img:first-child{max-height:96px;object-fit:cover;object-position:center 35%}
+.mr47{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.08);text-align:left}
+.mr47:last-child{border-bottom:0}
+.mr47 img{width:64px;height:44px;object-fit:cover;border-radius:6px;flex:none}
+.mr47 b{display:block;font-size:14px}.mr47 span{font-size:12.5px;color:var(--dim,#9d94b8);line-height:1.35}
+</style>
+<script id="skin47js">
+(function(){if(window._sk47)return;window._sk47=1;
+const el=id=>document.getElementById(id);
+/* long cards: picture becomes a thin strip */
+try{const _wc=wCard;wCard=function(art,title,text,opts){const r=_wc.apply(this,arguments);try{const mc=el('mcard');if(mc){const long=(opts&&opts.length>=4)||String(text||'').replace(/<[^>]+>/g,'').length>320||/vb45/.test(text||'');mc.classList.toggle('long47',!!long)}}catch(e){}return r};
+ const _md=modal;modal=function(){const mc=el('mcard');if(mc)mc.classList.remove('long47');return _md.apply(this,arguments)}}catch(e){console.error('sk47 wc',e)}
+/* random street events wait for big moments to finish */
+window.l47Busy=function(){try{if(S.meet||S.pr||S.inJail)return 'meet/jail';const X=typeof w4==='function'?w4():null;if(X&&X.bail&&X.bail.d<=S.day)return 'trial';if(S.crt&&S.crt.due<=S.day)return 'court costs';if(S.picQ&&S.picQ.length)return 'queued';if(S.hc&&S.hc.d!=null&&S.hc.d<=S.day)return 'heist';if(document.getElementById('mt31'))return 'meet'}catch(e){}return ''};
+try{const _se=streetEvent;streetEvent=function(){if(window.l47Busy&&l47Busy())return;return _se.apply(this,arguments)}}catch(e){console.error('sk47 se',e)}
+})();</script>

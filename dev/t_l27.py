@@ -93,7 +93,7 @@ with sync_playwright() as p:
     def maybe_lock():
         if J("()=>/Pick the back door lock/.test(document.getElementById('mcard').textContent)"):
             pg.keyboard.press('Enter');pg.wait_for_timeout(200)
-            for _ in range(12):
+            for _ in range(40):
                 if not J("()=>!!window.__lpDbg&&!document.getElementById('modal').hidden&&/pins|Pin/.test(document.getElementById('mcard').textContent)"):break
                 J("()=>{__lpDbg.aim();__lpDbg.press()}");pg.wait_for_timeout(450)
             pg.wait_for_timeout(300)

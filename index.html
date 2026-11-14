@@ -9761,7 +9761,7 @@ window.l42a=(k,h)=>{try{const u=ARTX(k);return u?`<div style="height:${h||110}px
 window.l42q=(k,h,t)=>{S.picQ=S.picQ||[];S.picQ.push({k,h,t})};
 /* crew heist result gets its picture */
 try{const _cr=cmResolve;cmResolve=function(m){const hc=S.hc;const r=_cr.apply(this,arguments);try{if(hc&&!S.hc){const t=(S.log[0]&&S.log[0].t)||'',ok=/pulled off/.test(t),set=/setup/i.test(JSON.stringify(S.log.slice(0,3)));l42q(ok?'g_hpay':'g_hsetup',ok?'💰 Crew heist: payday':set?'🚨 It was a setup':'🚨 The crew heist went bad',t)}}catch(e){console.error('sk42 hc',e)}return r}}catch(e){console.error('sk42 cm',e)}
-const show=()=>{try{const Q=S.picQ;if(!Q||!Q.length||!el('modal').hidden||document.querySelector('#mt31:not([hidden])'))return;const p=Q[0];modal(`${l42a(p.k,140)}<h2>${p.h}</h2><p>${esc(p.t)}</p><div class="btns"><button class="btn go" id="ok42">OK</button></div>`);el('ok42').onclick=()=>{S.picQ.shift();close();render()}}catch(e){console.error('sk42 show',e)}};
+const show=()=>{try{const Q=S.picQ;if(!Q||!Q.length||!el('modal').hidden||document.querySelector('#mt31:not([hidden])'))return;if(Q.length>1){const n=Q.length;modal(`<h2>📋 What happened</h2><div style="max-height:56vh;overflow:auto">${Q.map(p=>`<div class="mr47">${ARTX(p.k)?`<img src="${ARTX(p.k)}" alt="">`:''}<div><b>${p.h}</b><span>${esc(p.t)}</span></div></div>`).join('')}</div><div class="btns"><button class="btn go" id="ok42">Got it</button></div>`);el('ok42').onclick=()=>{S.picQ.splice(0,n);close();render()};return}const p=Q[0];modal(`${l42a(p.k,140)}<h2>${p.h}</h2><p>${esc(p.t)}</p><div class="btns"><button class="btn go" id="ok42">OK</button></div>`);el('ok42').onclick=()=>{S.picQ.shift();close();render()}}catch(e){console.error('sk42 show',e)}};
 const _r=render;render=function(){const r=_r.apply(this,arguments);try{
  const B=typeof b5==='function'?b5():null;if(B&&B.crack===S.day+5&&S.p42c!==S.day){S.p42c=S.day;l42q('g_raidup','🚨 Task force','A police task force hit the neighborhood. Every block is hotter for 5 days. Stay low.')}
  if(S.patSaid===S.day&&!S.p42p){S.p42p=1;l42q('g_patrol','🚓 Patrol on your block','A patrol car rolled through while you were serving. Each sale here costs more heat today. Move blocks or wait it out.')}
@@ -10080,6 +10080,25 @@ try{TUT.push(['Phone and people','Your phone has a battery: texts and calls drai
 try{const _dp=devPanel;devPanel=function(){const r=_dp.apply(this,arguments);try{const mc=el('mcard');if(mc&&!el('modal').hidden&&!mc.querySelector('[data-d46]')){const d=document.createElement('div');d.innerHTML=`<div class="sec">Phone and talk (new)</div><div class="btns"><button class="btn" data-d46="b5">Battery 5%</button><button class="btn" data-d46="b0">Phone dead</button><button class="btn" data-d46="b100">Charge phone</button><button class="btn" data-d46="pop">Just got popped (callbacks)</button><button class="btn" data-d46="ct">Court scene</button></div>`;const h2=mc.querySelector('h2');if(h2&&h2.parentNode)h2.parentNode.insertBefore(d,h2.nextSibling);else mc.appendChild(d);
  d.querySelectorAll('[data-d46]').forEach(b=>b.onclick=ev=>{ev.stopPropagation();const k=b.dataset.d46;el('modal').hidden=true;if(k==='b5')S.bat=5;if(k==='b0')S.bat=0;if(k==='b100')S.bat=100;if(k==='pop')CB().pop=S.day;
   if(k==='ct'){S.age=Math.max(S.age||0,18);S.strikes=Math.max(1,S.strikes||0);S.picQ=[];prStart();if(S.pr){S.pr.cc=0;S.pr._sc46=0;w4Court()}return}render()})}}catch(e){console.error('sk46 dev',e)}return r}}catch(e){}
+})();</script>
+
+<style id="skin47">
+body:has(#modal:not([hidden])) #sms{opacity:0!important;transform:translateY(-120%)!important;pointer-events:none}
+#mcard.long47>img:first-child{max-height:96px;object-fit:cover;object-position:center 35%}
+.mr47{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.08);text-align:left}
+.mr47:last-child{border-bottom:0}
+.mr47 img{width:64px;height:44px;object-fit:cover;border-radius:6px;flex:none}
+.mr47 b{display:block;font-size:14px}.mr47 span{font-size:12.5px;color:var(--dim,#9d94b8);line-height:1.35}
+</style>
+<script id="skin47js">
+(function(){if(window._sk47)return;window._sk47=1;
+const el=id=>document.getElementById(id);
+/* long cards: picture becomes a thin strip */
+try{const _wc=wCard;wCard=function(art,title,text,opts){const r=_wc.apply(this,arguments);try{const mc=el('mcard');if(mc){const long=(opts&&opts.length>=4)||String(text||'').replace(/<[^>]+>/g,'').length>320||/vb45/.test(text||'');mc.classList.toggle('long47',!!long)}}catch(e){}return r};
+ const _md=modal;modal=function(){const mc=el('mcard');if(mc)mc.classList.remove('long47');return _md.apply(this,arguments)}}catch(e){console.error('sk47 wc',e)}
+/* random street events wait for big moments to finish */
+window.l47Busy=function(){try{if(S.meet||S.pr||S.inJail)return 'meet/jail';const X=typeof w4==='function'?w4():null;if(X&&X.bail&&X.bail.d<=S.day)return 'trial';if(S.crt&&S.crt.due<=S.day)return 'court costs';if(S.picQ&&S.picQ.length)return 'queued';if(S.hc&&S.hc.d!=null&&S.hc.d<=S.day)return 'heist';if(document.getElementById('mt31'))return 'meet'}catch(e){}return ''};
+try{const _se=streetEvent;streetEvent=function(){if(window.l47Busy&&l47Busy())return;return _se.apply(this,arguments)}}catch(e){console.error('sk47 se',e)}
 })();</script>
 
 <script>if('serviceWorker' in navigator){addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}</script></body></html>
