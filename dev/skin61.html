@@ -1,0 +1,29 @@
+<style id="skin61">
+.tr61 .row{flex-wrap:wrap}.tr61 .row>.info{flex:1 1 160px;min-width:0}.tr61 .row>.btns{flex:1 1 100%;display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.tp61{position:absolute;z-index:4;transform:translate(-50%,-50%);border:2px solid #f5a524;background:#1d160a;border-radius:50%;width:clamp(26px,4vw,36px);height:clamp(26px,4vw,36px);display:grid;place-items:center;font-size:clamp(14px,2.2vw,18px);cursor:pointer;box-shadow:0 2px 6px #000}
+</style>
+<script id="skin61js">
+(function(){if(window._sk61)return;window._sk61=1;
+const el=id=>document.getElementById(id);
+const mine=()=>{try{return BLOCKS.map((b,i)=>i).filter(myBlock)}catch(e){return []}};
+/* the trap house is run in person, on one of your blocks */
+window.l61open=function(){const M=mine();
+ if(!M.length){modal(`<h2>🧺 Trap house</h2><p>You need a block first. Take one from a crew, then open a trap on it.</p><div class="btns"><button class="btn" id="x61">OK</button></div>`);el('x61').onclick=()=>{close();render()};return}
+ if(!M.includes(S.at)){modal(`<h2>🧺 Trap house</h2><p>Your blocks: <b>${M.map(i=>BLOCKS[i]).join(', ')}</b>. You run the trap in person, so go to one of them first.</p><div class="btns">${M.map(i=>`<button class="btn go" data-g61="${i}">Go to ${BLOCKS[i]}</button>`).join('')}<button class="btn" id="x61">Not now</button></div>`);el('x61').onclick=()=>{close();render()};document.querySelectorAll('[data-g61]').forEach(b=>b.onclick=()=>{close();const bi=+b.dataset.g61;window.l58Go?l58Go(bi,l61open):act('go',{dataset:{i:String(bi)}})});return}
+ modal(`<h2>🧺 Trap house · ${BLOCKS[S.at]}</h2><div class="pane tr61">${paneTraps()}</div><div class="btns"><button class="btn" id="x61">Done</button></div>`);el('x61').onclick=()=>{close();render()}};
+/* keep the page fresh after each action */
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('#mcard .tr61 [data-a]');if(!b||b.disabled)return;setTimeout(()=>{try{const mc=el('mcard');if(el('modal').hidden||(mc&&mc.querySelector('.tr61')))l61open()}catch(er){}},90)},false);
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-a61],.tp61');if(!b)return;e.preventDefault();e.stopPropagation();if(b.classList.contains('tp61')){const bi=+b.dataset.bi;if(bi!==S.at&&window.l58Go)return l58Go(bi,l61open)}l61open()},true);
+/* Block tab: a row on your blocks */
+try{const _pb=paneBlock;paneBlock=function(){let h=_pb.apply(this,arguments);try{const M=mine();if(M.length&&(S.age||0)>=16){const here=M.includes(S.at),t=here&&S.traps&&S.traps[S.at];h=`<div class="row"><div class="info"><div class="t">🧺 ${here?(t?`Your ${BLOCKS[S.at]} trap`:'Open a trap here'):'Your trap houses'}</div><div class="s">${here?'Workers, stock, upgrades and hiring.':`On ${M.map(i=>BLOCKS[i]).join(', ')}. Run them in person.`}</div></div><button class="btn ${here?'go':''}" data-a61="1">${here?'Run it':'Go'}</button></div>`+h}}catch(e){console.error('sk61 pb',e)}return h}}catch(e){}
+/* pins on the Move map for traps you own */
+try{const _r=render;render=function(){const r=_r.apply(this,arguments);try{if(typeof tab!=='undefined'&&tab==='move'){const m=el('fm26'),tp=window._tp26;if(m&&tp&&!m.querySelector('.tp61'))Object.keys(S.traps||{}).forEach(k=>{const i=+k;if(!S.traps[k]||!myBlock(i))return;const q=tp(i);if(!q)return;const b=document.createElement('button');b.className='tp61';b.textContent='🧺';b.title='Your trap on '+BLOCKS[i];b.dataset.bi=i;b.style.left=(q[0]-10)+'%';b.style.top=(q[1]+10)+'%';m.appendChild(b)})}
+ /* worker threads: "bring me the money" */
+ const th=document.querySelector('.phx[data-app="messages"] .mth-th');if(th&&window._mth){const kb=th.querySelector('.mth-kb');const wi=(S.workers||[]).findIndex(w=>w.name===window._mth);if(kb&&wi>=0&&!kb.querySelector('[data-a="wcollect"]')){const w=S.workers[wi];kb.insertAdjacentHTML('beforeend',`<button class="mth-opt" data-a="wcollect" data-i="${wi}" data-says="Bring me the money." ${w.held?'':'disabled'}>${w.held?`Bring me the money (${money(w.held)})`:'Nothing to pick up'}</button>`)}}}catch(e){console.error('sk61 r',e)}return r}}catch(e){}
+/* workers text you what they made */
+try{WD.push(()=>{try{S.w61=S.w61||{};(S.workers||[]).forEach(w=>{const h=Math.round(w.held||0),last=S.w61[w.id]||0;if(h>last+50&&Object.values(S.traps||{}).some(t=>t&&t.w===w.id)){S.inbox=S.inbox||[];S.inbox.unshift({d:S.day,f:w.name,t:(w.loyal<=3?['Holding ','Got '][S.day%2]:['Moved good today. Holding ','Block was jumping. Got '][S.day%2])+money(h)+' for you.'});S.inbox=S.inbox.slice(0,150)}S.w61[w.id]=h})}catch(e){}})}catch(e){}
+/* phone app gone */
+try{const R=window.l57open;window.l57open=id=>id==='trap'?false:(R?R(id):true)}catch(e){}
+try{const _r2=render;render=function(){const r=_r2.apply(this,arguments);try{document.querySelectorAll('.ph-home .ph-ic button[data-rph="trap"]').forEach(b=>b.remove())}catch(e){}return r}}catch(e){}
+try{TUT.push(['Trap house','Your trap houses are run in person: go to one of your blocks and tap Run it on the Block tab (or the 🧺 pin on the Move map). That is where you open traps, hire workers, give them stock, upgrade and fire. Workers text you what they are holding, and you can text them to bring you the money.'])}catch(e){}
+})();</script>

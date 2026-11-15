@@ -9,8 +9,7 @@ const rk=()=>window.l48rk?l48rk():(S.rk||0);
 const NAME={crew:'Crew',trap:'Trap house',orders:'Orders',burners:'Burners',licks:'Licks',backer:'Backer',hustle:'Side hustles',social:'Social'};
 const RULE={
  crew:()=>{try{return (typeof crewList==='function'&&crewList().length>0)||rk()>=1}catch(e){return rk()>=1}},
- trap:()=>rk()>=2||((S.traps||[]).length>0),
- orders:()=>rk()>=1,
+  orders:()=>rk()>=1,
   backer:()=>rk()>=2,
  hustle:()=>S.day>=2,
  social:()=>S.day>=2};

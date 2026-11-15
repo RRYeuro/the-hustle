@@ -16,7 +16,7 @@ with sync_playwright() as p:
     ck('day 3: Social unlocks with NEW + text',J("()=>{const b=document.querySelector('.ph-home [data-rph=\"social\"]');return b&&b.style.display!=='none'&&b.classList.contains('nw57')&&S.log.some(x=>/New app on your phone: Social/.test(x.t))}"))
     J("()=>{S.lvl=6;addXP(1);render()}");pg.wait_for_timeout(200)
     J("()=>{const u=document.querySelector('[data-unlock]');if(u&&document.querySelector('.ph-lock'))u.click()}");pg.wait_for_timeout(300)
-    ck('Middle Man: trap + backer unlock',J("()=>['trap','backer'].every(id=>{const b=document.querySelector('.ph-home [data-rph=\"'+id+'\"]');return b&&b.style.display!=='none'})"))
+    ck('Middle Man: backer unlocks',J("()=>['backer'].every(id=>{const b=document.querySelector('.ph-home [data-rph=\"'+id+'\"]');return b&&b.style.display!=='none'})"))
     pg.screenshot(path='/tmp/claude-0/s43/a57.png')
     ck('no errors',not errs,json.dumps(errs[:3]))
     b.close()

@@ -10457,8 +10457,7 @@ const rk=()=>window.l48rk?l48rk():(S.rk||0);
 const NAME={crew:'Crew',trap:'Trap house',orders:'Orders',burners:'Burners',licks:'Licks',backer:'Backer',hustle:'Side hustles',social:'Social'};
 const RULE={
  crew:()=>{try{return (typeof crewList==='function'&&crewList().length>0)||rk()>=1}catch(e){return rk()>=1}},
- trap:()=>rk()>=2||((S.traps||[]).length>0),
- orders:()=>rk()>=1,
+  orders:()=>rk()>=1,
   backer:()=>rk()>=2,
  hustle:()=>S.day>=2,
  social:()=>S.day>=2};
@@ -10534,18 +10533,18 @@ try{const _pl59=paneLicks;paneLicks=function(){let h=_pl59.apply(this,arguments)
 try{const _op=openPlace;openPlace=function(id){const r=_op.apply(this,arguments);try{if(id==='mall'&&!el('modal').hidden&&S.at===placeAt('mall')){const mc=el('mcard');
   /* small list, big picture only after you buy */
   [ARTX('g_glasses'),ARTX('jewelry'),ARTX('g_burner')].filter(Boolean).forEach(u=>mc.querySelectorAll(`img[src="${u}"]`).forEach(im=>{const w=im.closest('.a2,.a2i,figure')||im;if(w!==mc)w.remove()}));
-  if(!mc.querySelector('[data-b59]')&&(S.age||0)>=14){const X=w4(),bd=S.burnD>S.day;const row=document.createElement('div');row.className='row';row.style.cssText='padding:8px 12px;flex-wrap:wrap';
+  }}catch(e){console.error('sk59 mall',e)}try{if(id==='store'&&!el('modal').hidden&&S.at===placeAt('store')){const mc=el('mcard');if(!mc.querySelector('[data-b59]')&&(S.age||0)>=14){const X=w4(),bd=S.burnD>S.day;const row=document.createElement('div');row.className='row';row.style.cssText='padding:8px 12px;flex-wrap:wrap';
    row.innerHTML=`<div class="info" style="flex:1 1 180px"><div class="t">📱 Burner phone</div><div class="s">${bd?`Active ${S.burnD-S.day} more days. `:''}$40. Wipes your phone evidence, keeps new evidence low for a week, and gives you a spare to swap to.</div></div><button class="btn go" data-b59="buy" ${S.cash<40||bd?'disabled':''}>${bd?'Active':'$40'}</button>`;
    const row2=document.createElement('div');row2.className='row';row2.style.cssText='padding:8px 12px;flex-wrap:wrap';
    row2.innerHTML=`<div class="info" style="flex:1 1 180px"><div class="t">🔁 Swap to a burner</div><div class="s">${X.burn>0?`${X.burn} spare. Heat −10, but plugs have to learn your new number.`:'Buy a burner first.'}</div></div><button class="btn" data-b59="swap" ${X.burn>0&&!(X.sw>S.day-5)?'':'disabled'}>${X.sw>S.day-5?'Wait':'Swap'}</button>`;
-   const at=mc.querySelector('.btns:last-child');(at&&at.parentNode===mc?mc.insertBefore(row,at):mc.appendChild(row));row.after(row2)}}}catch(e){console.error('sk59 mall',e)}return r}}catch(e){}
-function bought(art,title,text){modal(`${ARTX(art)?`<img src="${ARTX(art)}" alt="" style="width:100%;max-height:220px;object-fit:cover;border-radius:10px;margin-bottom:8px">`:''}<h2>${title}</h2><p>${text}</p><div class="btns"><button class="btn go" id="bk59">Back to the mall</button></div>`);el('bk59').onclick=()=>{close();openPlace('mall')}}
+   const at=mc.querySelector('.btns:last-child');(at&&at.parentNode===mc?mc.insertBefore(row,at):mc.appendChild(row));row.after(row2)}}}catch(e){console.error('sk59 store',e)}return r}}catch(e){}
+function bought(art,title,text){modal(`${ARTX(art)?`<img src="${ARTX(art)}" alt="" style="width:100%;max-height:220px;object-fit:cover;border-radius:10px;margin-bottom:8px">`:''}<h2>${title}</h2><p>${text}</p><div class="btns"><button class="btn go" id="bk59">Back</button></div>`);el('bk59').onclick=()=>{close();openPlace(window._bk59||'mall')}}
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-b59]');if(b&&!b.disabled){e.preventDefault();e.stopPropagation();const X=w4();
-  if(b.dataset.b59==='buy'){if(S.cash<40)return;S.cash-=40;try{cleanCash()}catch(er){}S.chat=0;S.burnD=S.day+7;X.burn=Math.min(5,(X.burn||0)+1);say('Bought a burner. Phone evidence cleared and slow to build for a week.');bought('g_burner','📱 Got a burner','Old texts gone, new ones slow to stack up for a week. You have a spare to swap to if things get hot.')}
-  if(b.dataset.b59==='swap'){act('w4_swap',{dataset:{}});close();openPlace('mall')}return}
+  if(b.dataset.b59==='buy'){if(S.cash<40)return;window._bk59='store';S.cash-=40;try{cleanCash()}catch(er){}S.chat=0;S.burnD=S.day+7;X.burn=Math.min(5,(X.burn||0)+1);say('Bought a burner. Phone evidence cleared and slow to build for a week.');bought('g_burner','📱 Got a burner','Old texts gone, new ones slow to stack up for a week. You have a spare to swap to if things get hot.')}
+  if(b.dataset.b59==='swap'){act('w4_swap',{dataset:{}});close();openPlace('store')}return}
  const p=e.target.closest&&e.target.closest('#mcard [data-pl]');if(!p||p.disabled)return;const k=p.dataset.pl,c0=S.cash;
  const art=k==='rl_glass'?['g_glasses','🕶️ Privacy glasses','Cameras and plate readers spot you 40% less.']:/^jw:/.test(k)?['jewelry','💎 Iced out','Rep for as long as you keep it. Big pieces draw robbers when your heat is up.']:null;
- if(art)setTimeout(()=>{if(S.cash<c0)bought(...art)},60)},true);
+ if(art)setTimeout(()=>{if(S.cash<c0){window._bk59='mall';bought(...art)}},60)},true);
 /* phone burner app and lick app are gone (bought at the mall, pins on the map) */
 try{const R=window.l57open;window.l57open=id=>(id==='burners'||id==='licks')?false:(R?R(id):true)}catch(e){}
 try{const _r2=render;render=function(){const r=_r2.apply(this,arguments);try{document.querySelectorAll('.ph-home .ph-ic button[data-rph="burners"],.ph-home .ph-ic button[data-rph="licks"]').forEach(b=>b.remove())}catch(e){}return r}}catch(e){}
@@ -10553,7 +10552,7 @@ try{const _r2=render;render=function(){const r=_r2.apply(this,arguments);try{doc
 document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('.phx .mapb[data-a="go"]');if(!t)return;e.preventDefault();e.stopImmediatePropagation();const bi=+t.dataset.i,ad=(S.age||0)>=18;
  modal(`<h2>${BLOCKS[bi]}</h2><p>${ad?'Want a ride there? $25, no day lost.':'Rides are 18+. Use the Move tab to walk or take the bus.'}</p><div class="btns">${ad?`<button class="btn go" id="rd59" ${S.cash<25?'disabled':''}>🚕 Ride there · $25</button>`:''}<button class="btn" id="cx59">Close</button></div>`);
  el('cx59').onclick=()=>{close();render()};if(el('rd59'))el('rd59').onclick=()=>{close();window._go58=1;try{act('goR',{dataset:{i:String(bi)}})}catch(er){}window._go58=0;render()}},true);
-try{TUT.push(['Licks on the map','Licks are red pins on the Move map: the corner store (Southpark), the pharmacy, a car to steal (16+, needs a Pro Pad), and a house or a strap when somebody tips you. Go to that block and tap the pin. Burner phones are sold at the mall now. The phone Maps app is for looking; to travel from the phone, use the ride button.'])}catch(e){}
+try{TUT.push(['Licks on the map','Licks are red pins on the Move map: the corner store (Southpark), the pharmacy, a car to steal (16+, needs a Pro Pad), and a house or a strap when somebody tips you. Go to that block and tap the pin. Burner phones are at the corner store. The phone Maps app is for looking; to travel from the phone, use the ride button.'])}catch(e){}
 })();</script>
 
 <style id="skin60">
@@ -10572,6 +10571,36 @@ try{ART2.javi='art/edbf2dacdca0.jpg';ART2.mateo='art/42e55b87d57b.jpg'}catch(e){
 /* place pages: wide pictures become a thin strip */
 function strip(){try{const mc=document.getElementById('mcard');if(!mc||document.getElementById('modal').hidden)return;mc.querySelectorAll('img').forEach(im=>{if(im.dataset.s60||im.classList.contains('scn26-bg')||im.closest('.av,.ct55c,.mr47'))return;const w=im.getBoundingClientRect().width||parseInt(im.style.width)||0;const pane=im.closest('.pane,.row');if(pane&&w>200){im.dataset.s60=1;im.style.height='84px';im.style.maxHeight='84px';im.style.objectFit='cover';im.style.width='100%'}})}catch(e){}}
 try{const _op=openPlace;openPlace=function(){const r=_op.apply(this,arguments);try{strip();setTimeout(strip,60)}catch(e){}return r}}catch(e){}
+})();</script>
+
+<style id="skin61">
+.tr61 .row{flex-wrap:wrap}.tr61 .row>.info{flex:1 1 160px;min-width:0}.tr61 .row>.btns{flex:1 1 100%;display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.tp61{position:absolute;z-index:4;transform:translate(-50%,-50%);border:2px solid #f5a524;background:#1d160a;border-radius:50%;width:clamp(26px,4vw,36px);height:clamp(26px,4vw,36px);display:grid;place-items:center;font-size:clamp(14px,2.2vw,18px);cursor:pointer;box-shadow:0 2px 6px #000}
+</style>
+<script id="skin61js">
+(function(){if(window._sk61)return;window._sk61=1;
+const el=id=>document.getElementById(id);
+const mine=()=>{try{return BLOCKS.map((b,i)=>i).filter(myBlock)}catch(e){return []}};
+/* the trap house is run in person, on one of your blocks */
+window.l61open=function(){const M=mine();
+ if(!M.length){modal(`<h2>🧺 Trap house</h2><p>You need a block first. Take one from a crew, then open a trap on it.</p><div class="btns"><button class="btn" id="x61">OK</button></div>`);el('x61').onclick=()=>{close();render()};return}
+ if(!M.includes(S.at)){modal(`<h2>🧺 Trap house</h2><p>Your blocks: <b>${M.map(i=>BLOCKS[i]).join(', ')}</b>. You run the trap in person, so go to one of them first.</p><div class="btns">${M.map(i=>`<button class="btn go" data-g61="${i}">Go to ${BLOCKS[i]}</button>`).join('')}<button class="btn" id="x61">Not now</button></div>`);el('x61').onclick=()=>{close();render()};document.querySelectorAll('[data-g61]').forEach(b=>b.onclick=()=>{close();const bi=+b.dataset.g61;window.l58Go?l58Go(bi,l61open):act('go',{dataset:{i:String(bi)}})});return}
+ modal(`<h2>🧺 Trap house · ${BLOCKS[S.at]}</h2><div class="pane tr61">${paneTraps()}</div><div class="btns"><button class="btn" id="x61">Done</button></div>`);el('x61').onclick=()=>{close();render()}};
+/* keep the page fresh after each action */
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('#mcard .tr61 [data-a]');if(!b||b.disabled)return;setTimeout(()=>{try{const mc=el('mcard');if(el('modal').hidden||(mc&&mc.querySelector('.tr61')))l61open()}catch(er){}},90)},false);
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-a61],.tp61');if(!b)return;e.preventDefault();e.stopPropagation();if(b.classList.contains('tp61')){const bi=+b.dataset.bi;if(bi!==S.at&&window.l58Go)return l58Go(bi,l61open)}l61open()},true);
+/* Block tab: a row on your blocks */
+try{const _pb=paneBlock;paneBlock=function(){let h=_pb.apply(this,arguments);try{const M=mine();if(M.length&&(S.age||0)>=16){const here=M.includes(S.at),t=here&&S.traps&&S.traps[S.at];h=`<div class="row"><div class="info"><div class="t">🧺 ${here?(t?`Your ${BLOCKS[S.at]} trap`:'Open a trap here'):'Your trap houses'}</div><div class="s">${here?'Workers, stock, upgrades and hiring.':`On ${M.map(i=>BLOCKS[i]).join(', ')}. Run them in person.`}</div></div><button class="btn ${here?'go':''}" data-a61="1">${here?'Run it':'Go'}</button></div>`+h}}catch(e){console.error('sk61 pb',e)}return h}}catch(e){}
+/* pins on the Move map for traps you own */
+try{const _r=render;render=function(){const r=_r.apply(this,arguments);try{if(typeof tab!=='undefined'&&tab==='move'){const m=el('fm26'),tp=window._tp26;if(m&&tp&&!m.querySelector('.tp61'))Object.keys(S.traps||{}).forEach(k=>{const i=+k;if(!S.traps[k]||!myBlock(i))return;const q=tp(i);if(!q)return;const b=document.createElement('button');b.className='tp61';b.textContent='🧺';b.title='Your trap on '+BLOCKS[i];b.dataset.bi=i;b.style.left=(q[0]-10)+'%';b.style.top=(q[1]+10)+'%';m.appendChild(b)})}
+ /* worker threads: "bring me the money" */
+ const th=document.querySelector('.phx[data-app="messages"] .mth-th');if(th&&window._mth){const kb=th.querySelector('.mth-kb');const wi=(S.workers||[]).findIndex(w=>w.name===window._mth);if(kb&&wi>=0&&!kb.querySelector('[data-a="wcollect"]')){const w=S.workers[wi];kb.insertAdjacentHTML('beforeend',`<button class="mth-opt" data-a="wcollect" data-i="${wi}" data-says="Bring me the money." ${w.held?'':'disabled'}>${w.held?`Bring me the money (${money(w.held)})`:'Nothing to pick up'}</button>`)}}}catch(e){console.error('sk61 r',e)}return r}}catch(e){}
+/* workers text you what they made */
+try{WD.push(()=>{try{S.w61=S.w61||{};(S.workers||[]).forEach(w=>{const h=Math.round(w.held||0),last=S.w61[w.id]||0;if(h>last+50&&Object.values(S.traps||{}).some(t=>t&&t.w===w.id)){S.inbox=S.inbox||[];S.inbox.unshift({d:S.day,f:w.name,t:(w.loyal<=3?['Holding ','Got '][S.day%2]:['Moved good today. Holding ','Block was jumping. Got '][S.day%2])+money(h)+' for you.'});S.inbox=S.inbox.slice(0,150)}S.w61[w.id]=h})}catch(e){}})}catch(e){}
+/* phone app gone */
+try{const R=window.l57open;window.l57open=id=>id==='trap'?false:(R?R(id):true)}catch(e){}
+try{const _r2=render;render=function(){const r=_r2.apply(this,arguments);try{document.querySelectorAll('.ph-home .ph-ic button[data-rph="trap"]').forEach(b=>b.remove())}catch(e){}return r}}catch(e){}
+try{TUT.push(['Trap house','Your trap houses are run in person: go to one of your blocks and tap Run it on the Block tab (or the 🧺 pin on the Move map). That is where you open traps, hire workers, give them stock, upgrade and fire. Workers text you what they are holding, and you can text them to bring you the money.'])}catch(e){}
 })();</script>
 
 <script>if('serviceWorker' in navigator){addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}</script></body></html>
