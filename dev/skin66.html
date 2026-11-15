@@ -1,0 +1,14 @@
+<script id="skin66js">
+/* skin66: age gate on plugs. Big plugs 18+, 16-17 buy caps smaller */
+(function(){
+const age=()=>{try{return (typeof gAge==='function'&&gAge())||S.age||99}catch(e){return 99}};
+const isBig=bi=>{try{return PINFO[bi]&&PINFO[bi].lvl==='Big'}catch(e){return false}};
+window.l66kid=bi=>isBig(bi)&&age()<18;
+window.l66kidBlock=function(bi){if(!window.l66kid(bi))return false;const nm=plugName(bi);modal(`<h2>${nm} ain't serving you</h2><p>"How old are you? I don't move weight with kids. Come see me when you're grown."</p><p class="s" style="color:#8e8e93">Big plugs deal with you at 18.</p><div class="btns"><button class="btn go" id="ok66">Aight</button></div>`);const b=document.getElementById('ok66');if(b)b.onclick=()=>{document.getElementById('modal').hidden=true;render()};return true};
+/* teen limit is per day, not per purchase: backing out of the menu does not reset it */
+window.l66tb=g=>{try{const t=S.tb66;return t&&t.d===S.day?(t.g[g.id]||0):0}catch(e){return 0}};
+window.l66rec=(g,n)=>{try{if(!(typeof gAge==='function'&&gAge()&&gAge()<18))return;if(!S.tb66||S.tb66.d!==S.day)S.tb66={d:S.day,g:{}};S.tb66.g[g.id]=(S.tb66.g[g.id]||0)+n}catch(e){}};
+/* smaller teen caps: 16-17 max 2 oz / 150 pills / 8 units a day (was a QP a buy) */
+try{TUT.push(['Plugs and age','Big plugs (QPs, pounds) only deal with you at 18+. At 16-17 the most you can buy in a day is 2 oz, 150 pills or 8 units of each thing (under 16: 1 oz, 100 pills, 4 units).'])}catch(e){}
+})();
+</script>

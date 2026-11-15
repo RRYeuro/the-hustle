@@ -1,0 +1,126 @@
+<style id="skin68">
+.op68 .row{cursor:pointer}
+.op68 .nm{font-weight:700}
+.op68 .hold{color:#8e8e93;font-size:12px}
+.op68 .cash{color:#30d158;font-weight:700;white-space:nowrap}
+.op68 .tg{display:inline-block;font-size:10px;letter-spacing:.06em;text-transform:uppercase;padding:2px 6px;border-radius:6px;background:rgba(255,255,255,.08);margin-left:4px;color:#c7c7cc}
+.op68 .lv{display:flex;align-items:center;gap:6px;flex-wrap:nowrap}
+.op68 .lv b{min-width:56px;text-align:center;font-size:13px}
+.op68 .chev,.cm68 .chev{color:#8e8e93;font-size:20px;margin-left:auto;padding-left:8px}
+.row.cm68{cursor:pointer;flex-wrap:nowrap!important}
+.row.cm68 .btns,.row.cm68 .bar,.row.cm68 progress,.row.cm68 .cm68x{display:none!important}
+.cm68 .st68{font-size:12px;color:#8e8e93;margin-top:2px}
+.cmc68 .row{border:0;background:none;padding:0}
+.cmc68 .row .btns{display:flex!important;flex-wrap:wrap}
+</style>
+<script id="skin68js">
+/* skin68: Run the operation (all workers in one screen, Collect all, Restock all, keep-stocked levels),
+   crew cleanup on the Circle tab (tap a name for actions), and The Gang group chat */
+(function(){if(window._sk68)return;window._sk68=1;
+const $e=id=>document.getElementById(id);
+const E=x=>String(x==null?'':x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]);
+const W=()=>S.workers||[];
+const trapOf=w=>{for(const k in (S.traps||{})){const t=S.traps[k];if(t&&t.w===w.id)return [+k,t]}return [null,null]};
+const isMgr=w=>{const [,t]=trapOf(w);return !!(t&&t.mgr&&t.mgr===w.id)};
+const H=()=>{try{const h=shSt();return h&&h.own?h:null}catch(e){return null}};
+const hold=w=>{const L=GOODS.filter(g=>(w.stash&&w.stash[g.id])>0).map(g=>amt(w.stash[g.id],g)+' '+g.name);return L.length?L.join(', '):'nothing'};
+const free=w=>Math.max(0,wCap(w)-wStashUsed(w));
+const rnd=(g,n)=>g.step<1?Math.floor(n*2)/2:Math.floor(n);
+const avail=gid=>(S.inv[gid]||0)+((H()&&H().inv[gid])||0);
+/* move n of gid into worker w: stash house first, then your stash */
+function give(w,gid,n){const g=G(gid);n=rnd(g,Math.min(n,free(w)/g.sp,avail(gid)));if(n<=0)return 0;w.stash=w.stash||{};w.sq=w.sq||{};
+  let left=n;const h=H();const parts=[];
+  if(h&&(h.inv[gid]||0)>0){const k=Math.min(left,h.inv[gid]);parts.push([k,(h.q&&h.q[gid])||S.q[gid]]);h.inv[gid]-=k;if(h.inv[gid]<=0){h.inv[gid]=0;if(h.paid)h.paid[gid]=0;if(h.fake)h.fake[gid]=0}left-=k}
+  if(left>0){const k=Math.min(left,S.inv[gid]||0);parts.push([k,S.q[gid]]);S.inv[gid]-=k;if(S.inv[gid]<=0){S.inv[gid]=0;S.paid[gid]=0;S.fake[gid]=0}left-=k}
+  const got=n-left;parts.forEach(([k,q])=>{if(k<=0)return;const old=w.stash[gid]||0;w.sq[gid]=old?Math.round(((w.sq[gid]||q)*old+q*k)/(old+k)):q;w.stash[gid]=old+k});return got}
+const crewWorkers=()=>W().filter(w=>!isMgr(w));
+function restockAll(){const L=crewWorkers();if(!L.length)return [];const moved={};
+  GOODS.forEach(g=>{let a=avail(g.id);if(a<g.step)return;const tw=L.reduce((x,w)=>x+(w.hustle||1),0);
+    L.forEach(w=>{const share=a*(w.hustle||1)/tw;const n=give(w,g.id,share);if(n>0)moved[g.id]=(moved[g.id]||0)+n})});
+  return Object.keys(moved).map(k=>amt(moved[k],G(k))+' '+G(k).name)}
+function topUp(){const T=(S.op68&&S.op68.t)||{},out={},low=new Set();
+  crewWorkers().forEach(w=>{Object.keys(T).forEach(gid=>{const want=T[gid]||0;if(!want)return;const have=(w.stash&&w.stash[gid])||0;if(have>=want)return;const n=give(w,gid,want-have);if(n>0)out[gid]=(out[gid]||0)+n;if(((w.stash&&w.stash[gid])||0)<want)low.add(gid)})});
+  return {moved:Object.keys(out).map(k=>amt(out[k],G(k))+' '+G(k).name),low:[...low].map(k=>G(k).name)}}
+function collectAll(){let t=0;W().forEach(w=>{t+=w.held||0;w.held=0});if(t){S.cash+=t;say(`Your crew brought ${money(t)}.`)}return t}
+window.l68collect=collectAll;window.l68restock=restockAll;window.l68topUp=topUp;
+/* ---------- The Gang group chat ---------- */
+const GC='The Gang';
+function post(who,t){S.inbox=S.inbox||[];S.inbox.unshift({d:S.day,f:GC,t:(who?who+': ':'')+t});S.inbox=S.inbox.slice(0,150)}
+window.l68post=post;
+/* ---------- operation screen ---------- */
+const stepOf=g=>g.unit==='g'?7:g.unit==='pills'?10:1;
+window.l68op=function(){const L=W(),tot=L.reduce((x,w)=>x+(w.held||0),0),h=H();S.op68=S.op68||{on:false,t:{}};const O=S.op68;
+  const goods=GOODS.filter(g=>avail(g.id)>0||O.t[g.id]||L.some(w=>(w.stash&&w.stash[g.id])>0));
+  const rows=L.map((w,i)=>{const [bi,t]=trapOf(w),role=isMgr(w)?`Manager · ${BLOCKS[bi]}`:bi!=null?`Trap · ${BLOCKS[bi]}`:'Street';
+    return `<div class="row" data-w68="${i}"><div class="info" style="min-width:0"><div><span class="nm">${E(w.name)}</span><span class="tg">${role}</span></div><div class="hold">${isMgr(w)?'Sells from your stash house':'Holding '+hold(w)}</div></div>${w.held?`<span class="cash">${money(w.held)}</span>`:''}<span class="chev">›</span></div>`}).join('');
+  modal(`<h2>🧺 Run the operation</h2><p class="s" style="color:#8e8e93">${L.length} worker${L.length===1?'':'s'} · ${money(tot)} to collect · ${h?'Stash house: '+(GOODS.filter(g=>(h.inv[g.id]||0)>0).map(g=>amt(h.inv[g.id],g)+' '+g.name).join(', ')||'empty'):'No stash house'}</p>
+  <div class="btns"><button class="btn green" id="c68" ${tot?'':'disabled'}>Collect all ${money(tot)}</button><button class="btn go" id="r68" ${goods.some(g=>avail(g.id)>=g.step)&&crewWorkers().length?'':'disabled'}>Restock all</button></div>
+  <div class="pane op68">${rows||'<div class="row"><div class="info"><div class="s">No workers yet. Open a trap house on your block and hire one.</div></div></div>'}</div>
+  <div class="sec" style="margin-top:10px">Keep everyone stocked ${O.on?'<span class="tg" style="background:#30d15833;color:#30d158">On</span>':'<span class="tg">Off</span>'}</div>
+  <p class="s" style="color:#8e8e93;margin:2px 0 6px">Every morning each worker refills up to these amounts (stash house first, then your stash). Managers sell from the stash house on their own.</p>
+  <div class="pane op68">${goods.map(g=>`<div class="row" style="cursor:default"><div class="info"><div class="t">${g.name}</div><div class="s">You have ${amt(avail(g.id),g)}</div></div><div class="lv"><button class="btn" data-l68="${g.id}" data-d="-1">−</button><b>${O.t[g.id]?amt(O.t[g.id],g):'0'}</b><button class="btn" data-l68="${g.id}" data-d="1">+</button></div></div>`).join('')||'<div class="row"><div class="info"><div class="s">Get some product first.</div></div></div>'}</div>
+  <div class="btns"><button class="btn ${O.on?'':'green'}" id="t68">${O.on?'Turn auto refill off':'Turn auto refill on'}</button><button class="btn" id="x68">Done</button></div>`);
+  $e('x68').onclick=()=>{$e('modal').hidden=true;render()};
+  $e('c68').onclick=()=>{collectAll();render();l68op()};
+  $e('r68').onclick=()=>{const m=restockAll();if(m.length){say('Restocked the crew: '+m.join(', ')+'.');post('','You dropped off a re-up: '+m.join(', ')+'.')}render();l68op()};
+  $e('t68').onclick=()=>{O.on=!O.on;l68op()};
+  document.querySelectorAll('[data-l68]').forEach(b=>b.onclick=()=>{const g=G(b.dataset.l68),cap=Math.max(...W().map(wCap),40)/g.sp;let v=(O.t[g.id]||0)+(+b.dataset.d)*stepOf(g);v=Math.max(0,Math.min(v,rnd(g,cap)));O.t[g.id]=v;l68op()});
+  document.querySelectorAll('[data-w68]').forEach(r=>r.onclick=()=>l68card(+r.dataset.w68))};
+window.l68card=function(i){const w=W()[i];if(!w)return l68op();const [bi,t]=trapOf(w);let mb='';try{if(t)mb=mgrBtn(bi,t,w)}catch(e){}
+  modal(`<h2>${E(w.name)}</h2><p class="s" style="color:#8e8e93">${isMgr(w)?'Manager at '+BLOCKS[bi]:bi!=null?'Works the '+BLOCKS[bi]+' trap':'Works the street'} · level ${wLv(w)} · ${w.sales||0} work days · loyalty ${w.loyal||0}/10</p>
+  <p>${isMgr(w)?'Sells out of your stash house.':'Holding '+hold(w)}${w.held?` · <b style="color:#30d158">${money(w.held)}</b> to collect`:''}</p>
+  <div class="btns">${w.held?`<button class="btn green" id="k68c">Collect ${money(w.held)}</button>`:''}<button class="btn" id="k68s">Stash</button><button class="btn" data-a="wpay" data-i="${i}">Pay</button>${mb}<button class="btn red" data-a="firew" data-i="${i}">Cut off</button></div>
+  <div class="btns"><button class="btn" id="k68b">‹ Back</button></div>`);
+  if($e('k68c'))$e('k68c').onclick=()=>{S.cash+=w.held;say(`Collected ${money(w.held)} from ${w.name}.`);w.held=0;render();l68card(i)};
+  $e('k68s').onclick=()=>wStashModal(i);$e('k68b').onclick=l68op;
+  const c=$e('mcard');c._k68=1;
+  c.querySelectorAll('[data-a]').forEach(b=>b.addEventListener('click',()=>setTimeout(()=>{try{const m=$e('mcard');if(!$e('modal').hidden&&m&&m.querySelector('#k68b'))l68op();else if($e('modal').hidden)l68op()}catch(e){}},0)))};
+/* morning: auto refill + crew posts */
+try{const _nd=nextDay;nextDay=function(){let r;const ok=W().length>0;let res=null;
+  try{if(ok&&S.op68&&S.op68.on)res=topUp()}catch(e){console.error('sk68 top',e)}
+  r=_nd.apply(this,arguments);
+  try{if(ok&&W().length){const posts=[];
+    if(res&&res.moved.length)posts.push(['',`Crew restocked: ${res.moved.join(', ')}.`]);
+    if(res&&res.low.length)posts.push(['',`Running low on ${res.low.join(', ')}. Fill the stash house.`]);
+    const rich=W().filter(w=>(w.held||0)>=300).sort((a,b)=>b.held-a.held)[0];if(rich)posts.push([rich.name,pick([`holding ${money(rich.held)}, come grab it`,`got ${money(rich.held)} for you`,`${money(rich.held)} sitting here, pull up`])]);
+    const dry=crewWorkers().filter(w=>wStashUsed(w)<=0)[0];if(dry)posts.push([dry.name,pick(["I'm out. Need a re-up","dry over here, send something","sold out, what's next?"])]);
+    if(S.heat>=60&&Math.random()<.5){const w=pick(W());posts.push([w.name,pick(['cops riding heavy today','12 been circling all day','might wanna lay low, it\'s hot'])])}
+    posts.slice(0,3).reverse().forEach(p=>post(p[0],p[1]))}}catch(e){console.error('sk68 gc',e)}
+  return r}}catch(e){console.error('sk68 nd',e)}
+/* group chat reply options inside the thread */
+const opts=()=>{const tot=W().reduce((x,w)=>x+(w.held||0),0);return `<div class="mth-kt">Reply to the gang</div>
+ <button class="mth-opt hot" data-gc68="money" data-says="Bring the money" ${tot?'':'disabled'}>Bring the money${tot?' ('+money(tot)+')':''}</button>
+ <button class="mth-opt" data-gc68="reup" data-says="Re-up coming">Re-up coming</button>
+ <button class="mth-opt" data-gc68="low" data-says="Lay low today" ${S.gcLow68===S.day?'disabled':''}>Lay low today</button>
+ <button class="mth-opt" data-gc68="good" data-says="Good work. Bonus on me" ${S.gcGood68===S.day||S.cash<W().length*50?'disabled':''}>Good work ($${W().length*50} bonus)</button>
+ <button class="mth-opt" data-gc68="op">🧺 Open the operation</button>`};
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-gc68]');if(!b||b.disabled)return;const k=b.dataset.gc68,L=W();
+  setTimeout(()=>{try{
+   if(k==='money'){const t=collectAll();const w=pick(L);post(w?w.name:'',t?pick(['on the way','pulling up now','say less']):'nothing yet')}
+   if(k==='reup'){const m=restockAll();if(m.length){say('Restocked the crew: '+m.join(', ')+'.');post(pick(L).name,'got it, good looking')}else post(pick(L).name,"you ain't got nothing to send tho")}
+   if(k==='low'){S.gcLow68=S.day;S.heat=Math.max(0,S.heat-5);post(pick(L).name,'bet, keeping it quiet')}
+   if(k==='good'){S.gcGood68=S.day;S.cash-=L.length*50;L.forEach(w=>{w.loyal=Math.min(10,(w.loyal||0)+1)});post(pick(L).name,'appreciate you fr')}
+   if(k==='op'){l68op();return}
+   render()}catch(err){console.error('sk68 gc click',err)}},0)},true);
+/* render hooks: thread options, Circle tab crew cleanup, Block tab entry */
+function fix(){
+ try{if(W().length&&!(S.inbox||[]).some(m=>m.f===GC))post('','Group chat made. Everybody that works for you is in here.')}catch(e){}
+ try{const th=document.querySelector('.phx[data-app="messages"] .mth-th');if(th&&window._mth===GC){const kb=th.querySelector('.mth-kb');if(kb&&!kb.dataset.g68){kb.dataset.g68=1;kb.innerHTML=L0()?opts():'<div class="mth-kt">Nobody works for you right now</div>'}}}catch(e){}
+ try{if(tab==='block'){const p=$e('pane');if(p&&!p.querySelector('[data-op68]')&&W().length){const tot=W().reduce((x,w)=>x+(w.held||0),0);const d=document.createElement('div');d.className='row';d.dataset.op68=1;d.style.cursor='pointer';
+   d.innerHTML=`<div class="info"><div class="t">🧺 Run the operation</div><div class="s">${W().length} workers · ${money(tot)} to collect · restock everyone at once</div></div><button class="btn go">Open</button>`;d.onclick=()=>l68op();const f=p.querySelector('.sec');if(f)f.parentNode.insertBefore(d,f);else p.prepend(d)}}}catch(e){console.error('sk68 blk',e)}
+ try{if(tab==='beef'){const p=$e('pane');if(!p)return;
+   p.querySelectorAll('.row').forEach(r=>{if(r.classList.contains('cm68'))return;const bs=r.querySelectorAll('button');if(bs.length<5||!/Loyalty/.test(r.innerText))return;
+     const i=(r.querySelector('[data-a="cmchill"],[data-a="cmfire"]')||{}).dataset;if(!i)return;r.classList.add('cm68');r.dataset.cm68=i.i;
+     const info=r.querySelector('.info')||r;[...info.children].forEach((c,ix)=>{if(ix>1&&!/Loyalty|Ready|On a|Busy|Locked|Hurt/.test(c.textContent))c.classList.add('cm68x')});
+     const ch=document.createElement('span');ch.className='chev';ch.textContent='›';r.appendChild(ch)});
+   if(!p.querySelector('[data-wk68]')&&W().length){const sec=[...p.querySelectorAll('.sec')].find(s=>/Your crew/.test(s.textContent));if(sec){const tot=W().reduce((x,w)=>x+(w.held||0),0),d=document.createElement('div');d.className='row';d.dataset.wk68=1;d.style.cursor='pointer';d.innerHTML=`<div class="info"><div class="t">🧺 Workers · ${W().length}</div><div class="s">${W().map(w=>w.name).join(', ')} · ${money(tot)} to collect</div></div><span class="chev" style="color:#8e8e93;font-size:20px">›</span>`;d.onclick=()=>l68op();sec.after(d)}}}}catch(e){console.error('sk68 circ',e)}}
+const L0=()=>W().length>0;
+document.addEventListener('click',e=>{const r=e.target.closest&&e.target.closest('.row.cm68');if(!r||e.target.closest('button'))return;openCm(+r.dataset.cm68)},true);
+function openCm(i){const r=document.querySelector(`#pane .row.cm68[data-cm68="${i}"]`);if(!r)return;const c=r.cloneNode(true);c.classList.remove('cm68');c.querySelectorAll('.cm68x').forEach(x=>x.classList.remove('cm68x'));c.querySelectorAll('.chev').forEach(x=>x.remove());
+  modal(`<div class="cmc68" data-cmo="${i}"></div><div class="btns"><button class="btn" id="cmx68">Close</button></div>`);$e('mcard').querySelector('.cmc68').appendChild(c);$e('cmx68').onclick=()=>{$e('modal').hidden=true;render()};
+  c.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>setTimeout(()=>{try{const m=$e('mcard');if(m&&m.querySelector('[data-cmo]')){render();if(!$e('modal').hidden&&m.querySelector('[data-cmo]'))openCm(i)}}catch(e){}},30)))}
+try{const _r=render;render=function(){const x=_r.apply(this,arguments);try{fix()}catch(e){}return x}}catch(e){}
+try{const _dp=devPanel;devPanel=function(){const r=_dp.apply(this,arguments);try{const c=$e('mcard'),b=c&&c.querySelector('#dvr');if(b&&!c.querySelector('#dv68')){const x=document.createElement('button');x.className='btn';x.id='dv68';x.textContent='3 workers + traps';b.parentNode.insertBefore(x,b);x.onclick=()=>{S.age=Math.max(S.age||18,18);S.workers=S.workers||[];['Dre','Rosa','Tone'].forEach((n,i)=>{const id='dv68'+i;if(S.workers.some(w=>w.id===id))return;S.owner[i]='me';S.traps[i]=S.traps[i]||{w:null,bought:S.day,stock:{},cash:0};S.traps[i].w=id;S.workers.push({id,name:n,hustle:4+i,loyal:6,sales:12,pct:100,wage:150,held:150*(i+1),stash:{},sq:{}})});$e('modal').hidden=true;tab='block';render();l68op()}}}catch(e){}return r}}catch(e){}
+try{TUT.push(['Run the operation','Block tab → 🧺 Run the operation shows every worker on one screen. Collect all brings everyone\'s cash (dirty). Restock all splits your product across the crew (stash house first), fast sellers get more. Set "keep everyone stocked" amounts and turn auto refill on: every morning they refill themselves. Tap a name for Pay, Stash, Make manager or Cut off.'],['The Gang','Your workers have a group chat in Messages. They text when they are holding money, out of product, or cops are around. Reply to everyone at once: Bring the money, Re-up coming, Lay low, Good work.'],['Your crew cards','On the Circle tab each crew member is one short card. Tap it to see all their options: chill, jobs, pay, missions, send out, promote, cut loose.'])}catch(e){}
+})();
+</script>

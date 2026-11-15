@@ -10870,4 +10870,26 @@ try{const _dp=devPanel;devPanel=function(){const r=_dp.apply(this,arguments);try
 try{TUT.push(['Run the operation','Block tab → 🧺 Run the operation shows every worker on one screen. Collect all brings everyone\'s cash (dirty). Restock all splits your product across the crew (stash house first), fast sellers get more. Set "keep everyone stocked" amounts and turn auto refill on: every morning they refill themselves. Tap a name for Pay, Stash, Make manager or Cut off.'],['The Gang','Your workers have a group chat in Messages. They text when they are holding money, out of product, or cops are around. Reply to everyone at once: Bring the money, Re-up coming, Lay low, Good work.'],['Your crew cards','On the Circle tab each crew member is one short card. Tap it to see all their options: chill, jobs, pay, missions, send out, promote, cut loose.'])}catch(e){}
 })();
 </script>
+<script id="skin69js">
+/* skin69: "you can order again" pings: plug drops reset, connects back from laying low, new runner orders */
+(function(){if(window._sk69)return;window._sk69=1;
+const txt=(f,t)=>{try{S.inbox=S.inbox||[];S.inbox.unshift({d:S.day,f,t});S.inbox=S.inbox.slice(0,150)}catch(e){}};
+const cons=()=>{try{return typeof conList==='function'?conList():[]}catch(e){return []}};
+try{const _nd=nextDay;nextDay=function(){
+  let maxed=[],low=[],ord0=0;
+  try{const P=S.ptx;if(P&&P.d===S.day)maxed=Object.keys(P.n).filter(k=>(P.n[k]||0)>=PTX_MAX).map(Number)}catch(e){}
+  try{low=cons().map((C,i)=>(C.low||0)>S.day?i:-1).filter(i=>i>=0)}catch(e){}
+  try{ord0=(b5().ord||[]).length}catch(e){}
+  const r=_nd.apply(this,arguments);
+  try{if(S.over)return r;const back=[];
+    maxed.forEach(bi=>{const n=plugName(bi);back.push(n);txt(n,pick(["Re-upped. You can order again.","I'm stocked back up, hit me if you need something.","Back open. What you need?"]))});
+    cons().forEach((C,i)=>{if(low.includes(i)&&(C.low||0)<=S.day){back.push(C.name);txt(C.name,pick(["We back. Ready when you are.","Heat died down. You can order again.","Lines open again."]))}});
+    let nw=0;try{nw=(b5().ord||[]).length-ord0}catch(e){}
+    if(nw>0)back.push(`${nw} new runner order${nw>1?'s':''}`);
+    if(back.length){say(`🔔 You can order again: ${back.join(', ')}.`);try{if(typeof l42q==='function'&&back.length)null}catch(e){}}
+  }catch(e){console.error('sk69',e)}
+  return r}}catch(e){console.error('sk69 nd',e)}
+try{TUT.push(['Order pings','When a plug you maxed out (4 deals a day) is open again, or a connect comes back from laying low, they text you and you get a 🔔 "You can order again" note. New runner orders ping too.'])}catch(e){}
+})();
+</script>
 <script>if('serviceWorker' in navigator){addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}</script></body></html>
