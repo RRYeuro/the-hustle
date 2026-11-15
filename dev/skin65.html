@@ -1,0 +1,26 @@
+<style id="skin65">
+.c65h{display:flex;align-items:center;gap:10px;padding:2px 2px 10px;border-bottom:1px solid #33333b;margin-bottom:10px}
+.c65h b{display:block;font-size:16px}.c65h small{color:var(--dim);font-size:12px}
+.cht65 .bub.c65b{max-width:88%;margin:0 0 8px;white-space:normal;background:#25202f;padding:9px 13px;border-radius:19px 19px 19px 5px;font-size:14px;line-height:1.35}
+.cht65 .pane .row{background:#25202f;border:none;border-radius:16px}
+.cht65 .btns .btn{border-radius:999px}
+.c65t{display:flex;flex-direction:column;gap:6px}
+</style>
+<script id="skin65js">
+(function(){if(window._sk65)return;window._sk65=1;
+/* The connect texts like a person: chat bubbles and reply chips in the phone thread, a chat-style header and bubbles on the order screen. */
+const el=id=>document.getElementById(id);
+const greet=C=>{const t=(typeof ctr==='function'?ctr(C):50);return t>=60?'Yo, you good? What you need?':t>=30?'Aight, what you need?':'Talk to me. What you looking for?'};
+window.l65Thread=function(C,i){const ready=S.day-C.last>=1||(C.ordD===S.day&&C.ordN<3),t=ctier(C),inc=(S.ship||[]).filter(x=>x.c===C.name),sp=(CSPEC[C.name]||[]).map(id=>G(id).name).join(' and ')||'everything';
+ let h=`<div class="bub">${C.from<0?'Found you on the street.':'Met through '+plugName(C.from)+'.'} ${['Low','Mid','High'][t]} connect. Weight only, real product, way under block prices.</div><div class="bub">I do ${sp} best.</div>`;
+ if(inc.length)h+=`<div class="bub ord"><b>On the way</b><br>${inc.map(x=>amt(x.n,G(x.g))+' '+G(x.g).name+' · lands '+(x.day-S.day<=0?'today':dayTxt(x.day))).join('<br>')}</div>`;
+ h+=`<div class="bub">${ready?greet(C):'I am out and about. Hit me back tomorrow.'}</div>`;
+ h+=`<div class="mth-kb"><div class="mth-kt">Reply</div>${ready?`<button class="mth-opt" data-a="conn" data-i="${i}">Let me put in an order</button>`:`<button class="mth-opt" disabled>Hit back tomorrow</button>`}<button class="mth-opt" data-a="condrop" data-i="${i}">Lose this number</button></div>`;
+ return h};
+try{const _co=window.connectOrder;if(_co)connectOrder=function(i){const r=_co.apply(this,arguments);try{const mc=el('mcard'),h2=mc&&mc.querySelector('h2');if(!h2||!/^Text /.test(h2.textContent)||mc.querySelector('.cht65'))return r;
+  const C=conList()[i||0];if(!C)return r;const p=h2.nextElementSibling,st=p&&p.classList.contains('s')?p.innerHTML:'';
+  h2.outerHTML=`<div class="c65h">${typeof cpic==='function'?cpic(C.name,36):''}<div><b>${C.name}</b><small>Text message</small></div></div>`;
+  if(p&&st)p.outerHTML=`<div class="bub c65b">${greet(C)}<br><span class="s" style="color:var(--dim)">${st}</span></div>`;
+  const w=document.createElement('div');w.className='cht65';[...mc.children].filter(x=>!x.classList.contains('xbtn')).forEach(x=>w.appendChild(x));mc.appendChild(w)}catch(e){console.error('sk65',e)}return r}}catch(e){}
+})();
+</script>
