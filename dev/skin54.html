@@ -1,0 +1,48 @@
+<style id="skin54">
+/* phone apps look like phone apps */
+.phx .btn{text-transform:none!important;letter-spacing:0!important;font:600 13px/1.2 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important;border-radius:16px!important;padding:7px 13px!important;min-height:0!important;box-shadow:none!important;background:rgba(255,255,255,.1)!important;color:#f2f2f7!important;border:0!important}
+.phx .btn.go{background:#0a84ff!important;color:#fff!important}
+.phx .btn.green{background:#30d158!important;color:#04170c!important}
+.phx .btn.red{background:#ff453a!important;color:#fff!important}
+.phx .btn:disabled{opacity:.4!important}
+.phx .sec{text-transform:none!important;letter-spacing:0!important;font:600 13px -apple-system,BlinkMacSystemFont,sans-serif!important;color:#8e8e93!important;margin:14px 4px 6px!important;border:0!important}
+.phx .row{border-radius:12px!important;background:rgba(255,255,255,.05)!important;border:0!important;margin:0 0 1px!important}
+.phx .chip{text-transform:none!important;letter-spacing:0!important;font:500 11px -apple-system,sans-serif!important;border-radius:8px!important}
+.phx .t{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important}
+.phx details.i54{margin:2px 4px 8px;font:12.5px/1.4 -apple-system,sans-serif;color:#8e8e93}
+.phx details.i54 summary{cursor:pointer;list-style:none;color:#0a84ff;font-weight:600}
+.phx details.i54 summary::-webkit-details-marker{display:none}
+.phx details.i54[open] summary{margin-bottom:4px}
+</style>
+<script id="skin54js">
+(function(){if(window._sk54)return;window._sk54=1;
+const E=x=>String(x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])),pk=a=>a[Math.floor(Math.random()*a.length)],cl=t=>window.l45cl?l45cl(t):t;
+const once=(n,k)=>{S.t54=S.t54||{};return (S.t54[n+'|'+k]||-1)===S.day};
+const mark=(n,k)=>{S.t54=S.t54||{};S.t54[n+'|'+k]=S.day};
+const inbox=(f,t)=>{S.inbox=S.inbox||[];S.inbox.unshift({d:S.day,f,t:cl(t)});S.inbox=S.inbox.slice(0,150)};
+/* who is this thread with */
+function kind(n){try{const m=(typeof crewList==='function'?crewList():[]).find(x=>x.name===n);if(m)return{k:'crew',m}}catch(e){}
+ try{const d=(b5().dl||[]).find(x=>x.n===n);if(d)return{k:'runner',d}}catch(e){}
+ try{const w=(S.workers||[]).find(x=>x.name===n);if(w)return{k:'worker',w}}catch(e){}
+ try{if((S.par&&S.par.name===n)||/^(Mama|Dad|Mom|Auntie|Grandma|Unc)/i.test(n))return{k:'fam'}}catch(e){}return null}
+function opts(n,K){const o=[],B=(l,a,says,dis)=>o.push(`<button class="mth-opt" data-a54="${a}" data-says="${E(says)}" ${dis?'disabled':''}>${l}</button>`);
+ if(K.k==='fam'){const him=/^(Dad|Unc|Pops|Grandpa)/i.test(n)||(S.par&&S.par.name===n&&S.par.fem===false);B(once(n,'chk')?`Checked on ${him?'him':'her'} today`:'Just checking on you ❤️','chk','Just checking on you. You good?',once(n,'chk'));B('Send $100','send','Sent you $100. Don\'t argue with me.',once(n,'send')||S.cash<100);B('Can\'t talk right now','busy','Can\'t talk right now, I\'ll call you later.')}
+ else if(K.k==='crew'||K.k==='worker'||K.k==='runner'){B(once(n,'chk')?'Checked in today':'You good?','chk','You good? Need anything?',once(n,'chk'));B('Bonus ($100)','bonus','Here go a lil something. You been holding it down.',once(n,'bonus')||S.cash<100);B(K.k==='runner'?'How\'s it moving?':'Stay low today','talk',K.k==='runner'?'How\'s it moving out there?':'Stay low today. Twelve been around.')}
+ return `<div class="mth-kt">Text ${E(n)}</div>${o.join('')}`}
+function loy(K,d){try{if(K.m)K.m.loy=Math.max(0,Math.min(100,(K.m.loy||50)+d));if(K.d)K.d.loy=Math.max(0,Math.min(100,(K.d.loy||50)+d));if(K.w)K.w.loy=Math.max(0,Math.min(100,(K.w.loy||50)+d))}catch(e){}}
+function act54(a,n){const K=kind(n);if(!K)return;let r='';
+ if(K.k==='fam'){if(a==='chk'){mark(n,'chk');addStress(-3);try{if(S.par)S.par.trust=Math.min(100,(S.par.trust||50)+2)}catch(e){}const dad=/^(Dad|Unc|Pops|Grandpa)/i.test(n);r=dad?pk(['I\'m good. You staying out of trouble?','All good here. Keep your head on straight.']):pk(['I\'m okay baby. You eating?','I\'m good. Proud of you. Be careful.','Yes. Come see me sometime.'])}
+  if(a==='send'){if(S.cash<100)return;mark(n,'send');S.cash-=100;try{cleanCash()}catch(e){}addStress(-4);try{if(S.par)S.par.trust=Math.min(100,(S.par.trust||50)+3)}catch(e){}r=/^(Dad|Unc|Pops|Grandpa)/i.test(n)?'You didn\'t have to do that. Appreciate you.':'Baby you didn\'t have to. Thank you. I love you.'}
+  if(a==='busy')r='Okay. Call me back.'}
+ else{if(a==='chk'){mark(n,'chk');loy(K,2);r=pk(['Always. You good?','I\'m straight. Just waiting on you.','Good. Just say the word.'])}
+  if(a==='bonus'){if(S.cash<100)return;mark(n,'bonus');S.cash-=100;try{cleanCash()}catch(e){}loy(K,5);r=pk(['Good looks boss 💯','Ayy appreciate you fr.','That\'s love. I got you.'])}
+  if(a==='talk')r=K.k==='runner'?pk(['Slow but steady.','Moving. Hit me when you got more.','Block been dry, but I\'m out here.']):pk(['Say less.','Already. I\'m in the house.'])}
+ if(r)setTimeout(()=>{try{const kb=document.querySelector('.phx[data-app="messages"] .mth-kb');if(kb){const d=document.createElement('div');d.className='ty46';d.innerHTML='<i></i><i></i><i></i>';kb.parentNode.insertBefore(d,kb)}}catch(e){}setTimeout(()=>{inbox(n,r);render()},800)},60);render()}
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-a54]');if(!b||b.disabled)return;act54(b.dataset.a54,window._mth)},false);
+/* render: thread options + tidy app pages */
+function tidy(){try{const th=document.querySelector('.phx[data-app="messages"] .mth-th');if(th&&window._mth){const kb=th.querySelector('.mth-kb');if(kb&&!kb.dataset.f50&&!kb.dataset.p51&&!kb.dataset.k54&&kb.querySelector('[data-flav]')){const K=kind(window._mth);if(K){kb.dataset.k54=1;kb.innerHTML=opts(window._mth,K)}}}}catch(e){console.error('sk54 kb',e)}
+ try{document.querySelectorAll('.phx:not([data-app="messages"]) .row').forEach(r=>{if(r.dataset.i54||r.querySelector('button,input,select,img,.bar,.t'))return;const s=r.querySelector('.s');const t=(s||r).textContent.trim();if(t.length<70)return;r.dataset.i54=1;const d=document.createElement('details');d.className='i54';d.innerHTML=`<summary>ⓘ How this works</summary>${E(t)}`;r.replaceWith(d)})}catch(e){console.error('sk54 tidy',e)}}
+try{const _r=render;render=function(){const r=_r.apply(this,arguments);try{tidy()}catch(e){}return r}}catch(e){}
+/* plain words in the leftover generic replies */
+try{const K=window._KB;if(K){K.FL.grow.splice(0,3,'What\'s good?','I\'ll come through soon','Later');K.RP.grow.splice(0,3,'Stay ready.','Whenever you ready.','Cool.')}}catch(e){}
+})();</script>
