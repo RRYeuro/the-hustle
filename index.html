@@ -10476,4 +10476,25 @@ document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest
 try{TUT.push(['Phone apps','Your phone starts simple: Messages, Contacts, Maps, Family, Wallet, Rides, News. More apps show up as you grow: Side hustles and Social on day 2, Licks on day 3, Crew, Orders and Burners at Petty Dealer, Trap house and Backer at Middle Man. New apps get a NEW tag for 2 days.'])}catch(e){}
 })();</script>
 
+<script id="skin58js">
+(function(){if(window._sk58)return;window._sk58=1;
+const el=id=>document.getElementById(id);
+/* moving asks first: pick how you get there, so a mis-tap does not cost the day */
+function opts(bi){const o=[],age=S.age||18,teenFree=S.cal&&age<18&&S.freeMv!==S.day,car=S.car&&age>=16&&(S.en==null||S.en>=3),pass=S.bus>=S.day;
+ if(car)o.push(['go',`🚗 Drive · $5 gas, 3 energy`,S.car==='stolen'?'Stolen car: +3 heat':'No day lost','go']);
+ if(age>=18)o.push(['goR','🚕 Ride · $25','No day lost',S.cash<25?'dis':'']);
+ o.push(['goB',pass?'🚌 Bus · 3 energy':'🚌 Bus pass · $30',pass?`No day lost · pass ${S.bus-S.day} days left`:'Then the bus is 3 energy a ride',(!pass&&S.cash<30)||(pass&&S.en!=null&&S.en<3)?'dis':'']);
+ if(!car)o.push(['go',teenFree?'🚶 Walk · free move':'🚶 Walk · takes the day',teenFree?'First move of a school day is free':'The day ends when you get there','']);
+ return o}
+window.l58Go=function(bi,after){if(bi===S.at)return after&&after();const O=opts(bi);
+ modal(`<h2>Go to ${BLOCKS[bi]}?</h2><p style="color:var(--dim)">You're on ${BLOCKS[S.at]}.</p>${O.map((x,i)=>`<div class="row" style="flex-wrap:wrap"><div class="info" style="flex:1 1 160px;min-width:0"><div class="t">${x[1]}</div><div class="s">${x[2]}</div></div><button class="btn ${x[3]==='go'?'go':''}" data-g58="${i}" ${x[3]==='dis'?'disabled':''}>Go</button></div>`).join('')}<div class="btns"><button class="btn" id="no58">Stay here</button></div>`);
+ el('no58').onclick=()=>{close();render()};
+ document.querySelectorAll('#mcard [data-g58]').forEach(b=>b.onclick=()=>{const x=O[+b.dataset.g58];close();window._go58=1;try{act(x[0],{dataset:{i:String(bi)}})}catch(e){console.error('sk58',e)}window._go58=0;render();if(S.at===bi&&after&&el('modal').hidden)after()})};
+/* block taps on the map and Go buttons ask first */
+document.addEventListener('click',e=>{if(window._go58)return;const t=e.target.closest&&(e.target.closest('.mapb[data-a="go"]')||e.target.closest('button[data-a="go"]'));if(!t||t.disabled)return;const bi=+t.dataset.i;if(isNaN(bi)||bi===S.at)return;e.preventDefault();e.stopPropagation();l58Go(bi)},true);
+/* places on another block use the same chooser */
+try{const _op=openPlace;openPlace=function(id){try{const bi=placeAt(id);if(bi!==S.at&&!window._go58){l58Go(bi,()=>openPlace(id));return}}catch(e){}return _op.apply(this,arguments)}}catch(e){}
+try{TUT.push(['Getting around','Tapping a block or a place on another block asks how you want to go: drive ($5, 3 energy, 16+ with a car), ride ($25, 18+), bus (3 energy with a pass, $30 for the pass) or walk (takes the day; the first move of a school day is free for teens). Stay here cancels, so a mis-tap never costs the day.'])}catch(e){}
+})();</script>
+
 <script>if('serviceWorker' in navigator){addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}</script></body></html>
