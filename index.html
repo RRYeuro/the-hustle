@@ -3338,6 +3338,7 @@ function freshCands(){if(S.candDay>S.day-7&&S.cands.length)return;S.candDay=S.da
     const hustle=rnd(2,9),loyal=rnd(2,9);S.cands.push({id:name+S.day,name,hustle,loyal,wage:40+hustle*25+loyal*10})}}
 const myBlock=bi=>S.owner[bi]==='me'||S.owner[bi]==='none';
 const wCap=w=>[0,40,90,160][wLv(w)];
+function wMax(){try{return 3+Object.values(S.traps||{}).filter(Boolean).length}catch(e){return 3}}
 const WFEM=['Rosa','Kim','Lupe','Kesha','Nae Nae','Tink','Mya','Bri','Keke','Trina','Mari','Jada','Nae','Lexi','Tiana','Mei','Linh','Sam'];
 const wHer=w=>!!w&&(w.f||WFEM.includes(w.name));
 const wStashUsed=w=>GOODS.reduce((a,g)=>a+((w.stash&&w.stash[g.id])||0)*g.sp,0);
@@ -3421,8 +3422,8 @@ function paneTraps(){
   {const tot=S.workers.reduce((a,w)=>a+(w.held||0),0);h+=`<div class="sec">Your workers (${S.workers.length})</div>`+(tot?`<div class="row" style="padding:8px 12px"><div class="info"><div class="t">${money(tot)} waiting</div><div class="s">Workers hold the money until you collect it. Low loyalty workers can skim or run.</div></div><div class="btns"><button class="btn green" data-a="wcollectall">Collect all</button><button class="btn" data-a="wcount">Count it (+3%)</button></div></div>`:'');}
   h+=S.workers.length?S.workers.map((w,i)=>`<div class="row" style="padding:8px 12px">${faceImg(w.name,'c',40)}<div class="info"><div class="t">${w.name} ${busy(w.id)?'<span class="chip mine">Working</span>':'<span class="chip">Free</span>'}</div><div class="s">Level ${wLv(w)} · Hustle ${w.hustle} · Loyalty ${w.loyal} · ${money(wPay(w))}/day · ${bossTag(w.pct||100)}<br>Holding ${money(w.held||0)} · stash: ${wStashTxt(w)}${(w.held||0)>1500&&w.loyal<=3?' <span style="color:var(--blood)">(might run with it)</span>':''}</div></div><div class="btns"><button class="btn green" data-a="wcollect" data-i="${i}" ${w.held?'':'disabled'}>Collect</button><button class="btn" data-a="wstash" data-i="${i}">Stash</button><button class="btn" data-a="wpay" data-i="${i}">Pay</button><button class="btn" data-a="firew" data-i="${i}">Fire</button></div></div>`).join('')
     :`<div class="row"><div class="info"><div class="s">No workers yet. Hire one below.</div></div></div>`;
-  h+=`<div class="sec">Looking for work (max 3 workers, you have ${S.workers.length})</div>`;
-  h+=S.cands.map((c,i)=>`<div class="row" style="padding:8px 12px">${faceImg(c.name,'c',40)}<div class="info"><div class="t">${c.name}</div><div class="s">Hustle ${c.hustle} (sells more) · Loyalty ${c.loyal} (steals less) · ${money(c.wage)}/day</div></div><button class="btn green" data-a="hirew" data-i="${i}" ${S.cash>=500&&S.workers.length<3?'':'disabled'}>${S.workers.length>=3?'Max 3 workers':'Hire $500'}</button></div>`).join('');
+  h+=`<div class="sec">Looking for work (max ${wMax()} workers, +1 per trap house, you have ${S.workers.length})</div>`;
+  h+=S.cands.map((c,i)=>`<div class="row" style="padding:8px 12px">${faceImg(c.name,'c',40)}<div class="info"><div class="t">${c.name}</div><div class="s">Hustle ${c.hustle} (sells more) · Loyalty ${c.loyal} (steals less) · ${money(c.wage)}/day</div></div><button class="btn green" data-a="hirew" data-i="${i}" ${S.cash>=500&&S.workers.length<wMax()?'':'disabled'}>${S.workers.length>=wMax()?`Max ${wMax()} workers (+1 per trap house)`:'Hire $500'}</button></div>`).join('');
   h+=`<div class="row" style="padding:8px 12px"><div class="info"><div class="s">New faces show up every week.</div></div><button class="btn" data-a="newcands" ${S.cash>=200?'':'disabled'}>Ask around $200</button></div>`;
   return h;
 }
@@ -4156,13 +4157,13 @@ const NEWF=['Lupe','Ana','Jess','Linh','Toya','Bri','Nikki','Lala','Shon','Roxy'
 const RECR={Low:{rep:30,cost:1500,hustle:7,wage:200,sales:0},Mid:{rep:60,cost:4000,hustle:8,wage:320,sales:6}};
 const recrLvl=l=>Object.keys(S.recr||{}).some(k=>S.recr[k]&&PINFO[k]&&PINFO[k].lvl===l);
 const recrNeed=L=>L==='Mid'&&!recrLvl('Low')?'Get a low level plug on your team first':'';
-function recruitBtn(bi){const L=PINFO[bi].lvl,R=RECR[L];if(!R||!S.known.includes(bi)||!adult())return '';if(S.recr&&S.recr[bi])return '<span class="chip mine">Works for you</span>';const need=recrNeed(L),ok=!need&&S.rep>=R.rep&&S.trust[bi]>=40&&S.workers.length<3&&S.cash>=R.cost;
-  return `<button class="btn" data-a="precruit" data-i="${bi}" ${ok?'':'disabled'}>${need?'Recruit (low plug first)':S.rep<R.rep?`Recruit (need ${R.rep} rep)`:S.trust[bi]<40?'Recruit (need 40 trust)':S.workers.length>=3?'Recruit (3 workers max)':`Recruit ${money(R.cost)}`}</button>`}
+function recruitBtn(bi){const L=PINFO[bi].lvl,R=RECR[L];if(!R||!S.known.includes(bi)||!adult())return '';if(S.recr&&S.recr[bi])return '<span class="chip mine">Works for you</span>';const need=recrNeed(L),ok=!need&&S.rep>=R.rep&&S.trust[bi]>=40&&S.workers.length<wMax()&&S.cash>=R.cost;
+  return `<button class="btn" data-a="precruit" data-i="${bi}" ${ok?'':'disabled'}>${need?'Recruit (low plug first)':S.rep<R.rep?`Recruit (need ${R.rep} rep)`:S.trust[bi]<40?'Recruit (need 40 trust)':S.workers.length>=wMax()?`Recruit (${wMax()} workers max)`:`Recruit ${money(R.cost)}`}</button>`}
 function recruitAsk(bi){const L=PINFO[bi].lvl,R=RECR[L],o=S.owner[bi],c=o!=='me'&&o!=='none'?crew(o):null,nm=plugName(bi),fem=plugFem(bi),risky=c&&!c.ally&&S.gang!==c.id&&c.respect<60;
   const bigOk=S.known.some(i=>PINFO[i].lvl==='Big'&&!S.burned[i]&&S.trust[i]>=50&&!(S.recr&&S.recr[i]));
   modal(`<h2>Recruit ${nm}?</h2><p>${nm} keeps ${fem?'her':'his'} spot on ${BLOCKS[bi]} and works your traps for you. Signing ${fem?'her':'him'} costs ${money(R.cost)}. <b>${fem?'She':'He'} will stop selling to you.</b></p><p class="s" style="${bigOk?'':'color:var(--blood)'}">${bigOk?'You have a big plug backing you, so you can live without this one.':'You have no big plug connect yet. Without one, cutting off a small plug makes it hard to turn a profit. Big plugs are where the real deals come from.'}</p>${c?`<p class="s">The ${cdef(o).name} run ${BLOCKS[bi]}. ${risky?`<b style="color:var(--blood)">Your respect with them is ${c.respect}. Under 60, they will see this as you taking their people and it causes problems.</b>`:`Your respect with them is ${c.respect}${c.ally||S.gang===c.id?' and y\'all are cool':''}, so they let it slide.`}</p>`:''}
     <div class="btns"><button class="btn go" id="ry">Recruit ${fem?'her':'him'}</button><button class="btn" id="rn">Not now</button></div>`);$('rn').onclick=close;$('ry').onclick=()=>recruitPlug(bi)}
-function recruitPlug(bi){const L=PINFO[bi].lvl,R=RECR[L];if(!R||recrNeed(L)||S.workers.length>=3||S.cash<R.cost)return close();const nm=plugName(bi),fem=plugFem(bi),o=S.owner[bi],c=o!=='me'&&o!=='none'?crew(o):null;
+function recruitPlug(bi){const L=PINFO[bi].lvl,R=RECR[L];if(!R||recrNeed(L)||S.workers.length>=wMax()||S.cash<R.cost)return close();const nm=plugName(bi),fem=plugFem(bi),o=S.owner[bi],c=o!=='me'&&o!=='none'?crew(o):null;
   S.cash-=R.cost;S.recr=S.recr||{};S.recr[bi]=1;S.workers.push({id:nm+S.day,name:nm,hustle:R.hustle,loyal:8,wage:R.wage,sales:R.sales,from:bi});
   let extra='';
   if(c&&!c.ally&&S.gang!==c.id){if(c.respect<60){c.beef=Math.min(100,c.beef+30);c.respect=Math.max(0,c.respect-20);extra=` The ${cdef(o).name} did not like it. Beef went up and respect dropped.`}else{c.respect=Math.min(100,c.respect+3);extra=` The ${cdef(o).name} respect you enough to let it slide.`}}
@@ -5410,7 +5411,7 @@ function devSkip(n,untilAge){window.FF=true;window.DEVFF=true;let i=0;const a0=S
   say(untilAge&&a0?(arrived?`Dev: skipped ${i} day${i===1?'':'s'} to age ${S.age}.`:`Dev: skipped ${i} days and stopped before your birthday.`):`Dev: skipped ${i+(i<n?1:0)} day${i===0?'':'s'}.`);if($('modal').hidden){checkEnd();render();devPanel()}else render()}
 function devRv(k){if(k.slice(0,3)!=='rv_')return false;const done=m=>{say('Dev: '+m);render();devPanel()};
   if(k==='rv_sch'){S.at=4;if(!S.age||S.age>=18)S.age=15;S.school='in';S.cal=S.cal||1;S.en=enMax();return done('on Northline as a student. Hustles show on school days (skip time to a weekday if it is the weekend)')}
-  if(k==='rv_wplug'){const bi=BLOCKS.map((b,i)=>i).find(i=>PINFO[i]&&PINFO[i].lvl==='Low'&&!(S.recr||{})[i]);if(bi===undefined)return done('no free low plug');if(!S.known.includes(bi))S.known.push(bi);S.trust[bi]=Math.max(S.trust[bi]||0,40);S.rep=Math.max(S.rep,30);if(S.workers.length>=3)S.workers.pop();S.recr=S.recr||{};S.recr[bi]=1;const R=RECR.Low,nm=plugName(bi);S.workers.push({id:nm+S.day,name:nm,hustle:R.hustle,loyal:8,wage:R.wage,sales:R.sales,from:bi});return done(nm+' works for you now. Front them product in the plug menu')}
+  if(k==='rv_wplug'){const bi=BLOCKS.map((b,i)=>i).find(i=>PINFO[i]&&PINFO[i].lvl==='Low'&&!(S.recr||{})[i]);if(bi===undefined)return done('no free low plug');if(!S.known.includes(bi))S.known.push(bi);S.trust[bi]=Math.max(S.trust[bi]||0,40);S.rep=Math.max(S.rep,30);if(S.workers.length>=wMax())S.workers.pop();S.recr=S.recr||{};S.recr[bi]=1;const R=RECR.Low,nm=plugName(bi);S.workers.push({id:nm+S.day,name:nm,hustle:R.hustle,loyal:8,wage:R.wage,sales:R.sales,from:bi});return done(nm+' works for you now. Front them product in the plug menu')}
   if(k==='rv_prph'){if(!S.pr)return done('get locked up first');S.pr.inv.phone=1;return done('contraband phone in your cell')}
   if(k==='rv_lock'){if(!S.pr)return done('get locked up first');S.pr.lock=S.day+3;return done('lockdown for 3 days')}
   if(k==='rv_po'){if(S.pr)return done('get out first');if(!S.po)startParole();if(!S.po){S.po={until:S.day+12,sp:3,due:S.day+1,did:0,vio:0}}S.po.due=S.day+1;return done('parole check-in due tomorrow, Downtown')}
@@ -6560,7 +6561,7 @@ function act(a,el){
   if(a==='sk'&&S.pts>0&&S.sk[el.dataset.k]<10){S.pts--;S.sk[el.dataset.k]++;say(`${SKN[el.dataset.k]} went up to ${S.sk[el.dataset.k]}.`)}
   if(a==='hoops')return hoops();
   if(a==='trap'){if(proStop())return;if(S.age&&S.age<16){say('Opening a trap house starts at 16.');return render()}const bi=+el.dataset.i;S.cash-=trapCost();S.traps[bi]={w:null,g:null};say(`Opened a trap house on ${BLOCKS[bi]}.`)}
-  if(a==='hirew'){if(S.age&&S.age<16)return say('Hiring workers starts at 16.');if(S.workers.length>=3)return say('You can only run 3 workers.');const c=S.cands.splice(+el.dataset.i,1)[0];S.cash-=500;S.workers.push(c);say(`Put ${c.name} on the team for $500 up front and ${money(c.wage)} a day.`)}
+  if(a==='hirew'){if(S.age&&S.age<16)return say('Hiring workers starts at 16.');if(S.workers.length>=wMax())return say(`You can only run ${wMax()} workers right now. Each trap house you own lets you run 1 more.`);const c=S.cands.splice(+el.dataset.i,1)[0];S.cash-=500;S.workers.push(c);say(`Put ${c.name} on the team for $500 up front and ${money(c.wage)} a day.`)}
   if(a==='precruit'){recruitAsk(+el.dataset.i);return}
   if(a==='wstash')return wStashModal(+el.dataset.i);
   if(a==='wgive')return wGive(+el.dataset.i,el.dataset.g,el.dataset.m);
@@ -10682,7 +10683,7 @@ window.l66kidBlock=function(bi){if(!window.l66kid(bi))return false;const nm=plug
 window.l66tb=g=>{try{const t=S.tb66;return t&&t.d===S.day?(t.g[g.id]||0):0}catch(e){return 0}};
 window.l66rec=(g,n)=>{try{if(!(typeof gAge==='function'&&gAge()&&gAge()<18))return;if(!S.tb66||S.tb66.d!==S.day)S.tb66={d:S.day,g:{}};S.tb66.g[g.id]=(S.tb66.g[g.id]||0)+n}catch(e){}};
 /* smaller teen caps: 16-17 max 2 oz / 150 pills / 8 units a day (was a QP a buy) */
-try{TUT.push(['Plugs and age','Big plugs (QPs, pounds) only deal with you at 18+. At 16-17 the most you can buy in a day is 2 oz, 150 pills or 8 units of each thing (under 16: 1 oz, 100 pills, 4 units).'])}catch(e){}
+try{TUT.push(['Workers','You can run 3 workers, plus 1 more for every trap house you own (4 trap houses = 7 workers).']);TUT.push(['Plugs and age','Big plugs (QPs, pounds) only deal with you at 18+. At 16-17 the most you can buy in a day is 2 oz, 150 pills or 8 units of each thing (under 16: 1 oz, 100 pills, 4 units).'])}catch(e){}
 })();
 </script>
 <style id="skin67">
