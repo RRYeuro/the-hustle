@@ -419,3 +419,9 @@ Build order if Chris says build: 1) Crew Ops screen + ring basics (assign, equip
 - Short 3-step spotlights the first time you unlock crew, trap house, heists, Run the operation, Crew rings.
 - Bubble moves so it never covers the button; works on phone and laptop.
 - Replaces the 80-page text tutorial as the main way to learn: old book becomes ~10 short topics (Money, Plugs, Selling, Heat, Crew, Places, Phone, School, Rap, Licks); details stay in each screen's "ⓘ How this works". Old first-day guide (skin40) folds into this (no duplicate).
+
+## Code cleanup: fold the layers into the main code (Nov 15) — NOT BUILT, wait for "build" (~1-2 hrs, its own session, Sonnet paused)
+- Today: main file + ~68 skins that wrap old functions (render wrapped 15+ times, devPanel 17, openPlace 7). Works, but bugs hide (one layer undoes another: the move-in and silent Mexico load bugs were this kind) and dead code piles up.
+- Do: fold each skin into the main code so every feature lives in one place; delete dead/replaced code (old menus, removed apps, duplicate buttons); group by area (money, plugs, crew, phone, places, school, rap, licks); update dev/code-map.md.
+- Safety: full test suite + random-click crash test after each area; old saves must still load; no gameplay changes.
+- Best time: before Crew rings, so new systems go in clean. Nobody else pushes during it.
