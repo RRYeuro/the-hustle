@@ -10432,4 +10432,49 @@ document.addEventListener('click',e=>{const t=e.target;if(!t.closest)return;
 document.addEventListener('input',e=>{if(e.target&&e.target.id==='ct55q'){window._ctq55=e.target.value;const pos=e.target.selectionStart;render();const q=document.getElementById('ct55q');if(q){q.focus();try{q.setSelectionRange(pos,pos)}catch(er){}}}},true);
 })();</script>
 
+<style id="skin56">
+@media (max-width:700px){
+ body.ph56 .app>header,body.ph56 #me,body.ph56 .where,body.ph56 #tkr,body.ph56 .stats,body.ph56 #mission,body.ph56 .btns.late,body.ph56 #pane>.s,body.ph56 #pane>.wq,body.ph56 #pane>.wspan{display:none!important}
+ body.ph56 .app{padding-top:max(6px,env(safe-area-inset-top))!important}
+ body.ph56 #pane{margin-top:0!important;padding-top:0!important}
+ body.ph56 .phx{height:calc(100dvh - var(--dockh,84px) - 18px)!important;max-height:none!important;margin:0 auto!important;border-radius:28px!important}
+}
+</style>
+<script id="skin56js">
+(function(){if(window._sk56)return;window._sk56=1;
+const set=()=>{try{document.body.classList.toggle('ph56',typeof tab!=='undefined'&&tab==='phone'&&window.innerWidth<=700&&!!S&&!!S.char)}catch(e){}};
+try{const _r=render;render=function(){const r=_r.apply(this,arguments);set();return r}}catch(e){}
+window.addEventListener('resize',set);
+})();</script>
+
+<style id="skin57">
+.ph-home button[data-rph].nw57{position:relative}
+.ph-home button[data-rph].nw57::after{content:'NEW';position:absolute;top:-2px;left:50%;transform:translateX(-50%);background:#30d158;color:#04170c;font:800 8px -apple-system,sans-serif;padding:1px 4px;border-radius:5px}
+.lk57{grid-column:1/-1;text-align:center;font:12px -apple-system,sans-serif;color:#8e8e93;padding:6px 0 2px}
+</style>
+<script id="skin57js">
+(function(){if(window._sk57)return;window._sk57=1;
+const rk=()=>window.l48rk?l48rk():(S.rk||0);
+const NAME={crew:'Crew',trap:'Trap house',orders:'Orders',burners:'Burners',licks:'Licks',backer:'Backer',hustle:'Side hustles',social:'Social'};
+const RULE={
+ crew:()=>{try{return (typeof crewList==='function'&&crewList().length>0)||rk()>=1}catch(e){return rk()>=1}},
+ trap:()=>rk()>=2||((S.traps||[]).length>0),
+ orders:()=>rk()>=1,
+ burners:()=>rk()>=1,
+ licks:()=>S.day>=3,
+ backer:()=>rk()>=2,
+ hustle:()=>S.day>=2,
+ social:()=>S.day>=2};
+const HINT={crew:'when you build a crew or hit Petty Dealer',trap:'at Middle Man',orders:'at Petty Dealer',burners:'at Petty Dealer',licks:'on day 3',backer:'at Middle Man',hustle:'on day 2',social:'on day 2'};
+window.l57open=id=>!RULE[id]||RULE[id]();
+function check(){try{if(!S||!S.char)return;S.app57=S.app57||{};const fresh=!S.app57._init;Object.keys(RULE).forEach(id=>{if(S.app57[id]==null&&RULE[id]()){S.app57[id]=fresh?-99:S.day;if(!fresh)say(`📱 New app on your phone: ${NAME[id]}.`)}});S.app57._init=1}catch(e){}}
+function fix(){try{const h=document.querySelector('.phx.ph-home');if(!h)return;let locked=0;
+ h.querySelectorAll('.ph-ic button[data-rph]').forEach(b=>{const id=b.dataset.rph;if(!RULE[id])return;if(!RULE[id]()){b.style.display='none';locked++;return}b.style.display='';const d=(S.app57||{})[id];b.classList.toggle('nw57',d!=null&&d>=0&&S.day-d<=2)});
+ const ic=h.querySelector('.ph-ic');if(ic&&locked&&!ic.querySelector('.lk57')){const n=document.createElement('div');n.className='lk57';n.textContent=`🔒 ${locked} more app${locked===1?'':'s'} unlock as you grow`;ic.appendChild(n)}}catch(e){console.error('sk57',e)}}
+try{const _r=render;render=function(){check();const r=_r.apply(this,arguments);fix();return r}}catch(e){}
+/* opening a locked app another way (old saves, links) says why */
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-rph]');if(!b)return;const id=b.dataset.rph;if(RULE[id]&&!RULE[id]()){e.preventDefault();e.stopPropagation();say(`🔒 ${NAME[id]} unlocks ${HINT[id]}.`);render()}},true);
+try{TUT.push(['Phone apps','Your phone starts simple: Messages, Contacts, Maps, Family, Wallet, Rides, News. More apps show up as you grow: Side hustles and Social on day 2, Licks on day 3, Crew, Orders and Burners at Petty Dealer, Trap house and Backer at Middle Man. New apps get a NEW tag for 2 days.'])}catch(e){}
+})();</script>
+
 <script>if('serviceWorker' in navigator){addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}</script></body></html>

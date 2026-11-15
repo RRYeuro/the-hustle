@@ -1,0 +1,14 @@
+<style id="skin56">
+@media (max-width:700px){
+ body.ph56 .app>header,body.ph56 #me,body.ph56 .where,body.ph56 #tkr,body.ph56 .stats,body.ph56 #mission,body.ph56 .btns.late,body.ph56 #pane>.s,body.ph56 #pane>.wq,body.ph56 #pane>.wspan{display:none!important}
+ body.ph56 .app{padding-top:max(6px,env(safe-area-inset-top))!important}
+ body.ph56 #pane{margin-top:0!important;padding-top:0!important}
+ body.ph56 .phx{height:calc(100dvh - var(--dockh,84px) - 18px)!important;max-height:none!important;margin:0 auto!important;border-radius:28px!important}
+}
+</style>
+<script id="skin56js">
+(function(){if(window._sk56)return;window._sk56=1;
+const set=()=>{try{document.body.classList.toggle('ph56',typeof tab!=='undefined'&&tab==='phone'&&window.innerWidth<=700&&!!S&&!!S.char)}catch(e){}};
+try{const _r=render;render=function(){const r=_r.apply(this,arguments);set();return r}}catch(e){}
+window.addEventListener('resize',set);
+})();</script>
