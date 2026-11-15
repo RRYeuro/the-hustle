@@ -7444,9 +7444,9 @@ body[data-home="0"] .wq{display:none!important}
 <script id="skin6js">
 (function(){
 const RAW={beef:paneBeef,crew:paneCrew,money:paneMoney,biz:paneBiz,spots:paneSpots,phone:panePhone,move:paneMove};
-const R=[[/^Your fight style/,'tab:crew'],[/^(Trap houses|Your workers|Looking for work)/,'app:trap'],[/^(Your homies|Your girl)/,'app:contacts'],[/^Your crew$/,'app:crew'],[/^Family/,'app:family'],[/^Turf and space/,'app:turf'],[/^Stash and safe/,'drop'],
+const R=[[/^Your fight style/,'tab:crew'],[/^(Trap houses|Your workers|Looking for work)/,'app:trap'],[/^(Your homies|Your girl)/,'app:contacts'],[/^Your crew$/,'tab:beef'],[/^Family/,'tab:beef'],[/^Your runners/,'tab:beef'],[/^Turf and space/,'app:turf'],[/^Stash and safe/,'drop'],
  [/^(Jobs|School, work and business)/,'tab:crew'],[/^(Side hustles online|Side work)/,'app:hustle'],[/^Clean and dirty cash/,'drop'],[/^Modern life/,'app:modern'],[/^Backer/,'app:backer'],[/^Laundering/,'tab:biz'],
- [/^(Trap phone|Texts)/,'app:messages'],[/^Contacts/,'app:contacts'],[/^Phone, apps and cameras/,'app:modern'],[/^Dealer orders/,'drop'],[/^Debtors/,'app:contacts'],[/^Burners/,'app:burners'],[/^Social/,'app:social'],[/^The city/,'drop'],[/^Your people/,'app:family'],[/^Licks/,'app:licks'],[/^The Last Big Deal/,'drop']];
+ [/^(Trap phone|Texts)/,'app:messages'],[/^Contacts/,'app:contacts'],[/^Phone, apps and cameras/,'app:modern'],[/^Dealer orders/,'drop'],[/^Debtors/,'app:contacts'],[/^Burners/,'app:burners'],[/^Social/,'app:social'],[/^The city/,'drop'],[/^Your people/,'tab:beef'],[/^Licks/,'app:licks'],[/^The Last Big Deal/,'drop']];
 const dest=(src,t)=>{if(src==='spots')return /^Rival/.test(t)?'tab:beef':/^Street news/.test(t)?'app:news':/^Street business/.test(t)?'tab:block':/^(Where you stay|Living in)/.test(t)?'tab:biz':'tab:move';for(const r of R)if(r[0].test(t))return r[1];return null};
 const own={beef:'beef',crew:'crew',money:'money',biz:'biz',spots:'move',phone:'phone',move:'move'};
 function thin(n){if(n.querySelectorAll)n.querySelectorAll('img').forEach(i=>{if(i.closest('.cbd,.pol,.rph-grid'))return;const s=i.getAttribute('style')||'';const m=/(?:^|;)\s*width:\s*(\d+)px/.exec(s);if(!m||+m[1]>100)i.remove()})}
@@ -7456,7 +7456,7 @@ const ser=ns=>ns.map(n=>{if(n.nodeType===1){thin(n);return n.outerHTML}return n.
 const cache={};let ck='';
 function P(src){const k=(typeof S!=='undefined'&&S?S.day:0)+'|'+(window._rtick||0);if(ck!==k){for(const x in cache)delete cache[x];ck=k}return cache[src]||(cache[src]=parse(src))}
 window._rtick=0;
-const NEED={'tab:beef':['spots'],'tab:crew':['beef','biz'],'tab:biz':['money','spots'],'tab:move':['spots'],'tab:block':['spots']};
+const NEED={'tab:beef':['spots','crew','phone','money','biz'],'tab:crew':['beef','biz'],'tab:biz':['money','spots'],'tab:move':['spots'],'tab:block':['spots']};
 function secsFor(d){let o=[];(NEED[d]||['beef','crew','money','biz','phone','spots','move']).forEach(s=>{P(s).secs.forEach(x=>{if(dest(s,x.t)===d)o.push(x)})});return o}
 function tabHTML(key){const p=P(key);let out=ser(p.head.filter(n=>!(n.nodeType===1&&n.classList.contains('jump'))));
  p.secs.forEach(x=>{const d=dest(key,x.t);if(d===null||d==='tab:'+own[key])out+=ser(x.nodes)});
@@ -10601,6 +10601,22 @@ try{WD.push(()=>{try{S.w61=S.w61||{};(S.workers||[]).forEach(w=>{const h=Math.ro
 try{const R=window.l57open;window.l57open=id=>id==='trap'?false:(R?R(id):true)}catch(e){}
 try{const _r2=render;render=function(){const r=_r2.apply(this,arguments);try{document.querySelectorAll('.ph-home .ph-ic button[data-rph="trap"]').forEach(b=>b.remove())}catch(e){}return r}}catch(e){}
 try{TUT.push(['Trap house','Your trap houses are run in person: go to one of your blocks and tap Run it on the Block tab (or the 🧺 pin on the Move map). That is where you open traps, hire workers, give them stock, upgrade and fire. Workers text you what they are holding, and you can text them to bring you the money.'])}catch(e){}
+})();</script>
+
+<script id="skin62js">
+(function(){if(window._sk62)return;window._sk62=1;
+const E=x=>String(x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+/* manager button always shows, and says what is missing */
+try{mgrBtn=function(i,t,w){if(!w)return '';if(t.mgr&&t.mgr===t.w)return `<button class="btn" data-a="tmgrx" data-i="${i}">Take off manager</button>`;
+ const why=(S.age&&S.age<16)?'16+':(w.sales||0)<10?`needs 10 work days (${w.sales||0}/10)`:!(typeof shSt==='function'&&shSt().own)?'needs a stash house':(typeof trapMgrs==='function'&&trapMgrs()>=2)?'2 managers max':'';
+ return why?`<button class="btn" disabled title="${E(why)}">Manager: ${E(why)}</button>`:`<button class="btn green" data-a="tmgr" data-i="${i}">Make manager</button>`}}catch(e){}
+/* trap page shows what just happened */
+try{const _o=window.l61open;if(_o)window.l61open=function(){_o.apply(this,arguments);try{const mc=document.getElementById('mcard'),p=mc&&mc.querySelector('.tr61'),L=S.log&&S.log[0];if(p&&L&&L.d===S.day&&window._l62!==L){window._l62=L;p.insertAdjacentHTML('afterbegin',`<div class="row" style="border-left:3px solid var(--accent)"><div class="info"><div class="s">${E(L.t)}</div></div></div>`)}}catch(e){}}}catch(e){}
+/* Circle tab: friends are people you text, not a menu */
+try{const _r=render;render=function(){const r=_r.apply(this,arguments);try{if(typeof tab!=='undefined'&&tab==='beef'){document.querySelectorAll('#pane [data-a="fhang"]').forEach(b=>{const card=b.closest('.row');if(!card||card.dataset.f62)return;card.dataset.f62=1;const f=(S.friends||[])[+b.dataset.i];if(!f)return;const bt=b.closest('.btns');if(bt)bt.outerHTML=`<div class="btns"><button class="btn go" data-tx50="${E(encodeURIComponent(f.name))}">💬 Text ${E(f.name)}</button></div>`})}}catch(e){}return r}}catch(e){}
+/* phone: Crew and Family apps are gone (crew is managed in Your Circle, family is in Contacts) */
+try{const R=window.l57open;window.l57open=id=>(id==='crew'||id==='family'||id==='orders')?false:(R?R(id):true)}catch(e){}
+try{const _r2=render;render=function(){const r=_r2.apply(this,arguments);try{document.querySelectorAll('.ph-home .ph-ic button[data-rph="crew"],.ph-home .ph-ic button[data-rph="family"],.ph-home .ph-ic button[data-rph="orders"]').forEach(b=>b.remove())}catch(e){}return r}}catch(e){}
 })();</script>
 
 <script>if('serviceWorker' in navigator){addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}</script></body></html>

@@ -1,0 +1,15 @@
+<script id="skin62js">
+(function(){if(window._sk62)return;window._sk62=1;
+const E=x=>String(x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+/* manager button always shows, and says what is missing */
+try{mgrBtn=function(i,t,w){if(!w)return '';if(t.mgr&&t.mgr===t.w)return `<button class="btn" data-a="tmgrx" data-i="${i}">Take off manager</button>`;
+ const why=(S.age&&S.age<16)?'16+':(w.sales||0)<10?`needs 10 work days (${w.sales||0}/10)`:!(typeof shSt==='function'&&shSt().own)?'needs a stash house':(typeof trapMgrs==='function'&&trapMgrs()>=2)?'2 managers max':'';
+ return why?`<button class="btn" disabled title="${E(why)}">Manager: ${E(why)}</button>`:`<button class="btn green" data-a="tmgr" data-i="${i}">Make manager</button>`}}catch(e){}
+/* trap page shows what just happened */
+try{const _o=window.l61open;if(_o)window.l61open=function(){_o.apply(this,arguments);try{const mc=document.getElementById('mcard'),p=mc&&mc.querySelector('.tr61'),L=S.log&&S.log[0];if(p&&L&&L.d===S.day&&window._l62!==L){window._l62=L;p.insertAdjacentHTML('afterbegin',`<div class="row" style="border-left:3px solid var(--accent)"><div class="info"><div class="s">${E(L.t)}</div></div></div>`)}}catch(e){}}}catch(e){}
+/* Circle tab: friends are people you text, not a menu */
+try{const _r=render;render=function(){const r=_r.apply(this,arguments);try{if(typeof tab!=='undefined'&&tab==='beef'){document.querySelectorAll('#pane [data-a="fhang"]').forEach(b=>{const card=b.closest('.row');if(!card||card.dataset.f62)return;card.dataset.f62=1;const f=(S.friends||[])[+b.dataset.i];if(!f)return;const bt=b.closest('.btns');if(bt)bt.outerHTML=`<div class="btns"><button class="btn go" data-tx50="${E(encodeURIComponent(f.name))}">💬 Text ${E(f.name)}</button></div>`})}}catch(e){}return r}}catch(e){}
+/* phone: Crew and Family apps are gone (crew is managed in Your Circle, family is in Contacts) */
+try{const R=window.l57open;window.l57open=id=>(id==='crew'||id==='family'||id==='orders')?false:(R?R(id):true)}catch(e){}
+try{const _r2=render;render=function(){const r=_r2.apply(this,arguments);try{document.querySelectorAll('.ph-home .ph-ic button[data-rph="crew"],.ph-home .ph-ic button[data-rph="family"],.ph-home .ph-ic button[data-rph="orders"]').forEach(b=>b.remove())}catch(e){}return r}}catch(e){}
+})();</script>
