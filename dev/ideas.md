@@ -9,7 +9,9 @@ All done and live (v201). Nothing left here.
 
 ## 2A. Big systems
 - Reputation by block (feared, respected, trusted) changing prices, safety, events.
+  - Add-ons (Nov 15): Muscle ring raises feared, serving fair raises trusted, Business Manager's fronts raise respected. Feared = fewer robberies + higher prices but more cop attention; trusted = Js find you, snitch odds lower. Shows on the Move map as a color ring per block.
 - Seasons and city events (holidays, crackdowns, fight night, festival).
+  - Add-ons: summer = more Js + more shootings, winter = slower trap sales, holidays = scam ring pays double, tax season = rich customers, crackdown week = Watch network matters. Rap festival in summer (shows pay more, followers spike).
 
 ## 2B. Money and world
 - INTERACTIVE CITIES: BUILT (walk around out-of-town cities, places per city; depth inside each place unchecked, Nov 11). The world in 2B is INTERACTIVE. When you travel to another city or block, you can walk into places there and do things inside (shops, houses, the pawn spot, the garage, a bar, the courthouse), not just read a pop-up. Each city or block gets its own places to enter, with its own people and things to do inside. Anything in 2B (debtors, pawn and fence, stash spots, impound, bills, bail and lawyers) should live in those places.
@@ -66,6 +68,7 @@ All done and live (v201). Nothing left here.
 - Skills work everywhere (Talk = trust, Street Smarts = cops, Business = costs, Charm/Luck = meetings).
 - Sports = separate legit lane, not a side thing. Sports follows you across cities (fights/games in each city, texts from team/coach/agent). On the sports route: no trapping, no dealing, no shootouts, and NO crew/stash/right hand man (you are out of the streets). Can go back to streets later but not both at once.
 - Also: Rival screen and one other screen still have big pictures; shrink to thumbnails/thin strips.
+- Add-ons (Nov 15): rings can open a branch in another city (send members), Business Manager runs out-of-town businesses, Right Hand runs home while you live away.
 
 ## v205 BUILT: Living in other cities (Nov 10)
 Moving between 7 cities with real relocation, per-city block/gang/plug/spot names, price + rent scaling, houses + weekly rent-out (Money/Phone/Spots), crew fly-out/recruit/take blocks, right hand man texts, sports lane away games (no street), no travel cooldown, airport in Downtown, luxury perks in Miami/NY/LA/Chicago (penthouse, exotic car, VIP table), 24+ new faces, thin pictures, wide-layout gap fix, dev menu Cities group.
@@ -127,6 +130,7 @@ Crew jobs PRICING (Nov 11, matches game formula: base x (.55+skill*.1) x level x
 ## Map phase 3 (not built)
 - Per-customer and per-cop-patrol positions (the game does not track a block for customers or patrols yet).
 - City-specific map art for other cities.
+- Add-ons (Nov 15): Watch network reveals patrol positions on the map; customers show as dots on blocks with Js money left (Polish pack). Crew ring jobs show as small icons where they're working.
 
 ## Getting attention (not built, waiting for "build")
 1. Fast first load: instant title screen, load art in the background, compress the biggest pictures (file is about 19.8 MB). ~1 hr
@@ -137,6 +141,7 @@ Crew jobs PRICING (Nov 11, matches game formula: base x (.55+skill*.1) x level x
 6. Listings on itch.io and browser-game lists with the new art as the cover. ~30 min
 7. Simple privacy-friendly analytics to see where players quit. ~30 min
 Order if built: 1, 2, 3 as one batch (~2 hrs), then 5. Leaderboard only after people are actually playing.
+- Add-ons (Nov 15): share card shows your crew rings, followers and ending. Daily challenge seeds a random crew to start with.
 
 ## Balance notes (not changed)
 - Idle burn about $14-20/day for most characters; Tank burns about $130/day (soldier pay) with no warning; Life starts tight ($1,000).
@@ -147,6 +152,7 @@ Order if built: 1, 2, 3 as one batch (~2 hrs), then 5. Leaderboard only after pe
 - Club: base $35k. L1 VIP room $8k (+$300/day, VIP sells +30%), L2 security $12k (cannot be shut down, fewer fight events), L3 headliner nights $20k (+$700/day, +fans for rappers).
 - Barber: more chairs, then a back room that cleans more money. Car wash: second bay, then a detail shop with a rich-customer bonus. Laundromat: more machines, then a bigger cash-cleaning limit.
 - Also: show daily crew cost on the cash display / character card (Tank's soldier costs $150/day). About 2-3 hrs total, test payback with played runs.
+- Add-ons (Nov 15): Business Manager (Crew rings) runs each business; upgrades unlock what he can do (L1 restock, L2 wash more per day, L3 handles events). Businesses can be ring HQs (car wash = car ring, club = scam/robbery tips). Protection money: Muscle guards them; unguarded businesses get hit.
 
 ## BUILT Nov 13 (skin27, live silent, not bumped, art pending: g_search, g_keypad)
 - Licks with real loot: S.loot items (pockets 4, book bag 8, trunk 6), no bag = pocket stuff only, big stuff needs a car. Jewelry sells only at the pawn shop (40-60%, teens 40%), electronics at pawn or a plug with 25+ trust on their block (up to 68%). All dirty. Selling inside 3 days adds heat. Cop stop and search (under $2,000 seized + write-up, $2,000+ busted), home stash (raid takes it), busts take loot, trunk loot goes with the car. Licks app shows what you hold.
@@ -180,6 +186,7 @@ Order if built: 1, 2, 3 as one batch (~2 hrs), then 5. Leaderboard only after pe
 - One tap 'Kill time until night' spends the energy so nobody waits. Header shows a sun/moon on the bar. Sky tint per phase.
 - Size: about 3-4 hrs with tests. Gaps found Nov 13 and not fixed: rideshare/bus ignore the ankle monitor, a 14-year-old holding a car can drive, flying with stolen goods, pawn 'Hit a house' lit with no tip, $25 ride offered when you own a car.
 - PARKED (Nov 13): testers may want a full 24-hour day with nightfall instead. Chris is asking them. Do not build either version until he says. Same choice as the 12-hour clock (Time vote option 4, under Plugs on the Move map): pick ONE time system.
+- Add-ons (Nov 15, applies to whichever time system wins): rings work at their own time (robbery and car ring at night, scam ring by day, Business Manager during open hours), animations darken the map at night, Js pay more at night.
 
 ## Gaps found Nov 13 (NOT fixed, waiting on Chris)
 - Age 14 with money can: rent a stash house, hire soldiers and trap workers, go to war / pay for a hit, buy a getaway car and Pro Pad, drive to Charlotte/Atlanta/Houston/Miami, put a lawyer on payroll, pay an informant on the force, buy a parent a car, throw a $2,000 block party.
@@ -225,6 +232,7 @@ Order if built: 1, 2, 3 as one batch (~2 hrs), then 5. Leaderboard only after pe
 - 3D printer (expansion of the ghost gun kit, which is a $350 pawn shop pistol for 18+ today): at 18 buy a 3D printer at the pawn shop, or get offered one on the block in a random street event. Print switches and sell them for a small profit (dirty cash). Should carry real risk: a big charge if you are caught holding them, heat on every sale, raid risk where the printer sits, buyers can be undercover. Needs a place to keep it (your home or a property).
 - (Now part of Crew rings: Robbery ring.) Send soldiers on licks, not just heists. Heists already have "Send the crew" (built Nov 14). Licks would work the same way through crew jobs: pick a soldier for a house, store or car lick, they are gone 1 day, bring back cash or stolen goods (into your stash), skim risk under 30 loyalty, can get caught (hurt or picked up), you get part of the heat.
 - Nov 14: Sam is a she (Chris). Added to the female name lists for crew, friends and workers. Mission check: all 6 characters' story missions still work after the plug move; first buy works for everyone (text the plug, meet, buy grams).
+- Add-ons (Nov 15) for the 3D printer: printer sits in a ring HQ house (Realtor houses). Scam ring can sell the switches online (more money, federal risk). Watch network warns before a raid where the printer is. Upgrades: second printer, better filament (fewer jams).
 
 ## Unc's tire shop as the stolen car buyer (Chris, Nov 14) - NOT BUILT, wait for "build" (Car ring sends cars here if you have no chop shop)
 - Nov 15: chop shop owners can already park a stolen car on the lot and keep their own car (built). Unc's idea is now only for players WITHOUT a chop shop.
@@ -232,6 +240,7 @@ Order if built: 1, 2, 3 as one batch (~2 hrs), then 5. Leaderboard only after pe
 - Unc's strip pays less (he keeps a cut, say 50 to 60%), takes a day or has a cop-roll heat risk, and trust with Unc can raise his cut.
 - When you own your own chop shop ($8,000 clean, already built) you strip it yourself with Strip it fast and keep all of it, so it pays MORE (today 1,500 to 3,000 flip, parts by score). That is the reason to upgrade.
 - Needs: dev menu button, tutorial line, dirty cash only, age 18+ for the chop shop, keyboard on any new mini game.
+- Add-ons (Nov 15): Unc's trust grows with every car (better cut, he starts tipping you on cars worth stealing). He can sell you parts for your own rides. If Unc gets raided he can snitch on where cars came from unless trust is high.
 
 ## Who builds what, round 2 (Nov 14, Sonnet's suggestion, Chris to confirm)
 - SONNET: Memory tiles (30m), Rotating locks (30m), Unc's tire shop buys stolen cars (40m), Soldiers on licks (about 1h, wires into crew jobs), 3D printer (about 1h).
@@ -247,6 +256,7 @@ Order if built: 1, 2, 3 as one batch (~2 hrs), then 5. Leaderboard only after pe
 - Scanner texts: if you own a scanner, a short text when a patrol moves onto your current block. (~15 min) (Watch network in Crew rings upgrades this)
 - Unlock guides: when a new system opens (crew, heists, scanner, plugs calling), a one-time 3-step mini guide like the first-day guide. (~1 hr)
 - Nov 14 art in (skin41): 50 new faces wired (F1 to F5, R1 to R3, S1 to S4, plus Big Ray and Uncle Sal for the city plugs, Mr. Dell and Sweets). Held back: La Reina (neon CAFE/BAR signs) and Ghost (looked like a famous rapper), redo in the art list. The realistic heist picture was not used; Chris wants all event art in the hood cartoon style, prompts E1 to E4 rewritten. Test dev/t_art.py.
+- Add-ons (Nov 15): Plug family tier also opens fronting bigger loads and their connect's number. Undercover Js get spotted by the Watch network. Pawn buyback ties to drip (Chains and clothes) so you can flex then pawn in a pinch.
 
 ## Pounds in the inventory (Chris, Nov 14) - NOT BUILT, wait for "build" (Sonnet, about 2 to 3 hrs)
 - Keep the real count in grams (or pills). Only change how it shows and moves. Sizes: oz 28g, QP 112g, HP 224g, pound 448g (Chris's numbers, 1 lb = 16 oz of 28g). Pills: packs of 50, 100, boat 500.
@@ -254,6 +264,8 @@ Order if built: 1, 2, 3 as one batch (~2 hrs), then 5. Leaderboard only after pe
 - Break down button per drug: lb to 2 HP or 4 QP, HP to 2 QP, QP to 4 oz, oz to grams.
 - Selling: a buyer who wants a pound, HP, QP or oz gets that piece in one tap instead of sliding all the grams.
 - All drugs use one shared setup. Quality and fake/cut product must carry through every split (test with cut and fake). Same stash space as the grams. Dev menu button, tutorial line, tests.
+- Add-ons (Nov 15): multi-buy steppers use the same pieces (oz/QP/lb buttons). Right Hand Man and Stash Leader move product in pieces. Breaking down takes the scale mini game for perfect weight (bad weigh = customer complaints).
+
 ## Dialogue fix (Nov 14, not built yet; wait for "build")
 Problem: everyone sounds the same, stats are inside speech, robot/system lines, no back-and-forth, no memory.
 1. A voice for each character: Low plugs loose and slangy, Big plugs short and calm, lawyer formal, judge cold, guardian worried and mad.
@@ -267,6 +279,8 @@ Problem: everyone sounds the same, stats are inside speech, robot/system lines, 
 Cursing: Chris wants real cursing in the dialogue (shit, damn, ass, bitch, f-word where it fits; no slurs). Add a Settings toggle "Clean language" that swaps curses for clean words (default OFF = cursing on).
 Start with 2 + 8 on texting, court and plug talk (~5-8% usage). 3/4/5 are ~10-15% together.
 - Dialogue pass 1: BUILT Nov 14 (skin45). Plug voices by level + trust (texts, intro meet, calls, greeting at the meet), crew/heist/connect texts rewritten, numbers pulled out of texts into a tag, court talks (Judge Harlan, Solicitor Price, bailiff, your lawyer by tier), cursing + "Language: Raw/Clean" on the main menu. Still to do: 3 reply choices, 4 plug meet tones, 5 full court scenes, 6 callbacks.
+- Add-ons (Nov 15): each ring has its own voice in The Gang chat (scammers smooth, robbers short, drivers hype), and ring leaders bring up past busts and wins.
+
 ## Real phone (Nov 14) - BUILT (skin46, see last line)
 1. Lock screen with time/day and stacked notification banners; tap to open the chat.
 2. Messages app: chat list (last line, unread dot, time) and full threads with bubbles, read receipts, typing dots.
@@ -308,6 +322,7 @@ Start with 2 + 8 on texting, court and plug talk (~5-8% usage). 3/4/5 are ~10-15
 - Bringing it back (pick one, each with risk/cost): drive it in a stash car (hidden compartment upgrade, checkpoint chance; Car ring can build stash cars), mules (cheap, can flip/snitch/get caught), mail/freight (slow, seizure chance), your Right Hand Man drives it (see Crew rings: Right Hand powers), fly with it (fast, highest bust risk).
 - Bust = lose the load + heat/court; success = cheapest product in the game.
 - Clean vs dirty cash, dev menu (force refusal, set trust), tutorial line, keyboard on the talk game.
+- Add-ons (Nov 15): a ring at Kingpin rank can open your own connect line (no talk needed). Muscle can escort the load home (lower robbery risk on the road). Watch network checks the route for checkpoints first.
 
 ## Polish pack (from outside spec, Nov 15) — not built yet
 - Block prices drop when you oversell: each sale on a block lowers its price a little (cap about -50%), and it recovers over a few days. Pushes you to move around the map. Show a ▲/▼ trend on the block, plus "Js here have about $X left today" (moved here from Opus extras). Same build: heat per sale grows with volume on one block (balance run showed heat under 12 while serving hundreds).
@@ -317,6 +332,8 @@ Start with 2 + 8 on texting, court and plug talk (~5-8% usage). 3/4/5 are ~10-15
 - 3-tap rule: any main action (buy, sell, collect, assign crew, answer an event) takes 3 taps or fewer. Audit screens that break it.
 - Event buttons show exact results, e.g. "Pay bribe: -$1,200 dirty · -40 heat".
 - Clean vs dirty cash, dev menu toggles (mute, reset block prices), tutorial lines, tests.
+- Add-ons (Nov 15): oversold blocks hurt corner cred a little (Reputation by block). Notification stack also shows ring results ("Car ring: 2 cars on the lot"). Sounds per ring (engine for car ring, phone ring for scams). Event results show crew effects too ("Dre loyalty +2").
+
 ## Roadmap order (Nov 15) — do areas in this order so new stuff plugs into working stuff
 1. Clarity (always know what to do next) · 2. Core loop (buy/sell/move) · 3. Feel (juice, animations) · 4. Middle game (crew runs itself = Crew rings) · 5. Late game (money sinks, goals, endings) · 6. Balance pass (sim day 1-200) · 7. New chapters (grow op, dispensary) last.
 ## Crew cleanup — BUILT Nov 15 (skin68): short crew cards, tap name for actions, Make manager on the worker card, Collect all, Restock all, keep-stocked auto refill
@@ -330,6 +347,8 @@ Start with 2 + 8 on texting, court and plug talk (~5-8% usage). 3/4/5 are ~10-15
 - Cop lights sweep the screen on raids and chases.
 - Map by time of day (darker at night, lights brighter; follows whichever time system gets picked); red glow on hot blocks; pulsing dots on the map where a notification-stack item waits.
 - Later (needs art): walk-in scene strips, characters walking (needs consistent poses, hit or miss with Gemini).
+- Add-ons (Nov 15): crew ring icons move on the map when they work (car pin drives to the chop shop, robbery crew pin to the house), cash bag animation when Collect all fires, comic panel reveal for ring busts and big scores.
+
 ## Life paths — every path needs a start, middle, end goal and crossovers — not built
 - Rap: recording, diss, shows, signing, tour, merch and own label ALREADY exist. Missing: early steps (open mics, mixtape), features with other artists, beef/heat killing a deal, a platinum goal. Posting songs and going viral lives under Social media (one home).
 - Robbery: licks, loot + pawn fencing, crew heists, Last Big Deal ALREADY exist; the crew side is the Robbery ring (Crew rings). Missing: snatching as the first step, jack-boy rep (plugs scared, prices/fronts change).
@@ -337,11 +356,15 @@ Start with 2 + 8 on texting, court and plug talk (~5-8% usage). 3/4/5 are ~10-15
 - College: majors unlock careers (business = better fronts, music = rap skill, nursing = steady pay), student loans, campus hustle temptation, graduation day.
 - Relationships/family (thinnest now): dating, main partner, kids, family needing money, someone at home who worries when heat is high. Reason to go straight or keep going.
 - Endings: score, ending epilogue, Hall of the block, Dynasty ALREADY exist. Check they cover go legit / legend / die young; switching paths always possible.
+- Add-ons (Nov 15): each path has its own crew tie: rap (your crew becomes your entourage, Muscle as security at shows), work (a legit job lowers ring heat a little as cover), college (business major = better Business Manager, criminal justice = lawyer discount), relationships (partner can run a business or be a weak point if the opps find out). Endings count your rings (Kingpin ending needs 4+ rings running).
+
 ## Social media tied to your whole life — not built
 - Followers come from everything: street rep (~5 per rep point, 200 rep ≈ 1,000), rap drops/shows/features, flexing (car, chain, apartment posts), big moments (beat a case, big heist, beef, winning a game), jail ("free me" bump but can't post).
 - Followers do things: more rap streams and show pay, customers find you (sell faster), easier recruiting, but cops and jack boys watch big pages. A known crew (Crew rings) raises followers too.
 - Followers can drop: snitch rumors, losing a beef, going quiet, a flop.
 - Rap tie-in: drop a song then post it, content between drops (studio clip, snippet tease), viral chance, online beef/diss that can turn into real street beef, flexing stash/guns/cash on your page raises heat, fan comments show if a song hit or flopped.
+- Add-ons (Nov 15): posting a big score from a ring gives followers but raises heat; scam ring can buy fake followers (risky, they drop later); Watch network catches opps watching your page; followers raise recruiting quality for rings.
+
 ## Realtor houses: pick what each house is for — not built
 - Houses bought at the Real estate office get a use you choose: Personal home, Stash house, or Trap house. Can switch later (takes a day, costs a little to set up).
 - Location matters: hood blocks = cheap, more foot traffic (trap sells more) but more heat; nice areas = pricey, low heat, quiet (good home or stash), bad for traps (neighbors call cops).
@@ -351,6 +374,7 @@ Start with 2 + 8 on texting, court and plug talk (~5-8% usage). 3/4/5 are ~10-15
 - Trap house: workers sell there; more space = more workers and more product; heat builds on that block.
 - My add-ons: reuse the existing safe / guard dog / trap upgrades per house (don't make new ones), a "lay low" option to hide product at a quiet house during high heat, houses can get raided/robbed/burned in beef, and a house on a block you don't own pays a cut to whoever runs it. Renting out houses ALREADY exists (v205).
 - One home for this: houses live in the Real estate office + Block tab, no repeat lists. Clean cash to buy legit, dirty cash = cash buyer with more attention. Dev menu: give a house, tutorial line, tests.
+- Add-ons (Nov 15): a 4th use: Ring HQ (scam call center, car garage with a lift, robbery safe house). House size = how many ring members fit. Location = which rings work best (garage in an industrial area for cars, quiet suburb for scams).
 
 ## Crew rings: every role and skill becomes its own operation (Chris, Nov 15) — NOT BUILT, wait for "build"
 Big idea: your crew isn't just strength and 2-day routes. Each skill (Trapper, Robber, Scammer, Shooter, Lookout, Driver) can run a RING: a standing job you set once, buy equipment for, upgrade, and that feeds the rest of the game. Each rank role (Right Hand, Enforcer, Stash Leader, Block Captain, Business Manager) gets real powers. You manage it all from one Crew Ops screen (next to Run the operation, same style: one row per ring, tap for details, Collect all).
