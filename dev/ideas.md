@@ -308,3 +308,12 @@ Start with 2 + 8 on texting, court and plug talk (~5-8% usage). 3/4/5 are ~10-15
 - Also "Move stash": he moves real grams/pills between your stash, trap houses and stash houses so you stop sliding amounts yourself.
 - Costs his day (one job a day), heat risk if cops roll, skim risk under 40 loyalty (like today), lose the load if he is caught. Higher loyalty means safer and faster.
 - Works with pounds/QP pieces once the pounds idea is built. Clean vs dirty cash, dev menu button, tutorial line, tests.
+
+## Polish pack (from outside spec, Nov 15) — not built yet
+- Block prices drop when you oversell: each sale on a block lowers its price a little (cap about -50%), and it recovers over a few days. Pushes you to move around the map. Show a ▲/▼ trend on the block.
+- Notification stack at the top: one tap jumps to the thing or fixes it inline ("Dre holding $400 → [Collect]", "Mya says pull up → [Go]"). Pairs with the crew group chat idea.
+- Juice: floating gold "+$" when paid, red "-$" when spending, buttons press in on tap, screen shake + red edge on heat spikes or failed mini games.
+- Sounds made in code (no files): cash chime, text ping, deal thud, low pulse on high heat. One mute switch in the menu.
+- 3-tap rule: any main action (buy, sell, collect, assign crew, answer an event) takes 3 taps or fewer. Audit screens that break it.
+- Event buttons show exact results, e.g. "Pay bribe: -$1,200 dirty · -40 heat".
+- Clean vs dirty cash, dev menu toggles (mute, reset block prices), tutorial lines, tests.
