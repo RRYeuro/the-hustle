@@ -4667,7 +4667,7 @@ function debtDay(){if(!S.debt||!S.debt.length)return;S.debt.slice().forEach(d=>{
         if(PCARE[bi]==='amount'&&d.owe<small){S.debt=S.debt.filter(x=>x!==d);S.trust[bi]=0;S.pk[bi].ban=S.day+12;say(`${nm} shrugged it off. "That ain't worth my time." But ${PCARE[bi]==='amount'?'they':'he'} will not serve you for a while.`)}
         else{d.ran=1;S.trust[bi]=0;S.pk[bi].ban=S.day+999;say(`${nm} counts you as a runner now. ${PCARE[bi]==='principle'?'It ain\'t about the money to '+nm+'. You played '+nm+'.':'You owe '+money(Math.round(d.owe*1.25))+' and '+nm+' wants it.'} Do not come back without it.`)}}
       if(d.ran&&Math.random()<plugThreat(bi,d.owe)*(hasT('nosey')?.1:.14)*(S.at===bi?2.2:1)&&!S.inJail)debtHit(bi,S.at===bi)}})}
-function frontBlock(bi){const d=debtOf(bi),k=S.pk[bi]||{};
+function frontBlock(bi){if(window.l66kidBlock&&window.l66kidBlock(bi))return true;const d=debtOf(bi),k=S.pk[bi]||{};
   if(!d&&!((k.ban||0)>S.day))return false;const nm=plugName(bi),fem=plugFem(bi),he=fem?'she':'he',him=fem?'her':'him';
   if(!d){modal(`<h2>${nm} is not serving you</h2><p>${nm} ain't forgot. Give it ${k.ban-S.day} more day${k.ban-S.day===1?'':'s'}.</p><div class="btns"><button class="btn go" id="ok">Aight</button></div>`);$('ok').onclick=close;return true}
   if(!d.ran&&S.day<=d.due)return false;
@@ -5723,7 +5723,7 @@ function phonePlugs(){const L=S.known.filter(bi=>S.trust[bi]>=90&&!S.burned[bi]&
 const dropMult=bi=>S.dh&&S.dh.bi===bi&&S.dh.d===S.day?S.dh.m:1.1;
 function plugDrop(bi){if(frontBlock(bi))return;if((ptxo().n[bi]||0)>=PTX_MAX){modal(`<h2>${plugName(bi)} is done for today</h2><p>That is enough deals for one day.</p><div class="btns"><button class="btn go" id="ok">Bet</button></div>`);$('ok').onclick=close;return}const here=S.at;S.at=bi;const goods=PINFO[bi].carries.map(G).filter(g=>stockOf(bi,g)>=g.step);
   const priceOf=g=>Math.round(plugPrice('buy',g)*dropMult(bi));S.at=here;
-  const teenCap=g=>gAge()&&gAge()<16?(g.unit==='g'?28:g.unit==='pills'?100:4):gAge()&&gAge()<18?(g.unit==='g'?112:g.unit==='pills'?300:16):1e9;
+  const teenCap=g=>gAge()&&gAge()<16?(g.unit==='g'?28:g.unit==='pills'?100:4):gAge()&&gAge()<18?(g.unit==='g'?56:g.unit==='pills'?150:8):1e9;
   const maxOf=g=>{S.at=bi;const st=stockOf(bi,g);S.at=here;return Math.floor(Math.min(S.cash/priceOf(g),(S.cap-used())/g.sp,st,teenCap(g))/g.step)*g.step};
   modal(`${avatar(bi,64)}<h2>Text ${plugName(bi)}</h2>${persChip(bi)}<p>"What you need? I'll pull up."</p><div class="btns"><button class="btn" id="hg" ${(S.dh&&S.dh.d===S.day&&S.dh.bi===bi)||S.sk.talk<4?'disabled':''}>${S.sk.talk<4?'Haggle the trip fee (Talk 4+)':S.dh&&S.dh.d===S.day&&S.dh.bi===bi?'Already haggled today':'Haggle the trip fee'}</button></div>${goods.map(g=>{const mx=maxOf(g),of0=(S.offer[bi]||{})[g.id];return `<div class="row" style="padding:8px 12px;flex-wrap:wrap">${drugPic(g.id,32)}<div class="info" style="flex:1 1 140px;min-width:0"><div class="t">${g.name}${of0&&of0.v?` <span style="color:var(--dim);font-weight:400">· ${of0.v}</span>`:''} ${of0?gchip(of0.q,g):''}</div><div class="s">${money(priceOf(g))} each delivered · up to ${mx>=g.step?amt(mx,g):'none'}</div></div><div class="btns">${g.sizes.filter(z=>z[0]<=mx).slice(-3).map(z=>`<button class="btn green" data-dg="${g.id}" data-dn="${z[0]}">${z[1]}</button>`).join('')||'<span class="s">Can\'t afford or no room</span>'}</div></div>`}).join('')}<div class="btns"><button class="btn" id="no">Done</button></div>`);
   $('no').onclick=close;
@@ -6263,7 +6263,7 @@ function qtyModal(kind,g,to,bl){if(proStop())return;if(to==='js'&&stuckHome(true
   const jl=jsLeftAt(S.at);
   const stk=stockOf(S.at,g);
   if(kind==='buy'&&stk<g.step){modal(`<h2>${plugName(S.at)} is sold out</h2><p>${plugFem(S.at)?'She':'He'} ain't got no more ${g.name} today. New batch tomorrow.</p><div class="btns"><button class="btn go" id="no">Okay</button></div>`);$('no').onclick=close;return}
-  const teenCap=gAge()&&gAge()<16?(g.unit==='g'?28:g.unit==='pills'?100:4):gAge()&&gAge()<18?(g.unit==='g'?112:g.unit==='pills'?300:16):1e9;
+  const teenCap=gAge()&&gAge()<16?(g.unit==='g'?28:g.unit==='pills'?100:4):gAge()&&gAge()<18?(g.unit==='g'?56:g.unit==='pills'?150:8):1e9;
   const pcl=Math.max(0,plugBud(S.at)-plugUsed(S.at));
   if(kind==='sell'&&!js&&S.inv[g.id]>0&&pcl<p*g.step*4){modal(`<h2>${plugName(S.at)} is tapped out</h2><p>${plugFem(S.at)?'She':'He'} already spent ${plugFem(S.at)?'her':'his'} money on product today and cannot take any more. Come back tomorrow, or serve the Js.</p><div class="btns"><button class="btn red" id="jj">Serve the Js</button><button class="btn" id="no">Okay</button></div>`);$('jj').onclick=()=>qtyModal(kind,g,'js');$('no').onclick=close;return}
   const U=(kind==='buy'&&window.l34U)?l34U(S.at,g):g.step;const max=kind==='buy'?Math.floor(fl(Math.min((S.smartBuy?S.cash*.85:S.cash)/p,(S.cap-used())/g.sp,stk,teenCap))/U+1e-9)*U:js?Math.min(S.inv[g.id],fl(jl/p)):Math.min(S.inv[g.id],fl(pcl/p));
@@ -9172,7 +9172,7 @@ const strangers=()=>BLOCKS.map((b,i)=>i).filter(bi=>!gone(bi)&&!(S.burned&&S.bur
 function voucher(bi){const fam=known().find(i=>i!==bi&&tie(i)&&tr(i)>=30);if(fam!=null)return{n:plugName(fam)+' ('+tie(fam).toLowerCase()+')',t:Math.max(80,tr(fam)),plug:1};const ps=known().filter(i=>i!==bi&&tr(i)>=60).sort((a,b)=>tr(b)-tr(a));if(ps.length)return{n:plugName(ps[0]),t:tr(ps[0]),plug:1};
  const f=(S.friends||[])[0];if(f)return{n:f.name,t:50};try{const m=crewList()[0];if(m)return{n:m.name,t:50}}catch(e){}
  const need=Math.round((LVL[PINFO[bi].lvl].rep||0)*.6);if((S.rep||0)>=Math.max(5,need))return{n:'Your name',t:40,rep:1};return null}
-function introWhy(bi){try{const L=PINFO[bi].lvl,R=window.l48rk?l48rk():9;if(L==='Big'&&R<2)return `Big plugs don't deal with nobodies. Reach ${rname(2)} (level ${RANKS[2][0]}) first.`;if(L==='Mid'&&R<1)return `Mid plugs want to see you move first. Reach ${rname(1)} (level ${RANKS[1][0]}).`}catch(e){}if((S.introD||-9)===S.day)return 'One link-up a day.';if((pk(bi).cold||0)>S.day)return `Not feeling you. Try again in ${pk(bi).cold-S.day} day${pk(bi).cold-S.day===1?'':'s'}.`;if(!voucher(bi))return 'Nobody to vouch for you yet. Make a friend, earn a plug\'s trust (60), or build more rep.';if(S.cash<LV[PINFO[bi].lvl][0])return 'Need '+money(LV[PINFO[bi].lvl][0])+'.';return ''}
+function introWhy(bi){if(window.l66kid&&window.l66kid(bi))return "Big plugs don't deal with kids. Wait till you're 18.";try{const L=PINFO[bi].lvl,R=window.l48rk?l48rk():9;if(L==='Big'&&R<2)return `Big plugs don't deal with nobodies. Reach ${rname(2)} (level ${RANKS[2][0]}) first.`;if(L==='Mid'&&R<1)return `Mid plugs want to see you move first. Reach ${rname(1)} (level ${RANKS[1][0]}).`}catch(e){}if((S.introD||-9)===S.day)return 'One link-up a day.';if((pk(bi).cold||0)>S.day)return `Not feeling you. Try again in ${pk(bi).cold-S.day} day${pk(bi).cold-S.day===1?'':'s'}.`;if(!voucher(bi))return 'Nobody to vouch for you yet. Make a friend, earn a plug\'s trust (60), or build more rep.';if(S.cash<LV[PINFO[bi].lvl][0])return 'Need '+money(LV[PINFO[bi].lvl][0])+'.';return ''}
 function goLabel(bi){if(bi===S.at)return 'Meet';if(S.car&&yo()>=16)return 'Drive there';try{if(S.cal&&S.age&&S.age<18&&S.freeMv!==S.day)return 'Go (free move)'}catch(e){}try{if(S.bus>=S.day&&(S.en==null||S.en>=3))return 'Bus pass · 3 energy'}catch(e){}return 'Go · 1 day'}
 function spotsHTML(){if(locked()||away())return '';const L=known().filter(bi=>tie(bi)||tr(bi)>=FLOOR).sort((a,b)=>tr(b)-tr(a)),U=strangers();if(!L.length&&!U.length)return '';
  const fdOn=S.fd&&!S.fd.off&&!S.fd.x&&!S.fd.doneD;if(innerWidth<900&&!S.uiPs&&!fdOn){const op=L.filter(canGo).length;return `<div class="row" style="padding:6px 12px"><div class="info"><div class="t" style="font-size:14px">🔌 Plug spots · ${op} open today · ${L.length} in your phone</div></div><button class="btn go" data-a31="ps">Show</button></div>`}
@@ -10670,4 +10670,15 @@ try{const _co=window.connectOrder;if(_co)connectOrder=function(i){const r=_co.ap
 })();
 </script>
 
+<script id="skin66js">
+/* skin66: age gate on plugs. Big plugs 18+, 16-17 buy caps smaller */
+(function(){
+const age=()=>{try{return (typeof gAge==='function'&&gAge())||S.age||99}catch(e){return 99}};
+const isBig=bi=>{try{return PINFO[bi]&&PINFO[bi].lvl==='Big'}catch(e){return false}};
+window.l66kid=bi=>isBig(bi)&&age()<18;
+window.l66kidBlock=function(bi){if(!window.l66kid(bi))return false;const nm=plugName(bi);modal(`<h2>${nm} ain't serving you</h2><p>"How old are you? I don't move weight with kids. Come see me when you're grown."</p><p class="s" style="color:#8e8e93">Big plugs deal with you at 18.</p><div class="btns"><button class="btn go" id="ok66">Aight</button></div>`);const b=document.getElementById('ok66');if(b)b.onclick=()=>{document.getElementById('modal').hidden=true;render()};return true};
+/* smaller teen caps: 16-17 max 2 oz / 150 pills / 8 units (was a QP) */
+try{TUT.push(['Plugs and age','Big plugs (QPs, pounds) only deal with you at 18+. At 16-17 the most you can grab at once is 2 oz, 150 pills or 8 units.'])}catch(e){}
+})();
+</script>
 <script>if('serviceWorker' in navigator){addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}</script></body></html>
