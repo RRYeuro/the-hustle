@@ -90,10 +90,10 @@ Moving between 7 cities with real relocation, per-city block/gang/plug/spot name
 
 ## Nov 11 ideas (from Trapper RPG update video)
 - Loan shark ALREADY IN (Mr. Vi + collector). Only add: due-date texts on phone + calendar countdown
-- Spy/lookout: pay crew to scout rival stash, can fail, shows on crime board
+- Spy/lookout: pay crew to scout rival stash (Scout a rival crew BUILT in crew jobs; standing version = Watch network in Crew rings)
 - Quick deals: ALREADY IN as plays (Phone tab, they text for product). Not needed.
 - Random street events: short pop-ups, 2 choices (tip, cops, friend locked up)
-- Enforcer jobs (ladder Enforcer exists; own-enforcer jobs do not): handle beef/collect debts, risk of injury or turning if loyalty low
+- Enforcer jobs: moved into Crew rings (Muscle + Enforcer powers)
 - Customer moods: change price, better dealers read it
 - End-of-run replay clip: REJECTED by Chris Nov 11, do not build
 - DonMojo (Nov 11): boxing should be its own thing in the Sports tab, separate from school (no school boxing program). Trade offers now skip boxing/MMA/track. Separate boxing path still open.
@@ -244,7 +244,7 @@ Order if built: 1, 2, 3 as one batch (~2 hrs), then 5. Leaderboard only after pe
 - Pawn buyback: jewelry you pawn can be bought back within 7 days for the price plus 20%, like a real pawn ticket. Gives drip players a way to get cash fast without losing the chain for good. (~30 min)
 - Plug family tier: at 90 trust a plug gives family price (5% off), holds a load for you for a day, and warns you when a task force is coming. Lose it if you get caught snitching. (~45 min)
 - Undercover Js: now and then a "customer" is a cop. Street Smarts shows a tell ("asks too many questions", "new face, clean shoes") so you can walk away; selling to one is a bust. (~45 min)
-- Scanner texts: if you own a scanner, a short text when a patrol moves onto your current block. (~15 min)
+- Scanner texts: if you own a scanner, a short text when a patrol moves onto your current block. (~15 min) (Watch network in Crew rings upgrades this)
 - Unlock guides: when a new system opens (crew, heists, scanner, plugs calling), a one-time 3-step mini guide like the first-day guide. (~1 hr)
 - Nov 14 art in (skin41): 50 new faces wired (F1 to F5, R1 to R3, S1 to S4, plus Big Ray and Uncle Sal for the city plugs, Mr. Dell and Sweets). Held back: La Reina (neon CAFE/BAR signs) and Ghost (looked like a famous rapper), redo in the art list. The realistic heist picture was not used; Chris wants all event art in the hood cartoon style, prompts E1 to E4 rewritten. Test dev/t_art.py.
 
