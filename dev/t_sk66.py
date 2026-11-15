@@ -16,3 +16,14 @@ with sync_playwright() as p:
     J("()=>{render()}");chk("deal with kids" not in J("()=>document.body.innerText"),'no kid line at 19')
     chk(not errs,'no errors '+';'.join(errs[:2]))
     print(ok,'/',n);b.close()
+with sync_playwright() as p:
+    b=p.chromium.launch();pg=b.new_page();errs=[];pg.on('pageerror',lambda e:errs.append(str(e)));pg.goto('http://127.0.0.1:8765/index.html');pg.wait_for_timeout(1800);J=pg.evaluate
+    J("()=>{startLife('lucky');document.getElementById('modal').hidden=true;S.age=17;S.cash=50000}")
+    g=J("()=>GOODS.findIndex(x=>x.unit==='g')")
+    J(f"()=>{{l66rec(GOODS[{g}],50)}}")
+    chk(J(f"()=>l66tb(GOODS[{g}])")==50,'teen buys add up for the day')
+    J("()=>{S.day++}")
+    chk(J(f"()=>l66tb(GOODS[{g}])")==0,'resets next day')
+    J("()=>{S.age=19;S.tb66=null;l66rec(GOODS[0],99)}")
+    chk(J("()=>l66tb(GOODS[0])")==0,'adults not tracked')
+    chk(not errs,'no errors 2 '+';'.join(errs[:2]));print(ok,'/',n);b.close()

@@ -5723,7 +5723,7 @@ function phonePlugs(){const L=S.known.filter(bi=>S.trust[bi]>=90&&!S.burned[bi]&
 const dropMult=bi=>S.dh&&S.dh.bi===bi&&S.dh.d===S.day?S.dh.m:1.1;
 function plugDrop(bi){if(frontBlock(bi))return;if((ptxo().n[bi]||0)>=PTX_MAX){modal(`<h2>${plugName(bi)} is done for today</h2><p>That is enough deals for one day.</p><div class="btns"><button class="btn go" id="ok">Bet</button></div>`);$('ok').onclick=close;return}const here=S.at;S.at=bi;const goods=PINFO[bi].carries.map(G).filter(g=>stockOf(bi,g)>=g.step);
   const priceOf=g=>Math.round(plugPrice('buy',g)*dropMult(bi));S.at=here;
-  const teenCap=g=>gAge()&&gAge()<16?(g.unit==='g'?28:g.unit==='pills'?100:4):gAge()&&gAge()<18?(g.unit==='g'?56:g.unit==='pills'?150:8):1e9;
+  const teenCap=g=>gAge()&&gAge()<16?Math.max(0,(g.unit==='g'?28:g.unit==='pills'?100:4)-(window.l66tb?l66tb(g):0)):gAge()&&gAge()<18?Math.max(0,(g.unit==='g'?56:g.unit==='pills'?150:8)-(window.l66tb?l66tb(g):0)):1e9;
   const maxOf=g=>{S.at=bi;const st=stockOf(bi,g);S.at=here;return Math.floor(Math.min(S.cash/priceOf(g),(S.cap-used())/g.sp,st,teenCap(g))/g.step)*g.step};
   modal(`${avatar(bi,64)}<h2>Text ${plugName(bi)}</h2>${persChip(bi)}<p>"What you need? I'll pull up."</p><div class="btns"><button class="btn" id="hg" ${(S.dh&&S.dh.d===S.day&&S.dh.bi===bi)||S.sk.talk<4?'disabled':''}>${S.sk.talk<4?'Haggle the trip fee (Talk 4+)':S.dh&&S.dh.d===S.day&&S.dh.bi===bi?'Already haggled today':'Haggle the trip fee'}</button></div>${goods.map(g=>{const mx=maxOf(g),of0=(S.offer[bi]||{})[g.id];return `<div class="row" style="padding:8px 12px;flex-wrap:wrap">${drugPic(g.id,32)}<div class="info" style="flex:1 1 140px;min-width:0"><div class="t">${g.name}${of0&&of0.v?` <span style="color:var(--dim);font-weight:400">· ${of0.v}</span>`:''} ${of0?gchip(of0.q,g):''}</div><div class="s">${money(priceOf(g))} each delivered · up to ${mx>=g.step?amt(mx,g):'none'}</div></div><div class="btns">${g.sizes.filter(z=>z[0]<=mx).slice(-3).map(z=>`<button class="btn green" data-dg="${g.id}" data-dn="${z[0]}">${z[1]}</button>`).join('')||'<span class="s">Can\'t afford or no room</span>'}</div></div>`}).join('')}<div class="btns"><button class="btn" id="no">Done</button></div>`);
   $('no').onclick=close;
@@ -5731,7 +5731,7 @@ function plugDrop(bi){if(frontBlock(bi))return;if((ptxo().n[bi]||0)>=PTX_MAX){mo
   $('mcard').querySelectorAll('[data-dg]').forEach(b=>b.onclick=()=>{const g=G(b.dataset.dg),n=+b.dataset.dn,pr=priceOf(g);S.at=bi;const of=S.offer[bi][g.id];S.at=here;
     const tot=Math.round(pr*n*bulk(n,g));if(tot>S.cash)return;of.stock=Math.max(0,(of.stock??0)-n);S.dropDay=S.day;{const pt=ptxo();pt.n[bi]=(pt.n[bi]||0)+1}
     const realHave=S.inv[g.id]-S.fake[g.id];if(of.fake){$('modal').hidden=true;modal(`<h2>${plugName(bi)} kept it real</h2><p>"Don't take this batch. It ain't right. I'll hit you when the good stuff land."</p><div class="btns"><button class="btn go" id="ok">Good looking</button></div>`);$('ok').onclick=close;S.trust[bi]=Math.min(100,S.trust[bi]+1);return}
-    S.q[g.id]=Math.round((S.q[g.id]*realHave+of.real*n)/(realHave+n));S.paid[g.id]=Math.round((S.paid[g.id]*S.inv[g.id]+tot)/(S.inv[g.id]+n));S.inv[g.id]+=n;S.cash-=tot;S.heat=Math.min(100,S.heat+1);{S.lb=S.lb||{};const k=bi+':'+g.id,u=tot/n,o0=S.lb[k];S.lb[k]={d:S.day,u:o0&&S.day-o0.d<=4?Math.min(o0.u,u):u}}
+    S.q[g.id]=Math.round((S.q[g.id]*realHave+of.real*n)/(realHave+n));S.paid[g.id]=Math.round((S.paid[g.id]*S.inv[g.id]+tot)/(S.inv[g.id]+n));S.inv[g.id]+=n;S.cash-=tot;S.heat=Math.min(100,S.heat+1);try{l66rec(g,n)}catch(e){}{S.lb=S.lb||{};const k=bi+':'+g.id,u=tot/n,o0=S.lb[k];S.lb[k]={d:S.day,u:o0&&S.day-o0.d<=4?Math.min(o0.u,u):u}}
     say(`${plugName(bi)} dropped off ${amt(n,g)} of ${g.name} for ${money(tot)}.`);render();plugDrop(bi)})}
 function workerPhoneDay(){(S.workers||[]).forEach(w=>{
     if(w.fr&&S.day>=w.fr.due){const f=w.fr;w.fr=null;let pay=f.owe;if(!is('val')&&w.loyal<=3&&Math.random()<.3){pay=Math.round(pay*.6);say(`${w.name} came back short on the work you fronted. Paid ${money(pay)} of ${money(f.owe)}.`)}else say(`${w.name} paid back ${money(pay)} for the ${f.txt} you fronted.`);S.cash+=pay;S.heat=Math.min(100,S.heat+2)}
@@ -6263,7 +6263,7 @@ function qtyModal(kind,g,to,bl){if(proStop())return;if(to==='js'&&stuckHome(true
   const jl=jsLeftAt(S.at);
   const stk=stockOf(S.at,g);
   if(kind==='buy'&&stk<g.step){modal(`<h2>${plugName(S.at)} is sold out</h2><p>${plugFem(S.at)?'She':'He'} ain't got no more ${g.name} today. New batch tomorrow.</p><div class="btns"><button class="btn go" id="no">Okay</button></div>`);$('no').onclick=close;return}
-  const teenCap=gAge()&&gAge()<16?(g.unit==='g'?28:g.unit==='pills'?100:4):gAge()&&gAge()<18?(g.unit==='g'?56:g.unit==='pills'?150:8):1e9;
+  const teenCap=gAge()&&gAge()<16?Math.max(0,(g.unit==='g'?28:g.unit==='pills'?100:4)-(window.l66tb?l66tb(g):0)):gAge()&&gAge()<18?Math.max(0,(g.unit==='g'?56:g.unit==='pills'?150:8)-(window.l66tb?l66tb(g):0)):1e9;
   const pcl=Math.max(0,plugBud(S.at)-plugUsed(S.at));
   if(kind==='sell'&&!js&&S.inv[g.id]>0&&pcl<p*g.step*4){modal(`<h2>${plugName(S.at)} is tapped out</h2><p>${plugFem(S.at)?'She':'He'} already spent ${plugFem(S.at)?'her':'his'} money on product today and cannot take any more. Come back tomorrow, or serve the Js.</p><div class="btns"><button class="btn red" id="jj">Serve the Js</button><button class="btn" id="no">Okay</button></div>`);$('jj').onclick=()=>qtyModal(kind,g,'js');$('no').onclick=close;return}
   const U=(kind==='buy'&&window.l34U)?l34U(S.at,g):g.step;const max=kind==='buy'?Math.floor(fl(Math.min((S.smartBuy?S.cash*.85:S.cash)/p,(S.cap-used())/g.sp,stk,teenCap))/U+1e-9)*U:js?Math.min(S.inv[g.id],fl(jl/p)):Math.min(S.inv[g.id],fl(pcl/p));
@@ -6313,7 +6313,7 @@ function qtyModal(kind,g,to,bl){if(proStop())return;if(to==='js'&&stuckHome(true
     if(kind==='buy'&&firstTx)S.trust[S.at]=Math.min(100,S.trust[S.at]+1);
     if(kind==='buy'&&firstTx&&crewHere()){const c=crew(S.owner[S.at]);c.beef=Math.max(0,c.beef-1);c.respect=Math.min(100,c.respect+1)}
     if(!js&&!known&&firstTx){S.deals[S.at]=(S.deals[S.at]||0)+1;if(S.deals[S.at]>=(rankAt(4)?1:3)){S.known.push(S.at);say(`${plugName(S.at)} knows you now. Better prices and you can talk to ${plugFem(S.at)?'her':'him'}.`)}}
-    if(kind==='buy'){of.stock=Math.max(0,stockOf(S.at,g)-n);S.vn=S.vn||{};S.vn[g.id]=of.v;if(of.fake){S.fakeFrom=S.fakeFrom||{};S.fakeFrom[g.id]=S.at}const realHave=S.inv[g.id]-S.fake[g.id];if(of.fake)S.fake[g.id]+=n;else S.q[g.id]=Math.round((S.q[g.id]*realHave+of.real*n)/(realHave+n));const tot=Math.round(p*n*bulk(n,g));S.paid[g.id]=Math.round((S.paid[g.id]*S.inv[g.id]+tot)/(S.inv[g.id]+n));S.inv[g.id]+=n;S.cash-=tot;{S.lb=S.lb||{};const k=S.at+':'+g.id,u=tot/n,o0=S.lb[k];S.lb[k]={d:S.day,u:o0&&S.day-o0.d<=4?Math.min(o0.u,u):u}}if(bulk(n,g)<=.9)ck('s:bulk');say(`Copped ${amt(n,g)} of ${of.v?of.v+' ':''}${g.name} for ${money(tot)}${bulk(n,g)<1?` (bulk −${Math.round((1-bulk(n,g))*100)}%)`:''}.`)}
+    if(kind==='buy'){of.stock=Math.max(0,stockOf(S.at,g)-n);S.vn=S.vn||{};S.vn[g.id]=of.v;if(of.fake){S.fakeFrom=S.fakeFrom||{};S.fakeFrom[g.id]=S.at}const realHave=S.inv[g.id]-S.fake[g.id];if(of.fake)S.fake[g.id]+=n;else S.q[g.id]=Math.round((S.q[g.id]*realHave+of.real*n)/(realHave+n));const tot=Math.round(p*n*bulk(n,g));S.paid[g.id]=Math.round((S.paid[g.id]*S.inv[g.id]+tot)/(S.inv[g.id]+n));S.inv[g.id]+=n;S.cash-=tot;try{l66rec(g,n)}catch(e){}{S.lb=S.lb||{};const k=S.at+':'+g.id,u=tot/n,o0=S.lb[k];S.lb[k]={d:S.day,u:o0&&S.day-o0.d<=4?Math.min(o0.u,u):u}}if(bulk(n,g)<=.9)ck('s:bulk');say(`Copped ${amt(n,g)} of ${of.v?of.v+' ':''}${g.name} for ${money(tot)}${bulk(n,g)<1?` (bulk −${Math.round((1-bulk(n,g))*100)}%)`:''}.`)}
     else{const fk=Math.min(S.fake[g.id],Math.round(n*S.fake[g.id]/S.inv[g.id]));S.fake[g.id]-=fk;
       const got=Math.round(bl==='win'?n*p:(n-fk)*p+fk*Math.round(p*.15));
       if(bl==='win'&&Math.random()<.35){S.rep=Math.max(0,S.rep-1);say('A couple of the Js figured out it wasn\'t really top line. Rep −1.')}
@@ -10677,8 +10677,11 @@ const age=()=>{try{return (typeof gAge==='function'&&gAge())||S.age||99}catch(e)
 const isBig=bi=>{try{return PINFO[bi]&&PINFO[bi].lvl==='Big'}catch(e){return false}};
 window.l66kid=bi=>isBig(bi)&&age()<18;
 window.l66kidBlock=function(bi){if(!window.l66kid(bi))return false;const nm=plugName(bi);modal(`<h2>${nm} ain't serving you</h2><p>"How old are you? I don't move weight with kids. Come see me when you're grown."</p><p class="s" style="color:#8e8e93">Big plugs deal with you at 18.</p><div class="btns"><button class="btn go" id="ok66">Aight</button></div>`);const b=document.getElementById('ok66');if(b)b.onclick=()=>{document.getElementById('modal').hidden=true;render()};return true};
-/* smaller teen caps: 16-17 max 2 oz / 150 pills / 8 units (was a QP) */
-try{TUT.push(['Plugs and age','Big plugs (QPs, pounds) only deal with you at 18+. At 16-17 the most you can grab at once is 2 oz, 150 pills or 8 units.'])}catch(e){}
+/* teen limit is per day, not per purchase: backing out of the menu does not reset it */
+window.l66tb=g=>{try{const t=S.tb66;return t&&t.d===S.day?(t.g[g.id]||0):0}catch(e){return 0}};
+window.l66rec=(g,n)=>{try{if(!(typeof gAge==='function'&&gAge()&&gAge()<18))return;if(!S.tb66||S.tb66.d!==S.day)S.tb66={d:S.day,g:{}};S.tb66.g[g.id]=(S.tb66.g[g.id]||0)+n}catch(e){}};
+/* smaller teen caps: 16-17 max 2 oz / 150 pills / 8 units a day (was a QP a buy) */
+try{TUT.push(['Plugs and age','Big plugs (QPs, pounds) only deal with you at 18+. At 16-17 the most you can buy in a day is 2 oz, 150 pills or 8 units of each thing (under 16: 1 oz, 100 pills, 4 units).'])}catch(e){}
 })();
 </script>
 <script>if('serviceWorker' in navigator){addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}</script></body></html>
