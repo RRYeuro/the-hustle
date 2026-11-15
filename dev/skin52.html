@@ -1,0 +1,7 @@
+<script id="skin52js">
+(function(){if(window._sk52)return;window._sk52=1;
+/* Bus pass: a move on the map costs 3 energy and no day, same as the phone Rides bus (no car needed). Jail: no job paycheck while locked up (patched in nextDay). */
+try{const _d=window.l32Drive;window.l32Drive=function(){const r=_d?_d.apply(this,arguments):false;if(r)return r;try{if(!S||!(S.bus>=S.day))return false;if(S.en==null)S.en=enMax();if(S.en<3)return false;S.en-=3;say('Took the bus with your pass. No day lost (3 energy).');return true}catch(e){return false}}}catch(e){}
+try{TUT.push(['Bus pass','With an active bus pass, moving between blocks on the map costs 3 energy and no day, same as the Bus button on your phone. Without a pass or a car, a move still costs the day.'])}catch(e){}
+})();
+</script>
