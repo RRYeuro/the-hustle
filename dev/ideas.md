@@ -301,3 +301,11 @@ Start with 2 + 8 on texting, court and plug talk (~5-8% usage). 3/4/5 are ~10-15
 - Dedupe + manager: BUILT Nov 15 (skin62). Crew, Family (and Orders) phone apps removed; Your crew, Family, Your people and Your runners now show in Your Circle (router + NEED). Crew/family stay as contacts you text. Make manager button always shows; when blocked it says why (needs 10 work days X/10, needs a stash house, 2 managers max, 16+). Trap page shows the last thing that happened.
 - Stay in place after actions: BUILT Nov 15 (skin63). A redraw keeps the page scroll, phone app scroll and popup scroll when you're still on the same screen; switching tabs or apps still starts at the top.
 - Nov 15 tweaks (skin59/61/64): removed my extra 🧺 trap pins (map already has trap houses) and the store/pharmacy lick pins (you rob them inside the place); lick pins are now cars + tipped houses/straps. Added ⏩ Skip time next to Next day / Lay low / Nap: popup with Lay low for a week, Skip to your birthday, Skip to the next event (they were folded inside a closed Time section on the Move tab).
+
+## Connect says no → talk or go to them (Chris, Nov 15) — not built
+- When a connect refuses a deal, don't dead-end. Two options:
+  1. Talk your way in: a short talk mini game (Talk skill, trust, rep, cash shown). Win = deal at normal or slightly worse price; lose = trust drop + cooldown. Offer sweeteners: pay upfront, buy bigger, put a soldier up as collateral.
+  2. Go to them in person: travel to their city (flight/drive, costs time + money). They respect you showing up = better odds and price. But nothing ships for you: you have to bring it back yourself.
+- Bringing it back (pick one, each with risk/cost): drive it in a stash car (hidden compartment upgrade, checkpoint chance), mules (cheap, can flip/snitch/get caught), mail/freight (slow, seizure chance), your crew/Right Hand Man drives it (ties to the Right Hand Man idea), fly with it (fast, highest bust risk).
+- Bust = lose the load + heat/court; success = cheapest product in the game.
+- Clean vs dirty cash, dev menu (force refusal, set trust), tutorial line, keyboard on the talk game.
