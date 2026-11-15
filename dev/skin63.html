@@ -1,0 +1,11 @@
+<script id="skin63js">
+(function(){if(window._sk63)return;window._sk63=1;
+/* stay where you were after tapping something: keep scroll spots across a redraw */
+const SEL=['.phx .ph-scr','#pane','.app','#mcard','#mcard .pane'];
+const key=()=>{try{return [typeof tab!=='undefined'?tab:'',window._rph||'',window._mth||'',window._ct55||''].join('|')}catch(e){return ''}};
+function grab(){const o={k:key(),y:window.scrollY,el:{}};SEL.forEach(s=>{const e=document.querySelector(s);if(e&&e.scrollTop)o.el[s]=e.scrollTop});try{const m=document.querySelector('#mcard h2');o.mh=m?m.textContent:''}catch(e){}return o}
+function put(o){if(!o||o.k!==key())return;try{if(Math.abs(window.scrollY-o.y)>2)window.scrollTo(0,o.y)}catch(e){}const mh=(document.querySelector('#mcard h2')||{}).textContent||'';Object.entries(o.el).forEach(([s,v])=>{if(s.startsWith('#mcard')&&mh!==o.mh)return;const e=document.querySelector(s);if(e&&Math.abs(e.scrollTop-v)>2)e.scrollTop=v})}
+try{const _r=render;render=function(){const o=grab();const r=_r.apply(this,arguments);try{put(o);requestAnimationFrame(()=>put(o))}catch(e){}return r}}catch(e){}
+/* popups that reopen themselves (trap page, places) keep their scroll too */
+try{const _md=modal;modal=function(){const mc=document.getElementById('mcard'),open=!document.getElementById('modal').hidden,h=(mc&&mc.querySelector('h2')||{}).textContent||'',st=mc?mc.scrollTop:0,ps=(mc&&mc.querySelector('.pane')||{}).scrollTop||0;const r=_md.apply(this,arguments);try{const h2=(mc&&mc.querySelector('h2')||{}).textContent||'';if(open&&h&&h===h2){mc.scrollTop=st;const p=mc.querySelector('.pane');if(p)p.scrollTop=ps;requestAnimationFrame(()=>{mc.scrollTop=st;if(p)p.scrollTop=ps})}}catch(e){}return r}}catch(e){}
+})();</script>
