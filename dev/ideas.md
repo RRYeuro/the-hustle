@@ -411,3 +411,11 @@ How it all connects (examples):
 - Crew jobs by rank (built) stay as one-off jobs; rings are the standing version.
 
 Build order if Chris says build: 1) Crew Ops screen + ring basics (assign, equipment, daily result, text) 2) Car ring (chop shop is ready) 3) Robbery ring 4) Scam ring 5) Right Hand / Stash Leader real product moves 6) Business Manager 7) Muscle + Watch. Each: dev menu buttons, tutorial lines, clean vs dirty cash checks, quick test.
+
+## Spotlight walkthrough tutorial (Chris, Nov 15) — NOT BUILT, wait for "build" (~30 min)
+- Real walkthrough: screen grays out, one button lights up with a glow + short bubble ("Tap here to text your plug"), game moves on only when you tap it.
+- First loop, 12-15 steps (~2 min): stats (cash, dirty vs clean, heat) → Phone → text a plug → multi-buy → Move map → go to a block → serve the Js → Next day → collect → Block tab → Skip time.
+- When you start a character: a choice card "Play the tutorial" / "Skip tutorial (I know the game)". Also Skip + Back on every step, Enter = next, Esc = skip. Replay from the menu.
+- Short 3-step spotlights the first time you unlock crew, trap house, heists, Run the operation, Crew rings.
+- Bubble moves so it never covers the button; works on phone and laptop.
+- Replaces the 80-page text tutorial as the main way to learn: old book becomes ~10 short topics (Money, Plugs, Selling, Heat, Crew, Places, Phone, School, Rap, Licks); details stay in each screen's "ⓘ How this works". Old first-day guide (skin40) folds into this (no duplicate).
