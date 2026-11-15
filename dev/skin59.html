@@ -10,8 +10,7 @@ const RISK={car:'High',pharm:'High',strap:'High',store:'Medium',house:'Medium'};
 const IC={car:'🚗',pharm:'💊',strap:'🔫',store:'🏪',house:'🏠'};
 /* where each lick is today */
 function spots(){const o=[];try{if((S.age||0)<14)return o;S.lt=S.lt||{};S.lk59=S.lk59||{};const away=b=>{let x=b;if(x===S.home||x===(typeof homeBlock==='function'?homeBlock():-1))x=(x+2)%BLOCKS.length;return x};
- o.push({k:'store',bi:1});o.push({k:'pharm',bi:4});
- ['house','strap'].forEach(k=>{if(S.lt[k]>=S.day){if(!S.lk59[k]||S.lk59[k].d!==S.lt[k])S.lk59[k]={d:S.lt[k],bi:away(Math.floor(Math.random()*BLOCKS.length))};o.push({k,bi:S.lk59[k].bi})}});
+  ['house','strap'].forEach(k=>{if(S.lt[k]>=S.day){if(!S.lk59[k]||S.lk59[k].d!==S.lt[k])S.lk59[k]={d:S.lt[k],bi:away(Math.floor(Math.random()*BLOCKS.length))};o.push({k,bi:S.lk59[k].bi})}});
  if((S.age||0)>=16){if(!S.lk59.car||S.lk59.car.d!==S.day)S.lk59.car={d:S.day,bi:Math.floor(Math.random()*BLOCKS.length)};o.push({k:'car',bi:S.lk59.car.bi})}}catch(e){}return o}
 window.l59spots=spots;
 function card(k,bi){const L=LICKS[k];if(!L)return;const here=S.at===bi,ok=!L.need||L.need(),cd=typeof LCD!=='undefined'&&LCD[k]&&typeof lkLeft==='function'?lkLeft(k):0;
@@ -31,7 +30,7 @@ try{const _pl59=paneLicks;paneLicks=function(){let h=_pl59.apply(this,arguments)
  t.content.querySelectorAll('button[data-a="lick"],button[data-a="pad"]').forEach(b=>{const r=b.closest('.row');if(r)r.remove()});
  t.content.querySelectorAll('.row').forEach(r=>{if(/come through tips on your phone/.test(r.textContent))r.remove()});
  t.content.querySelectorAll('img').forEach(im=>{const r=im.closest('.a2,.a2i');if(r&&!r.closest('.row'))r.remove()});
- const sec=[...t.content.querySelectorAll('.sec')].find(x=>/^Licks/.test(x.textContent));const ptr=document.createElement('div');ptr.className='row';ptr.innerHTML=`<div class="info"><div class="t">🎯 Licks show up on your map</div><div class="s">Red pins on the Move map: the corner store, the pharmacy, cars (16+), and houses or straps when somebody tips you. Go to the block, tap the pin.</div></div>`;
+ const sec=[...t.content.querySelectorAll('.sec')].find(x=>/^Licks/.test(x.textContent));const ptr=document.createElement('div');ptr.className='row';ptr.innerHTML=`<div class="info"><div class="t">🎯 Licks show up on your map</div><div class="s">Red pins on the Move map: cars to steal (16+), and houses or straps when somebody tips you. Rob the corner store or pharmacy inside the place itself. Go to the block, tap the pin.</div></div>`;
  if(sec){sec.textContent='Licks';sec.after(ptr)}else t.content.prepend(ptr);const d=document.createElement('div');d.appendChild(t.content.cloneNode(true));h=d.innerHTML}catch(e){console.error('sk59 pl',e)}return h}}catch(e){}
 /* ---------- burners are bought at the mall ---------- */
 try{const _op=openPlace;openPlace=function(id){const r=_op.apply(this,arguments);try{if(id==='mall'&&!el('modal').hidden&&S.at===placeAt('mall')){const mc=el('mcard');

@@ -1,0 +1,9 @@
+<script id="skin64js">
+(function(){if(window._sk64)return;window._sk64=1;
+/* skip time is one tap away: a Skip button next to Next day / Lay low / Nap */
+try{const _r=render;render=function(){const r=_r.apply(this,arguments);try{const q=document.querySelector('#pane .wq');if(q&&!q.querySelector('[data-sk64]')&&!S.pr&&!S.inJail){const b=document.createElement('button');b.className='btn';b.dataset.sk64='1';b.textContent='⏩ Skip time';q.appendChild(b)}}catch(e){}return r}}catch(e){}
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-sk64]');if(!b)return;e.preventDefault();e.stopPropagation();let h='';try{h=skipRows()}catch(er){}
+ modal(`<h2>⏩ Skip time</h2>${h||'<p>You cannot skip time right now.</p>'}<div class="btns"><button class="btn" id="x64">Never mind</button></div>`);document.getElementById('x64').onclick=()=>{close();render()}},true);
+/* a choice in the popup: close it first (skipping needs a clear screen), then skip */
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('#mcard button[data-a="lay7"],#mcard button[data-a="skipb"],#mcard button[data-a="skipn"]');if(!b||b.disabled)return;if(!/Skip time/.test((document.querySelector('#mcard h2')||{}).textContent||''))return;e.preventDefault();e.stopPropagation();const k={lay7:'lay7',skipb:'bday',skipn:'next'}[b.dataset.a];close();try{skipTime(k)}catch(er){console.error('sk64',er)}},true);
+})();</script>

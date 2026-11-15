@@ -10506,8 +10506,7 @@ const RISK={car:'High',pharm:'High',strap:'High',store:'Medium',house:'Medium'};
 const IC={car:'🚗',pharm:'💊',strap:'🔫',store:'🏪',house:'🏠'};
 /* where each lick is today */
 function spots(){const o=[];try{if((S.age||0)<14)return o;S.lt=S.lt||{};S.lk59=S.lk59||{};const away=b=>{let x=b;if(x===S.home||x===(typeof homeBlock==='function'?homeBlock():-1))x=(x+2)%BLOCKS.length;return x};
- o.push({k:'store',bi:1});o.push({k:'pharm',bi:4});
- ['house','strap'].forEach(k=>{if(S.lt[k]>=S.day){if(!S.lk59[k]||S.lk59[k].d!==S.lt[k])S.lk59[k]={d:S.lt[k],bi:away(Math.floor(Math.random()*BLOCKS.length))};o.push({k,bi:S.lk59[k].bi})}});
+  ['house','strap'].forEach(k=>{if(S.lt[k]>=S.day){if(!S.lk59[k]||S.lk59[k].d!==S.lt[k])S.lk59[k]={d:S.lt[k],bi:away(Math.floor(Math.random()*BLOCKS.length))};o.push({k,bi:S.lk59[k].bi})}});
  if((S.age||0)>=16){if(!S.lk59.car||S.lk59.car.d!==S.day)S.lk59.car={d:S.day,bi:Math.floor(Math.random()*BLOCKS.length)};o.push({k:'car',bi:S.lk59.car.bi})}}catch(e){}return o}
 window.l59spots=spots;
 function card(k,bi){const L=LICKS[k];if(!L)return;const here=S.at===bi,ok=!L.need||L.need(),cd=typeof LCD!=='undefined'&&LCD[k]&&typeof lkLeft==='function'?lkLeft(k):0;
@@ -10527,7 +10526,7 @@ try{const _pl59=paneLicks;paneLicks=function(){let h=_pl59.apply(this,arguments)
  t.content.querySelectorAll('button[data-a="lick"],button[data-a="pad"]').forEach(b=>{const r=b.closest('.row');if(r)r.remove()});
  t.content.querySelectorAll('.row').forEach(r=>{if(/come through tips on your phone/.test(r.textContent))r.remove()});
  t.content.querySelectorAll('img').forEach(im=>{const r=im.closest('.a2,.a2i');if(r&&!r.closest('.row'))r.remove()});
- const sec=[...t.content.querySelectorAll('.sec')].find(x=>/^Licks/.test(x.textContent));const ptr=document.createElement('div');ptr.className='row';ptr.innerHTML=`<div class="info"><div class="t">🎯 Licks show up on your map</div><div class="s">Red pins on the Move map: the corner store, the pharmacy, cars (16+), and houses or straps when somebody tips you. Go to the block, tap the pin.</div></div>`;
+ const sec=[...t.content.querySelectorAll('.sec')].find(x=>/^Licks/.test(x.textContent));const ptr=document.createElement('div');ptr.className='row';ptr.innerHTML=`<div class="info"><div class="t">🎯 Licks show up on your map</div><div class="s">Red pins on the Move map: cars to steal (16+), and houses or straps when somebody tips you. Rob the corner store or pharmacy inside the place itself. Go to the block, tap the pin.</div></div>`;
  if(sec){sec.textContent='Licks';sec.after(ptr)}else t.content.prepend(ptr);const d=document.createElement('div');d.appendChild(t.content.cloneNode(true));h=d.innerHTML}catch(e){console.error('sk59 pl',e)}return h}}catch(e){}
 /* ---------- burners are bought at the mall ---------- */
 try{const _op=openPlace;openPlace=function(id){const r=_op.apply(this,arguments);try{if(id==='mall'&&!el('modal').hidden&&S.at===placeAt('mall')){const mc=el('mcard');
@@ -10594,7 +10593,7 @@ try{const _pb=paneBlock;paneBlock=function(){let h=_pb.apply(this,arguments);try
 /* street business lives on the Block tab */
 try{const _pb2=paneBlock;paneBlock=function(){let h=_pb2.apply(this,arguments);try{if(typeof w4Spots==='function'&&!/w4_cook/.test(h))h+=w4Spots()}catch(e){console.error('sk61 sb',e)}return h}}catch(e){}
 /* pins on the Move map for traps you own */
-try{const _r=render;render=function(){const r=_r.apply(this,arguments);try{if(typeof tab!=='undefined'&&tab==='move'){const m=el('fm26'),tp=window._tp26;if(m&&tp&&!m.querySelector('.tp61'))Object.keys(S.traps||{}).forEach(k=>{const i=+k;if(!S.traps[k]||!myBlock(i))return;const q=tp(i);if(!q)return;const b=document.createElement('button');b.className='tp61';b.textContent='🧺';b.title='Your trap on '+BLOCKS[i];b.dataset.bi=i;b.style.left=(q[0]-10)+'%';b.style.top=(q[1]+10)+'%';m.appendChild(b)})}
+try{const _r=render;render=function(){const r=_r.apply(this,arguments);try{if(false){const m=el('fm26'),tp=window._tp26;if(m&&tp&&!m.querySelector('.tp61'))Object.keys(S.traps||{}).forEach(k=>{const i=+k;if(!S.traps[k]||!myBlock(i))return;const q=tp(i);if(!q)return;const b=document.createElement('button');b.className='tp61';b.textContent='🧺';b.title='Your trap on '+BLOCKS[i];b.dataset.bi=i;b.style.left=(q[0]-10)+'%';b.style.top=(q[1]+10)+'%';m.appendChild(b)})}
  /* worker threads: "bring me the money" */
  const th=document.querySelector('.phx[data-app="messages"] .mth-th');if(th&&window._mth){const kb=th.querySelector('.mth-kb');const wi=(S.workers||[]).findIndex(w=>w.name===window._mth);if(kb&&wi>=0&&!kb.querySelector('[data-a="wcollect"]')){const w=S.workers[wi];kb.insertAdjacentHTML('beforeend',`<button class="mth-opt" data-a="wcollect" data-i="${wi}" data-says="Bring me the money." ${w.held?'':'disabled'}>${w.held?`Bring me the money (${money(w.held)})`:'Nothing to pick up'}</button>`)}}}catch(e){console.error('sk61 r',e)}return r}}catch(e){}
 /* workers text you what they made */
@@ -10633,4 +10632,13 @@ try{const _r=render;render=function(){const o=grab();const r=_r.apply(this,argum
 try{const _md=modal;modal=function(){const mc=document.getElementById('mcard'),open=!document.getElementById('modal').hidden,h=(mc&&mc.querySelector('h2')||{}).textContent||'',st=mc?mc.scrollTop:0,ps=(mc&&mc.querySelector('.pane')||{}).scrollTop||0;const r=_md.apply(this,arguments);try{const h2=(mc&&mc.querySelector('h2')||{}).textContent||'';if(open&&h&&h===h2){mc.scrollTop=st;const p=mc.querySelector('.pane');if(p)p.scrollTop=ps;requestAnimationFrame(()=>{mc.scrollTop=st;if(p)p.scrollTop=ps})}}catch(e){}return r}}catch(e){}
 })();</script>
 
+<script id="skin64js">
+(function(){if(window._sk64)return;window._sk64=1;
+/* skip time is one tap away: a Skip button next to Next day / Lay low / Nap */
+try{const _r=render;render=function(){const r=_r.apply(this,arguments);try{const q=document.querySelector('#pane .wq');if(q&&!q.querySelector('[data-sk64]')&&!S.pr&&!S.inJail){const b=document.createElement('button');b.className='btn';b.dataset.sk64='1';b.textContent='⏩ Skip time';q.appendChild(b)}}catch(e){}return r}}catch(e){}
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-sk64]');if(!b)return;e.preventDefault();e.stopPropagation();let h='';try{h=skipRows()}catch(er){}
+ modal(`<h2>⏩ Skip time</h2>${h||'<p>You cannot skip time right now.</p>'}<div class="btns"><button class="btn" id="x64">Never mind</button></div>`);document.getElementById('x64').onclick=()=>{close();render()}},true);
+/* a choice in the popup: close it first (skipping needs a clear screen), then skip */
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('#mcard button[data-a="lay7"],#mcard button[data-a="skipb"],#mcard button[data-a="skipn"]');if(!b||b.disabled)return;if(!/Skip time/.test((document.querySelector('#mcard h2')||{}).textContent||''))return;e.preventDefault();e.stopPropagation();const k={lay7:'lay7',skipb:'bday',skipn:'next'}[b.dataset.a];close();try{skipTime(k)}catch(er){console.error('sk64',er)}},true);
+})();</script>
 <script>if('serviceWorker' in navigator){addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}</script></body></html>

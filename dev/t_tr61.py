@@ -18,7 +18,7 @@ with sync_playwright() as p:
     J("()=>{const b=document.querySelector('#mcard .tr61 [data-a=\"hirew\"]');if(b)b.click()}");pg.wait_for_timeout(400)
     ck('hire a worker from the trap page',J("()=>S.workers.length>=1"))
     J("()=>{document.getElementById('modal').hidden=true;tab='move';render()}");pg.wait_for_timeout(200)
-    ck('🧺 pin on the Move map',J("()=>!!document.querySelector('#fm26 .tp61')"))
+    ck('no extra 🧺 pins (map already shows trap houses)',J("()=>!document.querySelector('#fm26 .tp61')"))
     J("()=>{tab='phone';window._rph=null;render()}");pg.wait_for_timeout(200)
     ck('Trap house app gone from the phone',J("()=>!document.querySelector('.ph-home [data-rph=\"trap\"]')"))
     J("()=>{const w=S.workers[0];w.held=900;S.traps[2].w=w.id;S.w61={};WD.forEach(f=>{try{if(/w61/.test(String(f)))f()}catch(e){}})}")
