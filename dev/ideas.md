@@ -309,3 +309,61 @@ Start with 2 + 8 on texting, court and plug talk (~5-8% usage). 3/4/5 are ~10-15
 - Bringing it back (pick one, each with risk/cost): drive it in a stash car (hidden compartment upgrade, checkpoint chance), mules (cheap, can flip/snitch/get caught), mail/freight (slow, seizure chance), your crew/Right Hand Man drives it (ties to the Right Hand Man idea), fly with it (fast, highest bust risk).
 - Bust = lose the load + heat/court; success = cheapest product in the game.
 - Clean vs dirty cash, dev menu (force refusal, set trust), tutorial line, keyboard on the talk game.
+
+## Right Hand Man runs the product (Chris, Nov 15) - NOT BUILT, wait for "build" (Opus/Fable, multi-system, about 2 hrs)
+- Today the Right Hand Man only boosts crew routes, adds strength, keeps the block paying while you are locked up, and in a city can "Pick up the load" or "Make the drop" for a random cash amount. He never moves real product.
+- Idea: on a connect order, option "Send [Right Hand] to meet [connect]". He collects the shipment (so you skip the trip/flight and carry less risk yourself) and takes it where you pick: your stash, a trap house, or a stash house.
+- Also "Move stash": he moves real grams/pills between your stash, trap houses and stash houses so you stop sliding amounts yourself.
+- Costs his day (one job a day), heat risk if cops roll, skim risk under 40 loyalty (like today), lose the load if he is caught. Higher loyalty means safer and faster.
+- Works with pounds/QP pieces once the pounds idea is built. Clean vs dirty cash, dev menu button, tutorial line, tests.
+## Polish pack (from outside spec, Nov 15) — not built yet
+- Block prices drop when you oversell: each sale on a block lowers its price a little (cap about -50%), and it recovers over a few days. Pushes you to move around the map. Show a ▲/▼ trend on the block.
+- Notification stack at the top: one tap jumps to the thing or fixes it inline ("Dre holding $400 → [Collect]", "Mya says pull up → [Go]"). Pairs with the crew group chat idea.
+- Juice: floating gold "+$" when paid, red "-$" when spending, buttons press in on tap, screen shake + red edge on heat spikes or failed mini games.
+- Sounds made in code (no files): cash chime, text ping, deal thud, low pulse on high heat. One mute switch in the menu.
+- 3-tap rule: any main action (buy, sell, collect, assign crew, answer an event) takes 3 taps or fewer. Audit screens that break it.
+- Event buttons show exact results, e.g. "Pay bribe: -$1,200 dirty · -40 heat".
+- Clean vs dirty cash, dev menu toggles (mute, reset block prices), tutorial lines, tests.
+## Roadmap order (Nov 15) — do areas in this order so new stuff plugs into working stuff
+1. Clarity (always know what to do next) · 2. Core loop (buy/sell/move) · 3. Feel (juice, animations) · 4. Middle game (crew runs itself) · 5. Late game (money sinks, goals, endings) · 6. Balance pass (sim day 1-200) · 7. New chapters (grow op, dispensary) last.
+## Crew cleanup — BUILT Nov 15 (skin68), except auto-run switch
+- Circle tab crew = one clean row per person: face, name, role, one status line ("Holding $340", "Needs pay"). No buttons on the row.
+- Tap the NAME/face to open their card with only the actions that work right now: text, pay, bonus, Make manager (or why not yet), cut off. Hidden instead of grayed out.
+- Manager button should pop up on the worker's name card too, not only inside the trap page.
+- One "Collect all" button at the top of the crew.
+- Auto-run switch per worker: they sell and drop off money on their own, then text you.
+## Crew group chat — BUILT Nov 15 (skin68)
+- "The Gang" group thread in Messages. Crew posts updates there ("Dre: holding $400", "Tasha: 12 left, need a re-up", "Moe: cops on 3rd").
+- They text first: thread jumps to the top with a red badge + banner.
+- Group reply chips: Bring the money · Re-up coming · Lay low · Good work (small bonus to all).
+- 1-on-1 threads stay for personal stuff (pay beef, manager, cut off).
+## Animations (no new art) — not built
+- Map travel: your face pin rides the streets to the next block (car / walking / bus, matches how you chose to go).
+- Money bills fly into the cash number when paid, fly out when spending.
+- Places slide open like a comic page.
+- 2x2 event art reveals one panel at a time.
+- Faces bob / lean in when talking in scenes.
+- Cop lights sweep the screen on raids and chases.
+- Map by time of day (darker at night, lights brighter); red glow on hot blocks; pulsing dots where something waits for you.
+- Later (needs art): walk-in scene strips, characters walking (needs consistent poses, hit or miss with Gemini).
+## Life paths — every path needs a start, middle, end goal and crossovers — not built
+- Rap ladder: open mics → mixtape → local buzz → features → label or indie → tour. Street rep feeds buzz; beef/heat can kill a deal; rap money is clean. End: platinum or own label.
+- Robbery ladder: snatching → licks → crew jobs → big heists, fencing loot, jack-boy rep makes plugs scared; robbing plugs burns connects.
+- Work: promotions, raises, a boss who notices; good shifts = raise, missed = fired. Legit job = cover (less cop attention, nicer apartment). End: manager or your own small business.
+- College: majors unlock careers (business = better fronts, music = rap skill, nursing = steady pay), student loans, campus hustle temptation, graduation day.
+- Relationships/family (thinnest now): dating, main partner, kids, family needing money, someone at home who worries when heat is high. Reason to go straight or keep going.
+- Endings + final score: retire rich, go legit, prison, die young, legend. Switching paths always possible.
+## Social media tied to your whole life — not built
+- Followers come from everything: street rep (~5 per rep point, 200 rep ≈ 1,000), rap drops/shows/features, flexing (car, chain, apartment posts), big moments (beat a case, big heist, beef, winning a game), jail ("free me" bump but can't post).
+- Followers do things: more rap streams and show pay, customers find you (sell faster), easier recruiting, but cops and jack boys watch big pages.
+- Followers can drop: snitch rumors, losing a beef, going quiet, a flop.
+- Rap tie-in: drop a song then post it, content between drops (studio clip, snippet tease), viral chance, online beef/diss that can turn into real street beef, flexing stash/guns/cash on your page raises heat, fan comments show if a song hit or flopped.
+## Realtor houses: pick what each house is for — not built
+- Houses bought at the Real estate office get a use you choose: Personal home, Stash house, or Trap house. Can switch later (takes a day, costs a little to set up).
+- Location matters: hood blocks = cheap, more foot traffic (trap sells more) but more heat; nice areas = pricey, low heat, quiet (good home or stash), bad for traps (neighbors call cops).
+- Size matters: small house / apartment / big house = stash space, how many workers fit in a trap, and how much the home helps stress.
+- Home: lowers stress, family/partner can live there, flex for followers.
+- Stash house: big storage, cops need a warrant (raid chance low unless someone snitches), lets you make managers.
+- Trap house: workers sell there; more space = more workers and more product; heat builds on that block.
+- My add-ons: upgrades per house (cameras, safe, dog, reinforced door: less raid/robbery loss), a "lay low" option to hide product at a quiet house during high heat, rent a house out for clean income, houses can get raided/robbed/burned in beef, and a house on a block you don't own pays a cut to whoever runs it.
+- One home for this: houses live in the Real estate office + Block tab, no repeat lists. Clean cash to buy legit, dirty cash = cash buyer with more attention. Dev menu: give a house, tutorial line, tests.
