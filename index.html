@@ -6200,7 +6200,7 @@ function talk(kind,g){
     S.talked[bi]=true;
     const dir=kind==='buy'?-1:1;$('modal').hidden=true;
     const nd=Math.round(10*Math.max(.35,Math.min(.9,1.05-ch/100*.75)));
-    talkDown(Math.max(.1,Math.min(.9,1-ch/100)),10,nd,won=>{
+    window._tdFem=plugFem(bi)?1:0;talkDown(Math.max(.1,Math.min(.9,1-ch/100)),10,nd,won=>{window._tdFem=0;
     if(won){const p=Math.round(now*(1+dir*pct));S.deal={bi,g:g.id,kind,p,ok:1,line:pick(pct>.2?['"Damn, you hard to say no to. Bet."','"You lucky I fuck with you. Run it."','"Aight aight, you got that. Don\'t tell nobody."']:['"Bet, I got you."','"For you? Cool."','"Aight, that\'s fair."'])};S.trust[bi]=Math.min(100,t+3);
       S.st.talks++;say(`${plug} went for it. ${g.name} at ${money(p)}.`)}
     else{const p=Math.round(now*(1-dir*.12));S.deal={bi,g:g.id,kind,p,ok:0,line:pick(['"You got me fucked up."','"Nah. Now it\'s more. Keep playing with me."','"Who you think you talking to?"','"Price just went up. Thank yourself."'])};S.trust[bi]=Math.max(0,t-10);
@@ -8023,17 +8023,17 @@ const MOODS={angry:['"You disrespected me. I am not letting that go."','"Say tha
  scared:['"Look, I do not want any problems. Just stay back."','"I got people coming. Do not do anything crazy."','"Why you looking at me like that?"'],
  proud:['"Nobody talks to me like that on my block."','"You know who I am? You better act like it."','"I run this corner. Show some respect."'],
  drunk:['"Bro what is your problem, huh? Huh?"','"I am fine! I am fine. You wanna go?"','"Hold on, hold on. You looking at me?"']};
-const CH={calm:{n:'Stay calm',d:{angry:-16,scared:-10,proud:-4,drunk:-8}},firm:{n:'Stand firm',d:{angry:8,scared:-14,proud:-6,drunk:-4}},joke:{n:'Crack a joke',d:{angry:12,scared:-4,proud:10,drunk:-14}},respect:{n:'Give him respect',d:{angry:-10,scared:-6,proud:-18,drunk:-2}},back:{n:'Step back',d:{angry:-12,scared:-12,proud:4,drunk:-10}}};
+const CH={calm:{n:'Stay calm',d:{angry:-16,scared:-10,proud:-4,drunk:-8}},firm:{n:'Stand firm',d:{angry:8,scared:-14,proud:-6,drunk:-4}},joke:{n:'Crack a joke',d:{angry:12,scared:-4,proud:10,drunk:-14}},respect:{n:'Give them respect',d:{angry:-10,scared:-6,proud:-18,drunk:-2}},back:{n:'Step back',d:{angry:-12,scared:-12,proud:4,drunk:-10}}};
 talkDown=function(diff,notes,need,cb){
-  mgOn=true;const TURNS=5;let ag=Math.round(45+diff*45),turn=0,mood='',log='';
+  mgOn=true;const TURNS=5;const FE=!!window._tdFem,P=FE?{he:'she',He:'She',him:'her',his:'her'}:{he:'he',He:'He',him:'him',his:'his'};let ag=Math.round(45+diff*45),turn=0,mood='',log='';
   const tk=(S.sk&&S.sk.talk||3),mult=1+(tk-3)*.07+(hasT('tongue')?.15:0)-(hasT('hot')?.15:0);
   const step=()=>{if(ag<=25||turn>=TURNS||ag>=100){mgOn=false;const ok=ag<=25;return cb(ok)}
     const ms=Object.keys(MOODS);mood=ms[rnd(0,ms.length-1)];const line=MOODS[mood][rnd(0,2)];const keys=Object.keys(CH).sort(()=>Math.random()-.5).slice(0,3);
-    modal(`<div class="sec" style="margin:0">Talk it out · ${turn+1} of ${TURNS}</div><h2>Calm him down</h2><div class="s">Aggression</div><div class="bar" style="height:12px"><i style="width:${clamp(ag,0,100)}%;background:${ag>70?'var(--blood)':ag>40?'var(--heat)':'var(--money)'}"></i></div><p class="s" style="color:var(--dim)">Get it under 25 before the turns run out. Over 100 and it pops off.</p>
-     <p style="font-style:italic;margin:10px 0">${line}</p><div class="s" style="margin-bottom:8px">He seems <b>${mood==='angry'?'angry':mood==='scared'?'scared':mood==='proud'?'proud':'drunk'}</b>. ${log}</div>
+    modal(`<div class="sec" style="margin:0">Talk it out · ${turn+1} of ${TURNS}</div><h2>Calm ${P.him} down</h2><div class="s">Aggression</div><div class="bar" style="height:12px"><i style="width:${clamp(ag,0,100)}%;background:${ag>70?'var(--blood)':ag>40?'var(--heat)':'var(--money)'}"></i></div><p class="s" style="color:var(--dim)">Get it under 25 before the turns run out. Over 100 and it pops off.</p>
+     <p style="font-style:italic;margin:10px 0">${line}</p><div class="s" style="margin-bottom:8px">${P.He} seems <b>${mood==='angry'?'angry':mood==='scared'?'scared':mood==='proud'?'proud':'drunk'}</b>. ${log}</div>
      <div class="btns" style="flex-direction:column;align-items:stretch">${keys.map(k=>`<button class="btn" data-k="${k}" style="text-align:left;text-transform:none;min-height:48px">${CH[k].n}</button>`).join('')}</div>`);
     $('mcard').querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>{const d=CH[b.dataset.k].d[mood],ch=d<0?Math.round(d*mult):Math.round(d/Math.max(.6,mult));ag=clamp(ag+ch+(Math.random()<.5?3:0),0,110);turn++;log=ch<=-12?'That helped a lot.':ch<0?'That helped a little.':ch<8?'That did not land.':'That made it worse.';step()})};
-  gateGame('Talk it out',`He is about to swing. Read how he feels, then pick the response that fits: calm for angry, firm for scared, respect for proud, a joke for drunk. Wrong picks make it worse. Get his aggression under 25 in ${TURNS} turns.`,step)};
+  gateGame('Talk it out',`${FE?'She':'He'} is about to swing. Read how ${FE?'she':'he'} feels, then pick the response that fits: calm for angry, firm for scared, respect for proud, a joke for drunk. Wrong picks make it worse. Get ${FE?'her':'his'} aggression under 25 in ${TURNS} turns.`,step)};
 })();
 </script>
 <script id="skin15js">
