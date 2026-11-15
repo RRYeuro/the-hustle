@@ -301,3 +301,10 @@ Start with 2 + 8 on texting, court and plug talk (~5-8% usage). 3/4/5 are ~10-15
 - Dedupe + manager: BUILT Nov 15 (skin62). Crew, Family (and Orders) phone apps removed; Your crew, Family, Your people and Your runners now show in Your Circle (router + NEED). Crew/family stay as contacts you text. Make manager button always shows; when blocked it says why (needs 10 work days X/10, needs a stash house, 2 managers max, 16+). Trap page shows the last thing that happened.
 - Stay in place after actions: BUILT Nov 15 (skin63). A redraw keeps the page scroll, phone app scroll and popup scroll when you're still on the same screen; switching tabs or apps still starts at the top.
 - Nov 15 tweaks (skin59/61/64): removed my extra 🧺 trap pins (map already has trap houses) and the store/pharmacy lick pins (you rob them inside the place); lick pins are now cars + tipped houses/straps. Added ⏩ Skip time next to Next day / Lay low / Nap: popup with Lay low for a week, Skip to your birthday, Skip to the next event (they were folded inside a closed Time section on the Move tab).
+
+## Right Hand Man runs the product (Chris, Nov 15) - NOT BUILT, wait for "build" (Opus/Fable, multi-system, about 2 hrs)
+- Today the Right Hand Man only boosts crew routes, adds strength, keeps the block paying while you are locked up, and in a city can "Pick up the load" or "Make the drop" for a random cash amount. He never moves real product.
+- Idea: on a connect order, option "Send [Right Hand] to meet [connect]". He collects the shipment (so you skip the trip/flight and carry less risk yourself) and takes it where you pick: your stash, a trap house, or a stash house.
+- Also "Move stash": he moves real grams/pills between your stash, trap houses and stash houses so you stop sliding amounts yourself.
+- Costs his day (one job a day), heat risk if cops roll, skim risk under 40 loyalty (like today), lose the load if he is caught. Higher loyalty means safer and faster.
+- Works with pounds/QP pieces once the pounds idea is built. Clean vs dirty cash, dev menu button, tutorial line, tests.
