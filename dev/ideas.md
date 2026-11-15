@@ -142,7 +142,7 @@ Order if built: 1, 2, 3 as one batch (~2 hrs), then 5. Leaderboard only after pe
 - Idle burn about $14-20/day for most characters; Tank burns about $130/day (soldier pay) with no warning; Life starts tight ($1,000).
 - Businesses (barber, car wash, laundromat, club) pay back in about 67 days, but a Normal run is 35 days. Check how score counts them, or lower the costs / add a score bonus.
 
-## Business upgrades (instead of only cutting prices) (not built)
+## Business upgrades (instead of only cutting prices) (not built) — each level also unlocks more for the Business Manager (Crew rings)
 - Lower base price a bit, add 3 upgrade levels per business paid from clean money (like trap fortify). Each level raises daily pay and unlocks a perk. Each upgrade should pay back in about 10-12 days.
 - Club: base $35k. L1 VIP room $8k (+$300/day, VIP sells +30%), L2 security $12k (cannot be shut down, fewer fight events), L3 headliner nights $20k (+$700/day, +fans for rappers).
 - Barber: more chairs, then a back room that cleans more money. Car wash: second bay, then a detail shop with a rich-customer bonus. Laundromat: more machines, then a bigger cash-cleaning limit.
@@ -223,10 +223,10 @@ Order if built: 1, 2, 3 as one batch (~2 hrs), then 5. Leaderboard only after pe
 
 ## Tester ideas Nov 14 (assistantcoachricky, Chris said "that should work") - NOT BUILT, wait for "build"
 - 3D printer (expansion of the ghost gun kit, which is a $350 pawn shop pistol for 18+ today): at 18 buy a 3D printer at the pawn shop, or get offered one on the block in a random street event. Print switches and sell them for a small profit (dirty cash). Should carry real risk: a big charge if you are caught holding them, heat on every sale, raid risk where the printer sits, buyers can be undercover. Needs a place to keep it (your home or a property).
-- Send soldiers on licks, not just heists. Heists already have "Send the crew" (built Nov 14). Licks would work the same way through crew jobs: pick a soldier for a house, store or car lick, they are gone 1 day, bring back cash or stolen goods (into your stash), skim risk under 30 loyalty, can get caught (hurt or picked up), you get part of the heat.
+- (Now part of Crew rings: Robbery ring.) Send soldiers on licks, not just heists. Heists already have "Send the crew" (built Nov 14). Licks would work the same way through crew jobs: pick a soldier for a house, store or car lick, they are gone 1 day, bring back cash or stolen goods (into your stash), skim risk under 30 loyalty, can get caught (hurt or picked up), you get part of the heat.
 - Nov 14: Sam is a she (Chris). Added to the female name lists for crew, friends and workers. Mission check: all 6 characters' story missions still work after the plug move; first buy works for everyone (text the plug, meet, buy grams).
 
-## Unc's tire shop as the stolen car buyer (Chris, Nov 14) - NOT BUILT, wait for "build"
+## Unc's tire shop as the stolen car buyer (Chris, Nov 14) - NOT BUILT, wait for "build" (Car ring sends cars here if you have no chop shop)
 - Nov 15: chop shop owners can already park a stolen car on the lot and keep their own car (built). Unc's idea is now only for players WITHOUT a chop shop.
 - Today a stolen car just sells on the spot ("Sell it to the chop shop") or you keep it. Change: no instant sale. You drive the stolen car to Unc's tire shop (he is shady) and he strips it down for you, for a cut. Fits the map: Unc's tire shop is already a place on the Block map.
 - Unc's strip pays less (he keeps a cut, say 50 to 60%), takes a day or has a cop-roll heat risk, and trust with Unc can raise his cut.
@@ -305,16 +305,10 @@ Start with 2 + 8 on texting, court and plug talk (~5-8% usage). 3/4/5 are ~10-15
 - When a connect refuses a deal, don't dead-end. Two options:
   1. Talk your way in: a short talk mini game (Talk skill, trust, rep, cash shown). Win = deal at normal or slightly worse price; lose = trust drop + cooldown. Offer sweeteners: pay upfront, buy bigger, put a soldier up as collateral.
   2. Go to them in person: travel to their city (flight/drive, costs time + money). They respect you showing up = better odds and price. But nothing ships for you: you have to bring it back yourself.
-- Bringing it back (pick one, each with risk/cost): drive it in a stash car (hidden compartment upgrade, checkpoint chance), mules (cheap, can flip/snitch/get caught), mail/freight (slow, seizure chance), your Right Hand Man drives it (that part IS the Right Hand Man idea below, build both together), fly with it (fast, highest bust risk).
+- Bringing it back (pick one, each with risk/cost): drive it in a stash car (hidden compartment upgrade, checkpoint chance; Car ring can build stash cars), mules (cheap, can flip/snitch/get caught), mail/freight (slow, seizure chance), your Right Hand Man drives it (see Crew rings: Right Hand powers), fly with it (fast, highest bust risk).
 - Bust = lose the load + heat/court; success = cheapest product in the game.
 - Clean vs dirty cash, dev menu (force refusal, set trust), tutorial line, keyboard on the talk game.
 
-## Right Hand Man runs the product (Chris, Nov 15) - NOT BUILT, wait for "build" (Opus/Fable, multi-system, about 2 hrs)
-- Today the Right Hand Man only boosts crew routes, adds strength, keeps the block paying while you are locked up, and in a city can "Pick up the load" or "Make the drop" for a random cash amount. He never moves real product.
-- Idea: on a connect order, option "Send [Right Hand] to meet [connect]". He collects the shipment (so you skip the trip/flight and carry less risk yourself) and takes it where you pick: your stash, a trap house, or a stash house.
-- Also "Move stash": he moves real grams/pills between your stash, trap houses and stash houses so you stop sliding amounts yourself.
-- Costs his day (one job a day), heat risk if cops roll, skim risk under 40 loyalty (like today), lose the load if he is caught. Higher loyalty means safer and faster.
-- Works with pounds/QP pieces once the pounds idea is built. Clean vs dirty cash, dev menu button, tutorial line, tests.
 ## Polish pack (from outside spec, Nov 15) — not built yet
 - Block prices drop when you oversell: each sale on a block lowers its price a little (cap about -50%), and it recovers over a few days. Pushes you to move around the map. Show a ▲/▼ trend on the block, plus "Js here have about $X left today" (moved here from Opus extras). Same build: heat per sale grows with volume on one block (balance run showed heat under 12 while serving hundreds).
 - Notification stack at the top: one tap jumps to the thing or fixes it inline ("Dre holding $400 → [Collect]", "Mya says pull up → [Go]"). Pulls from The Gang chat + plug texts (no new messages, just shortcuts).
@@ -324,9 +318,9 @@ Start with 2 + 8 on texting, court and plug talk (~5-8% usage). 3/4/5 are ~10-15
 - Event buttons show exact results, e.g. "Pay bribe: -$1,200 dirty · -40 heat".
 - Clean vs dirty cash, dev menu toggles (mute, reset block prices), tutorial lines, tests.
 ## Roadmap order (Nov 15) — do areas in this order so new stuff plugs into working stuff
-1. Clarity (always know what to do next) · 2. Core loop (buy/sell/move) · 3. Feel (juice, animations) · 4. Middle game (crew runs itself) · 5. Late game (money sinks, goals, endings) · 6. Balance pass (sim day 1-200) · 7. New chapters (grow op, dispensary) last.
+1. Clarity (always know what to do next) · 2. Core loop (buy/sell/move) · 3. Feel (juice, animations) · 4. Middle game (crew runs itself = Crew rings) · 5. Late game (money sinks, goals, endings) · 6. Balance pass (sim day 1-200) · 7. New chapters (grow op, dispensary) last.
 ## Crew cleanup — BUILT Nov 15 (skin68): short crew cards, tap name for actions, Make manager on the worker card, Collect all, Restock all, keep-stocked auto refill
-- Left: auto-run switch per worker (sell and drop money off on their own, text you). Mostly covered by auto refill; build only if Chris still wants it.
+- Left: auto-run switch per worker. Now covered by Crew rings (Block Captain + Stash Leader keep traps running).
 ## Crew group chat — BUILT Nov 15 (skin68): The Gang thread, crew posts, Bring the money / Re-up / Lay low / Good work.
 ## Animations (no new art) — not built
 - Map travel: your face pin rides the streets to the next block (car / walking / bus, matches how you chose to go).
@@ -338,14 +332,14 @@ Start with 2 + 8 on texting, court and plug talk (~5-8% usage). 3/4/5 are ~10-15
 - Later (needs art): walk-in scene strips, characters walking (needs consistent poses, hit or miss with Gemini).
 ## Life paths — every path needs a start, middle, end goal and crossovers — not built
 - Rap: recording, diss, shows, signing, tour, merch and own label ALREADY exist. Missing: early steps (open mics, mixtape), features with other artists, beef/heat killing a deal, a platinum goal. Posting songs and going viral lives under Social media (one home).
-- Robbery: licks, loot + pawn fencing, crew heists, Last Big Deal ALREADY exist (soldiers on licks = tester idea above). Missing: snatching as the first step, jack-boy rep (plugs scared, prices/fronts change).
+- Robbery: licks, loot + pawn fencing, crew heists, Last Big Deal ALREADY exist; the crew side is the Robbery ring (Crew rings). Missing: snatching as the first step, jack-boy rep (plugs scared, prices/fronts change).
 - Work: promotions, raises, a boss who notices; good shifts = raise, missed = fired. Legit job = cover (less cop attention, nicer apartment). End: manager or your own small business.
 - College: majors unlock careers (business = better fronts, music = rap skill, nursing = steady pay), student loans, campus hustle temptation, graduation day.
 - Relationships/family (thinnest now): dating, main partner, kids, family needing money, someone at home who worries when heat is high. Reason to go straight or keep going.
 - Endings: score, ending epilogue, Hall of the block, Dynasty ALREADY exist. Check they cover go legit / legend / die young; switching paths always possible.
 ## Social media tied to your whole life — not built
 - Followers come from everything: street rep (~5 per rep point, 200 rep ≈ 1,000), rap drops/shows/features, flexing (car, chain, apartment posts), big moments (beat a case, big heist, beef, winning a game), jail ("free me" bump but can't post).
-- Followers do things: more rap streams and show pay, customers find you (sell faster), easier recruiting, but cops and jack boys watch big pages.
+- Followers do things: more rap streams and show pay, customers find you (sell faster), easier recruiting, but cops and jack boys watch big pages. A known crew (Crew rings) raises followers too.
 - Followers can drop: snitch rumors, losing a beef, going quiet, a flop.
 - Rap tie-in: drop a song then post it, content between drops (studio clip, snippet tease), viral chance, online beef/diss that can turn into real street beef, flexing stash/guns/cash on your page raises heat, fan comments show if a song hit or flopped.
 ## Realtor houses: pick what each house is for — not built
@@ -353,7 +347,43 @@ Start with 2 + 8 on texting, court and plug talk (~5-8% usage). 3/4/5 are ~10-15
 - Location matters: hood blocks = cheap, more foot traffic (trap sells more) but more heat; nice areas = pricey, low heat, quiet (good home or stash), bad for traps (neighbors call cops).
 - Size matters: small house / apartment / big house = stash space, how many workers fit in a trap, and how much the home helps stress.
 - Home: lowers stress, family/partner can live there, flex for followers.
-- Stash house: big storage, cops need a warrant (raid chance low unless someone snitches), lets you make managers.
+- Stash house: big storage, cops need a warrant (raid chance low unless someone snitches), lets you make managers. Any house can also be a ring HQ (Crew rings).
 - Trap house: workers sell there; more space = more workers and more product; heat builds on that block.
 - My add-ons: reuse the existing safe / guard dog / trap upgrades per house (don't make new ones), a "lay low" option to hide product at a quiet house during high heat, houses can get raided/robbed/burned in beef, and a house on a block you don't own pays a cut to whoever runs it. Renting out houses ALREADY exists (v205).
 - One home for this: houses live in the Real estate office + Block tab, no repeat lists. Clean cash to buy legit, dirty cash = cash buyer with more attention. Dev menu: give a house, tutorial line, tests.
+
+## Crew rings: every role and skill becomes its own operation (Chris, Nov 15) — NOT BUILT, wait for "build"
+Big idea: your crew isn't just strength and 2-day routes. Each skill (Trapper, Robber, Scammer, Shooter, Lookout, Driver) can run a RING: a standing job you set once, buy equipment for, upgrade, and that feeds the rest of the game. Each rank role (Right Hand, Enforcer, Stash Leader, Block Captain, Business Manager) gets real powers. You manage it all from one Crew Ops screen (next to Run the operation, same style: one row per ring, tap for details, Collect all).
+
+How a ring works (same for all):
+- Assign members by skill (good fit = more money, bad fit = mistakes). A ring needs a leader (best skill) + 1-3 members.
+- Set it and forget it: it runs every day, results come by text (The Gang chat).
+- Equipment you buy (dirty cash) and 3 upgrade levels (clean or dirty, says which). Upgrades raise pay, lower bust odds, unlock new jobs.
+- Risk scales with size: heat, busts (member picked up → court/bail for them), skims under 30 loyalty, snitch under 20.
+- Rings need a place: a house or business you own (ties to Realtor houses: choose a house as "ring HQ").
+
+The rings:
+- 🧠 Scam ring (Scammers): equipment = laptops, burner phones, card printer/encoder, mail drops. Jobs: phone scams, fake checks, fake online stores, romance scams. Upgrades: call center house, better scripts (Talk skill), clean-up guy who launders the take. Feeds: clean money via fronts, Forger contact discount. Risk: federal file faster (ties to Money draws attention tiers).
+- 🔫 Robbery ring (Robbers + Lookout): equipment = masks, scanners, lockpick sets, bump keys, gloves, a "work car". Jobs: house licks, store licks, jewelry, cargo. Upgrades: tip network (more house/strap tips on the map), fence deal with the pawn shop (better loot price), case-it crew (better odds). Feeds: loot into your stash/pawn, tips into the lick pins on the Move map, heists crew (built). Covers the tester idea "send soldiers on licks".
+- 🚗 Car ring (Drivers + Robbers): drivers steal cars on their own every day, cars go straight to YOUR chop shop lot (built Nov 15) or to Unc's if you don't own one. Equipment = key programmer, tow truck, plate press. Upgrades: respray booth (flip pays more), export container (big money, big risk), street racing team (Driver skill, race wins). Feeds: chop shop strip/flip, getaway cars for heists, stash cars with hidden compartments for connect runs.
+- 💊 Trap ring (Trappers): this is Run the operation (built) + managers. Upgrade: Block Captain auto-hires/fires workers and keeps traps stocked from the stash house.
+- 🛡️ Muscle (Shooters + Enforcer): equipment = guns, vests, cars. Jobs: guard traps (fewer robberies/raids lost), collect debts (ties to Debtors), protection money from businesses on your blocks, answer beef automatically. Upgrades: armory (stash guns), safe houses.
+- 👀 Watch network (Lookouts): equipment = burners, cameras, scanner. Jobs: watch blocks for cops and opps. Upgrades: more blocks watched, earlier raid warnings, scanner texts (ties to Police scanner + Opus "scanner texts" idea), spot undercover Js (ties to Undercover Js idea).
+
+Rank roles get real powers:
+- Right Hand Man: moves REAL product (your stash ↔ trap houses ↔ stash houses), picks up connect loads so you don't travel (ties to Connect says no: he can bring it back), runs things while you're locked up or out of town, can stand in for you at meets. Skim risk under 40 loyalty, loses the load if caught.
+- Enforcer: leads Muscle, handles beef and collections, keeps crew loyalty from dropping.
+- Stash Leader: runs the stash house(s), auto-moves product to where it's needed, cuts raid losses, makes managers possible.
+- Block Captain: runs a block: workers, traps, corner cred, taking new blocks.
+- Business Manager (NEW role): auto-runs your businesses (barber, car wash, laundromat, club, chop shop, dispensary): restocks, pays bills, handles business events, launders a set amount a day at a lower fee. Business skill = more pay, low loyalty = he steals. Ties to Business upgrades idea (each upgrade level unlocks more for the manager).
+
+How it all connects (examples):
+- Drivers steal cars → chop shop lot → strip/flip → parts and cash; respray upgrade → better flips; stash car → Right Hand drives a connect load home.
+- Robbers hit houses → loot → pawn fence deal → dirty cash → Business Manager washes it through the car wash.
+- Scam ring makes money → federal attention climbs → Lookouts + lawyer + Enforcer matter more.
+- Muscle guards traps → fewer robberies; losing a beef can hit any ring's HQ (house burned/raided, ties to Realtor houses).
+- Followers (Social media idea) go up when your crew is known; cops and jack boys watch bigger crews.
+- Rank ladder gates rings: Scam/Watch at Petty Dealer, Robbery/Car at Middle Man, Muscle at Supplier, multiple rings of one kind at Connect/Kingpin.
+- Crew jobs by rank (built) stay as one-off jobs; rings are the standing version.
+
+Build order if Chris says build: 1) Crew Ops screen + ring basics (assign, equipment, daily result, text) 2) Car ring (chop shop is ready) 3) Robbery ring 4) Scam ring 5) Right Hand / Stash Leader real product moves 6) Business Manager 7) Muscle + Watch. Each: dev menu buttons, tutorial lines, clean vs dirty cash checks, quick test.
