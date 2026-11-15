@@ -7468,7 +7468,7 @@ function moveHTML(){const p=P('move'),sp=P('spots');let head='';const home=(()=>
  return head+here+rest}
 /* phone */
 const APPS=[['messages','Messages','💬','#3fd0c9','People'],['contacts','Contacts','👤','#3fd0c9','People'],['crew','Crew','🧍','#3fd0c9','People'],['family','Family','🏡','#3fd0c9','People'],
- ['trap','Trap house','🧺','#f5a524','Street'],['orders','Orders','📦','#f5a524','Street'],['burners','Burners','🔥','#f5a524','Street'],['turf','Turf & prices','🗺️','#f5a524','Street'],['news','News','📰','#f5a524','Street'],['licks','Licks','🎯','#f5a524','Street'],
+ ['trap','Trap house','🧺','#f5a524','Street'],['orders','Orders','📦','#f5a524','Street'],['burners','Burners','🔥','#f5a524','Street'],['turf','Maps','🗺️','#f5a524','Street'],['news','News','📰','#f5a524','Street'],['licks','Licks','🎯','#f5a524','Street'],
  ['modern','Wallet','💳','#5fd38a','Money'],['backer','Backer','🤝','#5fd38a','Money'],['rides','Rides','🚕','#f5c43a','Street'],['hustle','Side hustles','💻','#a98bff','Hustle'],['social','Social','📸','#a98bff','Hustle']];
 window._rph=window._rph||null;
 function rhBtns(){try{if(typeof clCity==='function'&&clCity()&&typeof clStreetLane==='function'&&clStreetLane()&&typeof clRH==='function'&&clRH())return '<div class="btns" style="margin:6px 0"><button class="btn go" data-ap2="load">Text: pick up the load</button><button class="btn" data-ap2="drop">Text: make the drop</button></div>'}catch(e){}return ''}
@@ -7704,7 +7704,7 @@ document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest
 <script id="skin11js">
 (function(){
 const APPS=[['messages','Messages','💬','#3fd0c9'],['contacts','Contacts','👤','#3fd0c9'],['crew','Crew','🧍','#3fd0c9'],['family','Family','🏡','#3fd0c9'],
- ['trap','Trap house','🧺','#f5a524'],['burners','Burners','🔥','#f5a524'],['turf','Turf & prices','🗺️','#f5a524'],['news','News','📰','#e8504a'],['licks','Licks','🎯','#f5a524'],['rides','Rides','🚕','#f5c43a'],
+ ['trap','Trap house','🧺','#f5a524'],['burners','Burners','🔥','#f5a524'],['turf','Maps','🗺️','#f5a524'],['news','News','📰','#e8504a'],['licks','Licks','🎯','#f5a524'],['rides','Rides','🚕','#f5c43a'],
  ['modern','Wallet','💳','#5fd38a'],['backer','Backer','🤝','#5fd38a'],['hustle','Side hustles','💻','#a98bff'],['social','Social','📸','#d46bd0']];
 const DOCK=['messages','modern','turf','contacts'];
 const ap=id=>APPS.find(a=>a[0]===id);
@@ -10359,6 +10359,77 @@ function tidy(){try{const th=document.querySelector('.phx[data-app="messages"] .
 try{const _r=render;render=function(){const r=_r.apply(this,arguments);try{tidy()}catch(e){}return r}}catch(e){}
 /* plain words in the leftover generic replies */
 try{const K=window._KB;if(K){K.FL.grow.splice(0,3,'What\'s good?','I\'ll come through soon','Later');K.RP.grow.splice(0,3,'Stay ready.','Whenever you ready.','Cool.')}}catch(e){}
+})();</script>
+
+<style id="skin55">
+.ct55s{width:100%;box-sizing:border-box;margin:2px 0 8px;padding:8px 12px;border-radius:10px;border:0;background:rgba(118,118,128,.24);color:#f2f2f7;font:15px -apple-system,BlinkMacSystemFont,sans-serif;outline:none}
+.ct55g{display:flex;gap:6px;overflow-x:auto;padding:0 0 8px;scrollbar-width:none}.ct55g::-webkit-scrollbar{display:none}
+.ct55g button{flex:none;border:0;border-radius:14px;padding:5px 11px;background:rgba(255,255,255,.08);color:#f2f2f7;font:600 12px -apple-system,sans-serif;cursor:pointer}
+.ct55g button.on{background:#0a84ff;color:#fff}
+.ct55l{font:600 12px -apple-system,sans-serif;color:#8e8e93;padding:8px 4px 2px;border-bottom:1px solid rgba(255,255,255,.06)}
+.ct55r{display:flex;align-items:center;gap:10px;width:100%;padding:8px 4px;border:0;border-bottom:1px solid rgba(255,255,255,.06);background:none;color:#f2f2f7;text-align:left;cursor:pointer;font:15px -apple-system,BlinkMacSystemFont,sans-serif}
+.ct55r .av{width:36px;height:36px;border-radius:50%;overflow:hidden;flex:none;display:grid;place-items:center;background:#3a3a3c;font-weight:700}
+.ct55r .av img{width:100%;height:100%;object-fit:cover}.ct55r small{display:block;color:#8e8e93;font-size:12px}
+.ct55c{text-align:center;padding:10px 4px;font-family:-apple-system,BlinkMacSystemFont,sans-serif}
+.ct55c .av{width:96px;height:96px;border-radius:50%;overflow:hidden;margin:6px auto 8px;background:#3a3a3c;display:grid;place-items:center;font:700 36px inherit}
+.ct55c .av img{width:100%;height:100%;object-fit:cover}.ct55c h3{margin:0;font-size:24px}.ct55c .sub{color:#8e8e93;font-size:13px;margin:2px 0 12px}
+.ct55c .acts{display:flex;justify-content:center;gap:14px;margin:6px 0 14px}
+.ct55c .acts button{display:flex;flex-direction:column;align-items:center;gap:4px;width:70px;padding:9px 0;border:0;border-radius:12px;background:rgba(255,255,255,.08);color:#0a84ff;font:600 12px inherit;cursor:pointer}
+.ct55c .acts button b{font-size:20px}.ct55c .acts button:disabled{opacity:.35}
+.ct55c .info{background:rgba(255,255,255,.05);border-radius:12px;text-align:left;padding:4px 12px}
+.ct55c .info div{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.06);font-size:14px}.ct55c .info div:last-child{border:0}
+.ct55c .info span{color:#8e8e93}
+.mp55{position:relative}.leg55{display:flex;flex-wrap:wrap;gap:10px;font:12px -apple-system,sans-serif;color:#8e8e93;margin:6px 2px 10px}
+.mp55 .pin{position:absolute;transform:translate(-50%,-50%);font-size:16px;pointer-events:none;filter:drop-shadow(0 1px 2px #000)}
+</style>
+<script id="skin55js">
+(function(){if(window._sk55)return;window._sk55=1;
+const E=x=>String(x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+/* ---------- Contacts: one A-Z list, search, groups, contact cards ---------- */
+const GRP=[['all','All'],['plug','Plugs'],['friend','Friends'],['family','Family'],['crew','Crew'],['runner','Runners'],['cust','Customers'],['conn','Connects']];
+function people(){const o=[],seen={},add=(n,g,sub)=>{if(!n||seen[n])return;seen[n]=1;o.push({n,g,sub})};
+ try{(S.known||[]).forEach(bi=>add(plugName(bi),'plug',`${(PINFO[bi]||{}).lvl||''} plug · ${BLOCKS[bi]}`))}catch(e){}
+ try{(S.friends||[]).forEach(f=>add(f.name,'friend',`Friend · close ${Math.round(f.close||0)}`))}catch(e){}
+ try{if(S.par&&S.par.name)add(S.par.name,'family','Family')}catch(e){}
+ try{(typeof crewList==='function'?crewList():[]).forEach(m=>add(m.name,'crew',`Crew · loyalty ${Math.round(m.loy||0)}`))}catch(e){}
+ try{(S.workers||[]).forEach(w=>add(w.name,'crew','Worker'))}catch(e){}
+ try{((b5().dl)||[]).forEach(d=>add(d.n,'runner',`Runner · loyalty ${Math.round(d.loy||0)}`))}catch(e){}
+ try{(S.custos||[]).forEach(c=>add(c.name,'cust','Customer · '+((G(c.gid)||{}).name||'')))}catch(e){}
+ try{(window._MC?window._MC():[]).forEach(c=>{if(/^(Connect|Grower|Mexico)/.test(c.sub))add(c.n,'conn',c.sub);else if(/^Family/.test(c.sub))add(c.n,'family',c.sub)})}catch(e){}
+ return o.sort((a,b)=>a.n.localeCompare(b.n))}
+function av(n,big){try{const r=window._AVX&&window._AVX(n,big?96:36);if(r&&r.pic){const m=/src="([^"]+)"/.exec(r.pic);if(m)return `<span class="av"><img src="${m[1]}" alt=""></span>`}}catch(e){}return `<span class="av">${E((n||'?')[0])}</span>`}
+function details(p){const L=[];try{if(p.g==='plug'){const bi=S.known.find(b=>plugName(b)===p.n);L.push(['Level',(PINFO[bi]||{}).lvl+' plug'],['Spot',BLOCKS[bi]],['Trust',(S.trust[bi]||0)+'/100']);try{if(typeof debtOf==='function'&&debtOf(bi))L.push(['You owe',money(debtOf(bi))])}catch(e){}}
+ if(p.g==='friend'){const f=S.friends.find(x=>x.name===p.n);L.push(['Closeness',Math.round(f.close||0)+'/100'],['Type',f.trait||'-']);if(f.sch)L.push(['Met','At school'])}
+ if(p.g==='crew'||p.g==='runner'){const m=(typeof crewList==='function'?crewList():[]).find(x=>x.name===p.n)||((b5().dl)||[]).find(x=>x.n===p.n)||(S.workers||[]).find(x=>x.name===p.n)||{};if(m.loy!=null)L.push(['Loyalty',Math.round(m.loy)+'/100']);if(m.job)L.push(['Job',m.job])}
+ if(p.g==='cust'){const c=S.custos.find(x=>x.name===p.n);L.push(['Buys',(G(c.gid)||{}).name||'-']);if(c.hook!=null)L.push(['Hooked',Math.round(c.hook)+'%'])}
+ if(p.g==='family'&&S.par&&S.par.name===p.n&&S.par.trust!=null)L.push(['Trust',Math.round(S.par.trust)+'/100'])}catch(e){}return L}
+function card(p){const bi=p.g==='plug'?S.known.find(b=>plugName(b)===p.n):null,canCall=p.g==='plug'&&typeof window.l31Text==='function';
+ return `<div class="mth-top"><button class="bk" data-ct55="">&#8249; Contacts</button><span class="mth-sp"></span></div><div class="ct55c">${av(p.n,1)}<h3>${E(p.n)}</h3><div class="sub">${E(p.sub)}</div>
+ <div class="acts"><button data-tx50="${E(encodeURIComponent(p.n))}"><b>💬</b>Text</button><button data-cl55="${bi==null?'':bi}" ${canCall?'':'disabled'}><b>📞</b>Call</button>${p.g==='plug'?`<button data-mp55="${bi}"><b>📍</b>Spot</button>`:''}</div>
+ ${(()=>{const L=details(p);return L.length?`<div class="info">${L.map(([k,v])=>`<div><span>${E(k)}</span><b>${E(v)}</b></div>`).join('')}</div>`:''})()}</div>`}
+function list(old){const all=people(),g=window._ctg55||'all',q=(window._ctq55||'').toLowerCase(),L=all.filter(p=>(g==='all'||p.g===g)&&(!q||p.n.toLowerCase().includes(q)));
+ let h=`<input class="ct55s" id="ct55q" placeholder="Search" value="${E(window._ctq55||'')}"><div class="ct55g">${GRP.filter(([k])=>k==='all'||all.some(p=>p.g===k)).map(([k,t])=>`<button data-ctg55="${k}" class="${g===k?'on':''}">${t}</button>`).join('')}</div>`;
+ let last='';L.forEach(p=>{const l=p.n[0].toUpperCase();if(l!==last){last=l;h+=`<div class="ct55l">${E(l)}</div>`}h+=`<button class="ct55r" data-ct55="${E(encodeURIComponent(p.n))}">${av(p.n)}<span>${E(p.n)}<small>${E(p.sub)}</small></span></button>`});
+ if(!L.length)h+=`<div class="ct55l" style="border:0">No contacts${q?' match':''} yet.</div>`;
+ if(old&&old.trim())h+=`<details class="i54" style="margin-top:14px"><summary>Manage people</summary>${old}</details>`;return h}
+const _ct=window._AP13&&window._AP13.contacts;
+if(window._AP13)window._AP13.contacts=function(c){let old=c;try{old=_ct?_ct(c):c;const t=document.createElement('template');t.innerHTML=old;t.content.querySelectorAll('.ct-row,.sec.sub').forEach(x=>x.remove());old=t.innerHTML}catch(e){}
+ try{const n=window._ct55;if(n){const p=people().find(x=>x.n===n);if(p)return card(p);window._ct55=null}return list(old)}catch(e){console.error('sk55 ct',e);return c}};
+/* ---------- Maps ---------- */
+function mapApp(c){let m='';try{m=cityMap()}catch(e){return c}
+ const pins=[];try{const D=typeof DIST!=='undefined'?DIST:null;if(D){(S.pat||[]).forEach(i=>{const d=D[i];if(d)pins.push(`<span class="pin" style="left:${(d[0]+d[2]/2)/360*100}%;top:${(d[1]+d[3]-20)/262*100}%">🚓</span>`)});
+  try{(S.known||[]).forEach(i=>{const d=D[i];if(d)pins.push(`<span class="pin" style="left:${(d[0]+18)/360*100}%;top:${(d[1]+d[3]-18)/262*100}%">🔌</span>`)})}catch(e){}}}catch(e){}
+ const leg=`<div class="leg55"><span>🟡 U = you</span><span>🏠 home</span><span>🔌 your plugs</span>${S.scan?'<span>🚓 patrols today</span>':''}</div>`;
+ let rest='';try{rest=(window._SR&&window._SR.pb?window._SR.pb():'')+c}catch(e){rest=c}
+ return `<div class="mp55">${m}${S.scan?pins.join(''):pins.filter(x=>!/🚓/.test(x)).join('')}</div>${leg}${rest?`<div class="sec">Turf and prices</div>${rest}`:''}`}
+if(window._AP13)window._AP13.turf=mapApp;
+/* clicks */
+document.addEventListener('click',e=>{const t=e.target;if(!t.closest)return;
+ const c=t.closest('[data-ct55]');if(c){e.preventDefault();e.stopPropagation();window._ct55=c.dataset.ct55?decodeURIComponent(c.dataset.ct55):null;render();return}
+ const g=t.closest('[data-ctg55]');if(g){e.preventDefault();e.stopPropagation();window._ctg55=g.dataset.ctg55;render();return}
+ const cl=t.closest('[data-cl55]');if(cl&&!cl.disabled){e.preventDefault();e.stopPropagation();const bi=+cl.dataset.cl55;try{window.l46bat&&l46bat(-3)}catch(er){}try{window.l31Text(bi)}catch(er){console.error(er)}render();return}
+ const mp=t.closest('[data-mp55]');if(mp){e.preventDefault();e.stopPropagation();window._rph='turf';window._ct55=null;render();return}},true);
+document.addEventListener('input',e=>{if(e.target&&e.target.id==='ct55q'){window._ctq55=e.target.value;const pos=e.target.selectionStart;render();const q=document.getElementById('ct55q');if(q){q.focus();try{q.setSelectionRange(pos,pos)}catch(er){}}}},true);
 })();</script>
 
 <script>if('serviceWorker' in navigator){addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}</script></body></html>
