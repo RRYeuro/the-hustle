@@ -85,7 +85,7 @@ with sync_playwright() as p:
     J("()=>{document.getElementById('modal').hidden=true}")
     ck('tutorial entries',J("()=>TUT.filter(t=>/Licks and loot|Sort and Pin/.test(t[0])).length")==2)
     # --- full flows (core mini games stubbed to a win)
-    J("()=>{window._l27force=true;window._m39no=1;seqGame=d=>d(true);grabGame=(d,o)=>d((o&&o.max)||6,false);sneakGame=d=>d(6,false);hotwireGame=d=>d(true);talkGame=d=>d(0);chase=d=>d(true);cut=()=>{};window.noTips=1}")
+    J("()=>{window._l27force=true;window._m39no=1;seqGame=d=>d(true);grabGame=(d,o)=>d((o&&o.max)||6,false);sneakGame=d=>d(6,false);hotwireGame=d=>d(true);talkGame=d=>d(0);chase=d=>d(true);cut=()=>{};window.noTips=1;lockGame=(o,d)=>d(true)}")
     R="()=>{window.m39Vault=null;window._m39force=0;window._m39roof=0;S._evDay=S.day;S.loot=[];S.bag=1;S.car=null;S.rob=S.rob||{};S.rob.fat=0;S.lcd={};S.cap=900;S.heat=0;S.cash=1000;S.clean=1000;S.hp=100;S.en=100;S.stress=0;S.over=false;document.getElementById('modal').hidden=true;"
     txt=lambda:J("()=>document.getElementById('modal').hidden?'(hidden)':document.getElementById('mcard').innerText.slice(0,260)")
     def sort_win():
@@ -116,7 +116,7 @@ with sync_playwright() as p:
     J("()=>document.getElementById('r').click()");pg.wait_for_timeout(300)
     ck('store: got away popup',J("()=>/got away/i.test(document.querySelector('#mcard h2').textContent)"),txt());J("()=>{document.getElementById('modal').hidden=true}")
     # house: alarm panel -> sneak -> grab -> safe
-    J(R+"S.at=3;lick('house')}");pg.wait_for_timeout(300)
+    J(R+"S.at=3;window._mr0=window._mr0||Math.random;Math.random=()=>0.5;lick('house')}");pg.wait_for_timeout(300)
     if J("()=>!!document.getElementById('sn')"): J("()=>document.getElementById('sn').click()");pg.wait_for_timeout(200)
     maybe_lock()
     ck('house: alarm panel sort card',J("()=>/alarm panel/i.test(document.getElementById('mcard').innerText)&&!!document.getElementById('gst')"),txt())
@@ -131,7 +131,7 @@ with sync_playwright() as p:
     ck('house: no trunk loot without a car',all(not x.endswith(':c') for x in r['loot']),str(r['loot']))
     J("()=>document.getElementById('ok').click()");pg.wait_for_timeout(300);J("()=>{document.getElementById('modal').hidden=true}")
     # house: alarm panel fail
-    J(R+"S.at=3;lick('house')}");pg.wait_for_timeout(300)
+    J(R+"S.at=3;window._mr0=window._mr0||Math.random;Math.random=()=>0.5;lick('house')}");pg.wait_for_timeout(300)
     if J("()=>!!document.getElementById('sn')"): J("()=>document.getElementById('sn').click()");pg.wait_for_timeout(200)
     maybe_lock()
     pg.keyboard.press('Enter');pg.wait_for_timeout(200);pg.keyboard.press('Escape');pg.wait_for_timeout(300)
