@@ -5725,9 +5725,10 @@ function plugDrop(bi){if(frontBlock(bi))return;if((ptxo().n[bi]||0)>=PTX_MAX){mo
   const priceOf=g=>Math.round(plugPrice('buy',g)*dropMult(bi));S.at=here;
   const teenCap=g=>gAge()&&gAge()<16?Math.max(0,(g.unit==='g'?28:g.unit==='pills'?100:4)-(window.l66tb?l66tb(g):0)):gAge()&&gAge()<18?Math.max(0,(g.unit==='g'?56:g.unit==='pills'?150:8)-(window.l66tb?l66tb(g):0)):1e9;
   const maxOf=g=>{S.at=bi;const st=stockOf(bi,g);S.at=here;return Math.floor(Math.min(S.cash/priceOf(g),(S.cap-used())/g.sp,st,teenCap(g))/g.step)*g.step};
-  modal(`${avatar(bi,64)}<h2>Text ${plugName(bi)}</h2>${persChip(bi)}<p>"What you need? I'll pull up."</p><div class="btns"><button class="btn" id="hg" ${(S.dh&&S.dh.d===S.day&&S.dh.bi===bi)||S.sk.talk<4?'disabled':''}>${S.sk.talk<4?'Haggle the trip fee (Talk 4+)':S.dh&&S.dh.d===S.day&&S.dh.bi===bi?'Already haggled today':'Haggle the trip fee'}</button></div>${goods.map(g=>{const mx=maxOf(g),of0=(S.offer[bi]||{})[g.id];return `<div class="row" style="padding:8px 12px;flex-wrap:wrap">${drugPic(g.id,32)}<div class="info" style="flex:1 1 140px;min-width:0"><div class="t">${g.name}${of0&&of0.v?` <span style="color:var(--dim);font-weight:400">· ${of0.v}</span>`:''} ${of0?gchip(of0.q,g):''}</div><div class="s">${money(priceOf(g))} each delivered · up to ${mx>=g.step?amt(mx,g):'none'}</div></div><div class="btns">${g.sizes.filter(z=>z[0]<=mx).slice(-3).map(z=>`<button class="btn green" data-dg="${g.id}" data-dn="${z[0]}">${z[1]}</button>`).join('')||'<span class="s">Can\'t afford or no room</span>'}</div></div>`}).join('')}<div class="btns"><button class="btn" id="no">Done</button></div>`);
+  modal(`${avatar(bi,64)}<h2>Text ${plugName(bi)}</h2>${persChip(bi)}<p>"What you need? I'll pull up."</p><div class="btns"><button class="btn" id="hg" ${(S.dh&&S.dh.d===S.day&&S.dh.bi===bi)||S.sk.talk<4?'disabled':''}>${S.sk.talk<4?'Haggle the trip fee (Talk 4+)':S.dh&&S.dh.d===S.day&&S.dh.bi===bi?'Already haggled today':'Haggle the trip fee'}</button></div>${goods.map(g=>{const mx=maxOf(g),of0=(S.offer[bi]||{})[g.id];return `<div class="row" style="padding:8px 12px;flex-wrap:wrap">${drugPic(g.id,32)}<div class="info" style="flex:1 1 140px;min-width:0"><div class="t">${g.name}${of0&&of0.v?` <span style="color:var(--dim);font-weight:400">· ${of0.v}</span>`:''} ${of0?gchip(of0.q,g):''}</div><div class="s">${money(priceOf(g))} each delivered · up to ${mx>=g.step?amt(mx,g):'none'}</div></div><div class="btns q67r" data-g="${g.id}">${mx>=g.step?`<button class="btn" data-q67="${g.id}" data-d="-1" aria-label="Less">−</button><b class="q67n" id="q67_${g.id}">0</b><button class="btn" data-q67="${g.id}" data-d="1" aria-label="More">+</button><button class="btn" data-q67="${g.id}" data-d="max">Max</button>`:'<span class="s">Can\'t afford or no room</span>'}</div></div>`}).join('')}<div class="q67f" id="q67f"></div><div class="btns"><button class="btn green" id="q67buy" disabled>Buy all</button><button class="btn" id="no">Done</button></div><p class="s" style="color:#8e8e93;margin:4px 0 0">↑↓ pick · ←→ amount · Enter buys. One order = one deal, one trip.</p>`);
   $('no').onclick=close;
   if($('hg'))$('hg').onclick=()=>{if(!spendEn('talk'))return;const odds=.3+S.sk.talk*.06+S.trust[bi]/400+(hasT('tongue')?.08:0)+(hasT('charm')?.03:0)-(hasT('hot')?.07:0)-(hasT('sketchy')?.05:0)-moodPen(bi)+(S.known.includes(bi)?PERSX[plugPers(bi)].h:0);markupGame(odds,win=>{S.dh={bi,d:S.day,m:win?.95:1.18};if(!win){S.trust[bi]=Math.max(0,S.trust[bi]-2);const k=S.pk[bi]=S.pk[bi]||{};k.mad=(k.mad||0)+1;k.madDay=S.day;if(k.mad>=3){S.dh.m=1.3;S.trust[bi]=Math.max(0,S.trust[bi]-4);say(plugName(bi)+' is sick of the haggling. Prices are up and the trust took a hit.')}}say(win?`${plugName(bi)} waived the trip fee and took 5% off.`:`${plugName(bi)} did not like the haggling. The drop costs 18% extra today.`);plugDrop(bi)})};
+  try{l67cart(bi,goods,priceOf,maxOf,here)}catch(e){console.error('sk67',e)}
   $('mcard').querySelectorAll('[data-dg]').forEach(b=>b.onclick=()=>{const g=G(b.dataset.dg),n=+b.dataset.dn,pr=priceOf(g);S.at=bi;const of=S.offer[bi][g.id];S.at=here;
     const tot=Math.round(pr*n*bulk(n,g));if(tot>S.cash)return;of.stock=Math.max(0,(of.stock??0)-n);S.dropDay=S.day;{const pt=ptxo();pt.n[bi]=(pt.n[bi]||0)+1}
     const realHave=S.inv[g.id]-S.fake[g.id];if(of.fake){$('modal').hidden=true;modal(`<h2>${plugName(bi)} kept it real</h2><p>"Don't take this batch. It ain't right. I'll hit you when the good stuff land."</p><div class="btns"><button class="btn go" id="ok">Good looking</button></div>`);$('ok').onclick=close;S.trust[bi]=Math.min(100,S.trust[bi]+1);return}
@@ -10682,6 +10683,59 @@ window.l66tb=g=>{try{const t=S.tb66;return t&&t.d===S.day?(t.g[g.id]||0):0}catch
 window.l66rec=(g,n)=>{try{if(!(typeof gAge==='function'&&gAge()&&gAge()<18))return;if(!S.tb66||S.tb66.d!==S.day)S.tb66={d:S.day,g:{}};S.tb66.g[g.id]=(S.tb66.g[g.id]||0)+n}catch(e){}};
 /* smaller teen caps: 16-17 max 2 oz / 150 pills / 8 units a day (was a QP a buy) */
 try{TUT.push(['Plugs and age','Big plugs (QPs, pounds) only deal with you at 18+. At 16-17 the most you can buy in a day is 2 oz, 150 pills or 8 units of each thing (under 16: 1 oz, 100 pills, 4 units).'])}catch(e){}
+})();
+</script>
+<style id="skin67">
+.q67r{align-items:center;flex-wrap:nowrap!important;gap:4px}
+.q67r .btn{min-width:34px;padding:6px 8px}
+.q67n{min-width:62px;text-align:center;font-variant-numeric:tabular-nums;font-size:13px}
+.q67n.on{color:#30d158}
+.row.q67sel{outline:2px solid #0a84ff;outline-offset:-2px;border-radius:8px}
+.q67f{margin:8px 0 2px;padding:8px 12px;border-radius:10px;background:rgba(255,255,255,.06);font-size:13px;line-height:1.45}
+.q67f .bad{color:#ff453a}
+</style>
+<script id="skin67js">
+/* skin67: multi-buy. Text-order screen: amount stepper per product, running total, one Buy all = one deal */
+(function(){
+const $q=id=>document.getElementById(id);
+window.l67cart=function(bi,goods,priceOf,maxOf,here){
+  const cart={},mxs={};goods.forEach(g=>{cart[g.id]=0;mxs[g.id]=maxOf(g)});
+  const tot=g=>{const n=cart[g.id];return n?Math.round(priceOf(g)*n*bulk(n,g)):0};
+  const sizes=g=>{const m=mxs[g.id];const L=[...new Set(g.sizes.map(z=>z[0]).filter(v=>v<=m))];if(m>=g.step&&!L.includes(m))L.push(m);return L.sort((a,b)=>a-b)};
+  const step=(g,d)=>{const L=sizes(g),c=cart[g.id];if(d==='max')cart[g.id]=mxs[g.id];else if(d>0){const nx=L.find(v=>v>c);if(nx!=null)cart[g.id]=nx}else{const pv=[...L].reverse().find(v=>v<c);cart[g.id]=pv!=null?pv:0}draw()};
+  const draw=()=>{let T=0,sp=0,bad='';goods.forEach(g=>{const n=cart[g.id],e=$q('q67_'+g.id);if(e){e.textContent=n?amt(n,g):'0';e.classList.toggle('on',n>0)}T+=tot(g);sp+=n*g.sp;if(n>mxs[g.id])bad=bad||`Too much ${g.name}.`});
+    const room=S.cap-used();if(T>S.cash)bad=`Need ${money(T)}, you got ${money(S.cash)}.`;else if(sp>room+1e-9)bad=`Not enough stash space (${Math.floor(room)} left).`;
+    const any=goods.some(g=>cart[g.id]>0),f=$q('q67f');
+    if(f)f.innerHTML=any?`Total <b>${money(T)}</b> · cash after ${money(Math.max(0,S.cash-T))}${bad?`<div class="bad">${bad}</div>`:''}`:'Pick amounts, then Buy all.';
+    const b=$q('q67buy');if(b)b.disabled=!any||!!bad};
+  const card=$q('mcard');if(!card)return;
+  card.querySelectorAll('[data-q67]').forEach(b=>b.onclick=()=>{const g=goods.find(x=>x.id===b.dataset.q67);if(g)step(g,b.dataset.d==='max'?'max':+b.dataset.d)});
+  const buy=()=>{const pick=goods.filter(g=>cart[g.id]>0);if(!pick.length)return;let T=0;pick.forEach(g=>T+=tot(g));if(T>S.cash)return;
+    const got=[],kept=[];
+    pick.forEach(g=>{const n=cart[g.id],t=tot(g);S.at=bi;const of=S.offer[bi][g.id];S.at=here;
+      if(of.fake){kept.push(g.name);return}
+      of.stock=Math.max(0,(of.stock??0)-n);const realHave=S.inv[g.id]-S.fake[g.id];
+      S.q[g.id]=Math.round((S.q[g.id]*realHave+of.real*n)/(realHave+n));S.paid[g.id]=Math.round((S.paid[g.id]*S.inv[g.id]+t)/(S.inv[g.id]+n));S.inv[g.id]+=n;S.cash-=t;try{l66rec(g,n)}catch(e){}
+      {S.lb=S.lb||{};const k=bi+':'+g.id,u=t/n,o0=S.lb[k];S.lb[k]={d:S.day,u:o0&&S.day-o0.d<=4?Math.min(o0.u,u):u}}
+      got.push(`${amt(n,g)} ${g.name} (${money(t)})`)});
+    if(got.length){S.dropDay=S.day;const pt=ptxo();pt.n[bi]=(pt.n[bi]||0)+1;S.heat=Math.min(100,S.heat+1);
+      say(`${plugName(bi)} dropped off ${got.join(', ')}.`)}
+    if(kept.length)S.trust[bi]=Math.min(100,S.trust[bi]+1);
+    $q('modal').hidden=true;render();
+    modal(`${avatar(bi,48)}<h2>${got.length?'Order dropped off':'No deal'}</h2>${got.length?`<p>${got.map(x=>'• '+x).join('<br>')}</p>`:''}${kept.length?`<p>"Don't take the ${kept.join(' or ')}. It ain't right. I'll hit you when the good stuff land."</p>`:''}<div class="btns"><button class="btn go" id="ok67">Bet</button></div>`);
+    $q('ok67').onclick=()=>{$q('modal').hidden=true;render()}};
+  const bb=$q('q67buy');if(bb)bb.onclick=buy;
+  /* keyboard */
+  let sel=0;const rows=()=>[...card.querySelectorAll('.q67r')].map(r=>r.closest('.row')).filter(Boolean);
+  const mark=()=>{const R=rows();R.forEach((r,i)=>r.classList.toggle('q67sel',i===sel))};
+  if(window._k67)document.removeEventListener('keydown',window._k67,true);
+  window._k67=e=>{if($q('modal').hidden||!card.contains($q('q67buy'))){document.removeEventListener('keydown',window._k67,true);window._k67=null;return}
+    const R=rows();if(!R.length)return;const g=goods.find(x=>x.id===R[sel].querySelector('.q67r').dataset.g);
+    if(e.key==='ArrowDown'){sel=(sel+1)%R.length;mark()}else if(e.key==='ArrowUp'){sel=(sel-1+R.length)%R.length;mark()}
+    else if(e.key==='ArrowRight'&&g&&mxs[g.id]>=g.step)step(g,1);else if(e.key==='ArrowLeft'&&g)step(g,-1);
+    else if(e.key==='Enter'){if(!bb.disabled)buy()}else return;e.preventDefault();e.stopPropagation()};
+  document.addEventListener('keydown',window._k67,true);mark();draw()};
+try{TUT.push(['Multi-buy','When you text a plug for a drop, set an amount for each product with − / + (or Max), check the total, then hit Buy all. The whole order is one deal and one trip. Keys: ↑↓ pick a product, ←→ change the amount, Enter buys.'])}catch(e){}
 })();
 </script>
 <script>if('serviceWorker' in navigator){addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}</script></body></html>
