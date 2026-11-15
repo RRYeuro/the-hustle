@@ -10293,4 +10293,23 @@ try{const _d=window.l32Drive;window.l32Drive=function(){const r=_d?_d.apply(this
 try{TUT.push(['Bus pass','With an active bus pass, moving between blocks on the map costs 3 energy and no day, same as the Bus button on your phone. Without a pass or a car, a move still costs the day.'])}catch(e){}
 })();
 </script>
+<script id="skin53js">
+(function(){if(window._sk53)return;window._sk53=1;
+const el=id=>document.getElementById(id);
+/* the more street money you sit on, the more eyes on you */
+const TIERS=[[0,0,'Nobody watching',''],[5000,1,'Block talking','People on the block are talking about your new money. Folks notice new shoes, new rides.'],[15000,2,'Watched','A gray car you don\'t know sat on your block two days straight. Not from around here.'],[40000,3,'Detective on you','A detective left a card at your people\'s house. Somebody downtown is asking about you.'],[100000,5,'Federal file','The feds opened a file on you. Phones, cars, who you\'re with: every move is getting written down.']];
+function dirtyAll(){let d=0;try{d+=Math.max(0,S.cash-cleanCash())}catch(e){}try{d+=S.safe||0}catch(e){}try{const H=shSt();d+=(H&&H.own&&H.cash)||0}catch(e){}return d}
+function tier(){const d=dirtyAll();let t=0;TIERS.forEach((x,i)=>{if(d>=x[0])t=i});return t}
+window.l53=function(){const d=dirtyAll(),t=tier(),c=(()=>{try{return cleanCash()}catch(e){return 0}})(),cover=c>=d*.5&&t>0,heat=TIERS[t][1]-(cover&&t>0?1:0);return{d,t,name:TIERS[t][2],heat:Math.max(0,heat),cover}};
+try{WD.push(()=>{try{if(S.pr||S.inJail||(S.age||18)<14)return;const A=l53();
+  if(A.heat>0){S.heat=Math.min(100,(S.heat||0)+A.heat+2)}
+  S.att53=S.att53||0;if(A.t>S.att53){S.att53=A.t;const T=TIERS[A.t];say(`👀 ${T[2]}: ${T[3]}`);try{l42q(A.t>=3?'g_raidup':'g_patrol',`👀 ${T[2]}`,`${T[3]} Sitting on ${money(A.d)} in street money adds +${A.heat} heat a day. Clean it (fronts, laundering) or move it to cool off.`)}catch(e){}}
+  else if(A.t<S.att53&&A.t<=1){S.att53=A.t}}catch(e){console.error('sk52',e)}})}catch(e){}
+/* shows on the Money tab */
+try{const _pe=paneExp;paneExp=function(){let h=_pe.apply(this,arguments);try{const A=l53();if(A.t>0){const row=`<div class="row" style="border-color:${A.t>=3?'var(--blood)':'var(--accent)'}"><div class="info"><div class="t">👀 ${A.name}</div><div class="s">You are sitting on ${money(A.d)} in street money. That is +${A.heat} heat every day${A.cover?' (your clean money is covering some of it)':''}. Clean it through fronts or laundering, or spend it, and the attention fades.</div></div></div>`;h=row+h}}catch(e){}return h}}catch(e){}
+try{TUT.push(['Attention','Cops follow the money. Sit on $5,000+ in street money (cash, safe, stash house) and the block starts talking (+1 heat a day). $15,000 gets you watched (+2), $40,000 brings a detective (+3), $100,000 opens a federal file (+5). Clean money covering at least half of it takes 1 off. Clean it through fronts or laundering to cool down.'])}catch(e){}
+try{const _dp=devPanel;devPanel=function(){const r=_dp.apply(this,arguments);try{const mc=el('mcard');if(mc&&!el('modal').hidden&&!mc.querySelector('[data-d53]')){const d=document.createElement('div');d.innerHTML=`<div class="sec">Attention (new)</div><div class="btns"><button class="btn" data-d53="16000">$16k street money</button><button class="btn" data-d53="45000">$45k</button><button class="btn" data-d53="120000">$120k</button></div>`;const h2=mc.querySelector('h2');if(h2&&h2.parentNode)h2.parentNode.insertBefore(d,h2.nextSibling);else mc.appendChild(d);
+ d.querySelectorAll('[data-d53]').forEach(b=>b.onclick=ev=>{ev.stopPropagation();el('modal').hidden=true;cleanCash();S.cash=S.clean+(+b.dataset.d52);S.safe=0;say('Dev: street money set. Next day shows the attention.');render()})}}catch(e){}return r}}catch(e){}
+})();</script>
+
 <script>if('serviceWorker' in navigator){addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}</script></body></html>
