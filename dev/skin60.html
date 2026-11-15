@@ -1,0 +1,11 @@
+<style id="skin60">
+.phx .ph-chat>img{width:72px!important;height:72px!important;max-width:72px!important;border-radius:50%!important;object-fit:cover!important;margin:4px auto 6px!important}
+</style>
+<script id="skin60js">
+(function(){if(window._sk60)return;window._sk60=1;
+/* Javi and Mateo cards in texts: face thumbnail instead of the whole collage */
+try{ART2.javi='art/edbf2dacdca0.jpg';ART2.mateo='art/42e55b87d57b.jpg'}catch(e){}
+/* place pages: wide pictures become a thin strip */
+function strip(){try{const mc=document.getElementById('mcard');if(!mc||document.getElementById('modal').hidden)return;mc.querySelectorAll('img').forEach(im=>{if(im.dataset.s60||im.classList.contains('scn26-bg')||im.closest('.av,.ct55c,.mr47'))return;const w=im.getBoundingClientRect().width||parseInt(im.style.width)||0;const pane=im.closest('.pane,.row');if(pane&&w>200){im.dataset.s60=1;im.style.height='84px';im.style.maxHeight='84px';im.style.objectFit='cover';im.style.width='100%'}})}catch(e){}}
+try{const _op=openPlace;openPlace=function(){const r=_op.apply(this,arguments);try{strip();setTimeout(strip,60)}catch(e){}return r}}catch(e){}
+})();</script>
