@@ -56,7 +56,7 @@ All done and live (v201). Nothing left here.
 - Nov 10: city + fly art (8 pictures) wired and deployed. Art list empty.
 - Nov 10 (deployed silent): Prison fixes (header says Inside, no turf/attention chip; texts and phone messages blocked in prison unless you hold a contraband phone, calls to outside still work). Dev menu redesigned: search box, Quick bar, collapsible groups (Law, courts and cities first), top Close, open state remembered. Tests t_dev.
 
-## Living in other cities (from voice chat, Nov 10) - NOT BUILT, wait for "build"
+## Living in other cities (from voice chat, Nov 10) - BUILT as v205 (see below)
 - Home screen header shows your location: Columbia, South Carolina (home base). Changes when you relocate.
 - Relocating is a real move, not a day trip. You keep ALL tabs and buttons. Each city has its own blocks, spots, studio, plugs, gangs, prices. Columbia stays playable.
 - Big cities = luxury tier: higher rent and upkeep, bigger money (penthouses, cars, clubs, rich buyers). Miami house pays more than Columbia.
@@ -179,7 +179,7 @@ Order if built: 1, 2, 3 as one batch (~2 hrs), then 5. Leaderboard only after pe
 - Phase changes things: school/jobs/bank/court/lawyer daytime only; pawn, mall, car lot close at night; club, strip, dice, street race evening and night; houses are empty by day (easier lick) and people are home at night; store and pharmacy licks easier at night; fewer patrols late but stops are harsher; Js pay more at night; plugs pull up any time.
 - One tap 'Kill time until night' spends the energy so nobody waits. Header shows a sun/moon on the bar. Sky tint per phase.
 - Size: about 3-4 hrs with tests. Gaps found Nov 13 and not fixed: rideshare/bus ignore the ankle monitor, a 14-year-old holding a car can drive, flying with stolen goods, pawn 'Hit a house' lit with no tip, $25 ride offered when you own a car.
-- PARKED (Nov 13): testers may want a full 24-hour day with nightfall instead. Chris is asking them. Do not build either version until he says.
+- PARKED (Nov 13): testers may want a full 24-hour day with nightfall instead. Chris is asking them. Do not build either version until he says. Same choice as the 12-hour clock (Time vote option 4, under Plugs on the Move map): pick ONE time system.
 
 ## Gaps found Nov 13 (NOT fixed, waiting on Chris)
 - Age 14 with money can: rent a stash house, hire soldiers and trap workers, go to war / pay for a hit, buy a getaway car and Pro Pad, drive to Charlotte/Atlanta/Houston/Miami, put a lawyer on payroll, pay an informant on the force, buy a parent a car, throw a $2,000 block party.
@@ -227,6 +227,7 @@ Order if built: 1, 2, 3 as one batch (~2 hrs), then 5. Leaderboard only after pe
 - Nov 14: Sam is a she (Chris). Added to the female name lists for crew, friends and workers. Mission check: all 6 characters' story missions still work after the plug move; first buy works for everyone (text the plug, meet, buy grams).
 
 ## Unc's tire shop as the stolen car buyer (Chris, Nov 14) - NOT BUILT, wait for "build"
+- Nov 15: chop shop owners can already park a stolen car on the lot and keep their own car (built). Unc's idea is now only for players WITHOUT a chop shop.
 - Today a stolen car just sells on the spot ("Sell it to the chop shop") or you keep it. Change: no instant sale. You drive the stolen car to Unc's tire shop (he is shady) and he strips it down for you, for a cut. Fits the map: Unc's tire shop is already a place on the Block map.
 - Unc's strip pays less (he keeps a cut, say 50 to 60%), takes a day or has a cop-roll heat risk, and trust with Unc can raise his cut.
 - When you own your own chop shop ($8,000 clean, already built) you strip it yourself with Strip it fast and keep all of it, so it pays MORE (today 1,500 to 3,000 flip, parts by score). That is the reason to upgrade.
@@ -240,8 +241,6 @@ Order if built: 1, 2, 3 as one batch (~2 hrs), then 5. Leaderboard only after pe
 - Nov 14 balance run (6 characters, 35 days, simple buy-and-serve bot, 3 runs each): with the Nov 13 Js boost (x1.5, +1%/rep to +50%) day-35 cash was about double the old budgets ($46k to $73k vs $27k to $35k). Lowered to x1.2, +1% per rep up to +25%: now about $37k to $54k, so the $45k and $54k missions are reachable but not easy. Old save (made on the pre-Nov-13 build) loads clean in the new build: all tabs and apps draw, 6 days play, no errors. Tests: dev/sim.py, dev/t_oldsave.py.
 
 ## Extra ideas from Opus (Nov 14) - NOT BUILT, wait for "build"
-- Js left today: show "Js on this block have about $X left today" on the Block tab so players know when a block is dry and it is time to move. (~20 min)
-- Serving heat check: in the balance run, heat stayed under about 12 even while serving hundreds of units a day. Check the real sell path; heat per sale may need to grow with volume so big days on one block feel risky. (~30 min to check, then tune)
 - Pawn buyback: jewelry you pawn can be bought back within 7 days for the price plus 20%, like a real pawn ticket. Gives drip players a way to get cash fast without losing the chain for good. (~30 min)
 - Plug family tier: at 90 trust a plug gives family price (5% off), holds a load for you for a day, and warns you when a task force is coming. Lose it if you get caught snitching. (~45 min)
 - Undercover Js: now and then a "customer" is a cop. Street Smarts shows a tell ("asks too many questions", "new face, clean shoes") so you can walk away; selling to one is a bust. (~45 min)
@@ -268,7 +267,7 @@ Problem: everyone sounds the same, stats are inside speech, robot/system lines, 
 Cursing: Chris wants real cursing in the dialogue (shit, damn, ass, bitch, f-word where it fits; no slurs). Add a Settings toggle "Clean language" that swaps curses for clean words (default OFF = cursing on).
 Start with 2 + 8 on texting, court and plug talk (~5-8% usage). 3/4/5 are ~10-15% together.
 - Dialogue pass 1: BUILT Nov 14 (skin45). Plug voices by level + trust (texts, intro meet, calls, greeting at the meet), crew/heist/connect texts rewritten, numbers pulled out of texts into a tag, court talks (Judge Harlan, Solicitor Price, bailiff, your lawyer by tier), cursing + "Language: Raw/Clean" on the main menu. Still to do: 3 reply choices, 4 plug meet tones, 5 full court scenes, 6 callbacks.
-## Real phone (Nov 14, ideas only; wait for "build")
+## Real phone (Nov 14) - BUILT (skin46, see last line)
 1. Lock screen with time/day and stacked notification banners; tap to open the chat.
 2. Messages app: chat list (last line, unread dot, time) and full threads with bubbles, read receipts, typing dots.
 3. Reply choices in threads ("bet", "what's the number", "nah").
@@ -278,7 +277,7 @@ Start with 2 + 8 on texting, court and plug talk (~5-8% usage). 3/4/5 are ~10-15
 7. Burner phone for plug business: less heat, breaks, can lose contacts.
 8. Notification sounds + buzz on mobile.
 - Dialogue pass 2 + real phone: BUILT Nov 14 (skin46). Meet tones (Respect +2 trust, Haggle 5% off, Flex needs 35 rep, Bluff Talk 5+ 10% off), text haggle once a day, typing dots, callbacks (popped, owing bills, long gap, back already, hot), court in session scene (Yes your honor +4%, Speak up +8%/-6% + $250 contempt, Stay quiet), battery (texts -4, calls -3, replies -2, recharge at home with lights on, -30 a day without), No Service when dead/cut, missed calls, Decline = trust -2 + voicemail text, ring + buzz, text ping. Lock screen, Messages threads, reply choices and apps already existed.
-## Plug actions move to the phone + Street business redo (Nov 14, idea from Chris; wait for "build")
+## Plug actions move to the phone + Street business redo (Nov 14) - BUILT (skin51 + Street business on Block)
 - The plug card buttons (Kick it, Ask for a front, Pitch him your stuff, Ask for something else, Slide on his opps, Rob him) become texts in that plug's Messages thread, sent as reply choices.
 - The plug answers in his voice ("Woah, I ain't giving you no front"), then a small gray line from the game says why (trust 47/100, need 60; you still owe him; you're too new, under 10 days with him).
 - Rob him: you can't just tap Rob. Text to set up a meet ("let me grab a QP"), pick the day and the spot, then the robbery happens at the meet (bring crew or a gun for better odds, the plug can bring backup, and if it fails the plug is now an enemy and puts word out).
@@ -306,7 +305,7 @@ Start with 2 + 8 on texting, court and plug talk (~5-8% usage). 3/4/5 are ~10-15
 - When a connect refuses a deal, don't dead-end. Two options:
   1. Talk your way in: a short talk mini game (Talk skill, trust, rep, cash shown). Win = deal at normal or slightly worse price; lose = trust drop + cooldown. Offer sweeteners: pay upfront, buy bigger, put a soldier up as collateral.
   2. Go to them in person: travel to their city (flight/drive, costs time + money). They respect you showing up = better odds and price. But nothing ships for you: you have to bring it back yourself.
-- Bringing it back (pick one, each with risk/cost): drive it in a stash car (hidden compartment upgrade, checkpoint chance), mules (cheap, can flip/snitch/get caught), mail/freight (slow, seizure chance), your crew/Right Hand Man drives it (ties to the Right Hand Man idea), fly with it (fast, highest bust risk).
+- Bringing it back (pick one, each with risk/cost): drive it in a stash car (hidden compartment upgrade, checkpoint chance), mules (cheap, can flip/snitch/get caught), mail/freight (slow, seizure chance), your Right Hand Man drives it (that part IS the Right Hand Man idea below, build both together), fly with it (fast, highest bust risk).
 - Bust = lose the load + heat/court; success = cheapest product in the game.
 - Clean vs dirty cash, dev menu (force refusal, set trust), tutorial line, keyboard on the talk game.
 
@@ -317,42 +316,33 @@ Start with 2 + 8 on texting, court and plug talk (~5-8% usage). 3/4/5 are ~10-15
 - Costs his day (one job a day), heat risk if cops roll, skim risk under 40 loyalty (like today), lose the load if he is caught. Higher loyalty means safer and faster.
 - Works with pounds/QP pieces once the pounds idea is built. Clean vs dirty cash, dev menu button, tutorial line, tests.
 ## Polish pack (from outside spec, Nov 15) — not built yet
-- Block prices drop when you oversell: each sale on a block lowers its price a little (cap about -50%), and it recovers over a few days. Pushes you to move around the map. Show a ▲/▼ trend on the block.
-- Notification stack at the top: one tap jumps to the thing or fixes it inline ("Dre holding $400 → [Collect]", "Mya says pull up → [Go]"). Pairs with the crew group chat idea.
-- Juice: floating gold "+$" when paid, red "-$" when spending, buttons press in on tap, screen shake + red edge on heat spikes or failed mini games.
+- Block prices drop when you oversell: each sale on a block lowers its price a little (cap about -50%), and it recovers over a few days. Pushes you to move around the map. Show a ▲/▼ trend on the block, plus "Js here have about $X left today" (moved here from Opus extras). Same build: heat per sale grows with volume on one block (balance run showed heat under 12 while serving hundreds).
+- Notification stack at the top: one tap jumps to the thing or fixes it inline ("Dre holding $400 → [Collect]", "Mya says pull up → [Go]"). Pulls from The Gang chat + plug texts (no new messages, just shortcuts).
+- Juice: floating gold "+$" (bills flying into the cash number) when paid, red "-$" when spending, buttons press in on tap, screen shake + red edge on heat spikes or failed mini games.
 - Sounds made in code (no files): cash chime, text ping, deal thud, low pulse on high heat. One mute switch in the menu.
 - 3-tap rule: any main action (buy, sell, collect, assign crew, answer an event) takes 3 taps or fewer. Audit screens that break it.
 - Event buttons show exact results, e.g. "Pay bribe: -$1,200 dirty · -40 heat".
 - Clean vs dirty cash, dev menu toggles (mute, reset block prices), tutorial lines, tests.
 ## Roadmap order (Nov 15) — do areas in this order so new stuff plugs into working stuff
 1. Clarity (always know what to do next) · 2. Core loop (buy/sell/move) · 3. Feel (juice, animations) · 4. Middle game (crew runs itself) · 5. Late game (money sinks, goals, endings) · 6. Balance pass (sim day 1-200) · 7. New chapters (grow op, dispensary) last.
-## Crew cleanup — BUILT Nov 15 (skin68), except auto-run switch
-- Circle tab crew = one clean row per person: face, name, role, one status line ("Holding $340", "Needs pay"). No buttons on the row.
-- Tap the NAME/face to open their card with only the actions that work right now: text, pay, bonus, Make manager (or why not yet), cut off. Hidden instead of grayed out.
-- Manager button should pop up on the worker's name card too, not only inside the trap page.
-- One "Collect all" button at the top of the crew.
-- Auto-run switch per worker: they sell and drop off money on their own, then text you.
-## Crew group chat — BUILT Nov 15 (skin68)
-- "The Gang" group thread in Messages. Crew posts updates there ("Dre: holding $400", "Tasha: 12 left, need a re-up", "Moe: cops on 3rd").
-- They text first: thread jumps to the top with a red badge + banner.
-- Group reply chips: Bring the money · Re-up coming · Lay low · Good work (small bonus to all).
-- 1-on-1 threads stay for personal stuff (pay beef, manager, cut off).
+## Crew cleanup — BUILT Nov 15 (skin68): short crew cards, tap name for actions, Make manager on the worker card, Collect all, Restock all, keep-stocked auto refill
+- Left: auto-run switch per worker (sell and drop money off on their own, text you). Mostly covered by auto refill; build only if Chris still wants it.
+## Crew group chat — BUILT Nov 15 (skin68): The Gang thread, crew posts, Bring the money / Re-up / Lay low / Good work.
 ## Animations (no new art) — not built
 - Map travel: your face pin rides the streets to the next block (car / walking / bus, matches how you chose to go).
-- Money bills fly into the cash number when paid, fly out when spending.
 - Places slide open like a comic page.
 - 2x2 event art reveals one panel at a time.
 - Faces bob / lean in when talking in scenes.
 - Cop lights sweep the screen on raids and chases.
-- Map by time of day (darker at night, lights brighter); red glow on hot blocks; pulsing dots where something waits for you.
+- Map by time of day (darker at night, lights brighter; follows whichever time system gets picked); red glow on hot blocks; pulsing dots on the map where a notification-stack item waits.
 - Later (needs art): walk-in scene strips, characters walking (needs consistent poses, hit or miss with Gemini).
 ## Life paths — every path needs a start, middle, end goal and crossovers — not built
-- Rap ladder: open mics → mixtape → local buzz → features → label or indie → tour. Street rep feeds buzz; beef/heat can kill a deal; rap money is clean. End: platinum or own label.
-- Robbery ladder: snatching → licks → crew jobs → big heists, fencing loot, jack-boy rep makes plugs scared; robbing plugs burns connects.
+- Rap: recording, diss, shows, signing, tour, merch and own label ALREADY exist. Missing: early steps (open mics, mixtape), features with other artists, beef/heat killing a deal, a platinum goal. Posting songs and going viral lives under Social media (one home).
+- Robbery: licks, loot + pawn fencing, crew heists, Last Big Deal ALREADY exist (soldiers on licks = tester idea above). Missing: snatching as the first step, jack-boy rep (plugs scared, prices/fronts change).
 - Work: promotions, raises, a boss who notices; good shifts = raise, missed = fired. Legit job = cover (less cop attention, nicer apartment). End: manager or your own small business.
 - College: majors unlock careers (business = better fronts, music = rap skill, nursing = steady pay), student loans, campus hustle temptation, graduation day.
 - Relationships/family (thinnest now): dating, main partner, kids, family needing money, someone at home who worries when heat is high. Reason to go straight or keep going.
-- Endings + final score: retire rich, go legit, prison, die young, legend. Switching paths always possible.
+- Endings: score, ending epilogue, Hall of the block, Dynasty ALREADY exist. Check they cover go legit / legend / die young; switching paths always possible.
 ## Social media tied to your whole life — not built
 - Followers come from everything: street rep (~5 per rep point, 200 rep ≈ 1,000), rap drops/shows/features, flexing (car, chain, apartment posts), big moments (beat a case, big heist, beef, winning a game), jail ("free me" bump but can't post).
 - Followers do things: more rap streams and show pay, customers find you (sell faster), easier recruiting, but cops and jack boys watch big pages.
@@ -365,5 +355,5 @@ Start with 2 + 8 on texting, court and plug talk (~5-8% usage). 3/4/5 are ~10-15
 - Home: lowers stress, family/partner can live there, flex for followers.
 - Stash house: big storage, cops need a warrant (raid chance low unless someone snitches), lets you make managers.
 - Trap house: workers sell there; more space = more workers and more product; heat builds on that block.
-- My add-ons: upgrades per house (cameras, safe, dog, reinforced door: less raid/robbery loss), a "lay low" option to hide product at a quiet house during high heat, rent a house out for clean income, houses can get raided/robbed/burned in beef, and a house on a block you don't own pays a cut to whoever runs it.
+- My add-ons: reuse the existing safe / guard dog / trap upgrades per house (don't make new ones), a "lay low" option to hide product at a quiet house during high heat, houses can get raided/robbed/burned in beef, and a house on a block you don't own pays a cut to whoever runs it. Renting out houses ALREADY exists (v205).
 - One home for this: houses live in the Real estate office + Block tab, no repeat lists. Clean cash to buy legit, dirty cash = cash buyer with more attention. Dev menu: give a house, tutorial line, tests.
