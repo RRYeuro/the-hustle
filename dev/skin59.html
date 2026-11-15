@@ -1,0 +1,60 @@
+<style id="skin59">
+.lk59{position:absolute;z-index:4;transform:translate(-50%,-50%);border:2px solid #ff453a;background:#1a0f12;color:#fff;border-radius:50%;width:clamp(26px,4vw,36px);height:clamp(26px,4vw,36px);display:grid;place-items:center;font-size:clamp(14px,2.2vw,18px);cursor:pointer;box-shadow:0 0 0 3px rgba(255,69,58,.25),0 2px 6px #000;animation:lk59 1.6s ease-in-out infinite}
+@keyframes lk59{50%{box-shadow:0 0 0 7px rgba(255,69,58,.05),0 2px 6px #000}}
+@media (prefers-reduced-motion:reduce){.lk59{animation:none}}
+</style>
+<script id="skin59js">
+(function(){if(window._sk59)return;window._sk59=1;
+const el=id=>document.getElementById(id);
+const RISK={car:'High',pharm:'High',strap:'High',store:'Medium',house:'Medium'};
+const IC={car:'🚗',pharm:'💊',strap:'🔫',store:'🏪',house:'🏠'};
+/* where each lick is today */
+function spots(){const o=[];try{if((S.age||0)<14)return o;S.lt=S.lt||{};S.lk59=S.lk59||{};const away=b=>{let x=b;if(x===S.home||x===(typeof homeBlock==='function'?homeBlock():-1))x=(x+2)%BLOCKS.length;return x};
+ o.push({k:'store',bi:1});o.push({k:'pharm',bi:4});
+ ['house','strap'].forEach(k=>{if(S.lt[k]>=S.day){if(!S.lk59[k]||S.lk59[k].d!==S.lt[k])S.lk59[k]={d:S.lt[k],bi:away(Math.floor(Math.random()*BLOCKS.length))};o.push({k,bi:S.lk59[k].bi})}});
+ if((S.age||0)>=16){if(!S.lk59.car||S.lk59.car.d!==S.day)S.lk59.car={d:S.day,bi:Math.floor(Math.random()*BLOCKS.length)};o.push({k:'car',bi:S.lk59.car.bi})}}catch(e){}return o}
+window.l59spots=spots;
+function card(k,bi){const L=LICKS[k];if(!L)return;const here=S.at===bi,ok=!L.need||L.need(),cd=typeof LCD!=='undefined'&&LCD[k]&&typeof lkLeft==='function'?lkLeft(k):0;
+ modal(`<h2>${IC[k]||'🎯'} ${L.name}</h2><p>${L.sub}</p><p class="s" style="color:var(--dim)">📍 ${BLOCKS[bi]} · Risk: <b>${RISK[k]||'Medium'}</b> · takes the day</p><div class="btns">${!ok?`<button class="btn green" id="pad59" ${S.cash>=1500?'':'disabled'}>Need a Pro Pad · $1,500</button>`:here?`<button class="btn red" id="go59" ${cd?'disabled':''}>${cd?`Lookout ${cd}d`:'Do it'}</button>`:`<button class="btn go" id="mv59">Go to ${BLOCKS[bi]} first</button>`}<button class="btn" id="no59">Not now</button></div>`);
+ el('no59').onclick=()=>{close();render()};
+ if(el('go59'))el('go59').onclick=()=>{close();act('lick',{dataset:{k}})};
+ if(el('mv59'))el('mv59').onclick=()=>{close();window.l58Go?l58Go(bi,()=>card(k,bi)):act('go',{dataset:{i:String(bi)}})};
+ if(el('pad59'))el('pad59').onclick=()=>{close();act('pad',{dataset:{}});render()}}
+window.l59card=card;
+/* pins on the Move map */
+function pins(){try{if(typeof tab==='undefined'||tab!=='move')return;const m=el('fm26');if(!m||m.querySelector('.lk59'))return;const tp=window._tp26;if(!tp)return;
+ spots().forEach((p,n)=>{const q=tp(p.bi);if(!q)return;const b=document.createElement('button');b.className='lk59';b.textContent=IC[p.k]||'🎯';b.title=LICKS[p.k].name+' · '+BLOCKS[p.bi];b.dataset.lk59=p.k;b.dataset.bi=p.bi;const off=[[9,-9],[-9,-9],[9,9],[-9,9],[0,-13]][n%5];b.style.left=(q[0]+off[0])+'%';b.style.top=(q[1]+off[1])+'%';m.appendChild(b)})}catch(e){console.error('sk59 pins',e)}}
+try{const _r=render;render=function(){const r=_r.apply(this,arguments);try{pins()}catch(e){}return r}}catch(e){}
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-lk59]');if(!b)return;e.preventDefault();e.stopPropagation();card(b.dataset.lk59,+b.dataset.bi)},true);
+/* the old lick list becomes a pointer to the map */
+try{const _pl59=paneLicks;paneLicks=function(){let h=_pl59.apply(this,arguments);try{const t=document.createElement('template');t.innerHTML=h;
+ t.content.querySelectorAll('button[data-a="lick"],button[data-a="pad"]').forEach(b=>{const r=b.closest('.row');if(r)r.remove()});
+ t.content.querySelectorAll('.row').forEach(r=>{if(/come through tips on your phone/.test(r.textContent))r.remove()});
+ t.content.querySelectorAll('img').forEach(im=>{const r=im.closest('.a2,.a2i');if(r&&!r.closest('.row'))r.remove()});
+ const sec=[...t.content.querySelectorAll('.sec')].find(x=>/^Licks/.test(x.textContent));const ptr=document.createElement('div');ptr.className='row';ptr.innerHTML=`<div class="info"><div class="t">🎯 Licks show up on your map</div><div class="s">Red pins on the Move map: the corner store, the pharmacy, cars (16+), and houses or straps when somebody tips you. Go to the block, tap the pin.</div></div>`;
+ if(sec){sec.textContent='Licks';sec.after(ptr)}else t.content.prepend(ptr);const d=document.createElement('div');d.appendChild(t.content.cloneNode(true));h=d.innerHTML}catch(e){console.error('sk59 pl',e)}return h}}catch(e){}
+/* ---------- burners are bought at the mall ---------- */
+try{const _op=openPlace;openPlace=function(id){const r=_op.apply(this,arguments);try{if(id==='mall'&&!el('modal').hidden&&S.at===placeAt('mall')){const mc=el('mcard');
+  /* small list, big picture only after you buy */
+  [ARTX('g_glasses'),ARTX('jewelry'),ARTX('g_burner')].filter(Boolean).forEach(u=>mc.querySelectorAll(`img[src="${u}"]`).forEach(im=>{const w=im.closest('.a2,.a2i,figure')||im;if(w!==mc)w.remove()}));
+  if(!mc.querySelector('[data-b59]')&&(S.age||0)>=14){const X=w4(),bd=S.burnD>S.day;const row=document.createElement('div');row.className='row';row.style.cssText='padding:8px 12px;flex-wrap:wrap';
+   row.innerHTML=`<div class="info" style="flex:1 1 180px"><div class="t">📱 Burner phone</div><div class="s">${bd?`Active ${S.burnD-S.day} more days. `:''}$40. Wipes your phone evidence, keeps new evidence low for a week, and gives you a spare to swap to.</div></div><button class="btn go" data-b59="buy" ${S.cash<40||bd?'disabled':''}>${bd?'Active':'$40'}</button>`;
+   const row2=document.createElement('div');row2.className='row';row2.style.cssText='padding:8px 12px;flex-wrap:wrap';
+   row2.innerHTML=`<div class="info" style="flex:1 1 180px"><div class="t">🔁 Swap to a burner</div><div class="s">${X.burn>0?`${X.burn} spare. Heat −10, but plugs have to learn your new number.`:'Buy a burner first.'}</div></div><button class="btn" data-b59="swap" ${X.burn>0&&!(X.sw>S.day-5)?'':'disabled'}>${X.sw>S.day-5?'Wait':'Swap'}</button>`;
+   const at=mc.querySelector('.btns:last-child');(at&&at.parentNode===mc?mc.insertBefore(row,at):mc.appendChild(row));row.after(row2)}}}catch(e){console.error('sk59 mall',e)}return r}}catch(e){}
+function bought(art,title,text){modal(`${ARTX(art)?`<img src="${ARTX(art)}" alt="" style="width:100%;max-height:220px;object-fit:cover;border-radius:10px;margin-bottom:8px">`:''}<h2>${title}</h2><p>${text}</p><div class="btns"><button class="btn go" id="bk59">Back to the mall</button></div>`);el('bk59').onclick=()=>{close();openPlace('mall')}}
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-b59]');if(b&&!b.disabled){e.preventDefault();e.stopPropagation();const X=w4();
+  if(b.dataset.b59==='buy'){if(S.cash<40)return;S.cash-=40;try{cleanCash()}catch(er){}S.chat=0;S.burnD=S.day+7;X.burn=Math.min(5,(X.burn||0)+1);say('Bought a burner. Phone evidence cleared and slow to build for a week.');bought('g_burner','📱 Got a burner','Old texts gone, new ones slow to stack up for a week. You have a spare to swap to if things get hot.')}
+  if(b.dataset.b59==='swap'){act('w4_swap',{dataset:{}});close();openPlace('mall')}return}
+ const p=e.target.closest&&e.target.closest('#mcard [data-pl]');if(!p||p.disabled)return;const k=p.dataset.pl,c0=S.cash;
+ const art=k==='rl_glass'?['g_glasses','🕶️ Privacy glasses','Cameras and plate readers spot you 40% less.']:/^jw:/.test(k)?['jewelry','💎 Iced out','Rep for as long as you keep it. Big pieces draw robbers when your heat is up.']:null;
+ if(art)setTimeout(()=>{if(S.cash<c0)bought(...art)},60)},true);
+/* phone burner app and lick app are gone (bought at the mall, pins on the map) */
+try{const R=window.l57open;window.l57open=id=>(id==='burners'||id==='licks')?false:(R?R(id):true)}catch(e){}
+try{const _r2=render;render=function(){const r=_r2.apply(this,arguments);try{document.querySelectorAll('.ph-home .ph-ic button[data-rph="burners"],.ph-home .ph-ic button[data-rph="licks"]').forEach(b=>b.remove())}catch(e){}return r}}catch(e){}
+/* phone Maps: look only, travel with Rides */
+document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('.phx .mapb[data-a="go"]');if(!t)return;e.preventDefault();e.stopImmediatePropagation();const bi=+t.dataset.i,ad=(S.age||0)>=18;
+ modal(`<h2>${BLOCKS[bi]}</h2><p>${ad?'Want a ride there? $25, no day lost.':'Rides are 18+. Use the Move tab to walk or take the bus.'}</p><div class="btns">${ad?`<button class="btn go" id="rd59" ${S.cash<25?'disabled':''}>🚕 Ride there · $25</button>`:''}<button class="btn" id="cx59">Close</button></div>`);
+ el('cx59').onclick=()=>{close();render()};if(el('rd59'))el('rd59').onclick=()=>{close();window._go58=1;try{act('goR',{dataset:{i:String(bi)}})}catch(er){}window._go58=0;render()}},true);
+try{TUT.push(['Licks on the map','Licks are red pins on the Move map: the corner store (Southpark), the pharmacy, a car to steal (16+, needs a Pro Pad), and a house or a strap when somebody tips you. Go to that block and tap the pin. Burner phones are sold at the mall now. The phone Maps app is for looking; to travel from the phone, use the ride button.'])}catch(e){}
+})();</script>

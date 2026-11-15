@@ -11,9 +11,7 @@ const RULE={
  crew:()=>{try{return (typeof crewList==='function'&&crewList().length>0)||rk()>=1}catch(e){return rk()>=1}},
  trap:()=>rk()>=2||((S.traps||[]).length>0),
  orders:()=>rk()>=1,
- burners:()=>rk()>=1,
- licks:()=>S.day>=3,
- backer:()=>rk()>=2,
+  backer:()=>rk()>=2,
  hustle:()=>S.day>=2,
  social:()=>S.day>=2};
 const HINT={crew:'when you build a crew or hit Petty Dealer',trap:'at Middle Man',orders:'at Petty Dealer',burners:'at Petty Dealer',licks:'on day 3',backer:'at Middle Man',hustle:'on day 2',social:'on day 2'};
