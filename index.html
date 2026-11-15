@@ -5049,7 +5049,9 @@ function lick(k){if(proStop())return;if(stuckHome())return;if(k==='store'&&lkBlo
   if(k==='car')return (window.l27Car?(f=>l27Car(hotwireGame,f)):hotwireGame)(ok=>{
     if(ok){const pay=rnd(1500,4000);S.heat=Math.min(100,S.heat+15);addXP(4);addStress(5);
       const sell=()=>{S.cash+=pay;lickDone('Got the whip',`Key programmed, car gone. The chop shop paid ${money(pay)}.`,true)};
-      if(S.car)return sell();
+      if(S.car&&S.car==='stolen')return sell();
+      if(S.car){const old=(CARS[S.car]&&CARS[S.car].name)||'your car';modal(`<h2 style="color:var(--money)">Got the whip</h2><p>Key programmed and it started right up. You already got ${esc(old)}. Sell this one to the chop shop for <b>${money(pay)}</b>, or ditch ${esc(old)} and keep this one.</p><p class="s" style="color:var(--dim);font-size:13px">A stolen car gives +30 stash space but stays hot. More heat every day you ride it, and the cops take it if you get locked up.</p><div class="btns"><button class="btn go" id="ks">Sell it ${money(pay)}</button><button class="btn" id="kw">Swap: keep the stolen one</button></div>`);
+        $('ks').onclick=sell;$('kw').onclick=()=>{try{S.cap-=((CARS[S.car]&&CARS[S.car].trunk)||0)}catch(e){}S.car='stolen';S.cap+=CARS.stolen.trunk;lickDone('Swapped whips',`You ditched ${old} and kept the stolen one. It runs hot: more heat every day you ride it.`,true)};return}
       modal(`<h2 style="color:var(--money)">Got the whip</h2><p>Key programmed and it started right up. Sell it to the chop shop for <b>${money(pay)}</b>, or keep it.</p><p class="s" style="color:var(--dim);font-size:13px">A stolen car gives +30 stash space but stays hot. More heat every day you ride it, and the cops take it if you get locked up.</p><div class="btns"><button class="btn go" id="ks">Sell it ${money(pay)}</button><button class="btn" id="kk">Keep it</button></div>`);
       $('ks').onclick=sell;$('kk').onclick=()=>{S.car='stolen';S.cap+=CARS.stolen.trunk;lickDone('Keeping it','The car is yours now. It runs hot though: more heat every day you ride it.',true)};return}
     S.heat=Math.min(100,S.heat+10);
