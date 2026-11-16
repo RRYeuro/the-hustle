@@ -1,0 +1,20 @@
+<script id="skin70js">
+/* skin70: worker texts work: "Bring me the money" collects from any worker (recruited plugs too, no trap needed);
+   a plug you recruited shows worker options, not plug ones (no kick it / rob your own worker) */
+(function(){if(window._sk70)return;window._sk70=1;
+const txt=(f,t)=>{try{S.inbox=S.inbox||[];S.inbox.unshift({d:S.day,f,t});S.inbox=S.inbox.slice(0,150)}catch(e){}};
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('.phx [data-a="wcollect"]');if(!b)return;e.stopPropagation();e.preventDefault();if(b.disabled)return;
+  try{const w=(S.workers||[])[+b.dataset.i];if(!w)return;const t=w.held||0;
+    S.inbox=S.inbox||[];S.inbox.unshift({d:S.day,f:'You',to:w.name,t:'Bring me the money.'});
+    if(t>0){S.cash+=t;w.held=0;say(`${w.name} brought you ${money(t)}.`);txt(w.name,pick([`On the way. ${money(t)}.`,`Pulled up, ${money(t)} in the bag.`,`Say less. ${money(t)}.`]))}
+    else txt(w.name,"Ain't nothing yet, still moving it.");
+    render()}catch(err){console.error('sk70 collect',err)}},true);
+function fix(){try{const th=document.querySelector('.phx[data-app="messages"] .mth-th');if(!th||!window._mth)return;const w=(S.workers||[]).find(x=>x.name===window._mth&&x.from!=null);if(!w)return;
+  const kb=th.querySelector('.mth-kb');if(!kb||kb.dataset.k70)return;kb.dataset.k70=1;
+  kb.querySelectorAll('[data-p51],[data-a="pkick"],[data-a="phook"]').forEach(x=>x.remove());
+  const i=S.workers.indexOf(w);
+  if(!kb.querySelector('[data-a="wcollect"]'))kb.insertAdjacentHTML('beforeend',`<button class="mth-opt" data-a="wcollect" data-i="${i}" data-says="Bring me the money." ${w.held?'':'disabled'}>${w.held?`Bring me the money (${money(w.held)})`:'Bring me the money (nothing yet)'}</button>`);
+  const t=kb.querySelector('.mth-kt');if(t)t.textContent='Works for you · on '+(BLOCKS[w.from]||'his block')}catch(e){console.error('sk70 fix',e)}}
+try{const _r=render;render=function(){const x=_r.apply(this,arguments);try{fix()}catch(e){}return x}}catch(e){}
+})();
+</script>
