@@ -265,6 +265,7 @@ Order if built: 1, 2, 3 as one batch (~2 hrs), then 5. Leaderboard only after pe
 - Selling: a buyer who wants a pound, HP, QP or oz gets that piece in one tap instead of sliding all the grams.
 - All drugs use one shared setup. Quality and fake/cut product must carry through every split (test with cut and fake). Same stash space as the grams. Dev menu button, tutorial line, tests.
 - Add-ons (Nov 15): multi-buy steppers use the same pieces (oz/QP/lb buttons). Right Hand Man and Stash Leader move product in pieces. Breaking down takes the scale mini game for perfect weight (bad weigh = customer complaints).
+- Lean cases (Chris, Nov 17): lean sells in oz now (1 oz, 4 oz, pint 16 oz, quart 32 oz). Add a gallon (128 oz) and a case = 12 pints = 192 oz. Big plugs only (18+). Same break-down button: case to 12 pints, pint to 4 oz, oz to 1 oz. Quality and fake/cut carry through. Dev menu button and tutorial line.
 
 ## Dialogue fix (Nov 14, not built yet; wait for "build")
 Problem: everyone sounds the same, stats are inside speech, robot/system lines, no back-and-forth, no memory.
