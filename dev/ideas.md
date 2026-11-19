@@ -427,3 +427,4 @@ Build order if Chris says build: 1) Crew Ops screen + ring basics (assign, equip
 - Safety: full test suite + random-click crash test after each area; old saves must still load; no gameplay changes.
 - Best time: before Crew rings, so new systems go in clean. Nobody else pushes during it.
 - BUILT Nov 19 (skin71): Heists tab lists today's licks with Go there / Open (ricky's bug: tips came but nothing in Heists).
+- BUILT Nov 19 (skin72): runner orders always show Fill it / Price is up / Not today in the text thread, even when the runner is also a friend (ricky's bug).

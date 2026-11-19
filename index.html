@@ -10925,4 +10925,15 @@ try{const _pr=paneRob;paneRob=function(){const h=_pr.apply(this,arguments);try{r
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-pl71]');if(!b)return;e.preventDefault();e.stopPropagation();openPlace(b.dataset.pl71)},true);
 try{TUT.push(['Licks in the Heists tab','The Heists tab lists every lick you can hit today: the car to steal (16+, needs a Pro Pad), house or strap tips, the corner store and the pharmacy. Tap Go there to travel, then Open to do it. The same licks are red pins on the Move map.'])}catch(e){}
 })();</script>
+<script id="skin72js">
+/* skin72: runner orders always show Fill it / Price is up / Not today, even when the runner is also a friend (friend options used to replace them) */
+(function(){if(window._sk72)return;window._sk72=1;
+const E=x=>String(x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function fix(){try{const th=document.querySelector('.phx[data-app="messages"] .mth-th');if(!th||!window._mth)return;const kb=th.querySelector('.mth-kb');if(!kb||kb.querySelector('[data-a="w5b_ord"]'))return;
+  const B=b5(),D=w5bDealers();const i=(B.ord||[]).findIndex(o=>D[o.d]&&D[o.d].n===window._mth);if(i<0)return;const o=B.ord[i],g=G(o.g),hv=S.inv[o.g]||0,have=hv>=o.n;
+  const d=document.createElement('div');d.dataset.k72=1;
+  d.innerHTML=`<div class="mth-kt">Their order</div><button class="mth-opt hot" data-a="w5b_ord" data-i="${i}" data-says="On my way." ${have?'':'disabled'}>${have?'Fill it':`You are short (${hv}/${o.n}${w5bUN(g)})`}</button><button class="mth-opt" data-mo="up" data-i="${i}" data-says="Price is up today." ${o.up?'disabled':''}>Price is up</button><button class="mth-opt" data-mo="no" data-i="${i}" data-says="Not today.">Not today</button>`;
+  kb.prepend(d)}catch(e){console.error('sk72',e)}}
+try{const _r=render;render=function(){const r=_r.apply(this,arguments);try{fix()}catch(e){}return r}}catch(e){}
+})();</script>
 <script>if('serviceWorker' in navigator){addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}</script></body></html>
