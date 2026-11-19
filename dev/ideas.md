@@ -426,3 +426,4 @@ Build order if Chris says build: 1) Crew Ops screen + ring basics (assign, equip
 - Do: fold each skin into the main code so every feature lives in one place; delete dead/replaced code (old menus, removed apps, duplicate buttons); group by area (money, plugs, crew, phone, places, school, rap, licks); update dev/code-map.md.
 - Safety: full test suite + random-click crash test after each area; old saves must still load; no gameplay changes.
 - Best time: before Crew rings, so new systems go in clean. Nobody else pushes during it.
+- BUILT Nov 19 (skin71): Heists tab lists today's licks with Go there / Open (ricky's bug: tips came but nothing in Heists).

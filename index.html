@@ -10912,4 +10912,17 @@ function fix(){try{const th=document.querySelector('.phx[data-app="messages"] .m
 try{const _r=render;render=function(){const x=_r.apply(this,arguments);try{fix()}catch(e){}return x}}catch(e){}
 })();
 </script>
+<script id="skin71js">
+/* skin71: Heists tab lists today's licks (car, house tip, strap tip, store, pharmacy) with a button that opens the lick card */
+(function(){if(window._sk71)return;window._sk71=1;
+const IC={car:'🚗',pharm:'💊',strap:'🔫',store:'🏪',house:'🏠'};
+function rows(){let h='<div class="sec">Licks today</div>';try{const sp=(window.l59spots?l59spots():[]).slice();
+  ['store','pharm'].forEach(k=>{try{if(LICKS[k]&&!sp.find(x=>x.k===k)){const id=k==='store'?'store':'pharm';const bi=typeof placeAt==='function'?placeAt(id):-1;if(bi>=0)sp.push({k,bi,pl:id})}}catch(e){}});
+  if(!sp.length)return h+`<div class="row"><div class="info"><div class="s">${(S.age||0)<14?'Licks open at 14.':'No tips today. Cars to steal show up at 16.'}</div></div></div>`;
+  sp.forEach(p=>{const L=LICKS[p.k];if(!L)return;const here=S.at===p.bi;
+   h+=`<div class="row"><div class="info"><div class="t">${IC[p.k]||'🎯'} ${esc(L.name)}</div><div class="s">📍 ${BLOCKS[p.bi]}${here?' · you\'re here':''}</div></div><button class="btn ${here?'red':'go'}" ${p.pl?`data-pl71="${p.pl}"`:`data-lk59="${p.k}" data-bi="${p.bi}"`}>${here?'Open':'Go there'}</button></div>`})}catch(e){console.error('sk71',e)}return h}
+try{const _pr=paneRob;paneRob=function(){const h=_pr.apply(this,arguments);try{return rows()+h}catch(e){return h}}}catch(e){}
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-pl71]');if(!b)return;e.preventDefault();e.stopPropagation();openPlace(b.dataset.pl71)},true);
+try{TUT.push(['Licks in the Heists tab','The Heists tab lists every lick you can hit today: the car to steal (16+, needs a Pro Pad), house or strap tips, the corner store and the pharmacy. Tap Go there to travel, then Open to do it. The same licks are red pins on the Move map.'])}catch(e){}
+})();</script>
 <script>if('serviceWorker' in navigator){addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}</script></body></html>
