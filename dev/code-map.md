@@ -62,6 +62,7 @@ Feature source copies: dev/skins/. Tests: dev/tests/ (crash test: dev/tests/t_fu
 | skin71 | 1k | paneRob | skin71: Heists tab lists today's licks (car, house tip, strap tip, store, pharmacy) with a button that opens the lick card |
 | skin77 | 8k | devPanel, nextDay, openPlace, plugPrice, render | ---- Unc ---- |
 | skin82 | 4k | devPanel, lickDone, nextDay, render, spendEn, street |  |
+| skin83 | 2k | mainMenu | the menu's How to play button opens the list |
 
 ## Money, bills & business
 

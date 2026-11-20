@@ -11388,4 +11388,26 @@ try{TUT.push(['The clock','Every day runs 10 AM to 10 PM. Spending energy takes 
 #clk82.late{background:rgba(232,80,74,.18);border-color:rgba(232,80,74,.6)}
 #nt82{position:fixed;inset:0;pointer-events:none;z-index:35;background:radial-gradient(ellipse at 50% 0%,rgba(20,20,60,.10),rgba(5,5,25,.30));transition:opacity 1s}
 </style>
+<script id="skin83js">
+/* skin83: How to play becomes a topic list instead of 80+ pages in a row. Grouped by area, tap a topic to read it, Back goes to the list. Nothing is deleted. */
+(function(){if(window._sk83)return;window._sk83=1;
+const el=id=>document.getElementById(id);
+const GR=[['🚀 Start here',/first day|walkthrough|welcome|tutorial|clock|how to/i],['💵 Money and selling',/money|cash|clean|dirty|launder|price|sell|block|js\b|stash|bills|bank/i],['🔌 Plugs and connects',/plug|connect|supply|front|lean|pound|unit|order|runner/i],['🧍 Crew and workers',/crew|worker|ring|role|gang|trap|manager|captain/i],['🥷 Licks and heists',/lick|heist|rob|car|chop|unc|pawn|printer|loot/i],['🚔 Heat and the law',/heat|cop|court|jail|lawyer|bail|raid|undercover|police/i],['📱 Phone and people',/phone|text|friend|family|partner|social|follow|contact/i],['🏠 Places and life',/house|home|real estate|school|college|job|work|gym|travel|move|city/i],['🎤 Rap and more',/rap|studio|mixtape|sport|music/i]];
+function grp(t){for(const [g,re] of GR)if(re.test(t))return g;return '📚 Everything else'}
+function list(done){const by={};TUT.forEach((t,i)=>{const g=grp(t[0]+' '+String(t[1]).slice(0,100));(by[g]=by[g]||[]).push(i)});const order=GR.map(g=>g[0]).concat(['📚 Everything else']).filter(g=>by[g]);
+ modal(`<h2>How to play</h2><p class="s" style="color:var(--dim)">Tap a topic. ${TUT.length} topics.</p>${order.map(g=>`<details class="h83"><summary>${g} <span class="s">(${by[g].length})</span></summary>${by[g].map(i=>`<button class="btn h83b" data-h83="${i}">${esc(TUT[i][0])}</button>`).join('')}</details>`).join('')}<div class="btns" style="margin-top:8px"><button class="btn go" id="h83x">Done</button></div>`);
+ const mc=el('mcard');const f=mc.querySelector('details');if(f)f.open=true;
+ mc.querySelectorAll('[data-h83]').forEach(b=>b.onclick=ev=>{ev.stopPropagation();page(+b.dataset.h83,done)});el('h83x').onclick=()=>{done?done():el('modal').hidden=true}}
+function page(i,done){const t=TUT[i];modal(`<div class="sec" style="margin:0;color:var(--accent)">How to play</div><h2>${t[0]}</h2><p>${t[1]}</p><div class="btns"><button class="btn" id="h83b">← Topics</button><button class="btn go" id="h83d">Done</button></div>`);
+ el('h83b').onclick=()=>list(done);el('h83d').onclick=()=>{done?done():el('modal').hidden=true}}
+window.l83help=list;
+/* the menu's How to play button opens the list */
+let lastCC=false;try{const _mm=mainMenu;mainMenu=function(cc){lastCC=cc;return _mm.apply(this,arguments)}}catch(e){}
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('#mh');if(!b)return;e.preventDefault();e.stopPropagation();const cc=lastCC||(typeof S!=='undefined'&&!!S&&!S.over&&!!S.char);list(()=>mainMenu(cc))},true);
+})();</script>
+<style id="skin83">
+.h83{border:1px solid var(--line,#333);border-radius:10px;margin:6px 0;padding:4px 8px}
+.h83 summary{cursor:pointer;font-weight:700;padding:6px 2px}
+.h83b{display:block;width:100%;text-align:left;margin:4px 0;text-transform:none!important;letter-spacing:0!important}
+</style>
 <script>if('serviceWorker' in navigator){addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}</script></body></html>

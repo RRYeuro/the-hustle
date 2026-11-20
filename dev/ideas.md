@@ -433,7 +433,8 @@ Build order if Chris says build: 1) Crew Ops screen + ring basics (assign, equip
 - Short 3-step spotlights the first time you unlock crew, trap house, heists, Run the operation, Crew rings.
 - Bubble moves so it never covers the button; works on phone and laptop.
 - BUILT: Play/Skip card on every new character (replaces the 80-page book popping up), 15-step walkthrough (money, heat, energy, Move, Show plug spots, text, meet, buy, done dealing, Block, sell, next day or head home, Phone, More), only the lit button works, Back/Skip/Next, Enter/Esc, popups pause it, folded sections get opened first, Replay tutorial in the main menu, dev buttons, 1-step spotlights when Heists/Studio/Sports first open. Old first-day guide turned off for new characters.
-- LEFT: trim the 80-page book down to ~10 topics; spotlights for crew/trap/Run the operation unlocks.
+- BUILT Nov 20 (skin83): How to play is now a topic list grouped by area (Start here, Money, Plugs, Crew, Licks, Heat, Phone, Places, Rap), tap a topic, ← Topics goes back; nothing deleted.
+- LEFT: spotlights for crew/trap/Run the operation unlocks.
 - Replaces the 80-page text tutorial as the main way to learn: old book becomes ~10 short topics (Money, Plugs, Selling, Heat, Crew, Places, Phone, School, Rap, Licks); details stay in each screen's "ⓘ How this works". Old first-day guide (skin40) folds into this (no duplicate).
 
 ## Code cleanup (Nov 15) — PART BUILT Nov 20 (~1-2 hrs, its own session, Sonnet paused)
