@@ -1,0 +1,39 @@
+<script id="skin90js">
+/* skin90: exact results on popup buttons. When a choice popup opens, each button is tried quietly a few times on the real state, the changes are
+   recorded (cash, heat, rep, stress, health, community, relationship, trust, the day), then the state is put back exactly as it was (same objects),
+   and the result is written on the button: "Help her · −$600 · stress −3", "maybe heat +8", "heat +2 to +8". Nothing about the game changes. */
+(function(){if(window._sk90)return;window._sk90=1;
+const el=id=>document.getElementById(id);
+const SKIP=/^(tu73|h83|gst|ms$|mb$|ml$|mh$|mlife|mdaily|msnd|mmus|mcode|mbak|again|ad82|no82|c78|tgo|tbk|ad$|no$|q67|gt$|pcx|mm86x|rl86x)/;
+/* deep copy + restore in place (keeps object identity so the real click still works) */
+const snap=o=>JSON.parse(JSON.stringify(o));
+function back(o,s){if(Array.isArray(o)&&Array.isArray(s)){o.length=s.length;for(let i=0;i<s.length;i++){if(s[i]&&typeof s[i]==='object'&&o[i]&&typeof o[i]==='object'&&Array.isArray(o[i])===Array.isArray(s[i]))back(o[i],s[i]);else o[i]=s[i]}return}
+ Object.keys(o).forEach(k=>{if(!(k in s))delete o[k]});Object.keys(s).forEach(k=>{const v=s[k];if(v&&typeof v==='object'&&o[k]&&typeof o[k]==='object'&&Array.isArray(o[k])===Array.isArray(v))back(o[k],v);else o[k]=v})}
+const num=x=>typeof x==='number'&&isFinite(x)?x:0;
+function read(){const t=(S.trust||[]).reduce((a,b)=>a+num(b),0);return {cash:num(S.cash),clean:num(S.clean),heat:num(S.heat),rep:num(S.rep),stress:num(S.stress),hp:num(S.hp),comm:num(S.comm??30),rel:S.gf?num(S.gf.rel):0,trust:t,day:num(S.day),en:num(S.en)}}
+const STUBS=['modal','say','render','save','phoneMsg','close','sfx','checkEnd','wNote','lickDone','busted','chase','gateGame','l76lights','wCard'];
+function trial(fn){const S0=snap(S),r0=read(),keep={},T=window.setTimeout,I=window.setInterval,RAF=window.requestAnimationFrame,AEL=document.addEventListener,M=el('modal'),mh=M.hidden,mc=el('mcard').innerHTML;let out=null;
+ window.__sim90=1;STUBS.forEach(k=>{try{keep[k]=window[k];if(typeof keep[k]==='function')window[k]=function(){}}catch(e){}});
+ try{window.setTimeout=()=>0;window.setInterval=()=>0;window.requestAnimationFrame=()=>0;document.addEventListener=()=>{}}catch(e){}
+ try{fn();out=read()}catch(e){out=null}
+ STUBS.forEach(k=>{try{if(keep[k])window[k]=keep[k]}catch(e){}});window.setTimeout=T;window.setInterval=I;window.requestAnimationFrame=RAF;document.addEventListener=AEL;window.__sim90=0;
+ try{back(S,S0)}catch(e){}if(el('mcard').innerHTML!==mc)el('mcard').innerHTML=mc;M.hidden=mh;
+ if(!out)return null;const d={};Object.keys(out).forEach(k=>d[k]=out[k]-r0[k]);return d}
+const LBL={cash:'$',heat:'heat',rep:'rep',stress:'stress',hp:'health',comm:'community',rel:'relationship',trust:'trust',en:'energy'};
+function fmt(k,lo,hi,maybe){const one=v=>k==='cash'?(v<0?'−':'+')+money(Math.abs(v)):`${v<0?'−':'+'}${Math.abs(Math.round(v))}`;
+ const name=k==='cash'?'':' '+LBL[k];if(k==='cash'){if(lo===hi)return one(lo);return `${one(lo)} to ${one(hi)}`}
+ const v=lo===hi?one(lo):`${one(lo)} to ${one(hi)}`;return (maybe?'maybe ':'')+LBL[k]+' '+v}
+function label(btn){const fn=btn.onclick;if(typeof fn!=='function')return;const R=[];for(let i=0;i<8;i++){const d=trial(()=>fn.call(btn,{target:btn,stopPropagation(){},preventDefault(){}}));if(!d)return;R.push(d)}
+ const parts=[];['cash','heat','rep','stress','hp','comm','rel','trust','en'].forEach(k=>{const v=R.map(d=>Math.round(d[k]*10)/10).filter(x=>Math.abs(x)>=(k==='cash'?1:.5));if(!v.length)return;const all=v.length===R.length,lo=Math.min(...v),hi=Math.max(...v);
+  if(k==='cash'&&!all){parts.push('maybe '+fmt(k,lo,hi));return}parts.push((!all&&k!=='cash'?'maybe ':'')+(k==='cash'?fmt(k,lo,hi):fmt(k,lo,hi).replace(/^maybe /,'')))});
+ if(R.every(d=>d.day>=1))parts.push('takes the day');
+ if(!parts.length)return;btn.textContent=btn.textContent.trim()+' · '+parts.slice(0,3).join(' · ');btn.dataset.x90=1}
+function scan(){try{const M=el('modal'),mc=el('mcard');if(!M||M.hidden||!mc||mc.dataset.s90===mc.innerHTML.length+'')return;if(window.__sim90||(typeof mgOn!=='undefined'&&mgOn))return;
+ if(!mc.querySelector('h2')||mc.querySelectorAll('.row').length>1||mc.querySelector('input,select,textarea,#again'))return;
+ const bs=[...mc.querySelectorAll('button')].filter(b=>!b.classList.contains('xbtn')&&!b.disabled&&b.offsetParent&&!/·/.test(b.textContent)&&!(b.id&&SKIP.test(b.id))&&typeof b.onclick==='function'&&!/^(next day|stay, next day|lay low|nap|close|leave|cancel|back|done|okay|ok|got it|not yet|start)\b/i.test(b.textContent.trim()));
+ const all=[...mc.querySelectorAll('.btns button')].filter(b=>!b.classList.contains('xbtn')&&b.offsetParent);if(all.length<2||all.length>5||!bs.length)return;
+ mc.dataset.s90=mc.innerHTML.length+'';bs.forEach(b=>{try{label(b)}catch(e){}});mc.dataset.s90=mc.innerHTML.length+''}catch(e){console.error('sk90',e)}}
+try{const m=el('modal');if(m)new MutationObserver(()=>{if(!m.hidden&&!window.__sim90)setTimeout(scan,30)}).observe(m,{attributes:true,attributeFilter:['hidden'],childList:true,subtree:true})}catch(e){}
+window.l90scan=scan;
+try{TUT.push(['Popup buttons show the result','Choice popups now show what each button does before you tap it: money, heat, rep, stress, health, community, relationship, trust, and if it takes the day. "maybe" means it can go either way; "to" means the amount varies.'])}catch(e){}
+})();</script>

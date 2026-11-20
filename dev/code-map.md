@@ -100,6 +100,7 @@ Feature source copies: dev/skins/. Tests: dev/tests/ (crash test: dev/tests/t_fu
 | skin84 | 4k | devPanel, render | Block tab before robbery opens; Heists tab list after |
 | skin87 | 8k | bizMul, connectLand, devPanel, nextDay, render, shipRisk | Right Hand picks up loads |
 | skin88 | 4k | connectOrder, devPanel, endStory, nextDay, shipRisk, w6Path, wMax | loads home |
+| skin90 | 5k | - | deep copy + restore in place (keeps object identity so the real click still works) |
 
 ## Look, layout & art
 
