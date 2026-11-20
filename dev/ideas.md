@@ -6,7 +6,6 @@ Last cleaned: Nov 20 (every line checked against the game code).
 - Full code fold: move each feature layer into the main code so every feature lives in one place. Do it one area at a time (phone, plugs, crew, licks, money, places), full crash test after each area. About 30-45 min per area.
 
 ## Robbery and licks
-- Snatching as the very first robbery step (purse/phone snatch on the block, small money, low heat).
 - Small guns and pills as loot items from licks.
 - Daily lick contracts (someone texts a job with a bonus if you do it today).
 - Memory tiles and Rotating locks mini games (keyboard + tutorial card with Start).

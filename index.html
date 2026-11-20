@@ -11410,4 +11410,33 @@ document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest
 .h83 summary{cursor:pointer;font-weight:700;padding:6px 2px}
 .h83b{display:block;width:100%;text-align:left;margin:4px 0;text-transform:none!important;letter-spacing:0!important}
 </style>
+<script id="skin84js">
+/* skin84: snatching, the first step into robbery. 14+, on any block that isn't your home block, once per block a day.
+   Grab a purse or phone off somebody slipping: small dirty cash, sometimes a phone (sell at the pawn shop). Miss and they chase you (foot run).
+   Your first clean snatch opens the Heists tab. Counts as a lick (jack-boy rep), costs 6 energy, heat +3, the block likes you less. */
+(function(){if(window._sk84)return;window._sk84=1;
+const el=id=>document.getElementById(id),R=(a,b)=>Math.round(a+Math.random()*(b-a));
+const age=()=>{try{return gAge()||S.age||14}catch(e){return S.age||14}};
+const home=()=>{try{return homeBlock()===S.at}catch(e){return false}};
+const done=()=>{S.sn84=S.sn84||{};return S.sn84[S.at]===S.day};
+const odds=()=>Math.max(.25,Math.min(.85,.62+((S.sk&&S.sk.street)||0)*.03-(S.heat||0)/300-(((S.att||[])[S.at]||0)/400)));
+function row(where){if(age()<14||S.meet||S.pr||S.inJail)return '';const can=!home()&&!done();
+ return `<div class="row" data-sn84r="1"><div class="info"><div class="t">👜 Snatch something</div><div class="s">${home()?'Not on your own block, people know you here.':done()?'Already hit somebody on this block today.':`Somebody on ${BLOCKS[S.at]} is slipping. Grab a purse or phone and run. ${Math.round(odds()*100)}% clean, small money, heat +3.`}${!S.robOn?' Your first one opens up robbery.':''}</div></div><button class="btn red" data-sn84="1" ${can?'':'disabled'}>Snatch</button></div>`}
+window.l84row=row;
+function snatch(){if(home()||done())return;if(typeof spendEn==='function'&&spendEn(6)===false)return;S.sn84[S.at]=S.day;S.heat=Math.min(100,(S.heat||0)+3);S.comm=Math.max(0,(S.comm??30)-2);
+ if(Math.random()<odds()){const cash=R(40,180);S.cash+=cash;S.st.licks=(S.st.licks||0)+1;let ph='';
+  if(Math.random()<.4){const L=Array.isArray(S.loot)?S.loot:(S.loot=[]);if(L.filter(x=>x.w==='p').length<4){L.push({k:'phone',v:R(15,40)*10,p:R(40,60),d:S.day,w:'p'});ph=' Got a phone too, sell it at the pawn shop.'}}
+  const first=!S.robOn;if(first)S.robOn=1;
+  try{lickDone('Snatched it',`You grabbed it and kept moving. ${money(cash)} dirty.${ph}${first?' Robbery is open now: check the Heists tab for bigger licks.':''}`,true)}catch(e){say(`Snatched it. ${money(cash)} dirty.${ph}`)}}
+ else{say('They saw you coming and started yelling. Run!');try{chase(ok=>{if(ok){say('You lost them. Nothing to show for it though.');render()}else{try{busted()}catch(e){}render()}})}catch(e){S.heat=Math.min(100,S.heat+8);render()}}}
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-sn84]');if(!b||b.disabled)return;e.preventDefault();e.stopPropagation();snatch()},true);
+/* Block tab before robbery opens; Heists tab list after */
+function inject(){try{const p=el('pane');if(!p||p.querySelector('[data-sn84r]'))return;
+ if(tab==='block'&&!S.robOn){const h=row();if(!h)return;const ref=p.querySelector('[data-pr77]')||p.querySelector('[data-uc77]')||p.querySelector('.ns75');if(ref)ref.insertAdjacentHTML('afterend',h);else p.insertAdjacentHTML('afterbegin',h)}
+ if(tab==='rob'){const h=row();if(!h)return;const sec=[...p.querySelectorAll('.sec')].find(s=>/Licks today/.test(s.textContent));if(sec)sec.insertAdjacentHTML('afterend',h);else p.insertAdjacentHTML('afterbegin',h)}}catch(e){console.error('sk84',e)}}
+try{const _r=render;render=function(){const r=_r.apply(this,arguments);try{inject()}catch(e){}return r}}catch(e){}
+try{const _dp=devPanel;devPanel=function(){const r=_dp.apply(this,arguments);try{const mc=el('mcard');if(mc&&!mc.querySelector('[data-d84]')){const d=document.createElement('div');d.innerHTML='<div class="sec">Snatching (new)</div><div class="btns"><button class="btn" data-d84="r">Reset snatches today</button></div>';const h2=mc.querySelector('h2');(h2&&h2.parentNode?h2.parentNode:mc).insertBefore(d,h2?h2.nextSibling:mc.firstChild);
+ d.querySelector('[data-d84]').onclick=ev=>{ev.stopPropagation();el('modal').hidden=true;S.sn84={};render()}}}catch(e){}return r}}catch(e){}
+try{TUT.push(['Snatching','The first step into robbery (14+). On any block that is not your home block, tap Snatch something: grab a purse or phone and run. Small dirty cash, sometimes a phone to sell at the pawn shop. Miss and they chase you. Once per block a day, heat +3. Your first clean snatch opens the Heists tab.'])}catch(e){}
+})();</script>
 <script>if('serviceWorker' in navigator){addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}</script></body></html>

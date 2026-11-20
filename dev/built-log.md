@@ -449,3 +449,4 @@ Build order if Chris says build: 1) Crew Ops screen + ring basics (assign, equip
 - STILL OPEN: fully folding the features into the main code. They are tightly linked (later ones reuse earlier ones), so do it one area at a time later, not in one go.
 - BUILT Nov 19 (skin71): Heists tab lists today's licks with Go there / Open (ricky's bug: tips came but nothing in Heists).
 - BUILT Nov 19 (skin72): runner orders always show Fill it / Price is up / Not today in the text thread, even when the runner is also a friend (ricky's bug).
+- Nov 20 (skin84): Snatching built: 14+, any block but home, once per block a day, 6 energy, heat +3, community -2, 62% base (street skill up, heat/attention down), $40-180 dirty + 40% a phone (pockets), miss = foot chase, first clean snatch opens the Heists tab, counts as a lick. Block tab before robbery opens, Heists tab Licks today after. Dev reset button, tutorial page.
