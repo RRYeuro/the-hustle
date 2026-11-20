@@ -377,7 +377,9 @@ Start with 2 + 8 on texting, court and plug talk (~5-8% usage). 3/4/5 are ~10-15
 - One home for this: houses live in the Real estate office + Block tab, no repeat lists. Clean cash to buy legit, dirty cash = cash buyer with more attention. Dev menu: give a house, tutorial line, tests.
 - Add-ons (Nov 15): a 4th use: Ring HQ (scam call center, car garage with a lift, robbery safe house). House size = how many ring members fit. Location = which rings work best (garage in an industrial area for cars, quiet suburb for scams).
 
-## Crew rings: every role and skill becomes its own operation (Chris, Nov 15) — NOT BUILT, wait for "build"
+## Crew rings: every role and skill becomes its own operation (Chris, Nov 15) — BUILT Nov 20 (skin74)
+- BUILT: Crew Ops screen (Block + Circle tab), 5 rings (Car, Robbery, Scam, Muscle, Watch) + Trap ring links to Run the operation; 1-4 members, best fit leads, equipment + 3 upgrades each, daily run, The Gang reports, 20% wages, skims <30 loyalty, snitch <20, busts lock a member up 3-6 days, scam fed file, rank gates; crew on a ring cannot take one-off jobs. Roles: Right Hand (rings run while you are locked up, +10%), Enforcer (Muscle +25%, ring loyalty), Stash Leader (daily restock to keep-stocked levels), Block Captain (daily Collect all), NEW Business Manager (daily wash at 8%). Dev: 5 crew + Supplier + $60k, Run rings now.
+- LEFT: Right Hand picking up connect loads / standing in at meets; ring HQ bonus from Realtor houses; ring icons on the map.
 Big idea: your crew isn't just strength and 2-day routes. Each skill (Trapper, Robber, Scammer, Shooter, Lookout, Driver) can run a RING: a standing job you set once, buy equipment for, upgrade, and that feeds the rest of the game. Each rank role (Right Hand, Enforcer, Stash Leader, Block Captain, Business Manager) gets real powers. You manage it all from one Crew Ops screen (next to Run the operation, same style: one row per ring, tap for details, Collect all).
 
 How a ring works (same for all):

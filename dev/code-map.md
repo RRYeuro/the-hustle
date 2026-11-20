@@ -48,6 +48,7 @@ Feature source copies: dev/skins/. Tests: dev/tests/ (crash test: dev/tests/t_fu
 | skin49 | 5k | devPanel, paneSchool, w5bDealers, w5bOrders | runners are recruited, never handed out |
 | skin57 | 2k | render | opening a locked app another way (old saves, links) says why |
 | skin68 | 15k | devPanel, nextDay, render | move n of gid into worker w: stash house first, then your stash |
+| skin74 | 19k | devPanel, nextDay, render | ---- the daily run ---- |
 
 ## Licks & heists
 
@@ -123,10 +124,10 @@ Feature source copies: dev/skins/. Tests: dev/tests/ (crash test: dev/tests/t_fu
 
 ## Functions wrapped by 4+ features (change these carefully)
 
-- render (26): skin1, skin8, skin10, skin16, skin20, skin21, skin24, skin25, skin31, skin36, skin40, skin42, skin50, skin51, skin54, skin56, skin57, skin59, skin61, skin62, skin63, skin64, skin68, skin70, skin72, skin73
-- devPanel (19): skin5, skin10, skin18, skin27, skin31, skin35, skin36, skin37, skin38, skin39, skin40, skin42, skin43, skin46, skin48, skin49, skin53, skin68, skin73
+- render (27): skin1, skin8, skin10, skin16, skin20, skin21, skin24, skin25, skin31, skin36, skin40, skin42, skin50, skin51, skin54, skin56, skin57, skin59, skin61, skin62, skin63, skin64, skin68, skin70, skin72, skin73, skin74
+- devPanel (20): skin5, skin10, skin18, skin27, skin31, skin35, skin36, skin37, skin38, skin39, skin40, skin42, skin43, skin46, skin48, skin49, skin53, skin68, skin73, skin74
 - openPlace (10): skin24, skin27, skin33, skin34, skin36, skin38, skin42, skin58, skin59, skin60
 - paneBlock (7): skin7, skin8, skin17, skin31, skin40, skin51, skin61
 - modal (7): skin9, skin16, skin24, skin26, skin45, skin47, skin63
+- nextDay (5): skin18, skin31, skin68, skin69, skin74
 - paneMove (4): skin4, skin6, skin31, skin36
-- nextDay (4): skin18, skin31, skin68, skin69

@@ -1,0 +1,143 @@
+<script id="skin74js">
+/* skin74: Crew Ops + crew rings. Each skill runs a standing job you set once: Car, Robbery, Scam, Muscle, Watch (Trap = Run the operation).
+   Assign crew, buy equipment, upgrade 3 levels. Runs every day, reports in The Gang chat. Risk: heat, busts (member locked up a few days), skims under 30 loyalty, snitches under 20. */
+(function(){if(window._sk74)return;window._sk74=1;
+const el=id=>document.getElementById(id),E=x=>String(x==null?'':x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const CR=k=>{try{return crewRank(k)}catch(e){return null}};
+const R=(a,b)=>Math.round(a+Math.random()*(b-a));
+const RK=()=>{try{return window.l48rk?l48rk():0}catch(e){return 0}};
+const RKN=['Corner Boy','Petty Dealer','Middle Man','Supplier','The Connect','Kingpin'];
+const SKN={drive:'Driver',look:'Lookout',trap:'Trapper',rob:'Robber',scam:'Scammer',shoot:'Shooter'};
+const RINGS={
+ car:{n:'Car ring',ic:'🚗',sk:['drive','rob'],rk:2,age:16,does:'Drivers steal a car a day each. Cars go to your chop shop lot, or Unc\'s tire shop buys them if you don\'t have one.',
+  eq:[['key','Key programmer',2500,'More cars a day'],['tow','Tow truck',6000,'Quieter grabs, fewer busts'],['plate','Plate press',4000,'Cars sell for 30% more']],
+  up:[['Respray booth',8000,'Every car pays 25% more'],['Export container',20000,'When the lot is full, cars ship overseas for big money'],['Street racing team',15000,'Your drivers race every week for a purse']]},
+ rob:{n:'Robbery ring',ic:'🔫',sk:['rob','look'],rk:2,age:16,does:'Your robbers hit a house or store a day. Loot comes back as dirty cash.',
+  eq:[['mask','Masks and gloves',1500,'Fewer busts'],['pick','Lockpicks and bump keys',3000,'More licks go right'],['scan','Police scanner',2500,'Fewer busts'],['wcar','Work car',5000,'One more lick a day']],
+  up:[['Tip network',7000,'A new house tip shows on your map every few days'],['Fence deal',10000,'Loot pays 30% more at the pawn shop'],['Case-it crew',12000,'Even more licks go right']]},
+ scam:{n:'Scam ring',ic:'🧠',sk:['scam'],rk:1,age:14,does:'Phone scams, fake checks and fake stores, every day. Steady money, but the feds slowly start a file.',
+  eq:[['lap','Laptops',3000,'Bigger take'],['burn','Burner phones',1000,'Fewer busts'],['enc','Card printer',6000,'Fake checks: bigger take'],['mail','Mail drops',2000,'Slower fed file']],
+  up:[['Call center',10000,'More calls, 40% more money'],['Better scripts',6000,'20% more money'],['Clean-up guy',12000,'40% of the take comes back clean']]},
+ mus:{n:'Muscle',ic:'🛡️',sk:['shoot'],rk:3,age:16,does:'Shooters collect protection money on your blocks, keep beef down and guard your traps.',
+  eq:[['gun','Guns',4000,'More protection money'],['vest','Vests',3000,'Fewer of your guys get hurt'],['mcar','Cars',5000,'Cover more blocks']],
+  up:[['Armory',8000,'Protection pays 50% more'],['Safe houses',10000,'Your shooters never get locked up'],['Debt team',9000,'They also collect from people who owe you']]},
+ wat:{n:'Watch network',ic:'👀',sk:['look'],rk:1,age:14,does:'Lookouts watch your blocks. Heat cools faster and they warn you before a raid.',
+  eq:[['bph','Burners',800,'Heat cools a bit faster'],['cam','Cameras',3000,'Raid warnings more often'],['scn','Scanner',2500,'Heat cools faster']],
+  up:[['More blocks',5000,'Watch every block you run'],['Scanner texts',4000,'They text you when cops patrol your block'],['Spot the Js',6000,'They spot undercover cops posing as customers']]}};
+const ORDER=['car','rob','scam','mus','wat'];
+function st(){S.rg74=S.rg74||{};ORDER.forEach(k=>{S.rg74[k]=S.rg74[k]||{on:0,mem:[],eq:{},up:0,log:[],made:0}});return S.rg74}
+const crew=()=>{try{return crewList()}catch(e){return S.crewM||[]}};
+const byName=n=>crew().find(m=>m.name===n);
+const ringOf=n=>{const g=st();return ORDER.find(k=>g[k].mem.includes(n))};
+const free=m=>!ringOf(m.name)&&!m.busy&&!(m.hurt>=S.day)&&!(m.jail74>=S.day);
+const fitN=(m,k)=>{const s=RINGS[k].sk.map(x=>(m.sk&&m.sk[x])||0);return Math.max(...s)+(s.length>1?Math.min(...s)*.3:0)};
+const fitW=v=>v>=7?'Great fit':v>=5?'Good fit':v>=3?'Okay fit':'Bad fit';
+function active(k){const g=st()[k];return g.mem.map(byName).filter(m=>m&&!(m.jail74>=S.day)&&!(m.hurt>=S.day))}
+function lead(k){const a=active(k);return a.sort((x,y)=>fitN(y,k)-fitN(x,k))[0]}
+function locked(k){const D=RINGS[k];if(RK()<D.rk)return 'Opens at '+RKN[D.rk];if(S.age&&S.age<D.age)return 'Opens at '+D.age;return ''}
+function pay(c){if(S.cash<c)return false;S.cash-=c;S.clean=Math.min(S.clean||0,S.cash);return true}
+function gc(who,t){S.inbox=S.inbox||[];S.inbox.unshift({d:S.day,f:'The Gang',t:(who?who+': ':'')+t});S.inbox=S.inbox.slice(0,150)}
+function addCash(v,cleanPart){v=Math.round(v);S.cash+=v;if(cleanPart)S.clean=(S.clean||0)+Math.round(v*cleanPart);return v}
+/* ---- the daily run ---- */
+function day(){const g=st();let tot=0,lines=[];
+ ORDER.forEach(k=>{const r=g[k],D=RINGS[k];if(!r.on||locked(k))return;const A=active(k);if(!A.length){return}
+  const L=lead(k),q=A.reduce((x,m)=>x+fitN(m,k),0)/A.length,eq=id=>!!r.eq[id],up=r.up;let made=0,msg='',bust=false,heat=0;
+  const loyMin=Math.min(...A.map(m=>m.loy||50));
+  if(k==='car'){let cars=0;A.forEach(m=>{if(Math.random()<.3+((m.sk&&m.sk.drive)||0)*.04+(eq('key')?.15:0))cars++});
+   const X=(typeof w4==='function')?w4():{};let lot=0,unc=0,exp=0;const cap=4;
+   for(let i=0;i<cars;i++){const val=R(600,1100)*(eq('plate')?1.3:1)*(up>=1?1.25:1);
+    if(X.chop&&(X.lot||0)<cap){X.lot=(X.lot||0)+1;lot++}else if(up>=2&&Math.random()<.6){made+=val*R(3,5);exp++}else{made+=val;unc++}}
+   if(up>=3&&S.day%7===0){const p=R(2000,8000)*(q>=6?1.4:1);made+=p;msg+=` Won a street race: ${money(p)}.`}
+   heat=cars;bust=Math.random()<Math.max(.02,.07+S.heat/400-(eq('tow')?.035:0)-q*.004);
+   msg=(cars?`Got ${cars} car${cars>1?'s':''}.`+(lot?` ${lot} on your chop shop lot.`:'')+(unc?` Unc bought ${unc}.`:'')+(exp?` Shipped ${exp} overseas.`:''):'No clean grabs today.')+msg}
+  else if(k==='rob'){const tries=1+(eq('wcar')?1:0);let ok=0;
+   for(let i=0;i<tries;i++){if(Math.random()<.45+q*.04+(eq('pick')?.1:0)+(up>=3?.12:0)){ok++;made+=R(800,3000)*(up>=2?1.3:1)}}
+   if(up>=1&&S.day%3===0){try{S.lt=S.lt||{};S.lt.house=S.day+2;msg+=' Tip network found a house, it\'s on your map.'}catch(e){}}
+   heat=2*ok;bust=Math.random()<Math.max(.03,.09+S.heat/300-(eq('mask')?.03:0)-(eq('scan')?.03:0));
+   msg=(ok?`Hit ${ok} lick${ok>1?'s':''}.`:'Nothing went right today.')+msg}
+  else if(k==='scam'){made=A.reduce((x,m)=>x+R(150,450)*(1+((m.sk&&m.sk.scam)||0)*.08),0)*(eq('lap')?1.25:1)*(eq('enc')?1.3:1)*(up>=1?1.4:1)*(up>=2?1.2:1);
+   r.fed=(r.fed||0)+(eq('mail')?1:2);heat=1;bust=Math.random()<Math.max(.02,.05-(eq('burn')?.02:0)+(r.fed>60?.06:0));
+   if(r.fed>=100){bust=true;r.fed=40;msg+=' The feds opened a file on the ring.';heat+=12}
+   msg=`Calls brought in ${money(made)}.`+(up>=3?' Some of it came back clean.':'')+msg}
+  else if(k==='mus'){const own=(S.owner||[]).filter(o=>o==='me').length;const blocks=Math.max(1,Math.min(own,A.length+(eq('mcar')?1:0)));
+   made=blocks*R(150,400)*(eq('gun')?1.25:1)*(up>=1?1.5:1);if(up>=3&&(S.dtr||[]).length){const d=S.dtr.find(x=>S.day>=x.due);if(d){made+=d.amt||0;S.dtr=S.dtr.filter(x=>x!==d);msg+=' Collected a debt.'}}
+   try{(S.crews||[]).forEach(c=>{if(c.alive&&c.beef>0)c.beef=Math.max(0,c.beef-2)})}catch(e){}
+   if(Math.random()<.08-(eq('vest')?.04:0)){const m=A[Math.floor(Math.random()*A.length)];m.hurt=S.day+R(2,4);msg+=` ${m.name} got hurt in a scuffle.`}
+   heat=1;bust=up<2&&Math.random()<Math.max(.02,.05+S.heat/500);
+   msg=`Collected protection on ${blocks} block${blocks>1?'s':''}. Beef is cooling down.`+msg}
+  else if(k==='wat'){const cool=1+(eq('bph')?1:0)+(eq('scn')?1:0)+(up>=1?1:0);S.heat=Math.max(0,S.heat-cool);
+   if(S.heat>=40&&Math.random()<.4+(eq('cam')?.3:0)){S.jobShield=Math.max(S.jobShield||0,S.day+2);msg+=' Cops are sniffing around. Product is moved for 2 days in case of a raid.'}
+   if(up>=2&&Math.random()<.35)msg+=' Patrol rolled through your block twice today.';if(up>=3&&Math.random()<.25)msg+=' Spotted an undercover J and waved him off.';
+   msg=`Heat down ${cool}.`+msg}
+  /* loyalty, wages, skims, snitches */
+  if(made>0){const wages=made*.2;made-=wages;if(loyMin<30){const sk=made*.2;made-=sk;msg+=` Somebody skimmed ${money(sk)}.`}}
+  if(loyMin<20&&Math.random()<.15){heat+=12;msg+=' Word is somebody in the ring is talking to cops.'}
+  if(bust&&!(k==='mus'&&up>=2)){const m=A[Math.floor(Math.random()*A.length)];m.jail74=S.day+R(3,6);m.loy=Math.max(0,(m.loy||50)-3);heat+=6;msg+=` ${m.name} got picked up. Out in a few days.`;r.bust=(r.bust||0)+1}
+  S.heat=Math.min(100,(S.heat||0)+heat);
+  if(made>0){if(CR('rh'))made*=1.1;if(k==='mus'&&CR('enf'))made*=1.25;made=addCash(made,k==='scam'&&up>=3?.4:0)}
+  if(CR('enf'))A.forEach(m=>{if((m.loy||0)<50)m.loy=(m.loy||0)+1});
+  A.forEach(m=>{if(Math.random()<.15){const sk=D.sk[0];m.sk[sk]=Math.min(10,(m.sk[sk]||0)+1)}});
+  r.made=(r.made||0)+made;r.last={d:S.day,v:made,t:msg};r.log=[{d:S.day,t:msg,v:made}].concat(r.log||[]).slice(0,5);tot+=made;
+  gc(L?L.name:'',`${D.ic} ${msg}${made?` Your cut: ${money(made)}.`:''}`);lines.push(D.ic+(made?' '+money(made):' ✓'))});
+ if(lines.length)try{say(`Crew rings: ${lines.join(' · ')}${tot?` · ${money(tot)} total, dirty`:''}. Details in The Gang chat.`)}catch(e){}}
+window.l74day=day;
+/* rank roles: real powers every day */
+function roles(){const out=[];
+ const cp=CR('cap');if(cp&&!(cp.jail74>=S.day)&&window.l68collect){const t=l68collect();if(t)out.push(`${cp.name} (Block Captain) collected ${money(t)} from your workers`)}
+ const sl=CR('stash');if(sl&&!(sl.jail74>=S.day)&&window.l68topUp&&S.op68&&S.op68.t&&Object.values(S.op68.t).some(v=>v>0)){const r=l68topUp();if(r.moved.length)out.push(`${sl.name} (Stash Leader) restocked: ${r.moved.join(', ')}`)}
+ const bm=CR('biz');const nb=Object.keys(S.biz||{}).length;if(bm&&nb&&!(bm.jail74>=S.day)){const dirty=Math.max(0,S.cash-(S.clean||0));const cap=1500*nb+300*((bm.sk&&bm.sk.scam)||0);const w=Math.min(dirty,cap);
+  if(w>=100){const fee=Math.round(w*(bm.loy<30?.2:.08));S.cash-=fee;S.clean=Math.min(S.cash,(S.clean||0)+w-fee);out.push(`${bm.name} (Business Manager) washed ${money(w)} through your business${nb>1?'es':''}, ${money(fee)} fee${bm.loy<30?' (he took extra)':''}`)}}
+ out.forEach(t=>gc('',t));if(out.length)try{say(out.join('. ')+'.')}catch(e){}}
+try{const _nd=nextDay;nextDay=function(){const r=_nd.apply(this,arguments);try{if(S&&!S.over){const away=S.pr||S.inJail;if(!away||CR('rh')){day();roles()}}}catch(e){console.error('sk74 day',e)}return r}}catch(e){}
+try{CRANK.biz={n:'Business Manager',d:'Runs your businesses. Washes dirty cash through them every day at a low fee (8%). Low loyalty means he takes more. Only one.'}}catch(e){}
+/* ---- screens ---- */
+function opsHTML(){const g=st();const rows=ORDER.map(k=>{const D=RINGS[k],r=g[k],lk=locked(k),A=active(k);
+  const s=lk?`🔒 ${lk}`:r.mem.length?`${r.on?'🟢 Running':'⏸ Paused'} · ${r.mem.length} member${r.mem.length>1?'s':''}${r.last&&r.last.d>=S.day-1?` · last: ${r.last.v?money(r.last.v):'✓'}`:''}`:'Nobody on it yet';
+  return `<div class="row" data-r74="${k}" style="cursor:pointer${lk?';opacity:.55':''}"><div class="info"><div class="t">${D.ic} ${D.n}</div><div class="s">${s}</div></div><span class="chev">›</span></div>`}).join('');
+ const tr=`<div class="row" data-r74="trap" style="cursor:pointer"><div class="info"><div class="t">💊 Trap ring</div><div class="s">Your workers and traps: Run the operation</div></div><span class="chev">›</span></div>`;
+ const n=crew().length,fr=crew().filter(free).length;
+ return `<h2>🧰 Crew Ops</h2><p class="s" style="color:var(--dim)">Set a ring once and it runs every day. Results come in The Gang chat. ${n} in your crew, ${fr} free.</p>${tr}${rows}<div class="btns" style="margin-top:8px"><button class="btn" data-mclose="1">Close</button></div>`}
+function ringHTML(k){const D=RINGS[k],r=st()[k],lk=locked(k);
+ if(lk)return `<h2>${D.ic} ${D.n}</h2><p>${D.does}</p><p class="s">🔒 ${lk}. Skills it uses: ${D.sk.map(x=>SKN[x]).join(' + ')}.</p><div class="btns"><button class="btn" data-o74="back">Back</button></div>`;
+ const mem=r.mem.map(n=>{const m=byName(n);if(!m)return '';const jail=m.jail74>=S.day,hurt=m.hurt>=S.day;
+  return `<div class="row"><div class="info"><div class="t">${E(n)}${lead(k)===m?' ⭐':''}</div><div class="s">${D.sk.map(x=>SKN[x]+' '+((m.sk&&m.sk[x])||0)).join(' · ')} · loyalty ${m.loy||0}${jail?' · 🚔 locked up':hurt?' · 🤕 hurt':''}</div></div><button class="btn" data-o74="rm" data-n="${E(n)}">Pull off</button></div>`}).join('')||'<div class="row"><div class="info"><div class="s">Nobody on this ring yet.</div></div></div>';
+ const add=r.mem.length<4?crew().filter(free).sort((a,b)=>fitN(b,k)-fitN(a,k)).map(m=>`<div class="row"><div class="info"><div class="t">${E(m.name)}</div><div class="s">${fitW(fitN(m,k))} · ${D.sk.map(x=>SKN[x]+' '+((m.sk&&m.sk[x])||0)).join(' · ')} · loyalty ${m.loy||0}</div></div><button class="btn go" data-o74="add" data-n="${E(m.name)}">Add</button></div>`).join(''):'';
+ const eq=D.eq.map(([id,n,c,f])=>`<div class="row"><div class="info"><div class="t">${n}</div><div class="s">${f}</div></div>${r.eq[id]?'<span class="s">✅ Got it</span>':`<button class="btn" data-o74="eq" data-e="${id}" ${S.cash>=c?'':'disabled'}>${money(c)}</button>`}</div>`).join('');
+ const nu=D.up[r.up];const up=D.up.map((u,i)=>`<div class="s">${i<r.up?'✅':'▫️'} Level ${i+1}: ${u[0]} (${u[2]})</div>`).join('');
+ const log=(r.log||[]).slice(0,3).map(x=>`<div class="s">Day ${x.d}: ${E(x.t)}${x.v?' · '+money(x.v):''}</div>`).join('')||'<div class="s">No reports yet.</div>';
+ return `<h2>${D.ic} ${D.n}</h2><p class="s" style="color:var(--dim)">${D.does} Uses ${D.sk.map(x=>SKN[x]).join(' + ')}. 1 to 4 members, the best one leads (⭐). They keep 20% as pay.</p>
+  <div class="btns"><button class="btn ${r.on?'':'go'}" data-o74="tog" ${r.mem.length?'':'disabled'}>${r.on?'⏸ Pause ring':'▶ Start ring'}</button></div>
+  <div class="sec">On the ring</div>${mem}${add?`<div class="sec">Free crew</div>${add}`:''}
+  <div class="sec">Equipment (dirty cash first)</div>${eq}
+  <div class="sec">Upgrades</div><div class="row"><div class="info">${up}</div>${nu?`<button class="btn go" data-o74="up" ${S.cash>=nu[1]?'':'disabled'}>${money(nu[1])}</button>`:'<span class="s">Maxed</span>'}</div>
+  <div class="sec">Last reports</div><div class="row"><div class="info">${log}</div></div>
+  <div class="btns" style="margin-top:8px"><button class="btn" data-o74="back">Back</button><button class="btn" data-mclose="1">Close</button></div>`}
+let cur=null;
+window.l74ops=function(k){cur=k||null;if(k==='trap'){cur=null;try{return l68op()}catch(e){say('Hire workers first: Run the operation shows up when somebody works for you.');return}}
+ modal(cur?ringHTML(cur):opsHTML());const mc=el('mcard');mc.dataset.o74=1};
+document.addEventListener('click',e=>{const t=e.target;if(!t.closest)return;const rr=t.closest('#mcard [data-r74]');if(rr){e.preventDefault();e.stopPropagation();return l74ops(rr.dataset.r74)}
+ const b=t.closest('#mcard [data-o74]');if(!b||b.disabled)return;e.preventDefault();e.stopPropagation();const a=b.dataset.o74,k=cur,r=k&&st()[k],D=k&&RINGS[k];
+ if(a==='back')return l74ops();
+ if(a==='add'){if(r.mem.length>=4)return;const m=byName(b.dataset.n);if(!m||!free(m))return;r.mem.push(m.name);try{phoneMsg(m.name,`I'm on the ${D.n.toLowerCase()}. Say less.`)}catch(x){}if(r.mem.length===1)r.on=1}
+ if(a==='rm'){r.mem=r.mem.filter(n=>n!==b.dataset.n);if(!r.mem.length)r.on=0}
+ if(a==='tog'){r.on=r.on?0:1;say(`${D.n} ${r.on?'is running. Reports come in The Gang chat every day.':'paused.'}`)}
+ if(a==='eq'){const q=D.eq.find(x=>x[0]===b.dataset.e);if(q&&!r.eq[q[0]]&&pay(q[2])){r.eq[q[0]]=1;say(`Bought ${q[1].toLowerCase()} for the ${D.n.toLowerCase()}. ${money(q[2])}.`)}}
+ if(a==='up'){const u=D.up[r.up];if(u&&pay(u[1])){r.up++;say(`${D.n} upgraded: ${u[0]}.`)}}
+ try{save()}catch(x){}l74ops(k);try{render()}catch(x){}},true);
+/* crew members on a ring can't take one-off jobs */
+try{const _cj=window.crewJobs;window.crewJobs=function(i){const m=crew()[i];const k=m&&ringOf(m.name);if(k){modal(`<h2>${E(m.name)}</h2><p>${E(m.name)} is on the ${RINGS[k].n.toLowerCase()}. Pull them off in Crew Ops first.</p><div class="btns"><button class="btn go" data-r74="${k}">Open ${RINGS[k].n}</button><button class="btn" data-mclose="1">Close</button></div>`);cur=k;return}return _cj.apply(this,arguments)}}catch(e){}
+/* entries: Block tab (under Run the operation) and Circle tab */
+function entry(){try{if(!S||S.over||S.meet)return;const p=el('pane');if(!p||p.querySelector('[data-ops74]'))return;if(tab!=='block'&&tab!=='beef')return;
+ if(!crew().length&&RK()<1)return;const g=st();const on=ORDER.filter(k=>g[k].on&&g[k].mem.length).length;
+ const d=document.createElement('div');d.className='row';d.dataset.ops74=1;d.style.cursor='pointer';
+ d.innerHTML=`<div class="info"><div class="t">🧰 Crew Ops</div><div class="s">${on?on+' ring'+(on>1?'s':'')+' running':'Put your crew on rings: cars, licks, scams, muscle, lookouts'}</div></div><button class="btn go">Open</button>`;d.onclick=()=>l74ops();
+ const op=p.querySelector('[data-op68]');if(op)op.after(d);else{const f=p.querySelector('.sec');if(f)f.parentNode.insertBefore(d,f);else p.prepend(d)}}catch(e){console.error('sk74 entry',e)}}
+try{const _r=render;render=function(){const r=_r.apply(this,arguments);try{entry()}catch(e){}return r}}catch(e){}
+/* dev */
+try{const _dp=devPanel;devPanel=function(){const r=_dp.apply(this,arguments);try{const mc=el('mcard');if(mc&&!mc.querySelector('[data-d74]')){const d=document.createElement('div');d.innerHTML='<div class="sec">Crew rings (new)</div><div class="btns"><button class="btn" data-d74="g">5 crew + Supplier rank + $60k</button><button class="btn" data-d74="d">Run rings now</button><button class="btn" data-d74="o">Open Crew Ops</button></div>';const h2=mc.querySelector('h2');(h2&&h2.parentNode?h2.parentNode:mc).insertBefore(d,h2?h2.nextSibling:mc.firstChild);
+ d.querySelectorAll('[data-d74]').forEach(b=>b.onclick=ev=>{ev.stopPropagation();el('modal').hidden=true;const k=b.dataset.d74;
+  if(k==='g'){S.crewM=S.crewM||[];[['Dev Wheels',{drive:7,look:2,trap:1,rob:4,scam:1,shoot:1}],['Dev Jack',{drive:3,look:4,trap:1,rob:7,scam:1,shoot:2}],['Dev Talker',{drive:1,look:2,trap:2,rob:1,scam:8,shoot:1}],['Dev Shooter',{drive:2,look:3,trap:1,rob:2,scam:1,shoot:8}],['Dev Eyes',{drive:2,look:8,trap:1,rob:1,scam:1,shoot:1}]].forEach(([n,sk])=>{if(!S.crewM.some(m=>m.name===n)){const m=mkMember(n,{loy:70,trust:60});m.sk=Object.assign(m.sk,sk);S.crewM.push(m);S.soldiers=(S.soldiers||0)+1}});
+   S.lvl=Math.max(S.lvl||1,10);S.rk=Math.max(S.rk||0,3);S.age=Math.max(S.age||14,18);S.cash+=60000;say('Dev: 5 crew, Supplier rank, +$60k.')}
+  if(k==='d')day();if(k==='o')return l74ops();render()})}}catch(e){}return r}}catch(e){}
+try{TUT.push(['Crew roles','Right Hand: your rings keep running while you are locked up or out of town, and every ring pays 10% more. Enforcer: Muscle pays 25% more and ring members stay loyal. Stash Leader: restocks your workers to your keep-stocked levels every morning. Block Captain: collects your workers\' money every day. Business Manager (new): washes dirty cash through your businesses every day at an 8% fee. Set roles on a crew card in the Circle tab.']);TUT.push(['Crew Ops and rings','Circle tab or Block tab → 🧰 Crew Ops. Put crew members on a ring and it runs every day by itself: 🚗 Car ring (Middle Man), 🔫 Robbery ring (Middle Man), 🧠 Scam ring (Petty Dealer), 🛡️ Muscle (Supplier), 👀 Watch network (Petty Dealer). 1 to 4 members, the best fit leads. Buy equipment and 3 upgrades per ring. They keep 20% as pay. Risk: heat, busts (a member gets locked up a few days), skims under 30 loyalty, snitches under 20. Reports land in The Gang chat. Crew on a ring can\'t take one-off jobs.'])}catch(e){}
+})();</script>
