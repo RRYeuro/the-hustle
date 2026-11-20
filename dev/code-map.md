@@ -59,6 +59,7 @@ Feature source copies: dev/skins/. Tests: dev/tests/ (crash test: dev/tests/t_fu
 | skin59 | 8k | openPlace, paneLicks, render | where each lick is today |
 | skin64 | 1k | render | skip time is one tap away: a Skip button next to Next day / Lay low / Nap |
 | skin71 | 1k | paneRob | skin71: Heists tab lists today's licks (car, house tip, strap tip, store, pharmacy) with a button that opens the lick card |
+| skin77 | 8k | devPanel, nextDay, openPlace, plugPrice, render | ---- Unc ---- |
 
 ## Map, places & moving
 
@@ -126,11 +127,11 @@ Feature source copies: dev/skins/. Tests: dev/tests/ (crash test: dev/tests/t_fu
 
 ## Functions wrapped by 4+ features (change these carefully)
 
-- render (29): skin1, skin8, skin10, skin16, skin20, skin21, skin24, skin25, skin31, skin36, skin40, skin42, skin50, skin51, skin54, skin56, skin57, skin59, skin61, skin62, skin63, skin64, skin68, skin70, skin72, skin73, skin74, skin75, skin76
-- devPanel (22): skin5, skin10, skin18, skin27, skin31, skin35, skin36, skin37, skin38, skin39, skin40, skin42, skin43, skin46, skin48, skin49, skin53, skin68, skin73, skin74, skin75, skin76
-- openPlace (10): skin24, skin27, skin33, skin34, skin36, skin38, skin42, skin58, skin59, skin60
+- render (30): skin1, skin8, skin10, skin16, skin20, skin21, skin24, skin25, skin31, skin36, skin40, skin42, skin50, skin51, skin54, skin56, skin57, skin59, skin61, skin62, skin63, skin64, skin68, skin70, skin72, skin73, skin74, skin75, skin76, skin77
+- devPanel (23): skin5, skin10, skin18, skin27, skin31, skin35, skin36, skin37, skin38, skin39, skin40, skin42, skin43, skin46, skin48, skin49, skin53, skin68, skin73, skin74, skin75, skin76, skin77
+- openPlace (11): skin24, skin27, skin33, skin34, skin36, skin38, skin42, skin58, skin59, skin60, skin77
 - paneBlock (7): skin7, skin8, skin17, skin31, skin40, skin51, skin61
 - modal (7): skin9, skin16, skin24, skin26, skin45, skin47, skin63
-- nextDay (6): skin18, skin31, skin68, skin69, skin74, skin75
+- nextDay (7): skin18, skin31, skin68, skin69, skin74, skin75, skin77
 - phoneMsg (4): skin3, skin45, skin46, skin75
 - paneMove (4): skin4, skin6, skin31, skin36

@@ -234,7 +234,7 @@ Order if built: 1, 2, 3 as one batch (~2 hrs), then 5. Leaderboard only after pe
 - Nov 14: Sam is a she (Chris). Added to the female name lists for crew, friends and workers. Mission check: all 6 characters' story missions still work after the plug move; first buy works for everyone (text the plug, meet, buy grams).
 - Add-ons (Nov 15) for the 3D printer: printer sits in a ring HQ house (Realtor houses). Scam ring can sell the switches online (more money, federal risk). Watch network warns before a raid where the printer is. Upgrades: second printer, better filament (fewer jams).
 
-## Unc's tire shop as the stolen car buyer (Chris, Nov 14) - NOT BUILT, wait for "build" (Car ring sends cars here if you have no chop shop)
+## Unc's tire shop as the stolen car buyer (Chris, Nov 14) - BUILT Nov 20 (skin77): no chop shop = Take it to Unc's, he keeps 55% at first down to 35% with trust, 8% cop-roll heat, he texts you; car ring Unc sales unchanged. (Car ring sends cars here if you have no chop shop)
 - Nov 15: chop shop owners can already park a stolen car on the lot and keep their own car (built). Unc's idea is now only for players WITHOUT a chop shop.
 - Today a stolen car just sells on the spot ("Sell it to the chop shop") or you keep it. Change: no instant sale. You drive the stolen car to Unc's tire shop (he is shady) and he strips it down for you, for a cut. Fits the map: Unc's tire shop is already a place on the Block map.
 - Unc's strip pays less (he keeps a cut, say 50 to 60%), takes a day or has a cop-roll heat risk, and trust with Unc can raise his cut.
@@ -251,6 +251,7 @@ Order if built: 1, 2, 3 as one batch (~2 hrs), then 5. Leaderboard only after pe
 
 ## Extra ideas from Opus (Nov 14) - NOT BUILT, wait for "build"
 - Pawn buyback: jewelry you pawn can be bought back within 7 days for the price plus 20%, like a real pawn ticket. Gives drip players a way to get cash fast without losing the chain for good. (~30 min)
+- BUILT Nov 20 (skin77): Plug family tier (5% off buys, welcome text, task force warning at heat 50+ with heat -4), Undercover J tell row at attention 30+ (Don't serve him = no undercover on that block today, costs 8% of the Js money), 3D printer (pawn shop $1,200 18+, print 2-4 at home once a day for 10 energy, 15% jam, sell ~$200 each dirty, heat +2 each, fed buyer chance = busted).
 - Plug family tier: at 90 trust a plug gives family price (5% off), holds a load for you for a day, and warns you when a task force is coming. Lose it if you get caught snitching. (~45 min)
 - Undercover Js: now and then a "customer" is a cop. Street Smarts shows a tell ("asks too many questions", "new face, clean shoes") so you can walk away; selling to one is a bust. (~45 min)
 - Scanner texts: if you own a scanner, a short text when a patrol moves onto your current block. (~15 min) (Watch network in Crew rings upgrades this)
