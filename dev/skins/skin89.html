@@ -45,6 +45,6 @@ function reRow(){try{if(tab!=='block'||S.meet||S.pr||S.inJail)return;const p=el(
  const ref=p.querySelector('.ns75');if(ref)ref.after(d);else p.prepend(d)}catch(e){}}
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-re89b]');if(!b)return;e.preventDefault();e.stopPropagation();const bi=+b.dataset.re89b,h=how(bi);
  try{if(h==='drop')return plugDrop(bi);if(h==='pull'){window.l31PullUp(bi);if(!S.meet){window.l31Text&&l31Text(bi);window.l31Go&&l31Go(bi)}return}window.l31Text&&l31Text(bi);window.l31Go&&l31Go(bi)}catch(x){console.error('sk89 reup',x)}},true);
-try{const _r=render;render=function(){const r=_r.apply(this,arguments);try{reRow()}catch(e){}return r}}catch(e){}
+try{const _r=render;render=function(){try{if(typeof S!=='undefined'&&S)['workers','crewM','cands','friends'].forEach(k=>{if(Array.isArray(S[k])&&S[k].some(x=>!x))S[k]=S[k].filter(Boolean)})}catch(e){}const r=_r.apply(this,arguments);try{reRow()}catch(e){}return r}}catch(e){}
 try{TUT.push(['Branches and quick re-up','Crew Ops → open a ring → Branches: send a free crew member to run that ring in another city ($5,000, Supplier rank). Bigger cities pay more, no heat at home, but they can get locked up out there. Quick re-up on the Block tab buys from your best plug in about 3 taps: 90+ trust they drop it off, 40+ they pull up to you, lower you text them and head over.'])}catch(e){}
 })();</script>

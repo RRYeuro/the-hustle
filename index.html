@@ -2436,7 +2436,7 @@ const CNAMES2=['Smoke','Duke','Boog','Moe','Peso','Juice','Deuce','Flaco','Slim'
 const mHe=(m,w)=>{const f=m&&(m.fem||m.f||FNAMES_F.includes(m.name)||(typeof WFEM!=='undefined'&&WFEM.includes(m.name))||(typeof NEWF!=='undefined'&&NEWF.includes(m.name)));return f?({he:'she',He:'She',his:'her',His:'Her',him:'her',himself:'herself'})[w]||w:w};
 function mkMember(name,o){o=o||{};const keys=Object.keys(CMSPEC),main=o.spec||pick(keys),sk={};keys.forEach(k=>sk[k]=rnd(1,3));sk[main]=rnd(4,6);
   return {id:(S.cmId=(S.cmId||0)+1),name,loy:o.loy!=null?o.loy:rnd(45,65),trust:o.trust!=null?o.trust:rnd(25,45),sk,rank:'sol',want:pick(Object.keys(CWANT)),hurt:0,busy:null,last:S.day,from:o.from||'hire',snake:o.snake?1:0}}
-const takenNames=()=>[...(S.friends||[]).map(f=>f.name),...(S.workers||[]).map(w=>w.name),...(S.crewM||[]).map(m=>m.name),...(S.cands||[]).map(c=>c.name),...(S.gf?[S.gf.name]:[]),...BLOCKS.map((b,i)=>{try{return plugName(i)}catch(e){return ''}})];
+const takenNames=()=>[...(S.friends||[]).map(f=>(f||{}).name),...(S.workers||[]).map(w=>(w||{}).name),...(S.crewM||[]).map(m=>(m||{}).name),...(S.cands||[]).map(c=>(c||{}).name),...(S.gf?[S.gf.name]:[]),...BLOCKS.map((b,i)=>{try{return plugName(i)}catch(e){return ''}})];
 function crewList(){S.crewM=S.crewM||[];const M=S.crewM,n=S.soldiers||0;M.forEach(m=>{if(m.sk&&m.sk.drive==null)m.sk.drive=1});
   try{const taken=new Set((S.workers||[]).map(w=>w.name).concat((S.friends||[]).map(f=>f.name)).concat(BLOCKS.map((b,i)=>{try{return plugName(i)}catch(e){return ''}})));const seen=new Set();M.forEach(m=>{if(taken.has(m.name)||seen.has(m.name)){const used=new Set(M.map(x=>x.name).concat([...taken]));const pool=CNAMES2.filter(x=>!used.has(x));if(pool.length)m.name=pick(pool)}seen.add(m.name)})}catch(e){}
 
@@ -11684,7 +11684,7 @@ function reRow(){try{if(tab!=='block'||S.meet||S.pr||S.inJail)return;const p=el(
  const ref=p.querySelector('.ns75');if(ref)ref.after(d);else p.prepend(d)}catch(e){}}
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-re89b]');if(!b)return;e.preventDefault();e.stopPropagation();const bi=+b.dataset.re89b,h=how(bi);
  try{if(h==='drop')return plugDrop(bi);if(h==='pull'){window.l31PullUp(bi);if(!S.meet){window.l31Text&&l31Text(bi);window.l31Go&&l31Go(bi)}return}window.l31Text&&l31Text(bi);window.l31Go&&l31Go(bi)}catch(x){console.error('sk89 reup',x)}},true);
-try{const _r=render;render=function(){const r=_r.apply(this,arguments);try{reRow()}catch(e){}return r}}catch(e){}
+try{const _r=render;render=function(){try{if(typeof S!=='undefined'&&S)['workers','crewM','cands','friends'].forEach(k=>{if(Array.isArray(S[k])&&S[k].some(x=>!x))S[k]=S[k].filter(Boolean)})}catch(e){}const r=_r.apply(this,arguments);try{reRow()}catch(e){}return r}}catch(e){}
 try{TUT.push(['Branches and quick re-up','Crew Ops → open a ring → Branches: send a free crew member to run that ring in another city ($5,000, Supplier rank). Bigger cities pay more, no heat at home, but they can get locked up out there. Quick re-up on the Block tab buys from your best plug in about 3 taps: 90+ trust they drop it off, 40+ they pull up to you, lower you text them and head over.'])}catch(e){}
 })();</script>
 <script>if('serviceWorker' in navigator){addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}</script></body></html>
