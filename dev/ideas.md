@@ -421,10 +421,12 @@ Build order if Chris says build: 1) Crew Ops screen + ring basics (assign, equip
 - Bubble moves so it never covers the button; works on phone and laptop.
 - Replaces the 80-page text tutorial as the main way to learn: old book becomes ~10 short topics (Money, Plugs, Selling, Heat, Crew, Places, Phone, School, Rap, Licks); details stay in each screen's "ⓘ How this works". Old first-day guide (skin40) folds into this (no duplicate).
 
-## Code cleanup: fold the layers into the main code (Nov 15) — NOT BUILT, wait for "build" (~1-2 hrs, its own session, Sonnet paused)
+## Code cleanup (Nov 15) — PART BUILT Nov 20 (~1-2 hrs, its own session, Sonnet paused)
 - Today: main file + ~68 skins that wrap old functions (render wrapped 15+ times, devPanel 17, openPlace 7). Works, but bugs hide (one layer undoes another: the move-in and silent Mexico load bugs were this kind) and dead code piles up.
 - Do: fold each skin into the main code so every feature lives in one place; delete dead/replaced code (old menus, removed apps, duplicate buttons); group by area (money, plugs, crew, phone, places, school, rap, licks); update dev/code-map.md.
 - Safety: full test suite + random-click crash test after each area; old saves must still load; no gameplay changes.
 - Best time: before Crew rings, so new systems go in clean. Nobody else pushes during it.
+- BUILT Nov 20: 41 style blocks merged into one (game-css); 11 dead functions removed (old shootout, old hack game, unused panes); dev/ tidied (tests in dev/tests, feature copies in dev/skins); deploy.sh picks up new features on its own; code map rebuilds itself on every deploy, grouped by area. Crash test: 0 errors.
+- STILL OPEN: fully folding the features into the main code. They are tightly linked (later ones reuse earlier ones), so do it one area at a time later, not in one go.
 - BUILT Nov 19 (skin71): Heists tab lists today's licks with Go there / Open (ricky's bug: tips came but nothing in Heists).
 - BUILT Nov 19 (skin72): runner orders always show Fill it / Price is up / Not today in the text thread, even when the runner is also a friend (ricky's bug).
