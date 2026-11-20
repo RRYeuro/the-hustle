@@ -1,0 +1,70 @@
+<script id="skin75js">
+/* skin75: polish pack. Block prices sag when you oversell (recover over days) + more heat when you keep hammering one block;
+   shortcut chips at the top (collect crew money, runner orders, ring results, high heat); floating +$/−$, shake on heat spikes, buttons press in;
+   new code sounds (text ping, deal thud, heat pulse, car ring engine) under the same Sound switch. */
+(function(){if(window._sk75)return;window._sk75=1;
+const el=id=>document.getElementById(id);
+/* --- oversold blocks --- */
+const ov=bi=>{S.ov75=S.ov75||[0,0,0,0,0,0];return S.ov75[bi]||0};
+try{const _st=street;street=function(g){const p=_st.apply(this,arguments);try{const o=ov(S.at);return o>0?Math.max(1,Math.round(p*(1-o))):p}catch(e){return p}}}catch(e){}
+try{const _sv=srvTick;srvTick=function(n,g){const r=_sv.apply(this,arguments);try{const o=ov(S.at),add=Math.min(.08,(n||0)*((g&&g.sp)||.1)*.006);S.ov75[S.at]=Math.min(.5,o+add);if(o>.25){S.heat=Math.min(100,(S.heat||0)+1)}}catch(e){}return r}}catch(e){}
+try{const _nd=nextDay;nextDay=function(){const r=_nd.apply(this,arguments);try{if(S.ov75)S.ov75=S.ov75.map(x=>x<.01?0:+(x*.55).toFixed(3));if(S.heat>=70)snd('pulse');if(S.rg74&&S.rg74.car&&S.rg74.car.on&&S.rg74.car.mem.length)setTimeout(()=>snd('engine'),400)}catch(e){}return r}}catch(e){}
+/* --- sounds (same Sound On/Off switch in the menu) --- */
+let lastPing=0;
+function snd(k){try{if(typeof SND==='undefined'||!SND.sfx||typeof tone!=='function')return;
+ if(k==='ping'){if(Date.now()-lastPing<1200)return;lastPing=Date.now();tone(1180,.07,'sine',.05);tone(1560,.1,'sine',.045,.08)}
+ if(k==='thud'){tone(140,.16,'triangle',.09,0,60)}
+ if(k==='pulse'){tone(70,.35,'sine',.09);tone(70,.35,'sine',.07,.45)}
+ if(k==='engine'){tone(70,.6,'sawtooth',.035,0,150)}
+ if(k==='minus'){tone(330,.09,'triangle',.03,0,220)}}catch(e){}}
+window.l75snd=snd;
+try{const _pm=phoneMsg;phoneMsg=function(){const r=_pm.apply(this,arguments);snd('ping');return r}}catch(e){}
+try{const _say=say;say=function(t){try{if(typeof t==='string'&&/^Copped /.test(t))snd('thud')}catch(e){}return _say.apply(this,arguments)}}catch(e){}
+/* --- juice: floating money, heat shake --- */
+let lc=null,lh=null;
+function floatMoney(d){const c=el('cash');if(!c)return;const r=c.getBoundingClientRect();if(!r.width)return;const f=document.createElement('div');f.className='fm75 '+(d>0?'up':'dn');
+ f.textContent=(d>0?'+':'−')+money(Math.abs(d));f.style.left=(r.left+Math.min(r.width-20,40))+'px';f.style.top=(r.top+4)+'px';document.body.appendChild(f);setTimeout(()=>f.remove(),1300)}
+function juice(){if(typeof S==='undefined'||!S||S.over||S.cash==null)return;
+ if(lc!=null&&S.cash!==lc){const d=Math.round(S.cash-lc);if(Math.abs(d)>=1){floatMoney(d);if(d<0&&d<=-50)snd('minus')}}
+ if(lh!=null&&S.heat-lh>=6){document.body.classList.remove('sh75');void document.body.offsetWidth;document.body.classList.add('sh75');setTimeout(()=>document.body.classList.remove('sh75'),700)}
+ lc=S.cash;lh=S.heat}
+/* --- shortcut chips at the top --- */
+function chips(){try{if(!S||S.over||S.meet||tab==='phone')return;const p=el('pane');if(!p||p.querySelector('.ns75'))return;S.ns75=S.ns75||{};const out=[];const hide=k=>S.ns75[k]===S.day;
+ const held=(S.workers||[]).reduce((x,w)=>x+(w.held||0),0);if(held>=200&&!hide('held'))out.push(['held',`💵 Crew holding ${money(held)}`,'Collect']);
+ try{const B=b5(),D=w5bDealers();const o=(B.ord||[])[0];if(o&&D[o.d]&&!hide('ord'))out.push(['ord',`📦 ${D[o.d].n} wants ${amt(o.n,G(o.g))} ${G(o.g).name}${B.ord.length>1?` (+${B.ord.length-1} more)`:''}`,'Open']);}catch(e){}
+ try{const g=S.rg74||{};const t=Object.values(g).filter(r=>r.last&&r.last.d===S.day).reduce((x,r)=>x+(r.last.v||0),0);if(t>0&&!hide('ring'))out.push(['ring',`🧰 Rings made ${money(t)} today`,'Crew Ops'])}catch(e){}
+ if(S.heat>=70&&!hide('heat'))out.push(['heat',`🚨 Heat ${Math.round(S.heat)}: cops are on you`,'Lay low']);
+ try{const o=ov(S.at);if(o>=.15&&tab==='block'&&!hide('ov'))out.push(['ov',`▼ Prices here down ${Math.round(o*100)}%, you oversold`,'Move'])}catch(e){}
+ if(!out.length)return;const d=document.createElement('div');d.className='ns75 wspan';
+ d.innerHTML=out.slice(0,3).map(([k,t,b])=>`<div class="ns75c"><span>${t}</span><button class="btn go" data-ns75="${k}">${b}</button><button class="ns75x" data-ns75x="${k}" aria-label="Hide">✕</button></div>`).join('');p.prepend(d)}catch(e){console.error('sk75 chips',e)}}
+document.addEventListener('click',e=>{const x=e.target.closest&&e.target.closest('[data-ns75x]');if(x){e.preventDefault();e.stopPropagation();S.ns75=S.ns75||{};S.ns75[x.dataset.ns75x]=S.day;return render()}
+ const b=e.target.closest&&e.target.closest('[data-ns75]');if(!b)return;e.preventDefault();e.stopPropagation();const k=b.dataset.ns75;
+ if(k==='held'){try{l68collect()}catch(er){}render()}
+ else if(k==='ord'){try{const B=b5(),D=w5bDealers(),o=B.ord[0];tab='phone';window._phLock=S.day;window._rph='messages';window._mth=D[o.d].n}catch(er){}render()}
+ else if(k==='ring'){try{l74ops()}catch(er){}}
+ else if(k==='heat'){const l=document.querySelector('[data-a="wq"][data-k="lay"]');if(l&&l.getBoundingClientRect().width)l.click();else{tab='block';render();say('Lay low is on the Block tab of your home block.')}}
+ else if(k==='ov'){tab='move';render()}},true);
+/* block card: show the price trend */
+function trend(){try{const h=el('here');if(!h||h.querySelector('.tr75'))return;const o=ov(S.at);if(o<.03)return;const s=document.createElement('div');s.className='tr75';s.textContent=`▼ Prices ${Math.round(o*100)}% lower here (oversold). They come back in a few days.`;h.appendChild(s)}catch(e){}}
+try{const _r=render;render=function(){const r=_r.apply(this,arguments);try{juice();chips();trend()}catch(e){}return r}}catch(e){}
+/* dev */
+try{const _dp=devPanel;devPanel=function(){const r=_dp.apply(this,arguments);try{const mc=el('mcard');if(mc&&!mc.querySelector('[data-d75]')){const d=document.createElement('div');d.innerHTML='<div class="sec">Polish (new)</div><div class="btns"><button class="btn" data-d75="rp">Reset block prices</button><button class="btn" data-d75="ov">Oversell this block</button><button class="btn" data-d75="mu">Sound on/off</button><button class="btn" data-d75="ht">Heat +10 (shake)</button></div>';const h2=mc.querySelector('h2');(h2&&h2.parentNode?h2.parentNode:mc).insertBefore(d,h2?h2.nextSibling:mc.firstChild);
+ d.querySelectorAll('[data-d75]').forEach(b=>b.onclick=ev=>{ev.stopPropagation();el('modal').hidden=true;const k=b.dataset.d75;if(k==='rp')S.ov75=[0,0,0,0,0,0];if(k==='ov'){ov(0);S.ov75[S.at]=.35}if(k==='mu'){SND.sfx=!SND.sfx;sndSave();say('Sound '+(SND.sfx?'on':'off'))}if(k==='ht')S.heat=Math.min(100,S.heat+10);render()})}}catch(e){}return r}}catch(e){}
+try{TUT.push(['Block prices and shortcuts','Selling a lot on one block makes prices there drop (up to 50%) and adds heat once it gets bad. Prices come back over a few days, so move around. The Block card shows ▼ when a block is oversold. Shortcut chips at the top of the screen let you collect crew money, open runner orders, see ring money or lay low in one tap. ✕ hides a chip for the day. Sound on/off is in the menu.'])}catch(e){}
+})();</script>
+<style id="skin75">
+.fm75{position:fixed;z-index:9999;font-weight:800;font-size:18px;pointer-events:none;animation:fm75 1.25s ease-out forwards;text-shadow:0 2px 6px rgba(0,0,0,.7)}
+.fm75.up{color:#f5c518}.fm75.dn{color:#e8504a}
+@keyframes fm75{0%{opacity:0;transform:translateY(6px) scale(.9)}15%{opacity:1;transform:translateY(0) scale(1.1)}100%{opacity:0;transform:translateY(-36px) scale(1)}}
+body.sh75 .app,body.sh75 #pane{animation:sh75 .45s}
+body.sh75::after{content:"";position:fixed;inset:0;pointer-events:none;box-shadow:inset 0 0 60px 10px rgba(232,80,74,.55);z-index:9998;animation:ed75 .7s forwards}
+@keyframes sh75{20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(3px)}}
+@keyframes ed75{to{opacity:0}}
+.btn:active,.mv-tile:active,.mapp:active{transform:scale(.95)}
+.ns75{display:flex;flex-direction:column;gap:6px;margin:0 0 8px}
+.ns75c{display:flex;align-items:center;gap:8px;background:rgba(245,197,24,.08);border:1px solid rgba(245,197,24,.35);border-radius:10px;padding:6px 8px;font-size:14px}
+.ns75c span{flex:1;min-width:0}.ns75c .btn{padding:6px 10px}
+.ns75x{background:none;border:0;color:var(--dim,#999);font-size:16px;cursor:pointer;padding:2px 6px}
+.tr75{color:#e8504a;font-size:12px;margin-top:4px}
+@media (prefers-reduced-motion:reduce){.fm75,body.sh75 .app,body.sh75 #pane,body.sh75::after{animation:none}.btn:active{transform:none}}
+</style>

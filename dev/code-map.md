@@ -41,7 +41,7 @@ Feature source copies: dev/skins/. Tests: dev/tests/ (crash test: dev/tests/t_fu
 | skin2 | 1k | paneBeef |  |
 | skin5 | 1k | devPanel |  |
 | skin6 | 9k | paneBeef, paneBiz, paneCrew, paneMoney, paneMove, panePhone, paneSpots | Move: board, here sections, rest |
-| skin10 | 18k | act, cmResolve, crewHTML, custoPrice, devPanel, mdBody, placeAct, raid, render, serveCusto | random street events |
+| skin10 | 19k | act, cmResolve, crewHTML, custoPrice, devPanel, mdBody, placeAct, raid, render, serveCusto | random street events |
 | skin35 | 14k | cmResolve, devPanel, heist, paneLicks | Licks app: a door to the heists |
 | skin38 | 5k | devPanel, openPlace, paneBag | daily: respect from crews and your own crew's loyalty |
 | skin48 | 5k | addXP, devPanel, paneCrew, teenStart, w5bOrderDay, w5bOrders | mark the rank-up so the ladder shows NEW for 2 days |
@@ -86,6 +86,7 @@ Feature source copies: dev/skins/. Tests: dev/tests/ (crash test: dev/tests/t_fu
 | skin36 | 10k | devPanel, lickDone, openPlace, paneMove, raid, render, srvTick | what patrols do (scanner or not) |
 | skin43 | 11k | devPanel, livingDay, paneExp | ---------- Bills that bite ---------- |
 | skin53 | 3k | devPanel, paneExp | the more street money you sit on, the more eyes on you |
+| skin75 | 7k | devPanel, nextDay, phoneMsg, render, say, srvTick, street | --- oversold blocks --- |
 
 ## Look, layout & art
 
@@ -124,10 +125,11 @@ Feature source copies: dev/skins/. Tests: dev/tests/ (crash test: dev/tests/t_fu
 
 ## Functions wrapped by 4+ features (change these carefully)
 
-- render (27): skin1, skin8, skin10, skin16, skin20, skin21, skin24, skin25, skin31, skin36, skin40, skin42, skin50, skin51, skin54, skin56, skin57, skin59, skin61, skin62, skin63, skin64, skin68, skin70, skin72, skin73, skin74
-- devPanel (20): skin5, skin10, skin18, skin27, skin31, skin35, skin36, skin37, skin38, skin39, skin40, skin42, skin43, skin46, skin48, skin49, skin53, skin68, skin73, skin74
+- render (28): skin1, skin8, skin10, skin16, skin20, skin21, skin24, skin25, skin31, skin36, skin40, skin42, skin50, skin51, skin54, skin56, skin57, skin59, skin61, skin62, skin63, skin64, skin68, skin70, skin72, skin73, skin74, skin75
+- devPanel (21): skin5, skin10, skin18, skin27, skin31, skin35, skin36, skin37, skin38, skin39, skin40, skin42, skin43, skin46, skin48, skin49, skin53, skin68, skin73, skin74, skin75
 - openPlace (10): skin24, skin27, skin33, skin34, skin36, skin38, skin42, skin58, skin59, skin60
 - paneBlock (7): skin7, skin8, skin17, skin31, skin40, skin51, skin61
 - modal (7): skin9, skin16, skin24, skin26, skin45, skin47, skin63
-- nextDay (5): skin18, skin31, skin68, skin69, skin74
+- nextDay (6): skin18, skin31, skin68, skin69, skin74, skin75
+- phoneMsg (4): skin3, skin45, skin46, skin75
 - paneMove (4): skin4, skin6, skin31, skin36

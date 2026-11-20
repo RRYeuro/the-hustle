@@ -325,7 +325,9 @@ Start with 2 + 8 on texting, court and plug talk (~5-8% usage). 3/4/5 are ~10-15
 - Clean vs dirty cash, dev menu (force refusal, set trust), tutorial line, keyboard on the talk game.
 - Add-ons (Nov 15): a ring at Kingpin rank can open your own connect line (no talk needed). Muscle can escort the load home (lower robbery risk on the road). Watch network checks the route for checkpoints first.
 
-## Polish pack (from outside spec, Nov 15) — not built yet
+## Polish pack (from outside spec, Nov 15) — BUILT Nov 20 (skin75)
+- BUILT: block prices drop up to 50% when oversold (recover ~45%/day), extra heat when a block is badly oversold, ▼ trend on the Block card ("Js got $X" was already there); shortcut chips at the top (crew holding cash → Collect, runner order → Open, rings made today → Crew Ops, high heat → Lay low, oversold → Move), ✕ hides for the day; floating +$/−$, shake + red edge on heat spikes, buttons press in, respects reduced motion; sounds: text ping, deal thud, heat pulse, car ring engine, spend blip (same Sound switch); street event buttons show exact results; dev buttons; tutorial page.
+- LEFT: 3-tap audit; exact results on the other popup events (family, pop-ups); sounds per other rings.
 - Block prices drop when you oversell: each sale on a block lowers its price a little (cap about -50%), and it recovers over a few days. Pushes you to move around the map. Show a ▲/▼ trend on the block, plus "Js here have about $X left today" (moved here from Opus extras). Same build: heat per sale grows with volume on one block (balance run showed heat under 12 while serving hundreds).
 - Notification stack at the top: one tap jumps to the thing or fixes it inline ("Dre holding $400 → [Collect]", "Mya says pull up → [Go]"). Pulls from The Gang chat + plug texts (no new messages, just shortcuts).
 - Juice: floating gold "+$" (bills flying into the cash number) when paid, red "-$" when spending, buttons press in on tap, screen shake + red edge on heat spikes or failed mini games.
