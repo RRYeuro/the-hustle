@@ -49,7 +49,7 @@ Feature source copies: dev/skins/. Tests: dev/tests/ (crash test: dev/tests/t_fu
 | skin49 | 5k | devPanel, paneSchool, w5bDealers, w5bOrders | runners are recruited, never handed out |
 | skin57 | 2k | render | opening a locked app another way (old saves, links) says why |
 | skin68 | 15k | devPanel, nextDay, render | move n of gid into worker w: stash house first, then your stash |
-| skin74 | 19k | devPanel, nextDay, render | ---- the daily run ---- |
+| skin74 | 20k | devPanel, nextDay, render | ---- the daily run ---- |
 
 ## Licks & heists
 
@@ -61,6 +61,12 @@ Feature source copies: dev/skins/. Tests: dev/tests/ (crash test: dev/tests/t_fu
 | skin64 | 1k | render | skip time is one tap away: a Skip button next to Next day / Lay low / Nap |
 | skin71 | 1k | paneRob | skin71: Heists tab lists today's licks (car, house tip, strap tip, store, pharmacy) with a button that opens the lick card |
 | skin77 | 8k | devPanel, nextDay, openPlace, plugPrice, render | ---- Unc ---- |
+
+## Money, bills & business
+
+| Feature | Size | Wraps | Note |
+|---|---|---|---|
+| skin79 | 5k | devPanel, mdBody, render | stash spots |
 
 ## Map, places & moving
 
@@ -128,8 +134,8 @@ Feature source copies: dev/skins/. Tests: dev/tests/ (crash test: dev/tests/t_fu
 
 ## Functions wrapped by 4+ features (change these carefully)
 
-- render (30): skin1, skin8, skin10, skin16, skin20, skin21, skin24, skin25, skin31, skin36, skin40, skin42, skin50, skin51, skin54, skin56, skin57, skin59, skin61, skin62, skin63, skin64, skin68, skin70, skin72, skin73, skin74, skin75, skin76, skin77
-- devPanel (24): skin5, skin10, skin18, skin27, skin31, skin35, skin36, skin37, skin38, skin39, skin40, skin42, skin43, skin46, skin48, skin49, skin53, skin68, skin73, skin74, skin75, skin76, skin77, skin78
+- render (31): skin1, skin8, skin10, skin16, skin20, skin21, skin24, skin25, skin31, skin36, skin40, skin42, skin50, skin51, skin54, skin56, skin57, skin59, skin61, skin62, skin63, skin64, skin68, skin70, skin72, skin73, skin74, skin75, skin76, skin77, skin79
+- devPanel (25): skin5, skin10, skin18, skin27, skin31, skin35, skin36, skin37, skin38, skin39, skin40, skin42, skin43, skin46, skin48, skin49, skin53, skin68, skin73, skin74, skin75, skin76, skin77, skin78, skin79
 - openPlace (11): skin24, skin27, skin33, skin34, skin36, skin38, skin42, skin58, skin59, skin60, skin77
 - paneBlock (7): skin7, skin8, skin17, skin31, skin40, skin51, skin61
 - modal (7): skin9, skin16, skin24, skin26, skin45, skin47, skin63

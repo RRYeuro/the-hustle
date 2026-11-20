@@ -371,7 +371,8 @@ Start with 2 + 8 on texting, court and plug talk (~5-8% usage). 3/4/5 are ~10-15
 - Rap tie-in: drop a song then post it, content between drops (studio clip, snippet tease), viral chance, online beef/diss that can turn into real street beef, flexing stash/guns/cash on your page raises heat, fan comments show if a song hit or flopped.
 - Add-ons (Nov 15): posting a big score from a ring gives followers but raises heat; scam ring can buy fake followers (risky, they drop later); Watch network catches opps watching your page; followers raise recruiting quality for rings.
 
-## Realtor houses: pick what each house is for — not built
+## Realtor houses: pick what each house is for — BUILT Nov 20 (skin79)
+- BUILT: each house you own (Real estate office → What each house is for): Rent (weekly rent), Live (no rent, less stress, stash space; one home), Stash (extra stash space by size), Ring HQ (pick a running ring, ↻ cycles: +15% money, 35% of busts avoided). Size: duplex small < row house medium < apartment building big. $500 to switch. Selling a house you live in moves you back. Dev button. LEFT: trap use (traps stay block-based), neighborhood heat by location, raids/robbery on houses.
 - Houses bought at the Real estate office get a use you choose: Personal home, Stash house, or Trap house. Can switch later (takes a day, costs a little to set up).
 - Location matters: hood blocks = cheap, more foot traffic (trap sells more) but more heat; nice areas = pricey, low heat, quiet (good home or stash), bad for traps (neighbors call cops).
 - Size matters: small house / apartment / big house = stash space, how many workers fit in a trap, and how much the home helps stress.

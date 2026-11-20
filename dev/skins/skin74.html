@@ -69,6 +69,7 @@ function day(){const g=st();let tot=0,lines=[];
    if(S.heat>=40&&Math.random()<.4+(eq('cam')?.3:0)){S.jobShield=Math.max(S.jobShield||0,S.day+2);msg+=' Cops are sniffing around. Product is moved for 2 days in case of a raid.'}
    if(up>=2&&Math.random()<.35)msg+=' Patrol rolled through your block twice today.';if(up>=3&&Math.random()<.25)msg+=' Spotted an undercover J and waved him off.';
    msg=`Heat down ${cool}.`+msg}
+  if(window.l79hq&&l79hq(k)){if(made>0)made*=1.15;if(bust&&Math.random()<.35)bust=false}
   /* loyalty, wages, skims, snitches */
   if(made>0){const wages=made*.2;made-=wages;if(loyMin<30){const sk=made*.2;made-=sk;msg+=` Somebody skimmed ${money(sk)}.`}}
   if(loyMin<20&&Math.random()<.15){heat+=12;msg+=' Word is somebody in the ring is talking to cops.'}

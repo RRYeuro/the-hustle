@@ -1966,7 +1966,7 @@ const W5BEV=[
 function w5bEvDay(){const B=b5();if(window.FF||!$('modal').hidden||S.pr||S.inJail)return;if(w5bHoliday())return;if(B.ev>S.day-2||Math.random()>.1)return;B.ev=S.day;const e=pick(W5BEV);wCard('event',e[0],e[1],e[2].map(o=>({l:o.l,c:o.c,dis:typeof o.dis==='function'?o.dis():o.dis,f:o.f})),'Street')}
 function w5bSeason(){const se=w5bSeasonOf();if(se==='winter'&&S.en!=null)S.en=Math.max(0,S.en-3)}
 /* ---- rentals, club manager, distribution, dating extras ---- */
-function w5bPropDay(){const B=b5();if(weekTick()){B.re.forEach(p=>{p.v*=1+(Math.random()-.4)*.01;if(p.vac>S.day)return;const r=Math.random();if(r<.06){p.vac=S.day+14;say(`Tenants skipped out on the ${p.n.toLowerCase()}. It will be empty a couple of weeks.`);return}if(r<.14&&S.cash>=400){S.cash-=400;say(`Repairs at the ${p.n.toLowerCase()} cost $400.`)}{const rr=Math.round(p.rent*bizMul());S.cash+=rr;legit(rr)}});
+function w5bPropDay(){const B=b5();if(weekTick()){B.re.forEach(p=>{p.v*=1+(Math.random()-.4)*.01;if(p.vac>S.day||(p.use79&&p.use79!=='rent'))return;const r=Math.random();if(r<.06){p.vac=S.day+14;say(`Tenants skipped out on the ${p.n.toLowerCase()}. It will be empty a couple of weeks.`);return}if(r<.14&&S.cash>=400){S.cash-=400;say(`Repairs at the ${p.n.toLowerCase()} cost $400.`)}{const rr=Math.round(p.rent*bizMul());S.cash+=rr;legit(rr)}});
     if(B.dist&&S.soldiers>0&&!S.car){say('Your distribution route sat idle. Nobody had a ride to move weight.')}else if(B.dist&&S.soldiers>0){const r=Math.random();if(r<.08){S.heat=Math.min(100,S.heat+12);say('Cops caught the distribution truck. Heat spiked and the load was lost.')}else if(r<.14){say('Another crew hit your distribution truck. Nothing made it.')}else{const p=Math.round(S.soldiers*rnd(150,260));S.cash+=p;S.heat=Math.min(100,S.heat+2);say(`Distribution route paid ${money(p)}.`)}}}
   if(B.mgr&&S.biz&&S.biz.club){S.cash+=120;legit(120)}}
 function w5bProp(){const B=b5();let h=`<div class="sec">Business moves</div>`;
@@ -10974,6 +10974,7 @@ function day(){const g=st();let tot=0,lines=[];
    if(S.heat>=40&&Math.random()<.4+(eq('cam')?.3:0)){S.jobShield=Math.max(S.jobShield||0,S.day+2);msg+=' Cops are sniffing around. Product is moved for 2 days in case of a raid.'}
    if(up>=2&&Math.random()<.35)msg+=' Patrol rolled through your block twice today.';if(up>=3&&Math.random()<.25)msg+=' Spotted an undercover J and waved him off.';
    msg=`Heat down ${cool}.`+msg}
+  if(window.l79hq&&l79hq(k)){if(made>0)made*=1.15;if(bust&&Math.random()<.35)bust=false}
   /* loyalty, wages, skims, snitches */
   if(made>0){const wages=made*.2;made-=wages;if(loyMin<30){const sk=made*.2;made-=sk;msg+=` Somebody skimmed ${money(sk)}.`}}
   if(loyMin<20&&Math.random()<.15){heat+=12;msg+=' Word is somebody in the ring is talking to cops.'}
@@ -11246,5 +11247,40 @@ try{const _cp=connectPrice;connectPrice=function(g,C){const p=_cp.apply(this,arg
 try{const _dp=devPanel;devPanel=function(){const r=_dp.apply(this,arguments);try{const mc=el('mcard');if(mc&&!mc.querySelector('[data-d78]')){const d=document.createElement('div');d.innerHTML='<div class="sec">Connect says no (new)</div><div class="btns"><button class="btn" data-d78="r">First connect lays low</button></div>';const h2=mc.querySelector('h2');(h2&&h2.parentNode?h2.parentNode:mc).insertBefore(d,h2?h2.nextSibling:mc.firstChild);
  d.querySelector('[data-d78]').onclick=ev=>{ev.stopPropagation();el('modal').hidden=true;const C=conList()[0];if(!C)return say('Dev: no connect yet.');C.low=S.day+10;C.t78=null;say('Dev: '+C.name+' is laying low.');render()}}}catch(e){}return r}}catch(e){}
 try{TUT.push(['When a connect says no','A connect laying low is not a dead end. Talk your way in (Talk skill and trust, add 10% extra to sweeten it) or fly out to see them (costs money and the day, much better odds, trust +8 if it works). Miss and trust drops 5. One try a day.'])}catch(e){}
+})();</script>
+<script id="skin79js">
+/* skin79: Realtor houses get a use. Each house you own at the Real estate office: Rental (rent every week), Live here (no rent, less stress, stash space),
+   Stash spot (lots of stash space, no rent) or Ring HQ (one crew ring: +15% money, fewer busts). Size matters: row house < duplex < apartment building. */
+(function(){if(window._sk79)return;window._sk79=1;
+const el=id=>document.getElementById(id);
+const SZ={dup:{home:110,stash:180,stress:-1,n:'small'},row:{home:150,stash:250,stress:-2,n:'medium'},apt:{home:300,stash:500,stress:-3,n:'big'}};
+const sz=p=>SZ[p.id]||SZ.row;
+const RN={car:'Car ring',rob:'Robbery ring',scam:'Scam ring',mus:'Muscle',wat:'Watch network'};
+const RE=()=>{try{return b5().re||[]}catch(e){return []}};
+try{HOMES.own79=HOMES.own79||{name:'Your house',rent:0,stash:150,stress:-2,raid:.03,lvl:1,sub:'You own it. No rent.'}}catch(e){}
+function sync(){if(typeof S==='undefined'||!S||S.over)return;const L=RE();
+ /* stash spots */
+ const want=L.filter(p=>p.use79==='stash').reduce((x,p)=>x+sz(p).stash,0),had=S.u79cap||0;if(want!==had){S.cap=(S.cap||0)+want-had;S.u79cap=want}
+ /* living in your own house */
+ const h=L.find(p=>p.use79==='home');
+ if(h){const z=sz(h);if(HOMES.own79.stash!==z.home&&S.home==='own79'){S.cap+=z.home-HOMES.own79.stash}Object.assign(HOMES.own79,{name:'Your '+h.n.toLowerCase(),stash:z.home,stress:z.stress});
+  if(S.home!=='own79'){const old=HOMES[S.home]||{stash:0};S.u79prev=S.home;S.cap+=z.home-(old.stash||0);S.home='own79';S.rentDay=S.day+7}}
+ else if(S.home==='own79'){const back=HOMES[S.u79prev]&&S.u79prev!=='own79'?S.u79prev:'couch';S.cap+=(HOMES[back].stash||0)-HOMES.own79.stash;S.home=back;S.rentDay=S.day+7;try{say(`You moved back to ${HOMES[back].name.toLowerCase()}.`)}catch(e){}}}
+window.l79hq=k=>RE().some(p=>p.use79==='hq'&&p.hq79===k);
+function rows(){const L=RE();if(!L.length)return '';
+ return `<div class="sec">What each house is for</div>`+L.map((p,i)=>{const u=p.use79||'rent',z=sz(p),run=Object.keys(RN).filter(k=>S.rg74&&S.rg74[k]&&S.rg74[k].mem.length);
+  const now=u==='rent'?`Rental, ${money(p.rent)} a week`:u==='home'?`You live here · no rent · +${z.home} stash · less stress`:u==='stash'?`Stash spot · +${z.stash} stash space`:`Ring HQ: ${RN[p.hq79]||'pick a ring'} · +15% money, fewer busts`;
+  const B=(k,t)=>`<button class="btn ${u===k?'go':''}" data-u79="${k}" data-i="${i}">${t}</button>`;
+  return `<div class="row" style="flex-wrap:wrap"><div class="info" style="flex:1 1 200px"><div class="t">🏘️ ${esc(p.n)} <span class="chip">${z.n}</span></div><div class="s">${now}</div></div><div class="btns">${B('rent','Rent')}${B('home','Live')}${B('stash','Stash')}${run.length?B('hq',u==='hq'?'HQ ↻':'HQ'):''}</div></div>`}).join('')+`<div class="row"><div class="info"><div class="s">Switching costs $500 to set up. Only one house can be home.</div></div></div>`}
+try{const _md=mdBody;mdBody=function(id){let h=_md.apply(this,arguments)||'';try{if(id==='realty'&&adult()){const x=rows();if(x){const k=h.indexOf('<div class="sec">For sale</div>');h=k>=0?h.slice(0,k)+x+h.slice(k):h+x}}}catch(e){console.error('sk79',e)}return h}}catch(e){}
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-u79]');if(!b)return;e.preventDefault();e.stopPropagation();const L=RE(),p=L[+b.dataset.i],k=b.dataset.u79;if(!p)return;
+ if(k==='hq'){const run=Object.keys(RN).filter(r=>S.rg74&&S.rg74[r]&&S.rg74[r].mem.length);if(!run.length)return;if(p.use79==='hq'){const j=run.indexOf(p.hq79);p.hq79=run[(j+1)%run.length]}else{if(S.cash<500)return say('Setting it up costs $500.');S.cash-=500;S.clean=Math.min(S.clean||0,S.cash);p.use79='hq';p.hq79=run[0]}say(`The ${p.n.toLowerCase()} is HQ for your ${RN[p.hq79].toLowerCase()}.`)}
+ else if((p.use79||'rent')!==k){if(S.cash<500)return say('Setting it up costs $500.');S.cash-=500;S.clean=Math.min(S.clean||0,S.cash);if(k==='home')L.forEach(q=>{if(q!==p&&q.use79==='home')q.use79='rent'});p.use79=k;
+  say(k==='rent'?`The ${p.n.toLowerCase()} is a rental again. Rent comes in every week.`:k==='home'?`You moved into your ${p.n.toLowerCase()}. No rent.`:`The ${p.n.toLowerCase()} is a stash spot now. +${sz(p).stash} stash space.`)}
+ sync();try{save()}catch(x){}try{openPlace('realty')}catch(x){render()}},true);
+try{const _r=render;render=function(){try{sync()}catch(e){}return _r.apply(this,arguments)}}catch(e){}
+try{const _dp=devPanel;devPanel=function(){const r=_dp.apply(this,arguments);try{const mc=el('mcard');if(mc&&!mc.querySelector('[data-d79]')){const d=document.createElement('div');d.innerHTML='<div class="sec">Realtor houses (new)</div><div class="btns"><button class="btn" data-d79="g">Give a row house + duplex</button></div>';const h2=mc.querySelector('h2');(h2&&h2.parentNode?h2.parentNode:mc).insertBefore(d,h2?h2.nextSibling:mc.firstChild);
+ d.querySelector('[data-d79]').onclick=ev=>{ev.stopPropagation();el('modal').hidden=true;const B=b5();B.re=B.re||[];W5BRE.filter(x=>x.id!=='apt').forEach(x=>{if(!B.re.find(p=>p.id===x.id))B.re.push({id:x.id,n:x.n,cost:x.cost,rent:x.rent,v:x.cost,vac:0})});say('Dev: houses added. Real estate office → What each house is for.');render()}}}catch(e){}return r}}catch(e){}
+try{TUT.push(['What your houses are for','Houses you buy at the Real estate office can be a Rental (rent every week), your Home (no rent, less stress, stash space), a Stash spot (lots of stash space) or a Ring HQ for one crew ring (+15% money, fewer busts). Bigger house = more space. Switching costs $500.'])}catch(e){}
 })();</script>
 <script>if('serviceWorker' in navigator){addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}</script></body></html>
