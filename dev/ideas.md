@@ -47,7 +47,6 @@ Last cleaned: Nov 20.
 
 ## Map
 - Customer dots and cop patrol spots on the map (game doesn't track their block yet).
-- Map art for the other cities.
 - Go inside the spots: a small scene with people and tap spots instead of a button list.
 
 ## Getting players
