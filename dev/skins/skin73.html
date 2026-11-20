@@ -51,6 +51,7 @@ function go(d){if(!T)return;T.i=Math.max(0,T.i+d);T.t0=Date.now();if(T.i===11||T
 function finish(){const mini=T&&T.mini;off();try{if(!mini){S.tut73='done';S.fd={off:1};say('Tutorial done. Get to the money.')}save()}catch(e){};try{render()}catch(e){}}
 function start(steps,mini){off();T={steps,i:0,t0:Date.now(),base:{day:S.day,sold:sold()},mini};try{document.getElementById('modal').hidden=true}catch(e){}if(!mini){try{tab='block'}catch(e){}S.fd={off:1};render()}draw()}
 window.l73tour=()=>start(LOOP(),0);
+window.l73mini=(sel,txt)=>start([{el:()=>vis(sel),txt,next:1}],1);
 /* choice card when a character starts */
 window.l73start=function(){try{localStorage.setItem('tl-tut','1')}catch(e){}
  modal(`<h2>New here?</h2><p>Take a 2 minute walkthrough. The screen goes dark and one button lights up at a time. You just tap it.</p><div class="btns" style="flex-direction:column"><button class="btn go" id="tu73p" style="padding:12px">▶ Play the tutorial</button><button class="btn" id="tu73s" style="padding:12px">Skip tutorial (I know the game)</button></div>`);

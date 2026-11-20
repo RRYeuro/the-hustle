@@ -10865,6 +10865,7 @@ function go(d){if(!T)return;T.i=Math.max(0,T.i+d);T.t0=Date.now();if(T.i===11||T
 function finish(){const mini=T&&T.mini;off();try{if(!mini){S.tut73='done';S.fd={off:1};say('Tutorial done. Get to the money.')}save()}catch(e){};try{render()}catch(e){}}
 function start(steps,mini){off();T={steps,i:0,t0:Date.now(),base:{day:S.day,sold:sold()},mini};try{document.getElementById('modal').hidden=true}catch(e){}if(!mini){try{tab='block'}catch(e){}S.fd={off:1};render()}draw()}
 window.l73tour=()=>start(LOOP(),0);
+window.l73mini=(sel,txt)=>start([{el:()=>vis(sel),txt,next:1}],1);
 /* choice card when a character starts */
 window.l73start=function(){try{localStorage.setItem('tl-tut','1')}catch(e){}
  modal(`<h2>New here?</h2><p>Take a 2 minute walkthrough. The screen goes dark and one button lights up at a time. You just tap it.</p><div class="btns" style="flex-direction:column"><button class="btn go" id="tu73p" style="padding:12px">▶ Play the tutorial</button><button class="btn" id="tu73s" style="padding:12px">Skip tutorial (I know the game)</button></div>`);
@@ -11560,4 +11561,49 @@ try{TUT.push(['Loot, contracts, pawn tickets, new locks','House and store licks 
 .mm86 .cu,.rl86 .cu{outline:2px solid var(--accent,#f5c518)}.mm86 .ok,.rl86 .ok{background:rgba(95,211,138,.2)}
 .rl86{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:10px 0}.rl86 button{display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 4px;border-radius:50%;aspect-ratio:1;border:2px solid var(--line,#444);background:#1b1b22;color:#ddd;font-size:11px}.rl86 b{font-size:22px}
 </style>
+<script id="skin87js">
+/* skin87: leftovers that plug into what is already there.
+   Right Hand picks up connect loads (half the seizure risk). Rings talk in their own voice and car/robbery work at night.
+   Ring icons sit on your home block on the Move board. A Ring HQ house can get raided when heat is high.
+   Partner (60+ closeness) helps at your businesses (+10%) but becomes a target when beef is high. Kids sometimes need money.
+   Scam ring rings the phone. First-time spotlights for Run the operation and Crew Ops. Move board shows 🚓 where cops patrol (with a scanner) and $ for Js money. */
+(function(){if(window._sk87)return;window._sk87=1;
+const el=id=>document.getElementById(id),R=(a,b)=>Math.round(a+Math.random()*(b-a));
+const CR=k=>{try{return crewRank(k)}catch(e){return null}};
+/* Right Hand picks up loads */
+try{const _sr=shipRisk;shipRisk=function(){const r=_sr.apply(this,arguments);try{const rh=CR('rh');if(rh&&!(rh.jail74>=S.day))return r*.5}catch(e){}return r}}catch(e){}
+try{const _cl=connectLand;connectLand=function(pk){const r=_cl.apply(this,arguments);try{const rh=CR('rh');if(rh&&!(rh.jail74>=S.day))phoneMsg(rh.name,pick(['Picked up the package. It\'s put up.','Load is home. Nobody followed me.','Got it from the drop. We good.']))}catch(e){}return r}}catch(e){}
+/* ring voices */
+const V={car:['Yooo, ','We outside! ','Easy work last night. '],rob:['Done. ','Clean. ','In and out last night. '],scam:['Smooth day. ','They bit. ','Phones was ringing all day. '],mus:['Handled. ','Nobody tried us. '],wat:['All eyes. ','Block was quiet. ']};
+const IC={car:'🚗',rob:'🔫',scam:'🧠',mus:'🛡️',wat:'👀'};
+function voices(){try{const g=S.rg74||{};(S.inbox||[]).slice(0,12).forEach(m=>{if(m.f!=='The Gang'||m.v87||m.d!==S.day)return;const k=Object.keys(IC).find(x=>m.t.includes(IC[x]+' '));if(!k)return;m.v87=1;
+ m.t=m.t.replace(IC[k]+' ',IC[k]+' '+pick(V[k]));const r=g[k];if(r&&r.bust&&Math.random()<.2)m.t+=' Still salty about the last time they got one of us.';if(r&&r.last&&r.last.v>=4000)m.t+=' Best day since we started.'})}catch(e){}}
+/* scam phone sound */
+function ringSounds(){try{const g=S.rg74||{};if(g.scam&&g.scam.on&&g.scam.mem.length&&typeof tone==='function'&&SND.sfx){tone(880,.12,'square',.03,.9);tone(880,.12,'square',.03,1.1)}}catch(e){}}
+/* HQ raid */
+function hqRaid(){try{const L=(b5().re||[]).filter(p=>p.use79==='hq');if(!L.length||S.heat<70||Math.random()>.04)return;const p=L[0],k=p.hq79,r=S.rg74&&S.rg74[k];if(!r)return;r.on=0;S.heat=Math.min(100,S.heat+5);
+ try{phoneMsg('The Gang',`Cops ran in the ${p.n.toLowerCase()}. Ring is shut down till you start it back up.`)}catch(e){}say(`Your ${p.n.toLowerCase()} got raided. The ring there is paused.`)}catch(e){}}
+/* partner */
+try{const _bm=bizMul;bizMul=function(){let m=_bm.apply(this,arguments);try{if(S.gf&&(S.gf.rel||0)>=60&&Object.keys(S.biz||{}).length)m*=1.1}catch(e){}return m}}catch(e){}
+function partnerRisk(){try{if(!S.gf||!(S.gf.rel>=60))return;const hot=(S.crews||[]).some(c=>c.alive&&c.beef>=70);if(!hot||Math.random()>.05||!el('modal').hidden)return;
+ modal(`<h2>They know about ${esc(S.gf.name)}</h2><p>Somebody from the other side rolled past ${esc(S.gf.name)}'s job, real slow. She called you shaking.</p><div class="btns" style="flex-direction:column"><button class="btn go" data-p87="s">Send somebody to watch her · stress −5 · $500</button><button class="btn" data-p87="t">Tell her to stay home a week · closeness −5</button></div>`);
+ el('mcard').querySelectorAll('[data-p87]').forEach(b=>b.onclick=ev=>{ev.stopPropagation();if(b.dataset.p87==='s'){if(S.cash>=500){S.cash-=500;S.clean=Math.min(S.clean||0,S.cash);try{addStress(-5)}catch(x){}say('Somebody is watching her now.')}else say('You don\'t have $500.')}else{S.gf.rel=Math.max(0,S.gf.rel-5);say('She stayed home. She\'s not happy about it.')}el('modal').hidden=true;render()})}catch(e){}}
+/* kids */
+function kidsAsk(){try{const K=S.kids||[];if(!K.length||Math.random()>.035||!el('modal').hidden)return;const k=K[Math.floor(Math.random()*K.length)];const [why,c]=pick([['a school trip',150],['new shoes',200],['the doctor',300],['a birthday party',250]]);
+ modal(`<h2>${esc(k.name)} needs something</h2><p>${esc(k.other||'Their mom')} says ${esc(k.name)} needs money for ${why}.</p><div class="btns" style="flex-direction:column"><button class="btn go" data-k87="y" ${S.cash>=c?'':'disabled'}>Send ${money(c)} · stress −3</button><button class="btn" data-k87="n">Not right now · stress +5</button></div>`);
+ el('mcard').querySelectorAll('[data-k87]').forEach(b=>b.onclick=ev=>{ev.stopPropagation();if(b.dataset.k87==='y'){S.cash-=c;S.clean=Math.min(S.clean||0,S.cash);try{addStress(-3)}catch(x){}say(`Sent ${money(c)} for ${k.name}.`)}else{try{addStress(5)}catch(x){}say('You said not right now. It weighs on you.')}el('modal').hidden=true;render()})}catch(e){}}
+/* Move board badges */
+function board(){try{if(tab!=='move')return;let pat=[];try{if(S.scan)pat=patrols()||[]}catch(e){}const g=S.rg74||{},run=Object.keys(IC).filter(k=>g[k]&&g[k].on&&g[k].mem.length);let hb=-1;try{hb=homeBlock()}catch(e){}
+ BLOCKS.forEach((b,i)=>{document.querySelectorAll(`#pane button[data-t="${i}"]`).forEach(x=>{if(x.querySelector('.bd87'))return;let t='';if(pat.includes(i))t+='🚓';try{const j=jsLeftAt(i);t+=j>=2500?'$$$':j>=1500?'$$':j>0?'$':''}catch(e){}if(i===hb&&run.length)t+=' '+run.map(k=>IC[k]).join('');if(!t)return;const s=document.createElement('span');s.className='bd87';s.textContent=t;x.appendChild(s)})})}catch(e){}}
+/* first-time spotlights for Run the operation and Crew Ops */
+function spots(){try{if(!window.l73tour||document.getElementById('tu73b')||!el('modal').hidden)return;S.ul73=S.ul73||{};
+ const L=[['op68','[data-op68]','🧺 <b>Run the operation</b>: collect from and restock all your workers in one tap.'],['ops74','[data-ops74]','🧰 <b>Crew Ops</b>: put your crew on rings that make money every day by themselves.']];
+ for(const [k,sel,txt] of L){if(S.ul73[k])continue;const e=document.querySelector(sel);if(!e||!e.getBoundingClientRect().width)continue;S.ul73[k]=1;window.l73mini&&l73mini(sel,txt);return}}catch(e){}}
+try{const _nd=nextDay;nextDay=function(){const r=_nd.apply(this,arguments);try{voices();ringSounds();hqRaid();partnerRisk();kidsAsk()}catch(e){console.error('sk87',e)}return r}}catch(e){}
+try{const _r=render;render=function(){const r=_r.apply(this,arguments);try{board();setTimeout(spots,200)}catch(e){}return r}}catch(e){}
+try{const _dp=devPanel;devPanel=function(){const r=_dp.apply(this,arguments);try{const mc=el('mcard');if(mc&&!mc.querySelector('[data-d87]')){const d=document.createElement('div');d.innerHTML='<div class="sec">Leftovers (new)</div><div class="btns"><button class="btn" data-d87="k">Kid needs money</button><button class="btn" data-d87="p">Partner threatened</button><button class="btn" data-d87="h">Raid the Ring HQ</button></div>';const h2=mc.querySelector('h2');(h2&&h2.parentNode?h2.parentNode:mc).insertBefore(d,h2?h2.nextSibling:mc.firstChild);
+ d.querySelectorAll('[data-d87]').forEach(b=>b.onclick=ev=>{ev.stopPropagation();el('modal').hidden=true;const k=b.dataset.d87,rr=Math.random;Math.random=()=>0;try{if(k==='k'){S.kids=S.kids&&S.kids.length?S.kids:[{name:'Lil Man',born:S.day,other:'His mom'}];kidsAsk()}if(k==='p'){S.gf=S.gf||{name:'Kayla',rel:70};S.gf.rel=Math.max(60,S.gf.rel||0);(S.crews||[]).forEach(c=>{if(c.alive)c.beef=80});partnerRisk()}if(k==='h'){S.heat=80;hqRaid()}}finally{Math.random=rr}render()})}}catch(e){}return r}}catch(e){}
+try{TUT.push(['Little things that tie it together','Your Right Hand picks up connect loads (half the seizure risk) and texts when it lands. Ring reports come in each ring\'s own voice. Your home block on the Move board shows icons for rings that are running, 🚓 where cops patrol (with a scanner) and $ to $$$ for how much money the Js have. A Ring HQ house can get raided at heat 70+. A partner at 60+ closeness helps your businesses (+10%), but in a hot beef the other side may come at her. Kids ask for money now and then.'])}catch(e){}
+})();</script>
+<style id="skin87">.bd87{display:block;font-size:10px;letter-spacing:1px;color:#f5c518;margin-top:2px}</style>
 <script>if('serviceWorker' in navigator){addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}</script></body></html>
