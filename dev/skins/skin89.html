@@ -13,7 +13,7 @@ const home=()=>{try{return clCity()}catch(e){return 'Columbia'}};
 const cities=()=>{try{return W5BCITY.map(c=>c.n).filter(n=>n!==home())}catch(e){return []}};
 const ringFree=m=>{try{const g=S.rg74||{};return !Object.values(g).some(r=>r.mem.includes(m.name))&&!m.br89&&!m.busy&&!(m.hurt>=S.day)&&!(m.jail74>=S.day)}catch(e){return false}};
 function brs(k){const r=S.rg74&&S.rg74[k];if(!r)return [];r.br=r.br||[];return r.br}
-function section(k){const r=S.rg74&&S.rg74[k];if(!r)return '';const B=brs(k);const lock=RK()<3?'Opens at Supplier rank.':!r.mem.length?'Put somebody on the ring at home first.':'';
+function section(k){const r=S.rg74&&S.rg74[k];if(!r)return '';const B=brs(k);const lock=(S.age||18)<18?'Opens at 18.':RK()<3?'Opens at Supplier rank.':!r.mem.length?'Put somebody on the ring at home first.':'';
  let h=`<div class="sec">Branches in other cities</div>`;
  h+=B.map((b,i)=>{const m=byName(b.m);const jail=m&&m.jail74>=S.day;return `<div class="row"><div class="info"><div class="t">📍 ${E(b.c)}: ${E(b.m)}</div><div class="s">${jail?'🚔 locked up out there':b.last?`Last: ${money(b.last)}`:'Just opened'} · made ${money(b.made||0)} so far</div></div><button class="btn" data-b89c="${i}">Close</button></div>`}).join('');
  if(lock){h+=`<div class="row"><div class="info"><div class="s">🔒 ${lock}</div></div></div>`;return h}

@@ -84,7 +84,7 @@ Feature source copies: dev/skins/. Tests: dev/tests/ (crash test: dev/tests/t_fu
 | skin62 | 2k | mgrBtn, render | manager button always shows, and says what is missing |
 | skin79 | 5k | devPanel, mdBody, render | stash spots |
 | skin80 | 2k | devPanel, jsBudget, nextDay |  |
-| skin81 | 8k | bizMul, devPanel, nextDay, plugPrice, render | majors |
+| skin81 | 9k | bizMul, devPanel, nextDay, plugPrice, render | majors |
 | skin85 | 5k | devPanel, lickDone, nextDay, rapTour, render | block rep follows real rep |
 
 ## Law, heat & beef
