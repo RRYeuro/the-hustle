@@ -5,12 +5,6 @@ Last cleaned: Nov 20 (every line checked against the game code).
 ## Code
 - Full code fold: move each feature layer into the main code so every feature lives in one place. Do it one area at a time (phone, plugs, crew, licks, money, places), full crash test after each area. About 30-45 min per area.
 
-## Robbery and licks
-- Small guns and pills as loot items from licks.
-- Daily lick contracts (someone texts a job with a bonus if you do it today).
-- Memory tiles and Rotating locks mini games (keyboard + tutorial card with Start).
-- Pawn buyback: pawn your own chain, buy it back within 7 days for price + 20%.
-
 ## Connects
 - Bring the load home yourself after flying out: stash car (hidden compartment, Car ring can build them), mules (cheap, can snitch), freight (slow, seizure chance), Right Hand drives it, fly with it (fastest, highest bust risk). Checkpoints; Watch network scouts the route; Muscle escorts.
 - Kingpin rank opens your own connect line (no talk needed).

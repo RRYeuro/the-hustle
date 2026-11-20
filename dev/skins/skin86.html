@@ -1,0 +1,72 @@
+<script id="skin86js">
+/* skin86: robbery batch.
+   Licks can turn up pills (go in your stash as Percs) or a pistol (yours if you don't have one).
+   Lick contracts: every few days somebody texts a job: hit a house today for a bonus.
+   Pawn buyback: pawn your own jewelry at the pawn shop for half, buy it back within 7 days for that +20%.
+   Two new lock mini games show up on safes: Memory tiles (match pairs) and Rotating locks (line up the notches). Keyboard on both. */
+(function(){if(window._sk86)return;window._sk86=1;
+const el=id=>document.getElementById(id),R=(a,b)=>Math.round(a+Math.random()*(b-a));
+/* --- which lick is running --- */
+let cur=null;
+try{const _lk=lick;lick=function(k){cur={k,d:S.day};return _lk.apply(this,arguments)}}catch(e){}
+try{const _ld=lickDone;lickDone=function(t,txt,ok){let extra='';try{if(ok&&cur&&cur.d===S.day&&/house|store|strap|pharm/.test(cur.k)){
+   if(Math.random()<.25){const n=R(10,30);S.inv.percs=(S.inv.percs||0)+n;extra+=` Found ${n} Percs in a cabinet. They're in your stash.`}
+   if(Math.random()<.12){S.guns=S.guns||{};if(!S.guns.pistol){S.guns.pistol=1;extra+=' Found a pistol under the mattress. It\'s yours now.'}}
+   const C=S.ct86;if(C&&C.d===S.day&&!C.done&&/house/.test(cur.k)){C.done=1;S.cash+=C.b;extra+=` Contract done: +${money(C.b)} bonus.`;try{phoneMsg(C.who,'Saw it on the news. Bonus sent. 🤝')}catch(x){}}}}catch(e){}
+  cur=null;return _ld.call(this,t,(txt||'')+extra,...[].slice.call(arguments,2))}}catch(e){}
+/* --- lick contracts --- */
+function contractDay(){if(!S.robOn||(S.age||14)<16||S.pr||S.inJail)return;if(S.ct86&&S.ct86.d>=S.day-2)return;if(Math.random()>.35)return;
+ const who=pick(['Unknown number','Lil Mike','Your cousin','Pooh']),b=R(3,8)*100;S.ct86={d:S.day,b,who};try{S.lt=S.lt||{};S.lt.house=S.day+1}catch(e){}
+ try{phoneMsg(who,`Got a house for you. Pin's on your map. Hit it today and I'll throw you ${money(b)} on top.`)}catch(e){}}
+function ctRow(){try{if(tab!=='rob')return;const C=S.ct86;if(!C||C.d!==S.day||C.done)return;const p=el('pane');if(!p||p.querySelector('[data-ct86]'))return;
+ const d=document.createElement('div');d.className='row';d.dataset.ct86=1;d.innerHTML=`<div class="info"><div class="t">📃 Contract from ${esc(C.who)}</div><div class="s">Hit a house today: +${money(C.b)} bonus on top of the loot. The tipped house is on your map.</div></div>`;p.prepend(d)}catch(e){}}
+/* --- pawn buyback --- */
+function tickets(){S.pt86=(S.pt86||[]).filter(t=>t.due>=S.day||(()=>{try{phoneMsg('Pawn shop',`Your ticket on the ${JEWEL[t.k].n.toLowerCase()} ran out. It's for sale now.`)}catch(e){}return false})());return S.pt86}
+try{const _op=openPlace;openPlace=function(id){const r=_op.apply(this,arguments);try{if(id==='pawn'&&!el('modal').hidden){const mc=el('mcard'),p=mc&&(mc.querySelector('.pane')||mc);if(p&&!mc.querySelector('[data-pb86]')){
+ const own=Object.keys(S.jew||{}).filter(k=>S.jew[k]&&JEWEL[k]),T=tickets();if(!own.length&&!T.length)return r;
+ let h='<div class="sec" data-pb86="1">Pawn your jewelry</div>';
+ h+=own.map(k=>`<div class="row"><div class="info"><div class="t">${JEWEL[k].n}</div><div class="s">Get ${money(Math.round(JEWEL[k].c*.5))} now. Buy it back within 7 days for ${money(Math.round(JEWEL[k].c*.6))}.</div></div><button class="btn" data-pb86p="${k}">Pawn it</button></div>`).join('');
+ h+=T.map((t,i)=>`<div class="row"><div class="info"><div class="t">🎟️ ${JEWEL[t.k].n}</div><div class="s">${t.due-S.day} day${t.due-S.day===1?'':'s'} left on the ticket.</div></div><button class="btn go" data-pb86b="${i}" ${S.cash>=t.cost?'':'disabled'}>Buy back ${money(t.cost)}</button></div>`).join('');
+ p.insertAdjacentHTML('beforeend',h)}}}catch(e){console.error('sk86 pawn',e)}return r}}catch(e){}
+document.addEventListener('click',e=>{const a=e.target.closest&&e.target.closest('[data-pb86p],[data-pb86b]');if(!a||a.disabled)return;e.preventDefault();e.stopPropagation();
+ if(a.dataset.pb86p){const k=a.dataset.pb86p,J=JEWEL[k];if(!S.jew||!S.jew[k])return;S.jew[k]=0;const v=Math.round(J.c*.5);S.cash+=v;tickets().push({k,cost:Math.round(J.c*.6),due:S.day+7});say(`Pawned your ${J.n.toLowerCase()} for ${money(v)}. Ticket good for 7 days.`)}
+ else{const T=tickets(),t=T[+a.dataset.pb86b];if(!t||S.cash<t.cost)return;S.cash-=t.cost;S.clean=Math.min(S.clean||0,S.cash);S.jew=S.jew||{};S.jew[t.k]=1;T.splice(+a.dataset.pb86b,1);say(`Got your ${JEWEL[t.k].n.toLowerCase()} back.`)}
+ try{openPlace('pawn')}catch(x){render()}},true);
+/* --- mini games --- */
+function memGame(o,done){const title=o.title||'Memory tiles';
+ gateGame(title,'Flip two tiles at a time and match all 8 pairs before the clock runs out or you miss too many. Keyboard: arrow keys move, Enter or Space flips, Esc gives up.',()=>{
+  try{mgOn=true}catch(e){}const IC=['💎','🔑','📱','💵','🔫','💊','🚗','⌚'];const deck=IC.concat(IC).sort(()=>Math.random()-.5);let up=[],got=new Set(),cur=0,miss=0,over=false;const MAXM=8,TL=45000,t0=performance.now();
+  modal(`<h2>${title}</h2><div class="bar" style="height:8px"><i id="mm86t" style="width:100%;background:var(--heat)"></i></div><div class="mm86" id="mm86"></div><p class="s" id="mm86m" style="text-align:center">Misses left: ${MAXM}</p><div class="btns" style="justify-content:center"><button class="btn" id="mm86x">Give up</button></div>`);
+  const fin=ok=>{if(over)return;over=true;try{mgOn=false}catch(e){}document.removeEventListener('keydown',kd,true);clearInterval(iv);el('modal').hidden=true;done(!!ok)};
+  const draw=()=>{const g=el('mm86');if(!g)return;g.innerHTML=deck.map((c,i)=>`<button class="${i===cur?'cu ':''}${got.has(i)?'ok':''}" data-mm="${i}">${got.has(i)||up.includes(i)?c:'?'}</button>`).join('');g.querySelectorAll('[data-mm]').forEach(b=>b.onclick=()=>{cur=+b.dataset.mm;flip()})};
+  const flip=()=>{if(over||got.has(cur)||up.includes(cur)||up.length>=2)return;up.push(cur);draw();if(up.length===2){const [a,b]=up;if(deck[a]===deck[b]){got.add(a);got.add(b);up=[];draw();if(got.size===16)fin(true)}else{miss++;el('mm86m').textContent='Misses left: '+(MAXM-miss);setTimeout(()=>{up=[];draw();if(miss>=MAXM)fin(false)},650)}}};
+  function kd(e){if(!el('mm86'))return;e.preventDefault();e.stopPropagation();const k=e.key;if(k==='ArrowRight')cur=(cur+1)%16;else if(k==='ArrowLeft')cur=(cur+15)%16;else if(k==='ArrowDown')cur=(cur+4)%16;else if(k==='ArrowUp')cur=(cur+12)%16;else if(k==='Enter'||k===' ')return flip();else if(k==='Escape')return fin(false);draw()}
+  document.addEventListener('keydown',kd,true);el('mm86x').onclick=()=>fin(false);
+  const iv=setInterval(()=>{const left=1-(performance.now()-t0)/TL,b=el('mm86t');if(b)b.style.width=Math.max(0,left*100)+'%';if(left<=0)fin(false)},100);draw()})}
+function rotGame(o,done){const title=o.title||'Rotating locks';
+ gateGame(title,'Four rings, each with one notch. Turn every ring until its notch sits at the top (12 o\'clock), then hit Open. Keyboard: up and down pick a ring, left and right turn it, Enter opens, Esc gives up. Wrong Open costs time.',()=>{
+  try{mgOn=true}catch(e){}const N=8;let pos=[0,0,0,0].map(()=>1+Math.floor(Math.random()*(N-1))),sel=0,over=false,pen=0;const TL=40000,t0=performance.now();
+  modal(`<h2>${title}</h2><div class="bar" style="height:8px"><i id="rl86t" style="width:100%;background:var(--heat)"></i></div><div id="rl86" class="rl86"></div><p class="s" id="rl86m" style="text-align:center">Line every notch up at the top.</p><div class="btns" style="justify-content:center"><button class="btn" data-rl="l">⟲</button><button class="btn" data-rl="r">⟳</button><button class="btn go" data-rl="o">Open</button><button class="btn" id="rl86x">Give up</button></div>`);
+  const fin=ok=>{if(over)return;over=true;try{mgOn=false}catch(e){}document.removeEventListener('keydown',kd,true);clearInterval(iv);el('modal').hidden=true;done(!!ok)};
+  const arrow=p=>['⬆️','↗️','➡️','↘️','⬇️','↙️','⬅️','↖️'][p];
+  const draw=()=>{const g=el('rl86');if(!g)return;g.innerHTML=pos.map((p,i)=>`<button class="${i===sel?'cu':''} ${p===0?'ok':''}" data-rs="${i}">Ring ${i+1}<b>${arrow(p)}</b></button>`).join('');g.querySelectorAll('[data-rs]').forEach(b=>b.onclick=()=>{sel=+b.dataset.rs;draw()})};
+  const turn=d=>{pos[sel]=(pos[sel]+d+N)%N;draw()};
+  const open=()=>{if(pos.every(p=>p===0))return fin(true);pen+=5000;el('rl86m').textContent='Not lined up. -5 seconds.'};
+  el('mcard').querySelectorAll('[data-rl]').forEach(b=>b.onclick=()=>{const k=b.dataset.rl;if(k==='l')turn(-1);else if(k==='r')turn(1);else open()});
+  function kd(e){if(!el('rl86'))return;e.preventDefault();e.stopPropagation();const k=e.key;if(k==='ArrowUp')sel=(sel+3)%4;else if(k==='ArrowDown')sel=(sel+1)%4;else if(k==='ArrowLeft')return turn(-1);else if(k==='ArrowRight')return turn(1);else if(k==='Enter')return open();else if(k==='Escape')return fin(false);draw()}
+  document.addEventListener('keydown',kd,true);el('rl86x').onclick=()=>fin(false);
+  const iv=setInterval(()=>{const left=1-(performance.now()-t0+pen)/TL,b=el('rl86t');if(b)b.style.width=Math.max(0,left*100)+'%';if(left<=0)fin(false)},100);draw()})}
+window.memGame=memGame;window.rotGame=rotGame;
+try{const _sg=safeGame;safeGame=function(o,done){try{if(!window._f86&&Math.random()<.4)return (Math.random()<.5?memGame:rotGame)({title:(o&&o.title)||'The safe'},done)}catch(e){}return _sg.apply(this,arguments)}}catch(e){}
+/* hooks */
+try{const _nd=nextDay;nextDay=function(){const r=_nd.apply(this,arguments);try{contractDay();tickets()}catch(e){}return r}}catch(e){}
+try{const _r=render;render=function(){const r=_r.apply(this,arguments);try{ctRow()}catch(e){}return r}}catch(e){}
+try{const _dp=devPanel;devPanel=function(){const r=_dp.apply(this,arguments);try{const mc=el('mcard');if(mc&&!mc.querySelector('[data-d86]')){const d=document.createElement('div');d.innerHTML='<div class="sec">Robbery batch (new)</div><div class="btns"><button class="btn" data-d86="m">Test Memory tiles</button><button class="btn" data-d86="r">Test Rotating locks</button><button class="btn" data-d86="c">Lick contract now</button><button class="btn" data-d86="j">Give a gold chain</button></div>';const h2=mc.querySelector('h2');(h2&&h2.parentNode?h2.parentNode:mc).insertBefore(d,h2?h2.nextSibling:mc.firstChild);
+ d.querySelectorAll('[data-d86]').forEach(b=>b.onclick=ev=>{ev.stopPropagation();el('modal').hidden=true;const k=b.dataset.d86;if(k==='m')memGame({},ok=>say('Memory tiles: '+(ok?'cracked':'failed')));if(k==='r')rotGame({},ok=>say('Rotating locks: '+(ok?'open':'failed')));if(k==='c'){S.robOn=1;S.ct86=null;const a=S.age;S.age=Math.max(16,S.age||16);const rr=Math.random;Math.random=()=>0;try{contractDay()}finally{Math.random=rr;S.age=a}render()}if(k==='j'){S.jew=S.jew||{};S.jew.chain=1;say('Dev: gold chain added.')}})}}catch(e){}return r}}catch(e){}
+try{TUT.push(['Loot, contracts, pawn tickets, new locks','House and store licks can turn up Percs (go in your stash) or a pistol. Every few days somebody may text a lick contract: hit a house that day for a bonus (the house is pinned on your map). At the pawn shop you can pawn your own jewelry for half and buy it back within 7 days for 60% of its price. Safes sometimes use Memory tiles (match 8 pairs) or Rotating locks (turn 4 rings until every notch points up).'])}catch(e){}
+})();</script>
+<style id="skin86">
+.mm86{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:10px 0}.mm86 button{aspect-ratio:1;font-size:24px;border-radius:10px;border:1px solid var(--line,#333);background:#1b1b22;color:#fff}
+.mm86 .cu,.rl86 .cu{outline:2px solid var(--accent,#f5c518)}.mm86 .ok,.rl86 .ok{background:rgba(95,211,138,.2)}
+.rl86{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:10px 0}.rl86 button{display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 4px;border-radius:50%;aspect-ratio:1;border:2px solid var(--line,#444);background:#1b1b22;color:#ddd;font-size:11px}.rl86 b{font-size:22px}
+</style>
