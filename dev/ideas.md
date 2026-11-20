@@ -364,7 +364,8 @@ Start with 2 + 8 on texting, court and plug talk (~5-8% usage). 3/4/5 are ~10-15
 - Endings: score, ending epilogue, Hall of the block, Dynasty ALREADY exist. Check they cover go legit / legend / die young; switching paths always possible.
 - Add-ons (Nov 15): each path has its own crew tie: rap (your crew becomes your entourage, Muscle as security at shows), work (a legit job lowers ring heat a little as cover), college (business major = better Business Manager, criminal justice = lawyer discount), relationships (partner can run a business or be a weak point if the opps find out). Endings count your rings (Kingpin ending needs 4+ rings running).
 
-## Social media tied to your whole life — not built
+## Social media tied to your whole life — BUILT Nov 20 (skin80)
+- BUILT: page grows daily toward a target from rep (x5), owned blocks (150 each), running rings (200 each), a real car (100), rap fans; "free me" bump while locked up; drops 2%/day if 1.5x bigger than your life (not with fake followers); followers raise Js money up to +15%; 20k+ page = +1 heat a day unless legit job, plus a "we're watching" text. Dev buttons. LEFT: post big ring scores, online beef → street beef, scam ring fake followers.
 - Followers come from everything: street rep (~5 per rep point, 200 rep ≈ 1,000), rap drops/shows/features, flexing (car, chain, apartment posts), big moments (beat a case, big heist, beef, winning a game), jail ("free me" bump but can't post).
 - Followers do things: more rap streams and show pay, customers find you (sell faster), easier recruiting, but cops and jack boys watch big pages. A known crew (Crew rings) raises followers too.
 - Followers can drop: snitch rumors, losing a beef, going quiet, a flop.

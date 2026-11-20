@@ -11283,4 +11283,25 @@ try{const _dp=devPanel;devPanel=function(){const r=_dp.apply(this,arguments);try
  d.querySelector('[data-d79]').onclick=ev=>{ev.stopPropagation();el('modal').hidden=true;const B=b5();B.re=B.re||[];W5BRE.filter(x=>x.id!=='apt').forEach(x=>{if(!B.re.find(p=>p.id===x.id))B.re.push({id:x.id,n:x.n,cost:x.cost,rent:x.rent,v:x.cost,vac:0})});say('Dev: houses added. Real estate office → What each house is for.');render()}}}catch(e){}return r}}catch(e){}
 try{TUT.push(['What your houses are for','Houses you buy at the Real estate office can be a Rental (rent every week), your Home (no rent, less stress, stash space), a Stash spot (lots of stash space) or a Ring HQ for one crew ring (+15% money, fewer busts). Bigger house = more space. Switching costs $500.'])}catch(e){}
 })();</script>
+<script id="skin80js">
+/* skin80: social media tied to your whole life. Your page grows by itself from street rep (~5 followers a rep point), blocks you run and crew rings,
+   gets a "free me" bump while you are locked up, slowly drops if it is way bigger than your real life. Followers bring more Js money (up to +15%),
+   but a page over 20k gets watched by detectives (+1 heat a day unless you have a legit job). */
+(function(){if(window._sk80)return;window._sk80=1;
+const el=id=>document.getElementById(id);
+const sw=()=>{try{return socW()}catch(e){return null}};
+function target(){let t=40+(S.rep||0)*5;try{t+=((S.rap||{}).fans||0)*.2}catch(e){}t+=((S.owner||[]).filter(o=>o==='me').length)*150;try{t+=Object.values(S.rg74||{}).filter(r=>r.on&&r.mem.length).length*200}catch(e){}if(S.car&&S.car!=='stolen')t+=100;return Math.round(t)}
+function day(){const s=sw();if(!s||S.over)return;const t=target(),f0=s.fol;
+ if(S.pr||S.inJail){s.fol=Math.round(s.fol*1.01)+3}
+ else if(s.fol<t){s.fol+=Math.max(5,Math.round((t-s.fol)*.08))}
+ else if(s.fol>t*1.5&&!(s.fake>0)){s.fol=Math.round(s.fol*.98)}
+ const d=s.fol-f0;if(d>=50)try{say(`Your page grew +${d.toLocaleString()} followers. Your name is getting around.`)}catch(e){}
+ if(s.fol>=20000&&!S.job){S.heat=Math.min(100,(S.heat||0)+1);if(!S.w80){S.w80=1;try{phoneMsg('Unknown number','Nice page. We\'re watching it too. 👮')}catch(e){}}}}
+window.l80target=target;
+try{const _nd=nextDay;nextDay=function(){const r=_nd.apply(this,arguments);try{day()}catch(e){console.error('sk80',e)}return r}}catch(e){}
+try{const _jb=jsBudget;jsBudget=function(){const v=_jb.apply(this,arguments);try{const s=sw();if(s&&s.fol>0)return Math.round(v*(1+Math.min(.15,s.fol/40000)))}catch(e){}return v}}catch(e){}
+try{const _dp=devPanel;devPanel=function(){const r=_dp.apply(this,arguments);try{const mc=el('mcard');if(mc&&!mc.querySelector('[data-d80]')){const d=document.createElement('div');d.innerHTML='<div class="sec">Social tie-in (new)</div><div class="btns"><button class="btn" data-d80="f">+10k followers</button><button class="btn" data-d80="d">Grow page a day</button></div>';const h2=mc.querySelector('h2');(h2&&h2.parentNode?h2.parentNode:mc).insertBefore(d,h2?h2.nextSibling:mc.firstChild);
+ d.querySelectorAll('[data-d80]').forEach(b=>b.onclick=ev=>{ev.stopPropagation();el('modal').hidden=true;const s=sw();if(b.dataset.d80==='f')s.fol+=10000;else day();say('Dev: followers '+s.fol.toLocaleString()+', target '+target().toLocaleString());render()})}}catch(e){}return r}}catch(e){}
+try{TUT.push(['Your page follows your life','Followers grow on their own from your street rep (about 5 per rep point), blocks you run, crew rings and a real car. Locked up? "Free me" posts bump you. A page way bigger than your real life slowly drops. More followers = more Js money on the block (up to +15%). Over 20k and detectives watch your page: +1 heat a day unless you have a legit job.'])}catch(e){}
+})();</script>
 <script>if('serviceWorker' in navigator){addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}</script></body></html>
