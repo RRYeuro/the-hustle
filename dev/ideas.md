@@ -342,7 +342,9 @@ Start with 2 + 8 on texting, court and plug talk (~5-8% usage). 3/4/5 are ~10-15
 ## Crew cleanup — BUILT Nov 15 (skin68): short crew cards, tap name for actions, Make manager on the worker card, Collect all, Restock all, keep-stocked auto refill
 - Left: auto-run switch per worker. Now covered by Crew rings (Block Captain + Stash Leader keep traps running).
 ## Crew group chat — BUILT Nov 15 (skin68): The Gang thread, crew posts, Bring the money / Re-up / Lay low / Good work.
-## Animations (no new art) — not built
+## Animations (no new art) — BUILT Nov 20 (skin76)
+- BUILT: popups slide in like a comic page; square 2x2 pictures reveal one panel at a time; your face rides across the top bar when you travel (from → to); cop lights sweep on every siren; hot blocks glow red on the Move board; small faces bob in texts and meets; reduced-motion respected; dev buttons.
+- LEFT: map tint by time of day (waits on the time system pick), ring icons moving on the map, walk-in scenes (need art).
 - Map travel: your face pin rides the streets to the next block (car / walking / bus, matches how you chose to go).
 - Places slide open like a comic page.
 - 2x2 event art reveals one panel at a time.

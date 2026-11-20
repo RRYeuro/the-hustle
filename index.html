@@ -11114,4 +11114,54 @@ body.sh75::after{content:"";position:fixed;inset:0;pointer-events:none;box-shado
 .tr75{color:#e8504a;font-size:12px;margin-top:4px}
 @media (prefers-reduced-motion:reduce){.fm75,body.sh75 .app,body.sh75 #pane,body.sh75::after{animation:none}.btn:active{transform:none}}
 </style>
+<script id="skin76js">
+/* skin76: animations with no new art. Popups slide in like a comic page; 2x2 event pictures reveal one panel at a time;
+   your face rides across the top when you travel; cop lights sweep on sirens (raids, chases, busts); hot blocks glow red on the map; faces bob in texts and meets. */
+(function(){if(window._sk76)return;window._sk76=1;
+const el=id=>document.getElementById(id);
+const calm=()=>{try{return matchMedia('(prefers-reduced-motion: reduce)').matches}catch(e){return false}};
+/* popups slide in + panel reveal */
+function reveal(){const mc=el('mcard');if(!mc)return;mc.classList.remove('op76');void mc.offsetWidth;mc.classList.add('op76');
+ mc.querySelectorAll('img').forEach(im=>{if(im.dataset.rv76||im.closest('.rv76'))return;const go=()=>{const w=im.naturalWidth,h=im.naturalHeight;if(!w||Math.abs(w-h)>w*.12||im.getBoundingClientRect().width<120)return;
+  im.dataset.rv76=1;const wr=document.createElement('div');wr.className='rv76';im.parentNode.insertBefore(wr,im);wr.appendChild(im);
+  for(let i=0;i<4;i++){const q=document.createElement('i');q.style.animationDelay=(.12+i*.28)+'s';wr.appendChild(q)}};
+  if(im.complete)go();else im.addEventListener('load',go,{once:true})})}
+try{const m=el('modal');if(m)new MutationObserver(()=>{if(!m.hidden&&!calm())setTimeout(reveal,0)}).observe(m,{attributes:true,attributeFilter:['hidden']})}catch(e){}
+/* travel: your face rides across the top */
+let lastAt=null;
+function ride(from,to){if(calm())return;const old=el('rd76');if(old)old.remove();const d=document.createElement('div');d.id='rd76';
+ const f=document.querySelector('#me img');const face=f&&f.src?`<img src="${f.src}" alt="">`:'<b>🚗</b>';
+ d.innerHTML=`<span class="a">${BLOCKS[from]}</span><span class="rd">${face}</span><span class="b">${BLOCKS[to]}</span>`;document.body.appendChild(d);setTimeout(()=>d.remove(),1700)}
+/* cop lights on sirens */
+function lights(){if(calm())return;const o=el('cop76');if(o)o.remove();const d=document.createElement('div');d.id='cop76';document.body.appendChild(d);setTimeout(()=>d.remove(),1700)}
+window.l76lights=lights;
+try{const _sfx=sfx;sfx=function(k){try{if(k==='siren')lights()}catch(e){}return _sfx.apply(this,arguments)}}catch(e){}
+/* hot blocks glow */
+function hot(){try{if(tab!=='move')return;const A=S.att||[],O=S.ov75||[];BLOCKS.forEach((b,i)=>{document.querySelectorAll(`#pane button[data-t="${i}"]`).forEach(x=>x.classList.toggle('hot76',(A[i]||0)>=60||(O[i]||0)>=.25||(S.burned&&S.burned[i]>=S.day)))})}catch(e){}}
+try{const _r=render;render=function(){const r=_r.apply(this,arguments);try{if(typeof S!=='undefined'&&S&&!S.over){if(lastAt!=null&&S.at!==lastAt&&S.at!=null)ride(lastAt,S.at);lastAt=S.at;hot();document.querySelectorAll('#mt31 img,.phx img').forEach(im=>{const w=im.getBoundingClientRect().width;if(w>0&&w<=64)im.classList.add('bob76')})}}catch(e){}return r}}catch(e){}
+try{const _dp=devPanel;devPanel=function(){const r=_dp.apply(this,arguments);try{const mc=el('mcard');if(mc&&!mc.querySelector('[data-d76]')){const d=document.createElement('div');d.innerHTML='<div class="sec">Animations (new)</div><div class="btns"><button class="btn" data-d76="l">Cop lights</button><button class="btn" data-d76="r">Ride test</button><button class="btn" data-d76="e">Event with picture</button></div>';const h2=mc.querySelector('h2');(h2&&h2.parentNode?h2.parentNode:mc).insertBefore(d,h2?h2.nextSibling:mc.firstChild);
+ d.querySelectorAll('[data-d76]').forEach(b=>b.onclick=ev=>{ev.stopPropagation();el('modal').hidden=true;const k=b.dataset.d76;if(k==='l')lights();if(k==='r')ride(S.at,(S.at+1)%BLOCKS.length);if(k==='e')try{streetEvent(0)}catch(x){}})}}catch(e){}return r}}catch(e){}
+})();</script>
+<style id="skin76">
+#mcard.op76{animation:op76 .32s cubic-bezier(.2,.9,.3,1.2)}
+@keyframes op76{0%{opacity:0;transform:translateY(22px) rotate(-1.2deg) scale(.95)}100%{opacity:1;transform:none}}
+.rv76{position:relative;display:block;width:fit-content;max-width:100%;margin:0 auto 6px;line-height:0}
+.rv76 img{margin-bottom:0!important}
+.rv76 i{position:absolute;width:50%;height:50%;background:#0b0b0f;animation:rv76 .35s forwards;pointer-events:none}
+.rv76 i:nth-of-type(1){left:0;top:0;border-radius:8px 0 0 0}.rv76 i:nth-of-type(2){right:0;top:0;border-radius:0 8px 0 0}.rv76 i:nth-of-type(3){left:0;bottom:0;border-radius:0 0 0 8px}.rv76 i:nth-of-type(4){right:0;bottom:0;border-radius:0 0 8px 0}
+@keyframes rv76{to{opacity:0;transform:scale(.92)}}
+#rd76{position:fixed;left:50%;top:max(10px,env(safe-area-inset-top));transform:translateX(-50%);z-index:9990;width:min(360px,92vw);display:flex;align-items:center;justify-content:space-between;gap:6px;background:rgba(15,15,20,.92);border:1px solid rgba(245,197,24,.5);border-radius:999px;padding:6px 12px;font-size:12px;color:#ddd;pointer-events:none;animation:rdf76 1.7s forwards}
+#rd76 .rd{flex:1;position:relative;height:30px;border-bottom:2px dashed rgba(255,255,255,.25)}
+#rd76 .rd img,#rd76 .rd b{position:absolute;left:0;top:0;width:30px;height:30px;border-radius:50%;object-fit:cover;border:2px solid #f5c518;animation:rdm76 1.2s ease-in-out forwards;font-size:20px;line-height:30px;text-align:center}
+@keyframes rdm76{to{left:calc(100% - 30px)}}
+@keyframes rdf76{0%{opacity:0}10%{opacity:1}85%{opacity:1}100%{opacity:0}}
+#cop76{position:fixed;inset:0;pointer-events:none;z-index:9997;background:linear-gradient(90deg,rgba(232,40,40,.35),transparent 35%,transparent 65%,rgba(40,90,255,.35));background-size:200% 100%;animation:cop76 .4s linear 4 alternate,copf76 1.7s forwards}
+@keyframes cop76{from{background-position:0 0}to{background-position:100% 0}}
+@keyframes copf76{80%{opacity:1}100%{opacity:0}}
+#pane button.hot76{box-shadow:0 0 0 2px rgba(232,80,74,.8),0 0 14px rgba(232,80,74,.6)!important;animation:hot76 1.6s ease-in-out infinite}
+@keyframes hot76{50%{box-shadow:0 0 0 2px rgba(232,80,74,.5),0 0 4px rgba(232,80,74,.3)}}
+img.bob76{animation:bob76 3.2s ease-in-out infinite}
+@keyframes bob76{50%{transform:translateY(-2px) rotate(.6deg)}}
+@media (prefers-reduced-motion:reduce){#mcard.op76,.rv76 i,#rd76,#cop76,#pane button.hot76,img.bob76{animation:none}.rv76 i{display:none}}
+</style>
 <script>if('serviceWorker' in navigator){addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}</script></body></html>
