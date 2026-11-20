@@ -21,7 +21,7 @@ function houses(){const L=RE();let tot=0,heat=0,msg=[];L.forEach(p=>{const z=win
  if(tot||msg.length)try{say([tot?`House traps sold ${money(tot)} dirty.`:''].concat(msg).filter(Boolean).join(' '))}catch(e){}}
 try{const _nd=nextDay;nextDay=function(){const r=_nd.apply(this,arguments);try{if(!S.over)houses()}catch(e){console.error('sk88',e)}return r}}catch(e){}
 /* endings */
-try{W6END.legend=['Legend','Your name outlived the block. Kids who never met you know every word.','']}catch(e){}
+try{W6END.legend=['Legend','Your name outlived the block. Kids who never met you know every word.','endlegend']}catch(e){}
 try{const _wp=w6Path;w6Path=function(){const p=_wp.apply(this,arguments);try{if(p==='walk'){if((S.rap&&S.rap.plat81)||((S.sp||{}).fame||0)>=80)return 'legend';if(rings()>=4&&w6Net()>=300000)return 'king'}}catch(e){}return p}}catch(e){}
 try{const _es=endStory;endStory=function(){const L=_es.apply(this,arguments);try{const n=rings();if(n>=2)L.unshift(`${n} crew rings were still running the day it ended.`)}catch(e){}return L.slice(0,4)}}catch(e){}
 try{const _dp=devPanel;devPanel=function(){const r=_dp.apply(this,arguments);try{const mc=el('mcard');if(mc&&!mc.querySelector('[data-d88]')){const d=document.createElement('div');d.innerHTML='<div class="sec">Last batch (new)</div><div class="btns"><button class="btn" data-d88="e">Which ending would I get?</button></div>';const h2=mc.querySelector('h2');(h2&&h2.parentNode?h2.parentNode:mc).insertBefore(d,h2?h2.nextSibling:mc.firstChild);

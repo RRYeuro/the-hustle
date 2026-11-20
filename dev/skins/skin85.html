@@ -24,7 +24,7 @@ function day(){if(!S||S.over)return;
  try{const live=(S.crews||[]).filter(c=>c.alive);if(s.fol>=5000&&live.length&&!S.ob85p&&Math.random()<.06){const c=live[Math.floor(Math.random()*live.length)];S.ob85p={c:c.id,d:S.day};beefCard(c)}}catch(e){}}
 function beefCard(c){let nm='a rival crew';try{nm=cdef(c.id).name}catch(e){}
  if(!el('modal').hidden){S.ob85p=null;return}
- modal(`<h2>📱 Online beef</h2><p>Somebody from the ${nm} posted you on their page, talking about your block and your money. Your comments are going crazy.</p><div class="btns" style="flex-direction:column">
+ modal(`${(typeof ARTX==='function'&&ARTX('ev_obeef'))?a2('ev_obeef',340):''}<h2>📱 Online beef</h2><p>Somebody from the ${nm} posted you on their page, talking about your block and your money. Your comments are going crazy.</p><div class="btns" style="flex-direction:column">
   <button class="btn red" data-ob85="r">Clap back · followers +8% · beef +15 · heat +3</button>
   <button class="btn" data-ob85="d">Drop a diss track${S.rapOn?'':' (rappers only)'} · fans +10% · beef +25</button>
   <button class="btn go" data-ob85="i">Let it go · followers −3% · no beef</button></div>`);

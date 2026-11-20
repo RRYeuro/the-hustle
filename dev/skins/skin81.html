@@ -17,7 +17,7 @@ const MAJ={biz:['Business','Your businesses pay 10% more and wash for less'],mus
 try{const _bm=bizMul;bizMul=function(){return _bm.apply(this,arguments)*(S.major81==='biz'?1.1:1)}}catch(e){}
 /* rap */
 function rapDay(){const Rp=S.rap;if(!Rp||!S.rapOn)return;if(S.major81==='music'&&S.day%7===0)Rp.fans=Math.round(Rp.fans*1.03);
- if(Rp.fans>=50000&&!Rp.plat81){Rp.plat81=S.day;S.rep=(S.rep||0)+10;try{modal(`<h2>💿 Platinum</h2><p>Your music just went platinum. The label sent a plaque to the house and your phone hasn't stopped ringing.</p><p class="s">Rep +10. Shows and features pay more from here.</p><div class="btns"><button class="btn go" id="ok">Hang it up</button></div>`);el('ok').onclick=()=>{el('modal').hidden=true;render()}}catch(e){}}}
+ if(Rp.fans>=50000&&!Rp.plat81){Rp.plat81=S.day;S.rep=(S.rep||0)+10;try{modal(`${(typeof ARTX==='function'&&ARTX('ev_plat'))?a2('ev_plat',340):''}<h2>💿 Platinum</h2><p>Your music just went platinum. The label sent a plaque to the house and your phone hasn't stopped ringing.</p><p class="s">Rep +10. Shows and features pay more from here.</p><div class="btns"><button class="btn go" id="ok">Hang it up</button></div>`);el('ok').onclick=()=>{el('modal').hidden=true;render()}}catch(e){}}}
 const songsN=()=>((S.rap&&S.rap.songs)||[]).length;
 /* daily: partner, jack boy, cj, job heat cover */
 function day(){try{rapDay()}catch(e){}
