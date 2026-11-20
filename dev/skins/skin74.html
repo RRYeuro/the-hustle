@@ -29,7 +29,7 @@ function st(){S.rg74=S.rg74||{};ORDER.forEach(k=>{S.rg74[k]=S.rg74[k]||{on:0,mem
 const crew=()=>{try{return crewList()}catch(e){return S.crewM||[]}};
 const byName=n=>crew().find(m=>m.name===n);
 const ringOf=n=>{const g=st();return ORDER.find(k=>g[k].mem.includes(n))};
-const free=m=>!ringOf(m.name)&&!m.busy&&!(m.hurt>=S.day)&&!(m.jail74>=S.day);
+const free=m=>!ringOf(m.name)&&!m.br89&&!m.busy&&!(m.hurt>=S.day)&&!(m.jail74>=S.day);
 const fitN=(m,k)=>{const s=RINGS[k].sk.map(x=>(m.sk&&m.sk[x])||0);return Math.max(...s)+(s.length>1?Math.min(...s)*.3:0)};
 const fitW=v=>v>=7?'Great fit':v>=5?'Good fit':v>=3?'Okay fit':'Bad fit';
 function active(k){const g=st()[k];return g.mem.map(byName).filter(m=>m&&!(m.jail74>=S.day)&&!(m.hurt>=S.day))}
@@ -114,7 +114,7 @@ function ringHTML(k){const D=RINGS[k],r=st()[k],lk=locked(k);
   <div class="sec">Last reports</div><div class="row"><div class="info">${log}</div></div>
   <div class="btns" style="margin-top:8px"><button class="btn" data-o74="back">Back</button><button class="btn" data-mclose="1">Close</button></div>`}
 let cur=null;
-window.l74ops=function(k){cur=k||null;if(k==='trap'){cur=null;try{return l68op()}catch(e){say('Hire workers first: Run the operation shows up when somebody works for you.');return}}
+window.l74cur=()=>cur;window.l74ops=function(k){cur=k||null;if(k==='trap'){cur=null;try{return l68op()}catch(e){say('Hire workers first: Run the operation shows up when somebody works for you.');return}}
  modal(cur?ringHTML(cur):opsHTML());const mc=el('mcard');mc.dataset.o74=1};
 document.addEventListener('click',e=>{const t=e.target;if(!t.closest)return;const rr=t.closest('#mcard [data-r74]');if(rr){e.preventDefault();e.stopPropagation();return l74ops(rr.dataset.r74)}
  const b=t.closest('#mcard [data-o74]');if(!b||b.disabled)return;e.preventDefault();e.stopPropagation();const a=b.dataset.o74,k=cur,r=k&&st()[k],D=k&&RINGS[k];
@@ -126,7 +126,7 @@ document.addEventListener('click',e=>{const t=e.target;if(!t.closest)return;cons
  if(a==='up'){const u=D.up[r.up];if(u&&pay(u[1])){r.up++;say(`${D.n} upgraded: ${u[0]}.`)}}
  try{save()}catch(x){}l74ops(k);try{render()}catch(x){}},true);
 /* crew members on a ring can't take one-off jobs */
-try{const _cj=window.crewJobs;window.crewJobs=function(i){const m=crew()[i];const k=m&&ringOf(m.name);if(k){modal(`<h2>${E(m.name)}</h2><p>${E(m.name)} is on the ${RINGS[k].n.toLowerCase()}. Pull them off in Crew Ops first.</p><div class="btns"><button class="btn go" data-r74="${k}">Open ${RINGS[k].n}</button><button class="btn" data-mclose="1">Close</button></div>`);cur=k;return}return _cj.apply(this,arguments)}}catch(e){}
+try{const _cj=window.crewJobs;window.crewJobs=function(i){const m=crew()[i];if(m&&m.br89){modal(`<h2>${E(m.name)}</h2><p>${E(m.name)} is running a branch in ${E(m.br89)}. Close the branch in Crew Ops to bring them home.</p><div class="btns"><button class="btn" data-mclose="1">Close</button></div>`);return}const k=m&&ringOf(m.name);if(k){modal(`<h2>${E(m.name)}</h2><p>${E(m.name)} is on the ${RINGS[k].n.toLowerCase()}. Pull them off in Crew Ops first.</p><div class="btns"><button class="btn go" data-r74="${k}">Open ${RINGS[k].n}</button><button class="btn" data-mclose="1">Close</button></div>`);cur=k;return}return _cj.apply(this,arguments)}}catch(e){}
 /* entries: Block tab (under Run the operation) and Circle tab */
 function entry(){try{if(!S||S.over||S.meet)return;const p=el('pane');if(!p||p.querySelector('[data-ops74]'))return;if(tab!=='block'&&tab!=='beef')return;
  if(!crew().length&&RK()<1)return;const g=st();const on=ORDER.filter(k=>g[k].on&&g[k].mem.length).length;

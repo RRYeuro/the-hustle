@@ -1,0 +1,50 @@
+<script id="skin89js">
+/* skin89: (1) Ring branches in other cities: from a ring's page in Crew Ops, send a free crew member to run that ring in another city ($5,000, Supplier rank).
+   Bigger cities pay more. No heat at home, but branch members can get locked up out there. Close a branch any time to bring them home.
+   (2) 3-tap re-up: a Quick re-up row on the Block tab. 90+ trust plug: they drop it off (cart opens: pick amounts, Buy all). 40+ trust: they pull up to you. Lower: text them and head to their spot. */
+(function(){if(window._sk89)return;window._sk89=1;
+const el=id=>document.getElementById(id),R=(a,b)=>Math.round(a+Math.random()*(b-a));
+const E=x=>String(x==null?'':x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const RK=()=>{try{return window.l48rk?l48rk():0}catch(e){return 0}};
+const NM={car:'Car ring',rob:'Robbery ring',scam:'Scam ring',mus:'Muscle',wat:'Watch network'},IC={car:'🚗',rob:'🔫',scam:'🧠',mus:'🛡️',wat:'👀'},SK={car:'drive',rob:'rob',scam:'scam',mus:'shoot',wat:'look'};
+const crew=()=>{try{return crewList()}catch(e){return S.crewM||[]}};
+const byName=n=>crew().find(m=>m.name===n);
+const home=()=>{try{return clCity()}catch(e){return 'Columbia'}};
+const cities=()=>{try{return W5BCITY.map(c=>c.n).filter(n=>n!==home())}catch(e){return []}};
+const ringFree=m=>{try{const g=S.rg74||{};return !Object.values(g).some(r=>r.mem.includes(m.name))&&!m.br89&&!m.busy&&!(m.hurt>=S.day)&&!(m.jail74>=S.day)}catch(e){return false}};
+function brs(k){const r=S.rg74&&S.rg74[k];if(!r)return [];r.br=r.br||[];return r.br}
+function section(k){const r=S.rg74&&S.rg74[k];if(!r)return '';const B=brs(k);const lock=RK()<3?'Opens at Supplier rank.':!r.mem.length?'Put somebody on the ring at home first.':'';
+ let h=`<div class="sec">Branches in other cities</div>`;
+ h+=B.map((b,i)=>{const m=byName(b.m);const jail=m&&m.jail74>=S.day;return `<div class="row"><div class="info"><div class="t">📍 ${E(b.c)}: ${E(b.m)}</div><div class="s">${jail?'🚔 locked up out there':b.last?`Last: ${money(b.last)}`:'Just opened'} · made ${money(b.made||0)} so far</div></div><button class="btn" data-b89c="${i}">Close</button></div>`}).join('');
+ if(lock){h+=`<div class="row"><div class="info"><div class="s">🔒 ${lock}</div></div></div>`;return h}
+ const used=B.map(b=>b.c),open=cities().filter(c=>!used.includes(c)),fm=crew().filter(ringFree);
+ if(!open.length)return h;if(!fm.length)return h+`<div class="row"><div class="info"><div class="s">No free crew to send. Hire more or pull somebody off a ring.</div></div></div>`;
+ const pickC=window._c89&&open.includes(window._c89)?window._c89:open[0];
+ h+=`<div class="row" style="flex-wrap:wrap"><div class="info" style="flex:1 1 200px"><div class="t">Open a branch · $5,000</div><div class="s">Pick a city, then who runs it. Bigger cities pay more and carry more risk. No heat at home.</div></div><div class="btns">${open.map(c=>`<button class="btn ${c===pickC?'go':''}" data-b89city="${E(c)}">${E(c)}</button>`).join('')}</div></div>`;
+ h+=fm.slice(0,6).map(m=>`<div class="row"><div class="info"><div class="t">${E(m.name)}</div><div class="s">${({drive:'Driver',rob:'Robber',scam:'Scammer',shoot:'Shooter',look:'Lookout'})[SK[k]]} ${(m.sk&&m.sk[SK[k]])||0} · loyalty ${m.loy||0}</div></div><button class="btn go" data-b89send="${E(m.name)}" data-city="${E(pickC)}" ${S.cash>=5000?'':'disabled'}>Send to ${E(pickC)}</button></div>`).join('');
+ return h}
+function inject(){try{const k=window.l74cur&&l74cur();if(!k||!NM[k])return;const mc=el('mcard');if(!mc||mc.querySelector('[data-b89]'))return;const back=mc.querySelector('[data-o74="back"]');const box=document.createElement('div');box.dataset.b89=1;box.innerHTML=section(k);
+ const bb=back&&back.closest('.btns');if(bb)bb.before(box);else mc.appendChild(box)}catch(e){console.error('sk89 inject',e)}}
+try{const _op=window.l74ops;window.l74ops=function(){const r=_op.apply(this,arguments);try{inject()}catch(e){}return r}}catch(e){}
+document.addEventListener('click',e=>{const t=e.target;if(!t.closest)return;const c=t.closest('[data-b89city]'),s=t.closest('[data-b89send]'),x=t.closest('[data-b89c]');if(!c&&!s&&!x)return;e.preventDefault();e.stopPropagation();const k=l74cur();
+ if(c){window._c89=c.dataset.b89city}
+ if(s&&!s.disabled){const m=byName(s.dataset.b89send),city=s.dataset.city;if(!m||!ringFree(m)||S.cash<5000)return;S.cash-=5000;S.clean=Math.min(S.clean||0,S.cash);m.br89=city;brs(k).push({c:city,m:m.name,d:S.day,made:0});try{phoneMsg(m.name,`Landed in ${city}. Setting it up now.`)}catch(x){}say(`${m.name} is opening a ${NM[k].toLowerCase()} branch in ${city}.`)}
+ if(x){const B=brs(k),b=B[+x.dataset.b89c];if(b){const m=byName(b.m);if(m)delete m.br89;B.splice(+x.dataset.b89c,1);say(`Closed the ${b.c} branch. ${b.m} is coming home.`)}}
+ try{save()}catch(y){}l74ops(k)},true);
+function day(){const g=S.rg74||{};Object.keys(NM).forEach(k=>{const r=g[k];if(!r)return;(r.br||[]).forEach(b=>{const m=byName(b.m);if(!m){b.dead=1;return}if(m.jail74>=S.day){b.last=0;return}
+ const lux=(typeof CLUX!=='undefined'&&CLUX[b.c])||1.3,s=(m.sk&&m.sk[SK[k]])||3;let v=R(400,1100)*lux*(1+s/10);v-=v*.2;if((m.loy||50)<30)v*=.8;
+ if(Math.random()<.06){m.jail74=S.day+R(3,6);b.last=0;try{S.inbox=S.inbox||[];S.inbox.unshift({d:S.day,f:'The Gang',t:`${b.m}: ${IC[k]} ${b.c} cops picked me up. Out in a few days.`})}catch(e){}return}
+ v=Math.round(v);S.cash+=v;b.last=v;b.made=(b.made||0)+v;try{S.inbox=S.inbox||[];S.inbox.unshift({d:S.day,f:'The Gang',t:`${b.m}: ${IC[k]} ${b.c} branch sent ${money(v)}.`})}catch(e){}});r.br=(r.br||[]).filter(b=>!b.dead)})}
+try{const _nd=nextDay;nextDay=function(){const r=_nd.apply(this,arguments);try{if(!S.over)day()}catch(e){console.error('sk89',e)}return r}}catch(e){}
+/* ---- 3-tap re-up ---- */
+function best(){const K=(S.known||[]).filter(bi=>bi!==S.at||true);if(!K.length)return null;return K.slice().sort((a,b)=>(S.trust[b]||0)-(S.trust[a]||0))[0]}
+function how(bi){const t=S.trust[bi]||0;if(t>=90&&S.dropDay!==S.day&&bi!==S.at)return 'drop';if(t>=40)return 'pull';return 'go'}
+function reRow(){try{if(tab!=='block'||S.meet||S.pr||S.inJail)return;const p=el('pane');if(!p||p.querySelector('[data-re89]'))return;const bi=best();if(bi==null)return;const h=how(bi),nm=plugName(bi);
+ const sub=h==='drop'?`${nm} drops it off (10% trip fee). Pick amounts, Buy all.`:h==='pull'?`${nm} pulls up to you (8% delivery). Buy right there.`:`Text ${nm} and head to the spot.`;
+ const d=document.createElement('div');d.className='row';d.dataset.re89=1;d.innerHTML=`<div class="info"><div class="t">🔌 Quick re-up</div><div class="s">${sub} Trust ${S.trust[bi]||0}.</div></div><button class="btn go" data-re89b="${bi}">Re-up</button>`;
+ const ref=p.querySelector('.ns75');if(ref)ref.after(d);else p.prepend(d)}catch(e){}}
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-re89b]');if(!b)return;e.preventDefault();e.stopPropagation();const bi=+b.dataset.re89b,h=how(bi);
+ try{if(h==='drop')return plugDrop(bi);if(h==='pull'){window.l31PullUp(bi);if(!S.meet){window.l31Text&&l31Text(bi);window.l31Go&&l31Go(bi)}return}window.l31Text&&l31Text(bi);window.l31Go&&l31Go(bi)}catch(x){console.error('sk89 reup',x)}},true);
+try{const _r=render;render=function(){const r=_r.apply(this,arguments);try{reRow()}catch(e){}return r}}catch(e){}
+try{TUT.push(['Branches and quick re-up','Crew Ops → open a ring → Branches: send a free crew member to run that ring in another city ($5,000, Supplier rank). Bigger cities pay more, no heat at home, but they can get locked up out there. Quick re-up on the Block tab buys from your best plug in about 3 taps: 90+ trust they drop it off, 40+ they pull up to you, lower you text them and head over.'])}catch(e){}
+})();</script>
