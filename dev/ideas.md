@@ -413,12 +413,14 @@ How it all connects (examples):
 
 Build order if Chris says build: 1) Crew Ops screen + ring basics (assign, equipment, daily result, text) 2) Car ring (chop shop is ready) 3) Robbery ring 4) Scam ring 5) Right Hand / Stash Leader real product moves 6) Business Manager 7) Muscle + Watch. Each: dev menu buttons, tutorial lines, clean vs dirty cash checks, quick test.
 
-## Spotlight walkthrough tutorial (Chris, Nov 15) — NOT BUILT, wait for "build" (~30 min)
+## Spotlight walkthrough tutorial (Chris, Nov 15) — BUILT Nov 20 (skin73)
 - Real walkthrough: screen grays out, one button lights up with a glow + short bubble ("Tap here to text your plug"), game moves on only when you tap it.
 - First loop, 12-15 steps (~2 min): stats (cash, dirty vs clean, heat) → Phone → text a plug → multi-buy → Move map → go to a block → serve the Js → Next day → collect → Block tab → Skip time.
 - When you start a character: a choice card "Play the tutorial" / "Skip tutorial (I know the game)". Also Skip + Back on every step, Enter = next, Esc = skip. Replay from the menu.
 - Short 3-step spotlights the first time you unlock crew, trap house, heists, Run the operation, Crew rings.
 - Bubble moves so it never covers the button; works on phone and laptop.
+- BUILT: Play/Skip card on every new character (replaces the 80-page book popping up), 15-step walkthrough (money, heat, energy, Move, Show plug spots, text, meet, buy, done dealing, Block, sell, next day or head home, Phone, More), only the lit button works, Back/Skip/Next, Enter/Esc, popups pause it, folded sections get opened first, Replay tutorial in the main menu, dev buttons, 1-step spotlights when Heists/Studio/Sports first open. Old first-day guide turned off for new characters.
+- LEFT: trim the 80-page book down to ~10 topics; spotlights for crew/trap/Run the operation unlocks.
 - Replaces the 80-page text tutorial as the main way to learn: old book becomes ~10 short topics (Money, Plugs, Selling, Heat, Crew, Places, Phone, School, Rap, Licks); details stay in each screen's "ⓘ How this works". Old first-day guide (skin40) folds into this (no duplicate).
 
 ## Code cleanup (Nov 15) — PART BUILT Nov 20 (~1-2 hrs, its own session, Sonnet paused)

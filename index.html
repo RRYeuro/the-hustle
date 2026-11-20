@@ -4391,7 +4391,7 @@ function startLife(ch){pendingDiff='normal';S=fresh(ch,'life');S.diff='normal';S
   if(ch==='country')S.crews.forEach(c=>c.respect=10);if(ch==='lucky')S.ex=-1;
   roll();tab='block';S.slot=pendingSlot;say(YOUNG[ch]);
   traitPick(()=>{let seen=false;try{seen=localStorage.getItem('tl-tut')==='1'}catch(e){}
-  if(!seen)return tutorial(0,()=>{try{localStorage.setItem('tl-tut','1')}catch(e){}$('modal').hidden=true;render()});
+  if(window.l73start)return l73start();if(!seen)return tutorial(0,()=>{try{localStorage.setItem('tl-tut','1')}catch(e){}$('modal').hidden=true;render()});
   $('modal').hidden=true;render()},lifeCreate)}
 function lifeCustom(){let fem=false,age=14;
   const draw=()=>{modal(`<h2>Start your life</h2><p>Make your own character. Under 18 you're in school, and relationships unlock at 18.</p>
@@ -4407,7 +4407,7 @@ function lifeCustom(){let fem=false,age=14;
       roll();tab='block';S.slot=pendingSlot;setLifeChar();
       say(`${nm}, age ${age}. ${age<18?`${GRADEN[9+age-14]} year starts this month. You live with ${S.par.name}.`:'Fresh out of school with nothing but time.'}`);save();
       let seen=false;try{seen=localStorage.getItem('tl-tut')==='1'}catch(e){}
-      if(!seen)return tutorial(0,()=>{try{localStorage.setItem('tl-tut','1')}catch(e){}$('modal').hidden=true;render()});
+      if(window.l73start)return l73start();if(!seen)return tutorial(0,()=>{try{localStorage.setItem('tl-tut','1')}catch(e){}$('modal').hidden=true;render()});
       $('modal').hidden=true;render()}};
   draw();
 }
@@ -6674,7 +6674,7 @@ function pickChar(mode='story',skip){
     say(mode==='sandbox'?`${C.name} hit the streets in sandbox mode with ${money(S.cash)}.`:`${C.name}'s story starts freshman year. ${D().name} difficulty.`);say(mode==='story'?YOUNG[S.char]:C.story);
     S.slot=pendingSlot;if(mode==='sandbox')save();
     const go=()=>{let seen=false;try{seen=localStorage.getItem('tl-tut')==='1'}catch(e){}
-    if(!seen)return tutorial(0,()=>{try{localStorage.setItem('tl-tut','1')}catch(e){}$('modal').hidden=true;render()});
+    if(window.l73start)return l73start();if(!seen)return tutorial(0,()=>{try{localStorage.setItem('tl-tut','1')}catch(e){}$('modal').hidden=true;render()});
     $('modal').hidden=true;render()};if(mode==='sandbox')return go();traitPick(go,()=>pickChar(mode,true))};
   $('mcard').querySelectorAll('[data-ch]').forEach(b=>b.onclick=()=>confirmChar(b.dataset.ch,begin,()=>pickChar(mode,true)));
 }
@@ -10810,4 +10810,95 @@ function fix(){try{const th=document.querySelector('.phx[data-app="messages"] .m
   kb.prepend(d)}catch(e){console.error('sk72',e)}}
 try{const _r=render;render=function(){const r=_r.apply(this,arguments);try{fix()}catch(e){}return r}}catch(e){}
 })();</script>
+<script id="skin73js">
+/* skin73: spotlight walkthrough tutorial. New character -> "Play the tutorial / Skip". Grays the screen, lights one button, moves on when you tap it.
+   Also short one-step spotlights the first time Heists, Studio or Sports open up. Replay from the main menu or dev menu. */
+(function(){if(window._sk73)return;window._sk73=1;
+const $q=s=>document.querySelector(s);
+const vis=sel=>{let fold=null;for(const e of document.querySelectorAll(sel)){const r=e.getBoundingClientRect();if(r.width>0&&r.height>0&&!e.disabled&&getComputedStyle(e).visibility!=='hidden')return e;
+ const d=e.closest&&e.closest('details:not([open])');if(d&&!fold){const sm=d.querySelector('summary');if(sm&&sm.getBoundingClientRect().width>0)fold=sm}}return fold};
+const inv=()=>{try{return GOODS.some(g=>(S.inv[g.id]||0)>0)}catch(e){return false}};
+const homeAt=()=>{try{return homeBlock()===S.at}catch(e){return true}};
+const sold=()=>(S.st&&S.st.sold)||0;
+const modalOpen=()=>{const m=$q('#modal');return m&&!m.hidden};
+let T=null; /* {steps,i,t0,base,miss} */
+const LOOP=()=>[
+ {el:()=>vis('#cash')&&vis('#cash').parentElement,txt:'💵 Your money. <b>Dirty</b> = street cash. <b>Clean</b> = money you can spend at stores and banks. Keep an eye on both.',next:1},
+ {el:()=>vis('#heat')&&vis('#heat').parentElement,txt:'🚨 <b>Heat</b> = how hard the cops are watching. Selling and licks raise it. Laying low cools it off.',next:1},
+ {el:()=>vis('#en')&&vis('#en').parentElement,txt:'⚡ <b>Energy</b>. Every action costs some. A new day fills it back up.',next:1},
+ {el:()=>vis('.tabs button[data-t="move"]'),txt:'Tap <b>Move</b>. That\'s the city and your plugs.',done:()=>tab==='move'},
+ {el:()=>vis('#pane [data-a31="tx"]')||vis('#pane [data-a31="ps"]'),txt:()=>vis('#pane [data-a31="tx"]')?'Text your plug to set up a meet.':'Tap <b>Show</b> to see your plug spots.',done:()=>!!vis('#pane [data-a31="go"]')||!!S.meet},
+ {el:()=>vis('#pane [data-a31="go"]'),txt:'Tap <b>Meet</b>. Pulling up to a plug doesn\'t use the day.',done:()=>!!S.meet},
+ {el:()=>vis('#mt31 [data-a="buy"]'),txt:'Tap <b>Buy</b> on something cheap to start.',done:()=>inv()||(modalOpen()&&!!$q('#mcard #ok'))},
+ {el:()=>modalOpen()?$q('#mcard'):null,txt:'Pick an amount, then tap <b>Buy</b>. Start small.',done:inv,modal:1},
+ {el:()=>vis('#mt31y')||vis('#mt31x'),txt:'Got it. Tap <b>Done dealing</b> to head back.',done:()=>!S.meet},
+ {el:()=>vis('.tabs button[data-t="block"]'),txt:'Tap <b>Block</b>. That\'s your corner, where the Js come.',done:()=>tab==='block'},
+ {el:()=>vis('#pane [data-a="sell"]'),txt:'Tap <b>Sell</b> to serve the Js. Street price is what they pay.',done:()=>sold()>T.base.sold,modal:1},
+ {el:()=>{const hm=homeAt();if(hm)return vis('[data-a="wq"][data-k="adv"]')||vis('[data-a="adv"]');if(tab!=='move')return vis('.tabs button[data-t="move"]');return vis('#pane button.mapp[data-p="home"]')||vis(`#pane button[data-t="${homeBlock()}"]`)},
+  txt:()=>homeAt()?'When you\'re out of energy or product, tap <b>Next day</b>.':`You're away from home. Head back to <b>${BLOCKS[homeBlock()]}</b>${tab==='move'?', then tap 🏠 Home':' (tap Move first)'}. The trip takes the day, so that ends it.`,done:()=>S.day>T.base.day,modal:1},
+ {el:()=>vis('#phtab')||vis('.tabs button[data-t="phone"]'),txt:'📱 Your <b>Phone</b>. Plugs, runners and your crew text you here. Order pings land here too.',next:1},
+ {el:()=>vis('.moretab'),txt:'☰ <b>More</b>: School, Circle, Heists, Studio and more open up as you grow.',next:1},
+ {el:()=>null,txt:'✅ That\'s the loop: <b>buy, sell, stack, repeat</b>. Stuck? Main menu → How to play. You can replay this tutorial from the main menu too.',next:1,last:1}];
+const UNLOCK=[['htab','🥷 <b>Heists</b> just opened. Licks you can hit today are listed at the top.'],['rtab','🎤 The <b>Studio</b> just opened. Record, drop songs and book shows here.'],['sptab','🏆 <b>Sports</b> just opened. Games and practice live here.']];
+/* overlay */
+function ui(){let h=$q('#tu73h'),b=$q('#tu73b');if(!h){h=document.createElement('div');h.id='tu73h';document.body.appendChild(h);b=document.createElement('div');b.id='tu73b';b.setAttribute('role','dialog');document.body.appendChild(b)}return [h,b]}
+function off(){T=null;const h=$q('#tu73h'),b=$q('#tu73b');if(h)h.remove();if(b)b.remove()}
+function draw(){if(!T)return;const st=T.steps[T.i];if(!st){finish();return}
+ if(!S||S.over){off();return}
+ if(st.done&&(()=>{try{return st.done()}catch(e){return false}})()){go(1);return}
+ const [h,b]=ui();let el=null;try{el=st.el()}catch(e){}
+ const blockedByModal=modalOpen()&&!st.modal&&!(el&&el.closest&&el.closest('#modal'));
+ const n=T.steps.length,mini=T.mini;
+ const btns=`<div class="tu73k">${!mini&&T.i>0&&!st.last?'<button class="btn" data-tu73="back">Back</button>':''}${!st.last&&!mini?'<button class="btn" data-tu73="skip">Skip tutorial</button>':''}${(st.next||mini)&&!blockedByModal?`<button class="btn go" data-tu73="next">${st.last||mini?'Got it':'Next'}</button>`:''}${!el&&!st.next&&!mini&&Date.now()-T.t0>4000?'<button class="btn" data-tu73="next">Skip step</button>':''}</div>`;
+ const stt=typeof st.txt==='function'?st.txt():st.txt;const txt=blockedByModal?'Finish this popup first, then we keep going.':(!el&&!st.next?stt+'<div class="tu73w">Can\'t see it? Close any popup, or tap Skip step.</div>':stt);
+ const txt2=el&&el.tagName==='SUMMARY'?'Tap here to open this section first.':txt;const key=txt2+btns;if(b._k!==key){b._k=key;b.innerHTML=`${mini?'':`<div class="tu73n">Tutorial · ${T.i+1} of ${n}</div>`}<div class="tu73t">${txt2}</div>${btns}`}
+ if(!el||blockedByModal){h.style.display=blockedByModal?'none':'block';if(!blockedByModal){h.style.cssText+=';left:50%;top:50%;width:0;height:0'}
+  b.style.left=Math.max(10,(innerWidth-b.offsetWidth)/2)+'px';b.style.top=(blockedByModal?12:Math.max(10,(innerHeight-b.offsetHeight)/2))+'px';return}
+ if(T.sc!==T.i){T.sc=T.i;try{el.scrollIntoView({block:'center',behavior:'smooth'})}catch(e){}}
+ const r=el.getBoundingClientRect(),p=6;h.style.display='block';
+ Object.assign(h.style,{left:(r.left-p)+'px',top:(r.top-p)+'px',width:(r.width+2*p)+'px',height:(r.height+2*p)+'px'});
+ const bw=b.offsetWidth,bh=b.offsetHeight;let top=r.bottom+14;if(top+bh>innerHeight-8)top=r.top-bh-14;if(top<8)top=Math.min(innerHeight-bh-8,r.bottom+14);
+ b.style.top=Math.max(8,top)+'px';b.style.left=Math.min(innerWidth-bw-8,Math.max(8,r.left+r.width/2-bw/2))+'px'}
+function go(d){if(!T)return;T.i=Math.max(0,T.i+d);T.t0=Date.now();if(T.i===11||T.i===10)T.base={day:S.day,sold:sold()};if(T.i>=T.steps.length)finish();else draw()}
+function finish(){const mini=T&&T.mini;off();try{if(!mini){S.tut73='done';S.fd={off:1};say('Tutorial done. Get to the money.')}save()}catch(e){};try{render()}catch(e){}}
+function start(steps,mini){off();T={steps,i:0,t0:Date.now(),base:{day:S.day,sold:sold()},mini};try{document.getElementById('modal').hidden=true}catch(e){}if(!mini){try{tab='block'}catch(e){}S.fd={off:1};render()}draw()}
+window.l73tour=()=>start(LOOP(),0);
+/* choice card when a character starts */
+window.l73start=function(){try{localStorage.setItem('tl-tut','1')}catch(e){}
+ modal(`<h2>New here?</h2><p>Take a 2 minute walkthrough. The screen goes dark and one button lights up at a time. You just tap it.</p><div class="btns" style="flex-direction:column"><button class="btn go" id="tu73p" style="padding:12px">▶ Play the tutorial</button><button class="btn" id="tu73s" style="padding:12px">Skip tutorial (I know the game)</button></div>`);
+ document.getElementById('tu73p').onclick=()=>{document.getElementById('modal').hidden=true;S.tut73='on';window.l73tour()};
+ document.getElementById('tu73s').onclick=()=>{document.getElementById('modal').hidden=true;S.tut73='skip';S.fd={off:1};render()}};
+/* clicks: only the lit button, the bubble and popups work while the tour runs */
+window.addEventListener('click',e=>{if(!T)return;const t=e.target;const tb=t.closest&&t.closest('[data-tu73]');
+ if(tb){e.preventDefault();e.stopPropagation();const k=tb.dataset.tu73;if(k==='next')go(1);else if(k==='back')go(-1);else if(k==='skip'){off();S.tut73='skip';S.fd={off:1};render()}return}
+ if(t.closest&&(t.closest('#tu73b')||t.closest('#modal')))return;
+ let el=null;try{el=T.steps[T.i].el()}catch(x){}
+ if(el&&(el===t||el.contains(t)))return;
+ e.preventDefault();e.stopPropagation()},true);
+window.addEventListener('keydown',e=>{if(!T)return;const st=T.steps[T.i];if(e.key==='Escape'){e.preventDefault();e.stopPropagation();if(T.mini)off();else{off();S.tut73='skip';render()}}
+ else if(e.key==='Enter'&&st&&(st.next||T.mini)&&!modalOpen()){e.preventDefault();e.stopPropagation();go(1)}},true);
+setInterval(()=>{try{if(T)draw();else unlocks()}catch(e){}},150);
+addEventListener('resize',()=>{try{draw()}catch(e){}});
+/* first-time unlock spotlights */
+function unlocks(){if(typeof S==='undefined'||!S||S.over||modalOpen()||!S.char)return;S.ul73=S.ul73||{};if(S.day<=1&&!S.tut73)return;
+ for(const [id,txt] of UNLOCK){if(S.ul73[id])continue;const e=document.getElementById(id);if(!e||e.hidden)continue;
+  S.ul73[id]=1;const more=vis('.moretab');const t=vis('#'+id)?()=>vis('#'+id):()=>vis('.moretab');start([{el:t,txt:txt+(vis('#'+id)?'':' Find it under ☰ More.'),next:1}],1);return}}
+/* the old saves: anyone past day 1 never sees the choice card */
+try{const _r=render;render=function(){const r=_r.apply(this,arguments);try{if(S&&!S.tut73&&S.day>1)S.tut73='old'}catch(e){}return r}}catch(e){}
+/* main menu: replay */
+try{const _mm=mainMenu;mainMenu=function(){const r=_mm.apply(this,arguments);try{const mh=document.getElementById('mh');if(mh&&!document.getElementById('tu73r')&&typeof S!=='undefined'&&S&&S.char&&!S.over){const b=document.createElement('button');b.className='btn';b.id='tu73r';b.style.padding='12px';b.textContent='▶ Replay tutorial';mh.after(b);b.onclick=()=>{document.getElementById('modal').hidden=true;window.l73tour()}}}catch(e){}return r}}catch(e){}
+/* dev */
+try{const _dp=devPanel;devPanel=function(){const r=_dp.apply(this,arguments);try{const mc=document.getElementById('mcard');if(mc&&!mc.querySelector('[data-d73]')){const d=document.createElement('div');d.innerHTML='<div class="sec">Tutorial (new)</div><div class="btns"><button class="btn" data-d73="t">Start tutorial</button><button class="btn" data-d73="c">Show Play/Skip card</button><button class="btn" data-d73="u">Reset unlock spotlights</button></div>';const h2=mc.querySelector('h2');(h2&&h2.parentNode?h2.parentNode:mc).insertBefore(d,h2?h2.nextSibling:mc.firstChild);
+ d.querySelectorAll('[data-d73]').forEach(b=>b.onclick=ev=>{ev.stopPropagation();const k=b.dataset.d73;document.getElementById('modal').hidden=true;if(k==='t')window.l73tour();else if(k==='c')window.l73start();else{S.ul73={};say('Unlock spotlights reset.');render()}})}}catch(e){}return r}}catch(e){}
+try{TUT.unshift(['Walkthrough tutorial','New character? Pick Play the tutorial for a 2 minute walkthrough: the screen goes dark and one button lights up at a time. Enter = next, Esc = skip. Replay it from the main menu any time.'])}catch(e){}
+})();</script>
+<style id="skin73">
+#tu73h{position:fixed;z-index:2147483000;border-radius:12px;box-shadow:0 0 0 9999px rgba(0,0,0,.74),0 0 0 3px var(--accent,#f5c518),0 0 22px 6px rgba(245,197,24,.55);pointer-events:none;transition:left .2s,top .2s,width .2s,height .2s;animation:tu73p 1.4s ease-in-out infinite}
+@keyframes tu73p{50%{box-shadow:0 0 0 9999px rgba(0,0,0,.74),0 0 0 3px var(--accent,#f5c518),0 0 34px 12px rgba(245,197,24,.75)}}
+#tu73b{position:fixed;z-index:2147483001;width:min(320px,calc(100vw - 20px));background:#16161c;border:2px solid var(--accent,#f5c518);border-radius:14px;padding:12px 14px;color:#fff;box-shadow:0 8px 30px rgba(0,0,0,.6);font-size:15px;line-height:1.35}
+#tu73b .tu73n{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent,#f5c518);margin-bottom:4px}
+#tu73b .tu73w{font-size:12px;opacity:.7;margin-top:6px}
+#tu73b .tu73k{display:flex;gap:6px;justify-content:flex-end;margin-top:10px;flex-wrap:wrap}
+#tu73b .tu73k .btn{padding:7px 12px}
+</style>
 <script>if('serviceWorker' in navigator){addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}</script></body></html>
