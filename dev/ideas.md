@@ -185,6 +185,7 @@ Order if built: 1, 2, 3 as one batch (~2 hrs), then 5. Leaderboard only after pe
 - Phase changes things: school/jobs/bank/court/lawyer daytime only; pawn, mall, car lot close at night; club, strip, dice, street race evening and night; houses are empty by day (easier lick) and people are home at night; store and pharmacy licks easier at night; fewer patrols late but stops are harsher; Js pay more at night; plugs pull up any time.
 - One tap 'Kill time until night' spends the energy so nobody waits. Header shows a sun/moon on the bar. Sky tint per phase.
 - Size: about 3-4 hrs with tests. Gaps found Nov 13 and not fixed: rideshare/bus ignore the ankle monitor, a 14-year-old holding a car can drive, flying with stolen goods, pawn 'Hit a house' lit with no tip, $25 ride offered when you own a car.
+- BUILT Nov 20 (skin82): Chris picked the 12-hour clock. 10 AM to 10 PM, energy spent = time (8 min a point), moving blocks 1 hr (30 min with a car), licks 3 hrs, night after 6 PM (darker screen, Js pay 10% more), 10 PM = day over (energy actions ask to end the day), clock chip next to the day, phone shows game time, dev buttons. LEFT: rings working at their own hours.
 - PARKED (Nov 13): testers may want a full 24-hour day with nightfall instead. Chris is asking them. Do not build either version until he says. Same choice as the 12-hour clock (Time vote option 4, under Plugs on the Move map): pick ONE time system.
 - Add-ons (Nov 15, applies to whichever time system wins): rings work at their own time (robbery and car ring at night, scam ring by day, Business Manager during open hours), animations darken the map at night, Js pay more at night.
 
@@ -345,7 +346,7 @@ Start with 2 + 8 on texting, court and plug talk (~5-8% usage). 3/4/5 are ~10-15
 ## Crew group chat — BUILT Nov 15 (skin68): The Gang thread, crew posts, Bring the money / Re-up / Lay low / Good work.
 ## Animations (no new art) — BUILT Nov 20 (skin76)
 - BUILT: popups slide in like a comic page; square 2x2 pictures reveal one panel at a time; your face rides across the top bar when you travel (from → to); cop lights sweep on every siren; hot blocks glow red on the Move board; small faces bob in texts and meets; reduced-motion respected; dev buttons.
-- LEFT: map tint by time of day (waits on the time system pick), ring icons moving on the map, walk-in scenes (need art).
+- LEFT: (night tint now done by the clock), ring icons moving on the map, walk-in scenes (need art).
 - Map travel: your face pin rides the streets to the next block (car / walking / bus, matches how you chose to go).
 - Places slide open like a comic page.
 - 2x2 event art reveals one panel at a time.
@@ -355,7 +356,10 @@ Start with 2 + 8 on texting, court and plug talk (~5-8% usage). 3/4/5 are ~10-15
 - Later (needs art): walk-in scene strips, characters walking (needs consistent poses, hit or miss with Gemini).
 - Add-ons (Nov 15): crew ring icons move on the map when they work (car pin drives to the chop shop, robbery crew pin to the house), cash bag animation when Collect all fires, comic panel reveal for ring busts and big scores.
 
-## Life paths — every path needs a start, middle, end goal and crossovers — not built
+## Life paths — every path needs a start, middle, end goal and crossovers — PART BUILT Nov 20 (skin81)
+- ALREADY THERE (checked): open mics + rap ladder, features, labels, tour, merch; licks + pawn + heists; jobs; college + student loans; girlfriend, kids; endings.
+- BUILT: job promotions every 4 weeks with heat <50 (Shift lead, Assistant manager, Manager; +20% per level paid clean), fired at heat 80+ (20% a week), legit job cools ring heat; college majors (Business +10% business pay, Music +3% fans a week, Nursing unlocks Nurse $1,500/week, Criminal justice heat −1 a day) shown on the Me tab under Your path; rap mixtape every 4 new songs ($1,500, fans +15%, hype +20) on the Studio tab, platinum plaque at 50k fans (rep +10); jack-boy rep at 15 licks (plug buys +5%); partner texts worried at heat 60+ and gets closer when you keep a legit job. Dev buttons.
+- LEFT: snatching as a first robbery step, partner running a business, kids needing money, ending check for go legit / legend / die young.
 - Rap: recording, diss, shows, signing, tour, merch and own label ALREADY exist. Missing: early steps (open mics, mixtape), features with other artists, beef/heat killing a deal, a platinum goal. Posting songs and going viral lives under Social media (one home).
 - Robbery: licks, loot + pawn fencing, crew heists, Last Big Deal ALREADY exist; the crew side is the Robbery ring (Crew rings). Missing: snatching as the first step, jack-boy rep (plugs scared, prices/fronts change).
 - Work: promotions, raises, a boss who notices; good shifts = raise, missed = fired. Legit job = cover (less cop attention, nicer apartment). End: manager or your own small business.

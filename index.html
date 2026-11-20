@@ -7517,7 +7517,7 @@ const APPS=[['messages','Messages','💬','#3fd0c9'],['contacts','Contacts','�
  ['modern','Wallet','💳','#5fd38a'],['backer','Backer','🤝','#5fd38a'],['hustle','Side hustles','💻','#a98bff'],['social','Social','📸','#d46bd0']];
 const DOCK=['messages','modern','turf','contacts'];
 const ap=id=>APPS.find(a=>a[0]===id);
-const clock=()=>{const d=new Date();let h=d.getHours()%12||12;return h+':'+String(d.getMinutes()).padStart(2,'0')};
+const clock=()=>{try{if(window.l82clock&&S&&S.char)return l82clock(true)}catch(e){}const d=new Date();let h=d.getHours()%12||12;return h+':'+String(d.getMinutes()).padStart(2,'0')};
 function badge(id){try{if(id==='messages'){return window._MS&&window._MS.unread?window._MS.unread():0}if(id==='crew')return (S.pts||0)>0?1:0;if(id==='modern')return (S.ls&&S.ls.owe&&S.ls.due-S.day<=2)?1:0;if(id==='news')return (S.news||[]).filter(n=>n.d===S.day).length}catch(e){}return 0}
 const btn=(id,dock)=>{const a=ap(id),n=badge(id);return `<button data-rph="${id}" style="--c:${a[3]}"><i>${a[2]}</i>${dock?'':a[1]}${n?`<span class="ph-bd">${n>9?'9+':n}</span>`:''}</button>`};
 const sb=()=>`<div class="ph-sb"><span>${clock()}</span><span class="isl"></span><span class="r">${window.l46sb?l46sb():'5G <span class="ph-bat"><i></i></span>'}</span></div>`;
@@ -10836,8 +10836,8 @@ const LOOP=()=>[
  {el:()=>vis('#mt31y')||vis('#mt31x'),txt:'Got it. Tap <b>Done dealing</b> to head back.',done:()=>!S.meet},
  {el:()=>vis('.tabs button[data-t="block"]'),txt:'Tap <b>Block</b>. That\'s your corner, where the Js come.',done:()=>tab==='block'},
  {el:()=>vis('#pane [data-a="sell"]'),txt:'Tap <b>Sell</b> to serve the Js. Street price is what they pay.',done:()=>sold()>T.base.sold,modal:1},
- {el:()=>{const hm=homeAt();if(hm)return vis('[data-a="wq"][data-k="adv"]')||vis('[data-a="adv"]');if(tab!=='move')return vis('.tabs button[data-t="move"]');return vis('#pane button.mapp[data-p="home"]')||vis(`#pane button[data-t="${homeBlock()}"]`)},
-  txt:()=>homeAt()?'When you\'re out of energy or product, tap <b>Next day</b>.':`You're away from home. Head back to <b>${BLOCKS[homeBlock()]}</b>${tab==='move'?', then tap 🏠 Home':' (tap Move first)'}. The trip takes the day, so that ends it.`,done:()=>S.day>T.base.day,modal:1},
+ {el:()=>{const nd=modalOpen()&&[...document.querySelectorAll('#mcard button')].find(b=>/^next day$/i.test(b.textContent.trim())&&b.getBoundingClientRect().width>0);if(nd)return nd;const hm=homeAt();if(hm)return vis('[data-a="wq"][data-k="adv"]')||vis('[data-a="adv"]');if(tab!=='move')return vis('.tabs button[data-t="move"]');return vis('#pane button.mapp[data-p="home"]')||vis(`#pane button[data-t="${homeBlock()}"]`)},
+  txt:()=>(modalOpen()&&[...document.querySelectorAll('#mcard button')].some(b=>/^next day$/i.test(b.textContent.trim())))?'Tap <b>Next day</b> to end the day.':homeAt()?'When you\'re out of energy or product, tap <b>Next day</b>.':`You're away from home. Head back to <b>${BLOCKS[homeBlock()]}</b>${tab==='move'?', then tap 🏠 Home':' (tap Move first)'}, then Next day.`,done:()=>S.day>T.base.day,modal:1},
  {el:()=>vis('#phtab')||vis('.tabs button[data-t="phone"]'),txt:'📱 Your <b>Phone</b>. Plugs, runners and your crew text you here. Order pings land here too.',next:1},
  {el:()=>vis('.moretab'),txt:'☰ <b>More</b>: School, Circle, Heists, Studio and more open up as you grow.',next:1},
  {el:()=>null,txt:'✅ That\'s the loop: <b>buy, sell, stack, repeat</b>. Stuck? Main menu → How to play. You can replay this tutorial from the main menu too.',next:1,last:1}];
@@ -10856,7 +10856,7 @@ function draw(){if(!T)return;const st=T.steps[T.i];if(!st){finish();return}
  const txt2=el&&el.tagName==='SUMMARY'?'Tap here to open this section first.':txt;const key=txt2+btns;if(b._k!==key){b._k=key;b.innerHTML=`${mini?'':`<div class="tu73n">Tutorial · ${T.i+1} of ${n}</div>`}<div class="tu73t">${txt2}</div>${btns}`}
  if(!el||blockedByModal){h.style.display=blockedByModal?'none':'block';if(!blockedByModal){h.style.cssText+=';left:50%;top:50%;width:0;height:0'}
   b.style.left=Math.max(10,(innerWidth-b.offsetWidth)/2)+'px';b.style.top=(blockedByModal?12:Math.max(10,(innerHeight-b.offsetHeight)/2))+'px';return}
- if(T.sc!==T.i){T.sc=T.i;try{el.scrollIntoView({block:'center',behavior:'smooth'})}catch(e){}}
+ if(T.sc!==T.i||T.se!==el){T.sc=T.i;T.se=el;try{el.scrollIntoView({block:'center',behavior:'smooth'})}catch(e){}}
  const r=el.getBoundingClientRect(),p=6;h.style.display='block';
  Object.assign(h.style,{left:(r.left-p)+'px',top:(r.top-p)+'px',width:(r.width+2*p)+'px',height:(r.height+2*p)+'px'});
  const bw=b.offsetWidth,bh=b.offsetHeight;let top=r.bottom+14;if(top+bh>innerHeight-8)top=r.top-bh-14;if(top<8)top=Math.min(innerHeight-bh-8,r.bottom+14);
@@ -10901,7 +10901,8 @@ try{TUT.unshift(['Walkthrough tutorial','New character? Pick Play the tutorial f
 #tu73b .tu73n{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent,#f5c518);margin-bottom:4px}
 #tu73b .tu73w{font-size:12px;opacity:.7;margin-top:6px}
 #tu73b .tu73k{display:flex;gap:6px;justify-content:flex-end;margin-top:10px;flex-wrap:wrap}
-#tu73b .tu73k .btn{padding:7px 12px}
+#tu73b .tu73k .btn{padding:7px 12px;pointer-events:auto}
+#tu73b{pointer-events:none}
 </style>
 <script id="skin74js">
 /* skin74: Crew Ops + crew rings. Each skill runs a standing job you set once: Car, Robbery, Scam, Muscle, Watch (Trap = Run the operation).
@@ -11304,4 +11305,87 @@ try{const _dp=devPanel;devPanel=function(){const r=_dp.apply(this,arguments);try
  d.querySelectorAll('[data-d80]').forEach(b=>b.onclick=ev=>{ev.stopPropagation();el('modal').hidden=true;const s=sw();if(b.dataset.d80==='f')s.fol+=10000;else day();say('Dev: followers '+s.fol.toLocaleString()+', target '+target().toLocaleString());render()})}}catch(e){}return r}}catch(e){}
 try{TUT.push(['Your page follows your life','Followers grow on their own from your street rep (about 5 per rep point), blocks you run, crew rings and a real car. Locked up? "Free me" posts bump you. A page way bigger than your real life slowly drops. More followers = more Js money on the block (up to +15%). Over 20k and detectives watch your page: +1 heat a day unless you have a legit job.'])}catch(e){}
 })();</script>
+<script id="skin81js">
+/* skin81: life paths fill-ins. Work: promotions (Worker → Shift lead → Assistant manager → Manager) with raises, the boss fires you if heat stays high; a legit job cools ring heat.
+   College: pick a major (Business, Music, Nursing, Criminal justice), each with its own perk; Nursing unlocks a Nurse job after you graduate.
+   Rap: drop a mixtape every 4 new songs; platinum plaque at 50,000 fans. Robbery: 15+ licks = jack-boy rep (plugs charge you 5% more, your robbery ring pays 10% more).
+   Partner: worries when your heat is high, closer when you keep it legit. */
+(function(){if(window._sk81)return;window._sk81=1;
+const el=id=>document.getElementById(id),R=(a,b)=>Math.round(a+Math.random()*(b-a));
+const LV=['Worker','Shift lead','Assistant manager','Manager'];
+try{JOBS.nurse=JOBS.nurse||{name:'Nurse',pay:1500,degree:1}}catch(e){}
+function wk(){S.wk81=S.wk81||{};if(S.job&&!S.wk81[S.job])S.wk81[S.job]={lv:0,w:0};return S.job?S.wk81[S.job]:null}
+function week(){const W=wk();if(!W||S.pr||S.inJail)return;const J=JOBS[S.job];if(!J)return;W.w++;
+ if(S.heat>=80&&Math.random()<.2){const n=J.name;S.job=null;try{phoneMsg('Your boss',"Cops came by asking about you. Don't come back.")}catch(e){}say(`Fired from ${n}. The heat followed you to work.`);return}
+ if(W.lv<3&&W.w>=4*(W.lv+1)&&S.heat<50){W.lv++;try{phoneMsg('Your boss',`You been holding it down. You're ${LV[W.lv].toLowerCase()} now, raise starts this week.`)}catch(e){}say(`Promoted to ${LV[W.lv]} at ${J.name}. Raise +${W.lv*20}%.`)}
+ if(W.lv>0){const b=Math.round(J.pay*.2*W.lv);S.cash+=b;S.clean=(S.clean||0)+b}}
+/* majors */
+const MAJ={biz:['Business','Your businesses pay 10% more and wash for less'],music:['Music','Rap fans grow 3% a week while you rap'],nurse:['Nursing','Unlocks the Nurse job ($1,500/week) after you graduate'],cj:['Criminal justice','You know your rights: heat cools 1 more a day']};
+try{const _bm=bizMul;bizMul=function(){return _bm.apply(this,arguments)*(S.major81==='biz'?1.1:1)}}catch(e){}
+/* rap */
+function rapDay(){const Rp=S.rap;if(!Rp||!S.rapOn)return;if(S.major81==='music'&&S.day%7===0)Rp.fans=Math.round(Rp.fans*1.03);
+ if(Rp.fans>=50000&&!Rp.plat81){Rp.plat81=S.day;S.rep=(S.rep||0)+10;try{modal(`<h2>💿 Platinum</h2><p>Your music just went platinum. The label sent a plaque to the house and your phone hasn't stopped ringing.</p><p class="s">Rep +10. Shows and features pay more from here.</p><div class="btns"><button class="btn go" id="ok">Hang it up</button></div>`);el('ok').onclick=()=>{el('modal').hidden=true;render()}}catch(e){}}}
+const songsN=()=>((S.rap&&S.rap.songs)||[]).length;
+/* daily: partner, jack boy, cj, job heat cover */
+function day(){try{rapDay()}catch(e){}
+ if(S.major81==='cj'&&(S.college==='in'||S.college==='grad'))S.heat=Math.max(0,S.heat-1);
+ if(S.job&&S.rg74&&Object.values(S.rg74).some(r=>r.on&&r.mem.length)&&Math.random()<.5)S.heat=Math.max(0,S.heat-1);
+ try{if(S.gf&&S.gf.rel!=null){if(S.heat>=60&&Math.random()<.25){S.gf.rel=Math.max(0,S.gf.rel-2);phoneMsg(S.gf.name,pick(["Baby you hot right now. I don't want twelve kicking in my door.","I'm scared for you. Can you chill for a minute?","My mama asking why cops keep riding past. Fix it."]))}else if(S.job&&S.heat<25&&S.day%7===0)S.gf.rel=Math.min(100,S.gf.rel+2)}}catch(e){}
+ const lk=(S.st&&S.st.licks)||0;if(lk>=15&&!S.jb81){S.jb81=1;try{phoneMsg('Your cousin','Word is you a jack boy now. Plugs talking about it. Watch who you meet with.')}catch(e){}say('Jack-boy rep: plugs charge you 5% more, but your robbery crew moves different.')}}
+try{const _pp=plugPrice;plugPrice=function(kind){const p=_pp.apply(this,arguments);try{if(kind==='buy'&&S.jb81&&typeof p==='number')return Math.max(1,Math.round(p*1.05))}catch(e){}return p}}catch(e){}
+try{const _nd=nextDay;nextDay=function(){const r=_nd.apply(this,arguments);try{day();if(typeof weekTick==='function'&&weekTick())week()}catch(e){console.error('sk81',e)}return r}}catch(e){}
+/* UI bits */
+function ui(){path();tape()}
+function path(){try{const p=el('pane');if(!p||tab!=='crew'||p.querySelector('[data-lp81]'))return;let h='';const W=wk();
+ if(S.job&&JOBS[S.job]&&W)h+=`<div class="row"><div class="info"><div class="t">💼 ${JOBS[S.job].name}: ${LV[W.lv]}</div><div class="s">${W.w} week${W.w===1?'':'s'} in.${W.lv<3?` Next promotion after ${4*(W.lv+1)} weeks with heat under 50.`:' Top of the ladder.'}${W.lv?` Raise: +${money(Math.round(JOBS[S.job].pay*.2*W.lv))} a week, clean.`:''} Heat 80+ can get you fired.</div></div></div>`;
+ if(S.college==='in'&&!S.major81)h+=`<div class="row" style="flex-wrap:wrap"><div class="info" style="flex:1 1 200px"><div class="t">🎓 Pick a college major</div><div class="s">${Object.values(MAJ).map(m=>`<b>${m[0]}</b>: ${m[1]}`).join('<br>')}</div></div><div class="btns">${Object.entries(MAJ).map(([k,m])=>`<button class="btn" data-m81b="${k}">${m[0]}</button>`).join('')}</div></div>`;
+ else if(S.major81&&(S.college==='in'||S.college==='grad'))h+=`<div class="row"><div class="info"><div class="t">🎓 ${MAJ[S.major81][0]} major${S.college==='grad'?' · graduated':''}</div><div class="s">${MAJ[S.major81][1]}.</div></div></div>`;
+ if(!h)return;const d=document.createElement('div');d.dataset.lp81=1;d.className='wspan';d.innerHTML=`<div class="sec">Your path</div>`+h;p.prepend(d)}catch(e){console.error('sk81 ui',e)}}
+function tape(){try{const p=el('pane');if(p&&tab==='rap'&&S.rapOn&&S.rap&&!p.querySelector('[data-mt81]')){const Rp=S.rap,since=songsN()-(Rp.mt81n||0),ok=since>=4&&S.cash>=1500;const d=document.createElement('div');d.className='row';d.dataset.mt81=1;
+  d.innerHTML=`<div class="info"><div class="t">📀 Drop a mixtape</div><div class="s">Bundle 4 new songs into a tape: fans +15%, hype +20. ${since}/4 new songs since your last tape. $1,500 for mixing and cover art.${Rp.plat81?' 💿 You went platinum.':` Platinum at 50,000 fans (${Rp.fans.toLocaleString()} now).`}</div></div><button class="btn go" data-mt81b="1" ${ok?'':'disabled'}>Drop it</button>`;
+  const f=p.querySelector('.sec');if(f)f.after(d);else p.prepend(d)}}catch(e){}}
+document.addEventListener('click',e=>{const j=e.target.closest&&e.target.closest('[data-a="job"][data-k="nurse"]');if(j&&S.major81!=='nurse'){e.preventDefault();e.stopPropagation();say('Nurse jobs need a nursing degree.')}},true);
+document.addEventListener('click',e=>{const m=e.target.closest&&e.target.closest('[data-m81b]');if(m){e.preventDefault();e.stopPropagation();S.major81=m.dataset.m81b;say(`You declared a ${MAJ[S.major81][0].toLowerCase()} major.`);return render()}
+ const t=e.target.closest&&e.target.closest('[data-mt81b]');if(t&&!t.disabled){e.preventDefault();e.stopPropagation();const Rp=S.rap;if(songsN()-(Rp.mt81n||0)<4||S.cash<1500)return;S.cash-=1500;S.clean=Math.min(S.clean||0,S.cash);Rp.mt81n=songsN();const g=Math.round(Rp.fans*.15);Rp.fans+=g;Rp.hype=Math.min(100,(Rp.hype||0)+20);Rp.tapes81=(Rp.tapes81||0)+1;say(`Mixtape #${Rp.tapes81} is out. +${g.toLocaleString()} fans, hype up.`);try{const s=socW();s.fol+=Math.round(g*.5)}catch(x){}render()}},true);
+try{const _r=render;render=function(){const r=_r.apply(this,arguments);try{ui()}catch(e){}return r}}catch(e){}
+try{const _dp=devPanel;devPanel=function(){const r=_dp.apply(this,arguments);try{const mc=el('mcard');if(mc&&!mc.querySelector('[data-d81]')){const d=document.createElement('div');d.innerHTML='<div class="sec">Life paths (new)</div><div class="btns"><button class="btn" data-d81="w">Job: +4 weeks</button><button class="btn" data-d81="l">+15 licks (jack boy)</button><button class="btn" data-d81="s">Rap: +4 songs, 49k fans</button></div>';const h2=mc.querySelector('h2');(h2&&h2.parentNode?h2.parentNode:mc).insertBefore(d,h2?h2.nextSibling:mc.firstChild);
+ d.querySelectorAll('[data-d81]').forEach(b=>b.onclick=ev=>{ev.stopPropagation();el('modal').hidden=true;const k=b.dataset.d81;if(k==='w'){const W=wk();if(W)W.w+=4;else say('Dev: get a job first.')}if(k==='l'){S.st.licks=(S.st.licks||0)+15}if(k==='s'){S.rapOn=1;S.rap=S.rap||{fans:900,hype:50,songs:[],fat:0};for(let i=0;i<4;i++)S.rap.songs.push({n:'Dev song '+i,q:60,d:S.day});S.rap.fans=49000}render()})}}catch(e){}return r}}catch(e){}
+try{TUT.push(['Life paths','Work: every 4 weeks at a job with heat under 50 gets you promoted (Shift lead, Assistant manager, Manager), each with a raise paid clean. Heat 80+ can get you fired. A legit job also cools your crew rings\' heat. College: pick a major (Business, Music, Nursing, Criminal justice) for its perk; Nursing unlocks a Nurse job after you graduate. Rap: drop a mixtape every 4 new songs, platinum plaque at 50,000 fans. 15+ licks gives you jack-boy rep: plugs charge 5% more. Your partner worries when your heat is high.'])}catch(e){}
+})();</script>
+<script id="skin82js">
+/* skin82: 12-hour clock. Each day runs 10 AM to 10 PM. Actions cost time: energy you spend (about 8 min a point), moving blocks (1 hr, 30 min with a car),
+   a lick (3 hrs). After 6 PM it is night: the screen darkens and the Js pay 10% more. At 10 PM the day is over: anything that costs energy asks you to end the day.
+   Energy is still how tired you are; the clock is how much day is left. The phone shows game time. */
+(function(){if(window._sk82)return;window._sk82=1;
+const el=id=>document.getElementById(id);
+const START=10*60,LEN=12*60,NIGHT=8*60;
+const used=()=>{if(typeof S==='undefined'||!S)return 0;if(S.tm82==null||S.tmd82!==S.day){S.tm82=0;S.tmd82=S.day}return S.tm82};
+function add(m){used();S.tm82=Math.min(LEN,S.tm82+m)}
+const fmt=(m,ap)=>{const t=START+m,h=Math.floor(t/60),mm=Math.round(t%60);const h12=h%12||12;return `${h12}:${String(mm).padStart(2,'0')}${ap?(h>=12?' PM':' AM'):''}`};
+window.l82clock=ap=>fmt(used(),!ap);
+window.l82night=()=>used()>=NIGHT;
+window.l82add=add;
+function over(){modal(`<h2>🌙 It's 10 PM</h2><p>The day is done. Everything closes up and the block goes quiet. Rest up and hit it again tomorrow.</p><div class="btns"><button class="btn go" id="ad82">Next day</button><button class="btn" id="no82">Not yet</button></div>`);
+ el('no82').onclick=()=>{el('modal').hidden=true};el('ad82').onclick=()=>{el('modal').hidden=true;nextDay();try{checkEnd()}catch(e){}render()}}
+try{const _se=spendEn;spendEn=function(n){let k=n;if(typeof k==='string')k=(typeof ENC!=='undefined'&&ENC[k])||5;try{if(!S.pr&&!S.inJail&&used()>=LEN){over();return false}}catch(e){}const r=_se.apply(this,arguments);if(r!==false){try{add(k*8)}catch(e){}}return r}}catch(e){}
+try{const _ld=lickDone;lickDone=function(){try{add(180)}catch(e){}return _ld.apply(this,arguments)}}catch(e){}
+try{const _st=street;street=function(){const p=_st.apply(this,arguments);try{if(used()>=NIGHT&&typeof p==='number')return Math.round(p*1.1)}catch(e){}return p}}catch(e){}
+try{const _nd=nextDay;nextDay=function(){const r=_nd.apply(this,arguments);try{S.tm82=0;S.tmd82=S.day;S.nt82=0}catch(e){}return r}}catch(e){}
+let lastAt=null;
+function show(){if(typeof S==='undefined'||!S||S.over||!S.char)return;
+ if(lastAt!=null&&S.at!==lastAt&&S.at!=null&&!S.meet){add(S.car&&S.car!=='stolen'?30:60)}lastAt=S.at;
+ const m=used(),n=m>=NIGHT,done=m>=LEN;document.body.classList.toggle('night82',n);let nt=el('nt82');if(n&&!nt){nt=document.createElement('div');nt.id='nt82';document.body.appendChild(nt)}else if(!n&&nt)nt.remove();
+ if(n&&!S.nt82){S.nt82=1;try{say("It's getting dark. Js pay more at night.")}catch(e){}}
+ let c=el('clk82');if(!c){const d=el('day');if(!d||!d.parentNode)return;c=document.createElement('span');c.id='clk82';d.parentNode.insertBefore(c,d.nextSibling)}
+ const t=`${done?'🌙 10:00 PM · day over':(n?'🌙 ':'☀️ ')+fmt(m)+(Math.floor((START+m)/60)>=12?' PM':' AM')}`;if(c.textContent!==t)c.textContent=t;c.classList.toggle('late',done)}
+try{const _r=render;render=function(){const r=_r.apply(this,arguments);try{show()}catch(e){}return r}}catch(e){}
+try{const _dp=devPanel;devPanel=function(){const r=_dp.apply(this,arguments);try{const mc=el('mcard');if(mc&&!mc.querySelector('[data-d82]')){const d=document.createElement('div');d.innerHTML='<div class="sec">Clock (new)</div><div class="btns"><button class="btn" data-d82="2">+2 hours</button><button class="btn" data-d82="n">Set 6:30 PM</button><button class="btn" data-d82="l">Set 9:50 PM</button></div>';const h2=mc.querySelector('h2');(h2&&h2.parentNode?h2.parentNode:mc).insertBefore(d,h2?h2.nextSibling:mc.firstChild);
+ d.querySelectorAll('[data-d82]').forEach(b=>b.onclick=ev=>{ev.stopPropagation();el('modal').hidden=true;const k=b.dataset.d82;used();if(k==='2')add(120);if(k==='n')S.tm82=510;if(k==='l')S.tm82=710;render()})}}catch(e){}return r}}catch(e){}
+try{TUT.push(['The clock','Every day runs 10 AM to 10 PM. Spending energy takes time (about 8 minutes a point), moving to another block takes an hour (30 minutes with a car), a lick takes 3 hours. After 6 PM it is night: Js pay 10% more. At 10 PM the day is over and you have to end it. Energy is how tired you are, the clock is how much day is left.'])}catch(e){}
+})();</script>
+<style id="skin82">
+#clk82{margin-left:8px;font-size:12px;padding:2px 8px;border-radius:999px;background:rgba(245,197,24,.12);border:1px solid rgba(245,197,24,.35);white-space:nowrap}
+#clk82.late{background:rgba(232,80,74,.18);border-color:rgba(232,80,74,.6)}
+#nt82{position:fixed;inset:0;pointer-events:none;z-index:35;background:radial-gradient(ellipse at 50% 0%,rgba(20,20,60,.10),rgba(5,5,25,.30));transition:opacity 1s}
+</style>
 <script>if('serviceWorker' in navigator){addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}</script></body></html>

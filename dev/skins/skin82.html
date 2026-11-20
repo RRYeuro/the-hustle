@@ -1,0 +1,36 @@
+<script id="skin82js">
+/* skin82: 12-hour clock. Each day runs 10 AM to 10 PM. Actions cost time: energy you spend (about 8 min a point), moving blocks (1 hr, 30 min with a car),
+   a lick (3 hrs). After 6 PM it is night: the screen darkens and the Js pay 10% more. At 10 PM the day is over: anything that costs energy asks you to end the day.
+   Energy is still how tired you are; the clock is how much day is left. The phone shows game time. */
+(function(){if(window._sk82)return;window._sk82=1;
+const el=id=>document.getElementById(id);
+const START=10*60,LEN=12*60,NIGHT=8*60;
+const used=()=>{if(typeof S==='undefined'||!S)return 0;if(S.tm82==null||S.tmd82!==S.day){S.tm82=0;S.tmd82=S.day}return S.tm82};
+function add(m){used();S.tm82=Math.min(LEN,S.tm82+m)}
+const fmt=(m,ap)=>{const t=START+m,h=Math.floor(t/60),mm=Math.round(t%60);const h12=h%12||12;return `${h12}:${String(mm).padStart(2,'0')}${ap?(h>=12?' PM':' AM'):''}`};
+window.l82clock=ap=>fmt(used(),!ap);
+window.l82night=()=>used()>=NIGHT;
+window.l82add=add;
+function over(){modal(`<h2>🌙 It's 10 PM</h2><p>The day is done. Everything closes up and the block goes quiet. Rest up and hit it again tomorrow.</p><div class="btns"><button class="btn go" id="ad82">Next day</button><button class="btn" id="no82">Not yet</button></div>`);
+ el('no82').onclick=()=>{el('modal').hidden=true};el('ad82').onclick=()=>{el('modal').hidden=true;nextDay();try{checkEnd()}catch(e){}render()}}
+try{const _se=spendEn;spendEn=function(n){let k=n;if(typeof k==='string')k=(typeof ENC!=='undefined'&&ENC[k])||5;try{if(!S.pr&&!S.inJail&&used()>=LEN){over();return false}}catch(e){}const r=_se.apply(this,arguments);if(r!==false){try{add(k*8)}catch(e){}}return r}}catch(e){}
+try{const _ld=lickDone;lickDone=function(){try{add(180)}catch(e){}return _ld.apply(this,arguments)}}catch(e){}
+try{const _st=street;street=function(){const p=_st.apply(this,arguments);try{if(used()>=NIGHT&&typeof p==='number')return Math.round(p*1.1)}catch(e){}return p}}catch(e){}
+try{const _nd=nextDay;nextDay=function(){const r=_nd.apply(this,arguments);try{S.tm82=0;S.tmd82=S.day;S.nt82=0}catch(e){}return r}}catch(e){}
+let lastAt=null;
+function show(){if(typeof S==='undefined'||!S||S.over||!S.char)return;
+ if(lastAt!=null&&S.at!==lastAt&&S.at!=null&&!S.meet){add(S.car&&S.car!=='stolen'?30:60)}lastAt=S.at;
+ const m=used(),n=m>=NIGHT,done=m>=LEN;document.body.classList.toggle('night82',n);let nt=el('nt82');if(n&&!nt){nt=document.createElement('div');nt.id='nt82';document.body.appendChild(nt)}else if(!n&&nt)nt.remove();
+ if(n&&!S.nt82){S.nt82=1;try{say("It's getting dark. Js pay more at night.")}catch(e){}}
+ let c=el('clk82');if(!c){const d=el('day');if(!d||!d.parentNode)return;c=document.createElement('span');c.id='clk82';d.parentNode.insertBefore(c,d.nextSibling)}
+ const t=`${done?'🌙 10:00 PM · day over':(n?'🌙 ':'☀️ ')+fmt(m)+(Math.floor((START+m)/60)>=12?' PM':' AM')}`;if(c.textContent!==t)c.textContent=t;c.classList.toggle('late',done)}
+try{const _r=render;render=function(){const r=_r.apply(this,arguments);try{show()}catch(e){}return r}}catch(e){}
+try{const _dp=devPanel;devPanel=function(){const r=_dp.apply(this,arguments);try{const mc=el('mcard');if(mc&&!mc.querySelector('[data-d82]')){const d=document.createElement('div');d.innerHTML='<div class="sec">Clock (new)</div><div class="btns"><button class="btn" data-d82="2">+2 hours</button><button class="btn" data-d82="n">Set 6:30 PM</button><button class="btn" data-d82="l">Set 9:50 PM</button></div>';const h2=mc.querySelector('h2');(h2&&h2.parentNode?h2.parentNode:mc).insertBefore(d,h2?h2.nextSibling:mc.firstChild);
+ d.querySelectorAll('[data-d82]').forEach(b=>b.onclick=ev=>{ev.stopPropagation();el('modal').hidden=true;const k=b.dataset.d82;used();if(k==='2')add(120);if(k==='n')S.tm82=510;if(k==='l')S.tm82=710;render()})}}catch(e){}return r}}catch(e){}
+try{TUT.push(['The clock','Every day runs 10 AM to 10 PM. Spending energy takes time (about 8 minutes a point), moving to another block takes an hour (30 minutes with a car), a lick takes 3 hours. After 6 PM it is night: Js pay 10% more. At 10 PM the day is over and you have to end it. Energy is how tired you are, the clock is how much day is left.'])}catch(e){}
+})();</script>
+<style id="skin82">
+#clk82{margin-left:8px;font-size:12px;padding:2px 8px;border-radius:999px;background:rgba(245,197,24,.12);border:1px solid rgba(245,197,24,.35);white-space:nowrap}
+#clk82.late{background:rgba(232,80,74,.18);border-color:rgba(232,80,74,.6)}
+#nt82{position:fixed;inset:0;pointer-events:none;z-index:35;background:radial-gradient(ellipse at 50% 0%,rgba(20,20,60,.10),rgba(5,5,25,.30));transition:opacity 1s}
+</style>

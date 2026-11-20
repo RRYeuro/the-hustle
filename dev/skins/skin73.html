@@ -22,8 +22,8 @@ const LOOP=()=>[
  {el:()=>vis('#mt31y')||vis('#mt31x'),txt:'Got it. Tap <b>Done dealing</b> to head back.',done:()=>!S.meet},
  {el:()=>vis('.tabs button[data-t="block"]'),txt:'Tap <b>Block</b>. That\'s your corner, where the Js come.',done:()=>tab==='block'},
  {el:()=>vis('#pane [data-a="sell"]'),txt:'Tap <b>Sell</b> to serve the Js. Street price is what they pay.',done:()=>sold()>T.base.sold,modal:1},
- {el:()=>{const hm=homeAt();if(hm)return vis('[data-a="wq"][data-k="adv"]')||vis('[data-a="adv"]');if(tab!=='move')return vis('.tabs button[data-t="move"]');return vis('#pane button.mapp[data-p="home"]')||vis(`#pane button[data-t="${homeBlock()}"]`)},
-  txt:()=>homeAt()?'When you\'re out of energy or product, tap <b>Next day</b>.':`You're away from home. Head back to <b>${BLOCKS[homeBlock()]}</b>${tab==='move'?', then tap 🏠 Home':' (tap Move first)'}. The trip takes the day, so that ends it.`,done:()=>S.day>T.base.day,modal:1},
+ {el:()=>{const nd=modalOpen()&&[...document.querySelectorAll('#mcard button')].find(b=>/^next day$/i.test(b.textContent.trim())&&b.getBoundingClientRect().width>0);if(nd)return nd;const hm=homeAt();if(hm)return vis('[data-a="wq"][data-k="adv"]')||vis('[data-a="adv"]');if(tab!=='move')return vis('.tabs button[data-t="move"]');return vis('#pane button.mapp[data-p="home"]')||vis(`#pane button[data-t="${homeBlock()}"]`)},
+  txt:()=>(modalOpen()&&[...document.querySelectorAll('#mcard button')].some(b=>/^next day$/i.test(b.textContent.trim())))?'Tap <b>Next day</b> to end the day.':homeAt()?'When you\'re out of energy or product, tap <b>Next day</b>.':`You're away from home. Head back to <b>${BLOCKS[homeBlock()]}</b>${tab==='move'?', then tap 🏠 Home':' (tap Move first)'}, then Next day.`,done:()=>S.day>T.base.day,modal:1},
  {el:()=>vis('#phtab')||vis('.tabs button[data-t="phone"]'),txt:'📱 Your <b>Phone</b>. Plugs, runners and your crew text you here. Order pings land here too.',next:1},
  {el:()=>vis('.moretab'),txt:'☰ <b>More</b>: School, Circle, Heists, Studio and more open up as you grow.',next:1},
  {el:()=>null,txt:'✅ That\'s the loop: <b>buy, sell, stack, repeat</b>. Stuck? Main menu → How to play. You can replay this tutorial from the main menu too.',next:1,last:1}];
@@ -42,7 +42,7 @@ function draw(){if(!T)return;const st=T.steps[T.i];if(!st){finish();return}
  const txt2=el&&el.tagName==='SUMMARY'?'Tap here to open this section first.':txt;const key=txt2+btns;if(b._k!==key){b._k=key;b.innerHTML=`${mini?'':`<div class="tu73n">Tutorial · ${T.i+1} of ${n}</div>`}<div class="tu73t">${txt2}</div>${btns}`}
  if(!el||blockedByModal){h.style.display=blockedByModal?'none':'block';if(!blockedByModal){h.style.cssText+=';left:50%;top:50%;width:0;height:0'}
   b.style.left=Math.max(10,(innerWidth-b.offsetWidth)/2)+'px';b.style.top=(blockedByModal?12:Math.max(10,(innerHeight-b.offsetHeight)/2))+'px';return}
- if(T.sc!==T.i){T.sc=T.i;try{el.scrollIntoView({block:'center',behavior:'smooth'})}catch(e){}}
+ if(T.sc!==T.i||T.se!==el){T.sc=T.i;T.se=el;try{el.scrollIntoView({block:'center',behavior:'smooth'})}catch(e){}}
  const r=el.getBoundingClientRect(),p=6;h.style.display='block';
  Object.assign(h.style,{left:(r.left-p)+'px',top:(r.top-p)+'px',width:(r.width+2*p)+'px',height:(r.height+2*p)+'px'});
  const bw=b.offsetWidth,bh=b.offsetHeight;let top=r.bottom+14;if(top+bh>innerHeight-8)top=r.top-bh-14;if(top<8)top=Math.min(innerHeight-bh-8,r.bottom+14);
@@ -87,5 +87,6 @@ try{TUT.unshift(['Walkthrough tutorial','New character? Pick Play the tutorial f
 #tu73b .tu73n{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent,#f5c518);margin-bottom:4px}
 #tu73b .tu73w{font-size:12px;opacity:.7;margin-top:6px}
 #tu73b .tu73k{display:flex;gap:6px;justify-content:flex-end;margin-top:10px;flex-wrap:wrap}
-#tu73b .tu73k .btn{padding:7px 12px}
+#tu73b .tu73k .btn{padding:7px 12px;pointer-events:auto}
+#tu73b{pointer-events:none}
 </style>
