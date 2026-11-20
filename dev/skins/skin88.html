@@ -1,0 +1,30 @@
+<script id="skin88js">
+/* skin88: last batch. Bringing loads home: a hidden compartment (mechanic), Muscle escort and the Watch network checking the route each cut shipment risk 30%.
+   Kingpin rank = your own connect line: connects never lay low on you. Houses can be trap houses (daily dirty sales, +1 worker slot, heat; hood houses draw more eyes).
+   Endings: new Legend ending (platinum rapper or sports star), and running 4+ crew rings with $300k is another road to Kingpin. */
+(function(){if(window._sk88)return;window._sk88=1;
+const el=id=>document.getElementById(id),R=(a,b)=>Math.round(a+Math.random()*(b-a));
+const RK=()=>{try{return window.l48rk?l48rk():0}catch(e){return 0}};
+const rings=()=>{try{return Object.values(S.rg74||{}).filter(r=>r.on&&r.mem.length).length}catch(e){return 0}};
+const on=k=>{try{const r=S.rg74&&S.rg74[k];return !!(r&&r.on&&r.mem.length)}catch(e){return false}};
+/* loads home */
+try{const _sr=shipRisk;shipRisk=function(C){let r=_sr.apply(this,arguments);try{if(typeof RL==='function'&&RL().hid&&cmode(C)==='fly')r*=.7;if(on('mus'))r*=.7;if(on('wat'))r*=.7}catch(e){}return r}}catch(e){}
+/* Kingpin: own connect line */
+try{const _co=connectOrder;connectOrder=function(i){try{if(RK()>=5){const C=conList()[i||0];if(C&&(C.low||0)>S.day){C.low=S.day;say(`${C.name} picks up for the Kingpin. No waiting.`)}}}catch(e){}return _co.apply(this,arguments)}}catch(e){}
+/* trap houses */
+const RE=()=>{try{return b5().re||[]}catch(e){return []}};
+try{const _wm=wMax;wMax=function(){return _wm.apply(this,arguments)+RE().filter(p=>p.use79==='trap').length}}catch(e){}
+function houses(){const L=RE();let tot=0,heat=0,msg=[];L.forEach(p=>{const z=window.l79sz?l79sz(p):{trap:[200,400],heat:.5};
+  if(p.use79==='trap'){if(S.heat>=60&&Math.random()<.04){p.use79='rent';heat+=8;msg.push(`Cops raided the ${p.n.toLowerCase()} trap. It's shut down (back to a rental).`);return}const v=R(z.trap[0],z.trap[1]);tot+=v;heat+=1+(z.heat||0)}
+  else if(['stash','hq'].includes(p.use79))heat+=(z.heat||0)*.5});
+ if(tot){S.cash+=tot}if(heat)S.heat=Math.min(100,(S.heat||0)+Math.round(heat));
+ if(tot||msg.length)try{say([tot?`House traps sold ${money(tot)} dirty.`:''].concat(msg).filter(Boolean).join(' '))}catch(e){}}
+try{const _nd=nextDay;nextDay=function(){const r=_nd.apply(this,arguments);try{if(!S.over)houses()}catch(e){console.error('sk88',e)}return r}}catch(e){}
+/* endings */
+try{W6END.legend=['Legend','Your name outlived the block. Kids who never met you know every word.','']}catch(e){}
+try{const _wp=w6Path;w6Path=function(){const p=_wp.apply(this,arguments);try{if(p==='walk'){if((S.rap&&S.rap.plat81)||((S.sp||{}).fame||0)>=80)return 'legend';if(rings()>=4&&w6Net()>=300000)return 'king'}}catch(e){}return p}}catch(e){}
+try{const _es=endStory;endStory=function(){const L=_es.apply(this,arguments);try{const n=rings();if(n>=2)L.unshift(`${n} crew rings were still running the day it ended.`)}catch(e){}return L.slice(0,4)}}catch(e){}
+try{const _dp=devPanel;devPanel=function(){const r=_dp.apply(this,arguments);try{const mc=el('mcard');if(mc&&!mc.querySelector('[data-d88]')){const d=document.createElement('div');d.innerHTML='<div class="sec">Last batch (new)</div><div class="btns"><button class="btn" data-d88="e">Which ending would I get?</button></div>';const h2=mc.querySelector('h2');(h2&&h2.parentNode?h2.parentNode:mc).insertBefore(d,h2?h2.nextSibling:mc.firstChild);
+ d.querySelector('[data-d88]').onclick=ev=>{ev.stopPropagation();el('modal').hidden=true;let p='?';try{p=w6Path()}catch(x){}say('Dev: ending right now = '+((W6END[p]||[p])[0]))}}}catch(e){}return r}}catch(e){}
+try{TUT.push(['Endings and the last pieces','Shipments: a hidden compartment (when you bring it yourself), a Muscle ring and a Watch network each cut seizure risk 30%. At Kingpin rank connects never lay low on you. A house can be a trap house: daily dirty sales, +1 worker slot, heat (hood houses draw more eyes, raids at heat 60+). Endings: Kingpin, Legit empire, Legend (platinum or sports star), Walked away, Locked up, Got took out. Running 4+ rings with $300k is another road to Kingpin.'])}catch(e){}
+})();</script>
