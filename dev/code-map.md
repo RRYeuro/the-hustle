@@ -88,6 +88,7 @@ Feature source copies: dev/skins/. Tests: dev/tests/ (crash test: dev/tests/t_fu
 | skin62 | 2k | mgrBtn, render | manager button always shows, and says what is missing |
 | skin80 | 2k | devPanel, jsBudget, nextDay |  |
 | skin81 | 8k | bizMul, devPanel, nextDay, plugPrice, render | majors |
+| skin85 | 5k | devPanel, lickDone, nextDay, rapTour, render | block rep follows real rep |
 
 ## Law, heat & beef
 
@@ -139,12 +140,13 @@ Feature source copies: dev/skins/. Tests: dev/tests/ (crash test: dev/tests/t_fu
 
 ## Functions wrapped by 4+ features (change these carefully)
 
-- render (34): skin1, skin8, skin10, skin16, skin20, skin21, skin24, skin25, skin31, skin36, skin40, skin42, skin50, skin51, skin54, skin56, skin57, skin59, skin61, skin62, skin63, skin64, skin68, skin70, skin72, skin73, skin74, skin75, skin76, skin77, skin79, skin81, skin82, skin84
-- devPanel (29): skin5, skin10, skin18, skin27, skin31, skin35, skin36, skin37, skin38, skin39, skin40, skin42, skin43, skin46, skin48, skin49, skin53, skin68, skin73, skin74, skin75, skin76, skin77, skin78, skin79, skin80, skin81, skin82, skin84
+- render (35): skin1, skin8, skin10, skin16, skin20, skin21, skin24, skin25, skin31, skin36, skin40, skin42, skin50, skin51, skin54, skin56, skin57, skin59, skin61, skin62, skin63, skin64, skin68, skin70, skin72, skin73, skin74, skin75, skin76, skin77, skin79, skin81, skin82, skin84, skin85
+- devPanel (30): skin5, skin10, skin18, skin27, skin31, skin35, skin36, skin37, skin38, skin39, skin40, skin42, skin43, skin46, skin48, skin49, skin53, skin68, skin73, skin74, skin75, skin76, skin77, skin78, skin79, skin80, skin81, skin82, skin84, skin85
+- nextDay (11): skin18, skin31, skin68, skin69, skin74, skin75, skin77, skin80, skin81, skin82, skin85
 - openPlace (11): skin24, skin27, skin33, skin34, skin36, skin38, skin42, skin58, skin59, skin60, skin77
-- nextDay (10): skin18, skin31, skin68, skin69, skin74, skin75, skin77, skin80, skin81, skin82
 - paneBlock (7): skin7, skin8, skin17, skin31, skin40, skin51, skin61
 - modal (7): skin9, skin16, skin24, skin26, skin45, skin47, skin63
 - phoneMsg (4): skin3, skin45, skin46, skin75
 - paneMove (4): skin4, skin6, skin31, skin36
 - plugPrice (4): skin31, skin46, skin77, skin81
+- lickDone (4): skin36, skin39, skin82, skin85

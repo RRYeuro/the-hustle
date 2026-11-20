@@ -33,8 +33,6 @@ Last cleaned: Nov 20 (every line checked against the game code).
 - Ending check: make sure go legit / legend / die young all have endings; Kingpin ending needs 4+ rings.
 
 ## Social media
-- Post a big ring score (followers up, heat up).
-- Online beef that can turn into real street beef.
 
 ## Polish
 - 3-tap audit: buy, sell, collect, assign crew, answer an event in 3 taps or less.

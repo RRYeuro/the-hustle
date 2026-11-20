@@ -11439,4 +11439,53 @@ try{const _dp=devPanel;devPanel=function(){const r=_dp.apply(this,arguments);try
  d.querySelector('[data-d84]').onclick=ev=>{ev.stopPropagation();el('modal').hidden=true;S.sn84={};render()}}}catch(e){}return r}}catch(e){}
 try{TUT.push(['Snatching','The first step into robbery (14+). On any block that is not your home block, tap Snatch something: grab a purse or phone and run. Small dirty cash, sometimes a phone to sell at the pawn shop. Miss and they chase you. Once per block a day, heat +3. Your first clean snatch opens the Heists tab.'])}catch(e){}
 })();</script>
+<script id="skin85js">
+/* skin85: everything follows your real life.
+   Block rep follows your real rep: every day it moves toward 10 + rep x 0.4 (rep 50 = 30, rep 150 = 70, rep 225 = 100).
+   Rap and your page are one: followers stream your songs (more fans every day), new fans follow your page, shows and tours bring followers.
+   Big moments get posted: a big ring day or a big lick posts itself (followers up, a little heat). Online beef: a big page and a rival crew can trade shots online,
+   and it spills into street beef unless you let it go. */
+(function(){if(window._sk85)return;window._sk85=1;
+const el=id=>document.getElementById(id),R=(a,b)=>Math.round(a+Math.random()*(b-a));
+const sw=()=>{try{return socW()}catch(e){return null}};
+const W4=()=>{try{return w4()}catch(e){return null}};
+function brTarget(){return Math.max(0,Math.min(100,Math.round(10+(S.rep||0)*.4)))}
+window.l85br=brTarget;
+let lastFans=null;
+function day(){if(!S||S.over)return;
+ /* block rep follows real rep */
+ const X=W4();if(X){const t=brTarget(),d=t-(X.br||0);if(Math.abs(d)>=1)X.br=Math.round((X.br||0)+d*.25+(d>0?.5:-.5))}
+ const s=sw();if(!s)return;
+ /* rap <-> page */
+ const Rp=S.rap;if(Rp&&S.rapOn){const f0=Rp.fans||0;
+  const stream=Math.round(Math.min(400,s.fol/2500)*(1+(Rp.hype||0)/200));if(stream>0)Rp.fans=f0+stream;
+  if(lastFans!=null&&Rp.fans>lastFans){s.fol+=Math.round((Rp.fans-lastFans)*.3)}lastFans=Rp.fans}
+ try{const t=Object.values(S.rg74||{}).filter(r=>r.last&&r.last.d===S.day).reduce((x,r)=>x+(r.last.v||0),0);postBig(t,"crew's big day")}catch(e){}
+ /* online beef */
+ try{const live=(S.crews||[]).filter(c=>c.alive);if(s.fol>=5000&&live.length&&!S.ob85p&&Math.random()<.06){const c=live[Math.floor(Math.random()*live.length)];S.ob85p={c:c.id,d:S.day};beefCard(c)}}catch(e){}}
+function beefCard(c){let nm='a rival crew';try{nm=cdef(c.id).name}catch(e){}
+ if(!el('modal').hidden){S.ob85p=null;return}
+ modal(`<h2>📱 Online beef</h2><p>Somebody from the ${nm} posted you on their page, talking about your block and your money. Your comments are going crazy.</p><div class="btns" style="flex-direction:column">
+  <button class="btn red" data-ob85="r">Clap back · followers +8% · beef +15 · heat +3</button>
+  <button class="btn" data-ob85="d">Drop a diss track${S.rapOn?'':' (rappers only)'} · fans +10% · beef +25</button>
+  <button class="btn go" data-ob85="i">Let it go · followers −3% · no beef</button></div>`);
+ el('mcard').querySelectorAll('[data-ob85]').forEach(b=>{if(b.dataset.ob85==='d'&&!S.rapOn)b.disabled=true;b.onclick=ev=>{ev.stopPropagation();const k=b.dataset.ob85,s=sw();
+  if(k==='r'){s.fol=Math.round(s.fol*1.08);c.beef=Math.min(100,(c.beef||0)+15);S.heat=Math.min(100,S.heat+3);say(`You clapped back. Followers up, but the ${nm} want smoke now.`)}
+  if(k==='d'){S.rap.fans=Math.round(S.rap.fans*1.1);s.fol=Math.round(s.fol*1.05);c.beef=Math.min(100,(c.beef||0)+25);say(`The diss track is everywhere. Fans up big, and the ${nm} are hot about it.`)}
+  if(k==='i'){s.fol=Math.round(s.fol*.97);say('You let it slide. A few people unfollowed, but no beef on the street.')}
+  S.ob85p=null;S.ob85d=S.day;el('modal').hidden=true;render()}})}
+window.l85beef=()=>{const live=(S.crews||[]).filter(c=>c.alive);if(live.length)beefCard(live[0]);else say('Dev: no rival crews alive.')};
+/* auto posts: big ring days and big licks */
+function postBig(v,what){const s=sw();if(!s||v<5000)return;const g=Math.round(Math.min(3000,v/10));s.fol+=g;S.heat=Math.min(100,(S.heat||0)+2);try{say(`Somebody posted about your ${what}. +${g.toLocaleString()} followers, heat +2.`)}catch(e){}}
+try{const _ld=lickDone;lickDone=function(t,txt,ok){const r=_ld.apply(this,arguments);try{if(ok){const m=/\$([\d,]+)/.exec(String(txt||''));if(m){const v=+m[1].replace(/,/g,'');postBig(v,'lick')}}}catch(e){}return r}}catch(e){}
+/* shows and tours bring followers */
+try{const _rt=rapTour;rapTour=function(){const f0=(S.rap&&S.rap.fans)||0;const r=_rt.apply(this,arguments);try{const g=((S.rap&&S.rap.fans)||0)-f0;if(g>0){const s=sw();s.fol+=Math.round(g*.5)}}catch(e){}return r}}catch(e){}
+try{const _nd=nextDay;nextDay=function(){const r=_nd.apply(this,arguments);try{day()}catch(e){console.error('sk85',e)}return r}}catch(e){}
+/* Block tab: show that block rep follows your rep */
+function note(){try{if(tab!=='block')return;const p=el('pane');if(!p||p.querySelector('[data-br85]'))return;const t=[...p.querySelectorAll('.t')].find(x=>/^Block reputation/.test(x.textContent));if(!t)return;const s=t.closest('.row')&&t.closest('.row').querySelector('.s');if(!s)return;s.dataset.br85=1;s.textContent=`Follows your real rep (${S.rep||0}). Heading to ${brTarget()}/100.`}catch(e){}}
+try{const _r=render;render=function(){const r=_r.apply(this,arguments);try{note()}catch(e){}return r}}catch(e){}
+try{const _dp=devPanel;devPanel=function(){const r=_dp.apply(this,arguments);try{const mc=el('mcard');if(mc&&!mc.querySelector('[data-d85]')){const d=document.createElement('div');d.innerHTML='<div class="sec">Rep + page tie-in (new)</div><div class="btns"><button class="btn" data-d85="b">Online beef now</button><button class="btn" data-d85="r">Rep +50</button></div>';const h2=mc.querySelector('h2');(h2&&h2.parentNode?h2.parentNode:mc).insertBefore(d,h2?h2.nextSibling:mc.firstChild);
+ d.querySelectorAll('[data-d85]').forEach(b=>b.onclick=ev=>{ev.stopPropagation();el('modal').hidden=true;if(b.dataset.d85==='b')window.l85beef();else{S.rep=(S.rep||0)+50;render()}})}}catch(e){}return r}}catch(e){}
+try{TUT.push(['Rep, rap and your page','Block rep follows your real rep: it moves toward 10 + rep x 0.4 every day. Your page and your music are one: followers stream your songs (more fans every day) and new fans follow your page; shows and tours bring followers too. Big ring days and big licks get posted (followers up, heat +2). With a big page a rival crew can come at you online: clap back, drop a diss (rappers) or let it go. Clapping back starts real beef.'])}catch(e){}
+})();</script>
 <script>if('serviceWorker' in navigator){addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}</script></body></html>
