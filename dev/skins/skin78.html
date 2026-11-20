@@ -1,0 +1,32 @@
+<script id="skin78js">
+/* skin78: connect says no -> no dead end. When a connect is laying low you can talk your way in (Talk skill + trust, sweeten it by paying 10% extra)
+   or fly out to see them in person (costs money and the day, they respect it: much better odds and trust +8). */
+(function(){if(window._sk78)return;window._sk78=1;
+const el=id=>document.getElementById(id);
+const talk=()=>{try{return (S.sk&&S.sk.talk)||0}catch(e){return 0}};
+const tr=C=>{try{return ctr(C)}catch(e){return C.tr||20}};
+function odds(C,mode,sweet){let p=mode==='fly'?.6+tr(C)/250:.3+talk()*.05+tr(C)/300;if(sweet)p+=.18;if((C.lowWhy||'heat')==='heat'&&S.heat>=60)p-=.15;return Math.max(.05,Math.min(.92,p))}
+function card(i){const C=conList()[i||0];if(!C)return;const fly=500+(C.far?400:0);const tried=C.t78===S.day;
+ modal(`<h2>${C.name} is laying low</h2><p>"${pick(CON_LOW[C.lowWhy||'heat'])}"</p><p class="s" style="color:var(--dim)">Don't take no for an answer. Talk your way in, or show up in person.</p>
+ <div class="btns" style="flex-direction:column">
+  <button class="btn go" data-c78="t" ${tried?'disabled':''}>💬 Talk your way in · ${Math.round(odds(C,'talk')*100)}%${tried?' (tried today)':''}</button>
+  <button class="btn" data-c78="s" ${tried?'disabled':''}>💵 Talk + offer 10% extra on the order · ${Math.round(odds(C,'talk',1)*100)}%</button>
+  <button class="btn" data-c78="f" ${S.cash>=fly&&!tried?'':'disabled'}>✈️ Fly out to see them · ${money(fly)} + the day · ${Math.round(odds(C,'fly')*100)}%</button>
+  <button class="btn" data-c78="x">Okay, work my plugs</button></div>
+ <p class="s" style="color:var(--dim);font-size:12px">Talk skill ${talk()} · trust ${tr(C)}/100. Miss and trust drops 5. One try a day.</p>`);
+ el('mcard').querySelectorAll('[data-c78]').forEach(b=>b.onclick=ev=>{ev.stopPropagation();const k=b.dataset.c78;if(k==='x')return close();if(C.t78===S.day)return;C.t78=S.day;
+  let mode=k==='f'?'fly':'talk',p=odds(C,mode,k==='s');
+  if(mode==='fly'){S.cash-=fly;S.clean=Math.min(S.clean||0,S.cash);try{close();nextDay();el('modal').hidden=true}catch(x){}}
+  if(Math.random()<p){C.low=S.day;if(mode==='fly')C.tr=Math.min(100,(C.tr||20)+8);if(k==='s')C.x78=S.day;
+   modal(`<h2>${C.name} is back on</h2><p>"${mode==='fly'?'You really pulled up. Aight, that\'s respect. Let\'s do business.':pick(['Aight, you persistent. One time.','You talk good. Fine, what you need?','For you, I\'ll make it work.'])}"</p>${mode==='fly'?'<p class="s">Trust +8 for showing up.</p>':''}${k==='s'?'<p class="s">You promised 10% extra on this order.</p>':''}<div class="btns"><button class="btn go" id="c78o">Place an order</button></div>`);
+   el('c78o').onclick=()=>{close();connectOrder(i)}}
+  else{C.tr=Math.max(0,(C.tr||20)-5);modal(`<h2>${C.name} said no</h2><p>"${mode==='fly'?'You flew all the way out here? Man, I said I\'m sitting down. Go home.':pick(['I said what I said.','Don\'t text me again till I hit you.','You pushing it.'])}"</p><p class="s">Trust −5. Try again tomorrow.</p><div class="btns"><button class="btn go" id="ok">Okay</button></div>`);el('ok').onclick=close}
+  try{save()}catch(x){}render()})}
+window.l78card=card;
+try{const _co=connectOrder;connectOrder=function(i){try{const C=conList()[i||0];if(C&&(C.low||0)>S.day)return card(i)}catch(e){}return _co.apply(this,arguments)}}catch(e){}
+/* 10% extra promised: bump the next order's price once */
+try{const _cp=connectPrice;connectPrice=function(g,C){const p=_cp.apply(this,arguments);try{if(C&&C.x78===S.day&&typeof p==='number')return Math.round(p*1.1)}catch(e){}return p}}catch(e){}
+try{const _dp=devPanel;devPanel=function(){const r=_dp.apply(this,arguments);try{const mc=el('mcard');if(mc&&!mc.querySelector('[data-d78]')){const d=document.createElement('div');d.innerHTML='<div class="sec">Connect says no (new)</div><div class="btns"><button class="btn" data-d78="r">First connect lays low</button></div>';const h2=mc.querySelector('h2');(h2&&h2.parentNode?h2.parentNode:mc).insertBefore(d,h2?h2.nextSibling:mc.firstChild);
+ d.querySelector('[data-d78]').onclick=ev=>{ev.stopPropagation();el('modal').hidden=true;const C=conList()[0];if(!C)return say('Dev: no connect yet.');C.low=S.day+10;C.t78=null;say('Dev: '+C.name+' is laying low.');render()}}}catch(e){}return r}}catch(e){}
+try{TUT.push(['When a connect says no','A connect laying low is not a dead end. Talk your way in (Talk skill and trust, add 10% extra to sweeten it) or fly out to see them (costs money and the day, much better odds, trust +8 if it works). Miss and trust drops 5. One try a day.'])}catch(e){}
+})();</script>

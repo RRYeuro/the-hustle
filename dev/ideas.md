@@ -259,7 +259,7 @@ Order if built: 1, 2, 3 as one batch (~2 hrs), then 5. Leaderboard only after pe
 - Nov 14 art in (skin41): 50 new faces wired (F1 to F5, R1 to R3, S1 to S4, plus Big Ray and Uncle Sal for the city plugs, Mr. Dell and Sweets). Held back: La Reina (neon CAFE/BAR signs) and Ghost (looked like a famous rapper), redo in the art list. The realistic heist picture was not used; Chris wants all event art in the hood cartoon style, prompts E1 to E4 rewritten. Test dev/t_art.py.
 - Add-ons (Nov 15): Plug family tier also opens fronting bigger loads and their connect's number. Undercover Js get spotted by the Watch network. Pawn buyback ties to drip (Chains and clothes) so you can flex then pawn in a pinch.
 
-## Pounds in the inventory (Chris, Nov 14) - NOT BUILT, wait for "build" (Sonnet, about 2 to 3 hrs)
+## Pounds in the inventory (Chris, Nov 14) - BUILT Nov 20 (main file amt): amounts show biggest pieces first ("1 lb, 1 oz, 24.5g (500.5g)", lean "2 cases, 1 pint (400 oz)"); count stays in grams/oz so quality and fake carry through; buy/sell size buttons already had Zip/QP/Pound. Lean: Gallon (128 oz) and Case (12 pints, 192 oz) sizes, Big plugs only. LEFT: break-down button (not needed while counts stay in grams), scale mini game.
 - Keep the real count in grams (or pills). Only change how it shows and moves. Sizes: oz 28g, QP 112g, HP 224g, pound 448g (Chris's numbers, 1 lb = 16 oz of 28g). Pills: packs of 50, 100, boat 500.
 - Inventory shows the biggest pieces first, e.g. "1 lb, 1 oz, 6g".
 - Break down button per drug: lb to 2 HP or 4 QP, HP to 2 QP, QP to 4 oz, oz to grams.
@@ -317,7 +317,7 @@ Start with 2 + 8 on texting, court and plug talk (~5-8% usage). 3/4/5 are ~10-15
 - Stay in place after actions: BUILT Nov 15 (skin63). A redraw keeps the page scroll, phone app scroll and popup scroll when you're still on the same screen; switching tabs or apps still starts at the top.
 - Nov 15 tweaks (skin59/61/64): removed my extra 🧺 trap pins (map already has trap houses) and the store/pharmacy lick pins (you rob them inside the place); lick pins are now cars + tipped houses/straps. Added ⏩ Skip time next to Next day / Lay low / Nap: popup with Lay low for a week, Skip to your birthday, Skip to the next event (they were folded inside a closed Time section on the Move tab).
 
-## Connect says no → talk or go to them (Chris, Nov 15) — not built
+## Connect says no → talk or go to them (Chris, Nov 15) — BUILT Nov 20 (skin78): laying-low connect shows Talk your way in (Talk + trust odds), Talk + 10% extra (better odds, next order +10%), Fly out ($500+, takes the day, best odds, trust +8); miss = trust −5, one try a day; dev button. LEFT: bring-it-back-yourself routes (stash car, mules, freight) and checkpoints.
 - When a connect refuses a deal, don't dead-end. Two options:
   1. Talk your way in: a short talk mini game (Talk skill, trust, rep, cash shown). Win = deal at normal or slightly worse price; lose = trust drop + cooldown. Offer sweeteners: pay upfront, buy bigger, put a soldier up as collateral.
   2. Go to them in person: travel to their city (flight/drive, costs time + money). They respect you showing up = better odds and price. But nothing ships for you: you have to bring it back yourself.
