@@ -1,6 +1,6 @@
 # The Hustle: open ideas (only what is NOT built yet)
 Rule: build only when Chris says "build". Built stuff lives in dev/built-log.md.
-Last cleaned: Nov 20.
+Last cleaned: Nov 20 (every line checked against the game code).
 
 ## Code
 - Full code fold: move each feature layer into the main code so every feature lives in one place. Do it one area at a time (phone, plugs, crew, licks, money, places), full crash test after each area. About 30-45 min per area.
@@ -32,12 +32,10 @@ Last cleaned: Nov 20.
 - Partner can run one of your businesses (or becomes a weak point if the opps find out).
 - Kids and family needing money now and then.
 - Ending check: make sure go legit / legend / die young all have endings; Kingpin ending needs 4+ rings.
-- Boxing as its own path in the Sports tab (separate from school).
 
 ## Social media
 - Post a big ring score (followers up, heat up).
 - Online beef that can turn into real street beef.
-- Scam ring can buy fake followers (they drop later).
 
 ## Polish
 - 3-tap audit: buy, sell, collect, assign crew, answer an event in 3 taps or less.
@@ -47,7 +45,6 @@ Last cleaned: Nov 20.
 
 ## Map
 - Customer dots and cop patrol spots on the map (game doesn't track their block yet).
-- Go inside the spots: a small scene with people and tap spots instead of a button list.
 
 ## Getting players
 - Trailer clips (15-20 sec vertical gameplay clips).
