@@ -3,7 +3,7 @@ Rule: build only when Chris says "build". Built stuff lives in dev/built-log.md.
 Last cleaned: Nov 20 (every line checked against the game code).
 
 ## Code
-- Full code fold: move each feature layer into the main code so every feature lives in one place. Do it one area at a time (phone, plugs, crew, licks, money, places), full crash test after each area. About 30-45 min per area.
+- Full code fold, one area at a time with a crash test after each. DONE: phone (Nov 24). LEFT: plugs, crew, licks, money, places (30-45 min each).
 
 ## Getting players
 - Trailer clips: first auto-recorded clip made Nov 20 (hustle-trailer-1.mp4, rough). A real screen recording of Chris playing will look better.

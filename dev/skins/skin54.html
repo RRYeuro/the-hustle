@@ -40,7 +40,8 @@ function act54(a,n){const K=kind(n);if(!K)return;let r='';
  if(r)setTimeout(()=>{try{const kb=document.querySelector('.phx[data-app="messages"] .mth-kb');if(kb){const d=document.createElement('div');d.className='ty46';d.innerHTML='<i></i><i></i><i></i>';kb.parentNode.insertBefore(d,kb)}}catch(e){}setTimeout(()=>{inbox(n,r);render()},800)},60);render()}
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-a54]');if(!b||b.disabled)return;act54(b.dataset.a54,window._mth)},false);
 /* render: thread options + tidy app pages */
-function tidy(){try{const th=document.querySelector('.phx[data-app="messages"] .mth-th');if(th&&window._mth){const kb=th.querySelector('.mth-kb');if(kb&&!kb.dataset.f50&&!kb.dataset.p51&&!kb.dataset.k54&&kb.querySelector('[data-flav]')){const K=kind(window._mth);if(K){kb.dataset.k54=1;kb.innerHTML=opts(window._mth,K)}}}}catch(e){console.error('sk54 kb',e)}
+window.l54opts=n=>{const K=kind(n);return K?opts(n,K):''};
+function tidy(){
  try{document.querySelectorAll('.phx:not([data-app="messages"]) .row').forEach(r=>{if(r.dataset.i54||r.querySelector('button,input,select,img,.bar,.t'))return;const s=r.querySelector('.s');const t=(s||r).textContent.trim();if(t.length<70)return;r.dataset.i54=1;const d=document.createElement('details');d.className='i54';d.innerHTML=`<summary>ⓘ How this works</summary>${E(t)}`;r.replaceWith(d)})}catch(e){console.error('sk54 tidy',e)}}
 try{const _r=render;render=function(){const r=_r.apply(this,arguments);try{tidy()}catch(e){}return r}}catch(e){}
 /* plain words in the leftover generic replies */

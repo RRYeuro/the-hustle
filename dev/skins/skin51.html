@@ -5,7 +5,7 @@
 (function(){if(window._sk51)return;window._sk51=1;
 const E=x=>String(x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])),pk=a=>a[Math.floor(Math.random()*a.length)],cl=t=>window.l45cl?l45cl(t):t;
 const lvl=bi=>(PINFO[bi]||{}).lvl||'Low',tr=bi=>(S.trust&&S.trust[bi])||0,addTr=(bi,d)=>{S.trust[bi]=Math.max(0,Math.min(100,tr(bi)+d))};
-const bOf=n=>{try{return (S.known||[]).find(bi=>plugName(bi)===n)}catch(e){return undefined}};
+const bOf=n=>{try{return (S.known||[]).find(bi=>plugName(bi)===n)}catch(e){return undefined}};window.l51bOf=bOf;window.l51opts=bi=>threadOpts(bi);
 const inbox=(f,t)=>{S.inbox=S.inbox||[];S.inbox.unshift({d:S.day,f,t:cl(t)});S.inbox=S.inbox.slice(0,150)};
 const note=(f,t)=>inbox(f,'ℹ️ '+t);
 const later=(fn,ms)=>setTimeout(()=>{try{fn();render()}catch(e){console.error('sk51',e)}},ms||850);
@@ -44,7 +44,6 @@ document.addEventListener('click',e=>{
  const n=plugName(bi);later(()=>{const L=lvl(bi);const R={pkick:L==='Big'?'Good talk.':'That was cool. Come back through.',pfav:'Appreciate that. I owe you.',ppitch:'',pasks:'',pfront:'',phook:'😏',pdate:'',ppay:'We good.'}[a];if(R)inbox(n,R)},1200)},true);
 /* thread: plug options + gray game notes */
 try{const _r=render;render=function(){const r=_r.apply(this,arguments);try{const th=document.querySelector('.phx[data-app="messages"] .mth-th');if(th&&window._mth){const bi=bOf(window._mth),kb=th.querySelector('.mth-kb');
-  if(bi!=null&&kb&&!kb.dataset.p51&&!(S.texts||[]).some(x=>((S.custos||[])[x.ci]||{}).name===window._mth)){let pend=false;try{pend=(w4().act||[]).some(t=>t.f===window._mth&&S.day-t.d<=3)}catch(e){}if(!pend){kb.dataset.p51=1;kb.innerHTML=threadOpts(bi)}}
   th.querySelectorAll('.bub').forEach(x=>{if(/^ℹ️ /.test(x.textContent)&&!x.classList.contains('sys51')){x.classList.add('sys51');x.textContent=x.textContent.replace(/^ℹ️ /,'')}})}}catch(e){console.error('sk51 r',e)}return r}}catch(e){}
 /* meet: slim plug line instead of the big card; street business stays on the Block tab */
 function slimMeet(){const p=document.getElementById('mt31p'),M=S.meet;if(!p||!M||p.dataset.s51)return;p.dataset.s51=1;const bi=M.bi;

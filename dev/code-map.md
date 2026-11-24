@@ -14,10 +14,9 @@ Feature source copies: dev/skins/. Tests: dev/tests/ (crash test: dev/tests/t_fu
 | skin22 | 3k | - |  |
 | skin46 | 11k | busted, devPanel, phoneMsg, plugPrice, w4Court, w4Verdict | ---------- callbacks: people remember ---------- |
 | skin50 | 5k | render | friends are contacts |
-| skin54 | 5k | render | who is this thread with |
 | skin63 | 1k | modal, render | stay where you were after tapping something: keep scroll spots across a redraw |
-| skin70 | 2k | render |  |
-| skin72 | 1k | render |  |
+| skin70 | 1k | - | thread buttons for recruited plug workers now come from the phone builder (skin91) |
+| skin91 | 2k | - |  |
 
 ## Plugs & buying
 
@@ -47,6 +46,7 @@ Feature source copies: dev/skins/. Tests: dev/tests/ (crash test: dev/tests/t_fu
 | skin38 | 5k | devPanel, openPlace, paneBag | daily: respect from crews and your own crew's loyalty |
 | skin48 | 5k | addXP, devPanel, paneCrew, teenStart, w5bOrderDay, w5bOrders | mark the rank-up so the ladder shows NEW for 2 days |
 | skin49 | 5k | devPanel, paneSchool, w5bDealers, w5bOrders | runners are recruited, never handed out |
+| skin54 | 4k | render | who is this thread with |
 | skin57 | 2k | render | opening a locked app another way (old saves, links) says why |
 | skin68 | 15k | devPanel, nextDay, render | move n of gid into worker w: stash house first, then your stash |
 | skin74 | 20k | devPanel, nextDay, render | ---- the daily run ---- |
@@ -140,7 +140,7 @@ Feature source copies: dev/skins/. Tests: dev/tests/ (crash test: dev/tests/t_fu
 
 ## Functions wrapped by 4+ features (change these carefully)
 
-- render (38): skin1, skin8, skin10, skin16, skin20, skin21, skin24, skin25, skin31, skin36, skin40, skin42, skin50, skin51, skin54, skin56, skin57, skin59, skin61, skin62, skin63, skin64, skin68, skin70, skin72, skin73, skin74, skin75, skin76, skin77, skin79, skin81, skin82, skin84, skin85, skin86, skin87, skin89
+- render (36): skin1, skin8, skin10, skin16, skin20, skin21, skin24, skin25, skin31, skin36, skin40, skin42, skin50, skin51, skin54, skin56, skin57, skin59, skin61, skin62, skin63, skin64, skin68, skin73, skin74, skin75, skin76, skin77, skin79, skin81, skin82, skin84, skin85, skin86, skin87, skin89
 - devPanel (33): skin5, skin10, skin18, skin27, skin31, skin35, skin36, skin37, skin38, skin39, skin40, skin42, skin43, skin46, skin48, skin49, skin53, skin68, skin73, skin74, skin75, skin76, skin77, skin78, skin79, skin80, skin81, skin82, skin84, skin85, skin86, skin87, skin88
 - nextDay (15): skin18, skin31, skin68, skin69, skin74, skin75, skin77, skin80, skin81, skin82, skin85, skin86, skin87, skin88, skin89
 - openPlace (12): skin24, skin27, skin33, skin34, skin36, skin38, skin42, skin58, skin59, skin60, skin77, skin86
