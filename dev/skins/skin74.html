@@ -128,12 +128,14 @@ document.addEventListener('click',e=>{const t=e.target;if(!t.closest)return;cons
 /* crew members on a ring can't take one-off jobs */
 try{const _cj=window.crewJobs;window.crewJobs=function(i){const m=crew()[i];if(m&&m.br89){modal(`<h2>${E(m.name)}</h2><p>${E(m.name)} is running a branch in ${E(m.br89)}. Close the branch in Crew Ops to bring them home.</p><div class="btns"><button class="btn" data-mclose="1">Close</button></div>`);return}const k=m&&ringOf(m.name);if(k){modal(`<h2>${E(m.name)}</h2><p>${E(m.name)} is on the ${RINGS[k].n.toLowerCase()}. Pull them off in Crew Ops first.</p><div class="btns"><button class="btn go" data-r74="${k}">Open ${RINGS[k].n}</button><button class="btn" data-mclose="1">Close</button></div>`);cur=k;return}return _cj.apply(this,arguments)}}catch(e){}
 /* entries: Block tab (under Run the operation) and Circle tab */
-function entry(){try{if(!S||S.over||S.meet)return;const p=el('pane');if(!p||p.querySelector('[data-ops74]'))return;if(tab!=='block'&&tab!=='beef')return;
- if(!crew().length&&RK()<1)return;const g=st();const on=ORDER.filter(k=>g[k].on&&g[k].mem.length).length;
- const d=document.createElement('div');d.className='row';d.dataset.ops74=1;d.style.cursor='pointer';
- d.innerHTML=`<div class="info"><div class="t">🧰 Crew Ops</div><div class="s">${on?on+' ring'+(on>1?'s':'')+' running':'Put your crew on rings: cars, licks, scams, muscle, lookouts'}</div></div><button class="btn go">Open</button>`;d.onclick=()=>l74ops();
- const op=p.querySelector('[data-op68]');if(op)op.after(d);else{const f=p.querySelector('.sec');if(f)f.parentNode.insertBefore(d,f);else p.prepend(d)}}catch(e){console.error('sk74 entry',e)}}
-try{const _r=render;render=function(){const r=_r.apply(this,arguments);try{entry()}catch(e){}return r}}catch(e){}
+/* fold: Crew Ops row is built with the Block and Circle tabs (right after Run the operation) */
+function opsRow(){try{if(!S||S.over||S.meet)return '';if(!crew().length&&RK()<1)return '';const g=st();const on=ORDER.filter(k=>g[k].on&&g[k].mem.length).length;
+ return `<div class="row" data-ops74="1" style="cursor:pointer"><div class="info"><div class="t">🧰 Crew Ops</div><div class="s">${on?on+' ring'+(on>1?'s':'')+' running':'Put your crew on rings: cars, licks, scams, muscle, lookouts'}</div></div><button class="btn go">Open</button></div>`}catch(e){return ''}}
+function addOps(h){const r=opsRow();if(!r)return h;const k=h.indexOf('data-op68');if(k>=0){const e=h.indexOf('</button></div>',k);if(e>=0){const at=e+'</button></div>'.length;return h.slice(0,at)+r+h.slice(at)}}const q=h.indexOf('<div class="sec"');return q>=0?h.slice(0,q)+r+h.slice(q):r+h}
+try{const _pb=paneBlock;paneBlock=function(){const h=_pb.apply(this,arguments);try{return addOps(h)}catch(e){return h}}}catch(e){}
+try{const _pf=paneBeef;paneBeef=function(){const h=_pf.apply(this,arguments);try{return addOps(h)}catch(e){return h}}}catch(e){}
+document.addEventListener('click',e=>{const r=e.target.closest&&e.target.closest('#pane [data-ops74]');if(!r)return;e.preventDefault();e.stopPropagation();l74ops()},true);
+
 /* dev */
 try{const _dp=devPanel;devPanel=function(){const r=_dp.apply(this,arguments);try{const mc=el('mcard');if(mc&&!mc.querySelector('[data-d74]')){const d=document.createElement('div');d.innerHTML='<div class="sec">Crew rings (new)</div><div class="btns"><button class="btn" data-d74="g">5 crew + Supplier rank + $60k</button><button class="btn" data-d74="d">Run rings now</button><button class="btn" data-d74="o">Open Crew Ops</button></div>';const h2=mc.querySelector('h2');(h2&&h2.parentNode?h2.parentNode:mc).insertBefore(d,h2?h2.nextSibling:mc.firstChild);
  d.querySelectorAll('[data-d74]').forEach(b=>b.onclick=ev=>{ev.stopPropagation();el('modal').hidden=true;const k=b.dataset.d74;

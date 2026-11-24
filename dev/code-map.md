@@ -48,8 +48,8 @@ Feature source copies: dev/skins/. Tests: dev/tests/ (crash test: dev/tests/t_fu
 | skin49 | 5k | devPanel, paneSchool, w5bDealers, w5bOrders | runners are recruited, never handed out |
 | skin54 | 4k | render | who is this thread with |
 | skin57 | 2k | render | opening a locked app another way (old saves, links) says why |
-| skin68 | 15k | devPanel, nextDay, render | move n of gid into worker w: stash house first, then your stash |
-| skin74 | 20k | devPanel, nextDay, render | ---- the daily run ---- |
+| skin68 | 15k | devPanel, nextDay, paneBeef, paneBlock, render | move n of gid into worker w: stash house first, then your stash |
+| skin74 | 20k | devPanel, nextDay, paneBeef, paneBlock | ---- the daily run ---- |
 | skin89 | 7k | nextDay, render | ---- 3-tap re-up ---- |
 
 ## Licks & heists
@@ -140,12 +140,13 @@ Feature source copies: dev/skins/. Tests: dev/tests/ (crash test: dev/tests/t_fu
 
 ## Functions wrapped by 4+ features (change these carefully)
 
-- render (36): skin1, skin8, skin10, skin16, skin20, skin21, skin24, skin25, skin31, skin36, skin40, skin42, skin50, skin51, skin54, skin56, skin57, skin59, skin61, skin62, skin63, skin64, skin68, skin73, skin74, skin75, skin76, skin77, skin79, skin81, skin82, skin84, skin85, skin86, skin87, skin89
+- render (35): skin1, skin8, skin10, skin16, skin20, skin21, skin24, skin25, skin31, skin36, skin40, skin42, skin50, skin51, skin54, skin56, skin57, skin59, skin61, skin62, skin63, skin64, skin68, skin73, skin75, skin76, skin77, skin79, skin81, skin82, skin84, skin85, skin86, skin87, skin89
 - devPanel (33): skin5, skin10, skin18, skin27, skin31, skin35, skin36, skin37, skin38, skin39, skin40, skin42, skin43, skin46, skin48, skin49, skin53, skin68, skin73, skin74, skin75, skin76, skin77, skin78, skin79, skin80, skin81, skin82, skin84, skin85, skin86, skin87, skin88
 - nextDay (15): skin18, skin31, skin68, skin69, skin74, skin75, skin77, skin80, skin81, skin82, skin85, skin86, skin87, skin88, skin89
 - openPlace (12): skin24, skin27, skin33, skin34, skin36, skin38, skin42, skin58, skin59, skin60, skin77, skin86
-- paneBlock (7): skin7, skin8, skin17, skin31, skin40, skin51, skin61
+- paneBlock (9): skin7, skin8, skin17, skin31, skin40, skin51, skin61, skin68, skin74
 - modal (7): skin9, skin16, skin24, skin26, skin45, skin47, skin63
+- paneBeef (5): skin2, skin6, skin13, skin68, skin74
 - lickDone (5): skin36, skin39, skin82, skin85, skin86
 - phoneMsg (4): skin3, skin45, skin46, skin75
 - paneMove (4): skin4, skin6, skin31, skin36

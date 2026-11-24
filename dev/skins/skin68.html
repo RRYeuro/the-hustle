@@ -105,16 +105,24 @@ document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest
 /* render hooks: thread options, Circle tab crew cleanup, Block tab entry */
 function fix(){
  try{if(W().length&&!(S.inbox||[]).some(m=>m.f===GC))post('','Group chat made. Everybody that works for you is in here.')}catch(e){}
- try{const th=document.querySelector('.phx[data-app="messages"] .mth-th');if(th&&window._mth===GC){const kb=th.querySelector('.mth-kb');if(kb&&!kb.dataset.g68){kb.dataset.g68=1;kb.innerHTML=L0()?opts():'<div class="mth-kt">Nobody works for you right now</div>'}}}catch(e){}
- try{if(tab==='block'){const p=$e('pane');if(p&&!p.querySelector('[data-op68]')&&W().length){const tot=W().reduce((x,w)=>x+(w.held||0),0);const d=document.createElement('div');d.className='row';d.dataset.op68=1;d.style.cursor='pointer';
-   d.innerHTML=`<div class="info"><div class="t">🧺 Run the operation</div><div class="s">${W().length} workers · ${money(tot)} to collect · restock everyone at once</div></div><button class="btn go">Open</button>`;d.onclick=()=>l68op();const f=p.querySelector('.sec');if(f)f.parentNode.insertBefore(d,f);else p.prepend(d)}}}catch(e){console.error('sk68 blk',e)}
  try{if(tab==='beef'){const p=$e('pane');if(!p)return;
    p.querySelectorAll('.row').forEach(r=>{if(r.classList.contains('cm68'))return;const bs=r.querySelectorAll('button');if(bs.length<5||!/Loyalty/.test(r.innerText))return;
      const i=(r.querySelector('[data-a="cmchill"],[data-a="cmfire"]')||{}).dataset;if(!i)return;r.classList.add('cm68');r.dataset.cm68=i.i;
      const info=r.querySelector('.info')||r;[...info.children].forEach((c,ix)=>{if(ix>1&&!/Loyalty|Ready|On a|Busy|Locked|Hurt/.test(c.textContent))c.classList.add('cm68x')});
      const ch=document.createElement('span');ch.className='chev';ch.textContent='›';r.appendChild(ch)});
-   if(!p.querySelector('[data-wk68]')&&W().length){const sec=[...p.querySelectorAll('.sec')].find(s=>/Your crew/.test(s.textContent));if(sec){const tot=W().reduce((x,w)=>x+(w.held||0),0),d=document.createElement('div');d.className='row';d.dataset.wk68=1;d.style.cursor='pointer';d.innerHTML=`<div class="info"><div class="t">🧺 Workers · ${W().length}</div><div class="s">${W().map(w=>w.name).join(', ')} · ${money(tot)} to collect</div></div><span class="chev" style="color:#8e8e93;font-size:20px">›</span>`;d.onclick=()=>l68op();sec.after(d)}}}}catch(e){console.error('sk68 circ',e)}}
+   }}catch(e){console.error('sk68 circ',e)}}
 const L0=()=>W().length>0;
+/* fold: rows built with the tab, The Gang buttons come from the phone builder (skin91) */
+window.l68gc=()=>L0()?opts():'<div class="mth-kt">Nobody works for you right now</div>';
+window.l68GC=GC;
+const opRow=()=>{if(!W().length)return '';const tot=W().reduce((x,w)=>x+(w.held||0),0);return `<div class="row" data-op68="1" style="cursor:pointer"><div class="info"><div class="t">🧺 Run the operation</div><div class="s">${W().length} workers · ${money(tot)} to collect · restock everyone at once</div></div><button class="btn go">Open</button></div>`};
+const wkRow=()=>{if(!W().length)return '';const tot=W().reduce((x,w)=>x+(w.held||0),0);return `<div class="row" data-wk68="1" style="cursor:pointer"><div class="info"><div class="t">🧺 Workers · ${W().length}</div><div class="s">${W().map(w=>w.name).join(', ')} · ${money(tot)} to collect</div></div><span class="chev" style="color:#8e8e93;font-size:20px">›</span></div>`};
+const beforeSec=(h,r)=>{if(!r)return h;const k=h.indexOf('<div class="sec"');return k>=0?h.slice(0,k)+r+h.slice(k):r+h};
+window.l68beforeSec=beforeSec;
+try{const _pb=paneBlock;paneBlock=function(){const h=_pb.apply(this,arguments);try{return beforeSec(h,opRow())}catch(e){return h}}}catch(e){}
+try{const _pf=paneBeef;paneBeef=function(){const h=_pf.apply(this,arguments);try{const r=wkRow();if(!r)return h;const m=/<div class="sec">[^<]*Your crew[^<]*<\/div>/.exec(h);return m?h.slice(0,m.index+m[0].length)+r+h.slice(m.index+m[0].length):h}catch(e){return h}}}catch(e){}
+document.addEventListener('click',e=>{const r=e.target.closest&&e.target.closest('#pane [data-op68],#pane [data-wk68]');if(!r)return;e.preventDefault();e.stopPropagation();l68op()},true);
+
 document.addEventListener('click',e=>{const r=e.target.closest&&e.target.closest('.row.cm68');if(!r||e.target.closest('button'))return;openCm(+r.dataset.cm68)},true);
 function openCm(i){const r=document.querySelector(`#pane .row.cm68[data-cm68="${i}"]`);if(!r)return;const c=r.cloneNode(true);c.classList.remove('cm68');c.querySelectorAll('.cm68x').forEach(x=>x.classList.remove('cm68x'));c.querySelectorAll('.chev').forEach(x=>x.remove());
   modal(`<div class="cmc68" data-cmo="${i}"></div><div class="btns"><button class="btn" id="cmx68">Close</button></div>`);$e('mcard').querySelector('.cmc68').appendChild(c);$e('cmx68').onclick=()=>{$e('modal').hidden=true;render()};
