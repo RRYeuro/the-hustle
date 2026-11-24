@@ -9811,10 +9811,12 @@ const RULE={
  hustle:()=>S.day>=2,
  social:()=>S.day>=2};
 const HINT={crew:'when you build a crew or hit Petty Dealer',trap:'at Middle Man',orders:'at Petty Dealer',burners:'at Petty Dealer',licks:'on day 3',backer:'at Middle Man',hustle:'on day 2',social:'on day 2'};
-window.l57open=id=>!RULE[id]||RULE[id]();
+/* fold: apps that moved out of the phone live here (burners+licks: mall/map, trap: in person, crew/family/orders: Your Circle/Contacts) */
+const GONE={burners:1,licks:1,trap:1,crew:1,family:1,orders:1};
+window.l57open=id=>!GONE[id]&&(!RULE[id]||RULE[id]());
 function check(){try{if(!S||!S.char)return;S.app57=S.app57||{};const fresh=!S.app57._init;Object.keys(RULE).forEach(id=>{if(S.app57[id]==null&&RULE[id]()){S.app57[id]=fresh?-99:S.day;if(!fresh)say(`📱 New app on your phone: ${NAME[id]}.`)}});S.app57._init=1}catch(e){}}
 function fix(){try{const h=document.querySelector('.phx.ph-home');if(!h)return;let locked=0;
- h.querySelectorAll('.ph-ic button[data-rph]').forEach(b=>{const id=b.dataset.rph;if(!RULE[id])return;if(!RULE[id]()){b.style.display='none';locked++;return}b.style.display='';const d=(S.app57||{})[id];b.classList.toggle('nw57',d!=null&&d>=0&&S.day-d<=2)});
+ h.querySelectorAll('.ph-ic button[data-rph]').forEach(b=>{const id=b.dataset.rph;if(GONE[id]){b.remove();return}if(!RULE[id])return;if(!RULE[id]()){b.style.display='none';locked++;return}b.style.display='';const d=(S.app57||{})[id];b.classList.toggle('nw57',d!=null&&d>=0&&S.day-d<=2)});
  const ic=h.querySelector('.ph-ic');if(ic&&locked&&!ic.querySelector('.lk57')){const n=document.createElement('div');n.className='lk57';n.textContent=`🔒 ${locked} more app${locked===1?'':'s'} unlock as you grow`;ic.appendChild(n)}}catch(e){console.error('sk57',e)}}
 try{const _r=render;render=function(){check();const r=_r.apply(this,arguments);fix();return r}}catch(e){}
 /* opening a locked app another way (old saves, links) says why */
@@ -9888,8 +9890,7 @@ document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest
  const art=k==='rl_glass'?['g_glasses','🕶️ Privacy glasses','Cameras and plate readers spot you 40% less.']:/^jw:/.test(k)?['jewelry','💎 Iced out','Rep for as long as you keep it. Big pieces draw robbers when your heat is up.']:null;
  if(art)setTimeout(()=>{if(S.cash<c0){window._bk59='mall';bought(...art)}},60)},true);
 /* phone burner app and lick app are gone (bought at the mall, pins on the map) */
-try{const R=window.l57open;window.l57open=id=>(id==='burners'||id==='licks')?false:(R?R(id):true)}catch(e){}
-try{const _r2=render;render=function(){const r=_r2.apply(this,arguments);try{document.querySelectorAll('.ph-home .ph-ic button[data-rph="burners"],.ph-home .ph-ic button[data-rph="licks"]').forEach(b=>b.remove())}catch(e){}return r}}catch(e){}
+/* burners + licks app removal now lives in skin57 GONE */
 /* phone Maps: look only, travel with Rides */
 document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('.phx .mapb[data-a="go"]');if(!t)return;e.preventDefault();e.stopImmediatePropagation();const bi=+t.dataset.i,ad=(S.age||0)>=18;
  modal(`<h2>${BLOCKS[bi]}</h2><p>${ad?'Want a ride there? $25, no day lost.':'Rides are 18+. Use the Move tab to walk or take the bus.'}</p><div class="btns">${ad?`<button class="btn go" id="rd59" ${S.cash<25?'disabled':''}>🚕 Ride there · $25</button>`:''}<button class="btn" id="cx59">Close</button></div>`);
@@ -9921,14 +9922,11 @@ try{const _pb=paneBlock;paneBlock=function(){let h=_pb.apply(this,arguments);try
 /* street business lives on the Block tab */
 try{const _pb2=paneBlock;paneBlock=function(){let h=_pb2.apply(this,arguments);try{if(typeof w4Spots==='function'&&!/w4_cook/.test(h))h+=w4Spots()}catch(e){console.error('sk61 sb',e)}return h}}catch(e){}
 /* pins on the Move map for traps you own */
-try{const _r=render;render=function(){const r=_r.apply(this,arguments);try{if(false){const m=el('fm26'),tp=window._tp26;if(m&&tp&&!m.querySelector('.tp61'))Object.keys(S.traps||{}).forEach(k=>{const i=+k;if(!S.traps[k]||!myBlock(i))return;const q=tp(i);if(!q)return;const b=document.createElement('button');b.className='tp61';b.textContent='🧺';b.title='Your trap on '+BLOCKS[i];b.dataset.bi=i;b.style.left=(q[0]-10)+'%';b.style.top=(q[1]+10)+'%';m.appendChild(b)})}
- /* worker threads: "bring me the money" */
- const th=document.querySelector('.phx[data-app="messages"] .mth-th');if(th&&window._mth){const kb=th.querySelector('.mth-kb');const wi=(S.workers||[]).findIndex(w=>w.name===window._mth);if(kb&&wi>=0&&!kb.querySelector('[data-a="wcollect"]')){const w=S.workers[wi];kb.insertAdjacentHTML('beforeend',`<button class="mth-opt" data-a="wcollect" data-i="${wi}" data-says="Bring me the money." ${w.held?'':'disabled'}>${w.held?`Bring me the money (${money(w.held)})`:'Nothing to pick up'}</button>`)}}}catch(e){console.error('sk61 r',e)}return r}}catch(e){}
+/* worker 'Bring me the money' button now comes from the phone builder (skin91) */
 /* workers text you what they made */
 try{WD.push(()=>{try{S.w61=S.w61||{};(S.workers||[]).forEach(w=>{const h=Math.round(w.held||0),last=S.w61[w.id]||0;if(h>last+50&&Object.values(S.traps||{}).some(t=>t&&t.w===w.id)){S.inbox=S.inbox||[];S.inbox.unshift({d:S.day,f:w.name,t:(w.loyal<=3?['Holding ','Got '][S.day%2]:['Moved good today. Holding ','Block was jumping. Got '][S.day%2])+money(h)+' for you.'});S.inbox=S.inbox.slice(0,150)}S.w61[w.id]=h})}catch(e){}})}catch(e){}
 /* phone app gone */
-try{const R=window.l57open;window.l57open=id=>id==='trap'?false:(R?R(id):true)}catch(e){}
-try{const _r2=render;render=function(){const r=_r2.apply(this,arguments);try{document.querySelectorAll('.ph-home .ph-ic button[data-rph="trap"]').forEach(b=>b.remove())}catch(e){}return r}}catch(e){}
+/* trap app removal now lives in skin57 GONE */
 try{TUT.push(['Trap house','Your trap houses are run in person: go to one of your blocks and tap Run it on the Block tab (or the 🧺 pin on the Move map). That is where you open traps, hire workers, give them stock, upgrade and fire. Workers text you what they are holding, and you can text them to bring you the money.'])}catch(e){}
 })();</script>
 
@@ -9944,8 +9942,7 @@ try{const _o=window.l61open;if(_o)window.l61open=function(){_o.apply(this,argume
 /* Circle tab: friends are people you text, not a menu */
 try{const _r=render;render=function(){const r=_r.apply(this,arguments);try{if(typeof tab!=='undefined'&&tab==='beef'){document.querySelectorAll('#pane [data-a="fhang"]').forEach(b=>{const card=b.closest('.row');if(!card||card.dataset.f62)return;card.dataset.f62=1;const f=(S.friends||[])[+b.dataset.i];if(!f)return;const bt=b.closest('.btns');if(bt)bt.outerHTML=`<div class="btns"><button class="btn go" data-tx50="${E(encodeURIComponent(f.name))}">💬 Text ${E(f.name)}</button></div>`})}}catch(e){}return r}}catch(e){}
 /* phone: Crew and Family apps are gone (crew is managed in Your Circle, family is in Contacts) */
-try{const R=window.l57open;window.l57open=id=>(id==='crew'||id==='family'||id==='orders')?false:(R?R(id):true)}catch(e){}
-try{const _r2=render;render=function(){const r=_r2.apply(this,arguments);try{document.querySelectorAll('.ph-home .ph-ic button[data-rph="crew"],.ph-home .ph-ic button[data-rph="family"],.ph-home .ph-ic button[data-rph="orders"]').forEach(b=>b.remove())}catch(e){}return r}}catch(e){}
+/* crew/family/orders app removal now lives in skin57 GONE */
 })();</script>
 
 <script id="skin63js">
@@ -11727,8 +11724,8 @@ try{TUT.push(['Popup buttons show the result','Choice popups now show what each 
 (function(){if(window._sk91)return;window._sk91=1;
 const E=x=>String(x==null?'':x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const call=(f,...a)=>{try{return typeof window[f]==='function'?(window[f](...a)||''):''}catch(e){console.error('sk91 '+f,e);return ''}};
-function worker(n){const w=(S.workers||[]).find(x=>x&&x.name===n&&x.from!=null);if(!w)return '';const i=S.workers.indexOf(w);
- return `<div class="mth-kt">Works for you · on ${E(BLOCKS[w.from]||'his block')}</div><button class="mth-opt hot" data-a="wcollect" data-i="${i}" data-says="Bring me the money." ${w.held?'':'disabled'}>${w.held?`Bring me the money (${money(w.held)})`:'Bring me the money (nothing yet)'}</button>`+call('l54opts',n).replace(/<div class="mth-kt">[^<]*<\/div>/,'')}
+function worker(n){const w=(S.workers||[]).find(x=>x&&x.name===n);if(!w)return '';const i=S.workers.indexOf(w);
+ return `<div class="mth-kt">Works for you${w.from!=null?` · on ${E(BLOCKS[w.from]||'his block')}`:''}</div><button class="mth-opt hot" data-a="wcollect" data-i="${i}" data-says="Bring me the money." ${w.held?'':'disabled'}>${w.held?`Bring me the money (${money(w.held)})`:'Bring me the money (nothing yet)'}</button>`+call('l54opts',n).replace(/<div class="mth-kt">[^<]*<\/div>/,'')}
 function order(t){if(!t.ord||!t.ord.length)return '';const [oo,i]=t.ord[0],g=G(oo.g),hv=S.inv[oo.g]||0,have=hv>=oo.n;
  return `<div class="mth-kt">Their order</div><button class="mth-opt hot" data-a="w5b_ord" data-i="${i}" data-says="On my way." ${have?'':'disabled'}>${have?'Fill it':`You are short (${hv}/${oo.n}${w5bUN(g)})`}</button><button class="mth-opt" data-mo="up" data-i="${i}" data-says="Price is up today." ${oo.up?'disabled':''}>Price is up</button><button class="mth-opt" data-mo="no" data-i="${i}" data-says="Not today.">Not today</button>`}
 window.l91kb=function(t){const n=t.n;if(t.tx&&t.tx.length)return null;

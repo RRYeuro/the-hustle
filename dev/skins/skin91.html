@@ -5,8 +5,8 @@
 (function(){if(window._sk91)return;window._sk91=1;
 const E=x=>String(x==null?'':x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const call=(f,...a)=>{try{return typeof window[f]==='function'?(window[f](...a)||''):''}catch(e){console.error('sk91 '+f,e);return ''}};
-function worker(n){const w=(S.workers||[]).find(x=>x&&x.name===n&&x.from!=null);if(!w)return '';const i=S.workers.indexOf(w);
- return `<div class="mth-kt">Works for you · on ${E(BLOCKS[w.from]||'his block')}</div><button class="mth-opt hot" data-a="wcollect" data-i="${i}" data-says="Bring me the money." ${w.held?'':'disabled'}>${w.held?`Bring me the money (${money(w.held)})`:'Bring me the money (nothing yet)'}</button>`+call('l54opts',n).replace(/<div class="mth-kt">[^<]*<\/div>/,'')}
+function worker(n){const w=(S.workers||[]).find(x=>x&&x.name===n);if(!w)return '';const i=S.workers.indexOf(w);
+ return `<div class="mth-kt">Works for you${w.from!=null?` · on ${E(BLOCKS[w.from]||'his block')}`:''}</div><button class="mth-opt hot" data-a="wcollect" data-i="${i}" data-says="Bring me the money." ${w.held?'':'disabled'}>${w.held?`Bring me the money (${money(w.held)})`:'Bring me the money (nothing yet)'}</button>`+call('l54opts',n).replace(/<div class="mth-kt">[^<]*<\/div>/,'')}
 function order(t){if(!t.ord||!t.ord.length)return '';const [oo,i]=t.ord[0],g=G(oo.g),hv=S.inv[oo.g]||0,have=hv>=oo.n;
  return `<div class="mth-kt">Their order</div><button class="mth-opt hot" data-a="w5b_ord" data-i="${i}" data-says="On my way." ${have?'':'disabled'}>${have?'Fill it':`You are short (${hv}/${oo.n}${w5bUN(g)})`}</button><button class="mth-opt" data-mo="up" data-i="${i}" data-says="Price is up today." ${oo.up?'disabled':''}>Price is up</button><button class="mth-opt" data-mo="no" data-i="${i}" data-says="Not today.">Not today</button>`}
 window.l91kb=function(t){const n=t.n;if(t.tx&&t.tx.length)return null;

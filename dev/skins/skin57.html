@@ -14,10 +14,12 @@ const RULE={
  hustle:()=>S.day>=2,
  social:()=>S.day>=2};
 const HINT={crew:'when you build a crew or hit Petty Dealer',trap:'at Middle Man',orders:'at Petty Dealer',burners:'at Petty Dealer',licks:'on day 3',backer:'at Middle Man',hustle:'on day 2',social:'on day 2'};
-window.l57open=id=>!RULE[id]||RULE[id]();
+/* fold: apps that moved out of the phone live here (burners+licks: mall/map, trap: in person, crew/family/orders: Your Circle/Contacts) */
+const GONE={burners:1,licks:1,trap:1,crew:1,family:1,orders:1};
+window.l57open=id=>!GONE[id]&&(!RULE[id]||RULE[id]());
 function check(){try{if(!S||!S.char)return;S.app57=S.app57||{};const fresh=!S.app57._init;Object.keys(RULE).forEach(id=>{if(S.app57[id]==null&&RULE[id]()){S.app57[id]=fresh?-99:S.day;if(!fresh)say(`📱 New app on your phone: ${NAME[id]}.`)}});S.app57._init=1}catch(e){}}
 function fix(){try{const h=document.querySelector('.phx.ph-home');if(!h)return;let locked=0;
- h.querySelectorAll('.ph-ic button[data-rph]').forEach(b=>{const id=b.dataset.rph;if(!RULE[id])return;if(!RULE[id]()){b.style.display='none';locked++;return}b.style.display='';const d=(S.app57||{})[id];b.classList.toggle('nw57',d!=null&&d>=0&&S.day-d<=2)});
+ h.querySelectorAll('.ph-ic button[data-rph]').forEach(b=>{const id=b.dataset.rph;if(GONE[id]){b.remove();return}if(!RULE[id])return;if(!RULE[id]()){b.style.display='none';locked++;return}b.style.display='';const d=(S.app57||{})[id];b.classList.toggle('nw57',d!=null&&d>=0&&S.day-d<=2)});
  const ic=h.querySelector('.ph-ic');if(ic&&locked&&!ic.querySelector('.lk57')){const n=document.createElement('div');n.className='lk57';n.textContent=`🔒 ${locked} more app${locked===1?'':'s'} unlock as you grow`;ic.appendChild(n)}}catch(e){console.error('sk57',e)}}
 try{const _r=render;render=function(){check();const r=_r.apply(this,arguments);fix();return r}}catch(e){}
 /* opening a locked app another way (old saves, links) says why */

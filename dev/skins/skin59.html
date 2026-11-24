@@ -51,8 +51,7 @@ document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest
  const art=k==='rl_glass'?['g_glasses','🕶️ Privacy glasses','Cameras and plate readers spot you 40% less.']:/^jw:/.test(k)?['jewelry','💎 Iced out','Rep for as long as you keep it. Big pieces draw robbers when your heat is up.']:null;
  if(art)setTimeout(()=>{if(S.cash<c0){window._bk59='mall';bought(...art)}},60)},true);
 /* phone burner app and lick app are gone (bought at the mall, pins on the map) */
-try{const R=window.l57open;window.l57open=id=>(id==='burners'||id==='licks')?false:(R?R(id):true)}catch(e){}
-try{const _r2=render;render=function(){const r=_r2.apply(this,arguments);try{document.querySelectorAll('.ph-home .ph-ic button[data-rph="burners"],.ph-home .ph-ic button[data-rph="licks"]').forEach(b=>b.remove())}catch(e){}return r}}catch(e){}
+/* burners + licks app removal now lives in skin57 GONE */
 /* phone Maps: look only, travel with Rides */
 document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('.phx .mapb[data-a="go"]');if(!t)return;e.preventDefault();e.stopImmediatePropagation();const bi=+t.dataset.i,ad=(S.age||0)>=18;
  modal(`<h2>${BLOCKS[bi]}</h2><p>${ad?'Want a ride there? $25, no day lost.':'Rides are 18+. Use the Move tab to walk or take the bus.'}</p><div class="btns">${ad?`<button class="btn go" id="rd59" ${S.cash<25?'disabled':''}>🚕 Ride there · $25</button>`:''}<button class="btn" id="cx59">Close</button></div>`);

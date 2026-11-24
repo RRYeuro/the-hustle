@@ -47,7 +47,7 @@ Feature source copies: dev/skins/. Tests: dev/tests/ (crash test: dev/tests/t_fu
 | skin48 | 5k | addXP, devPanel, paneCrew, teenStart, w5bOrderDay, w5bOrders | mark the rank-up so the ladder shows NEW for 2 days |
 | skin49 | 5k | devPanel, paneSchool, w5bDealers, w5bOrders | runners are recruited, never handed out |
 | skin54 | 4k | render | who is this thread with |
-| skin57 | 2k | render | opening a locked app another way (old saves, links) says why |
+| skin57 | 2k | render | fold: apps that moved out of the phone live here (burners+licks: mall/map, trap: in person, crew/family/orders: Your Circle/Contacts) |
 | skin68 | 15k | devPanel, nextDay, paneBeef, paneBlock, render | move n of gid into worker w: stash house first, then your stash |
 | skin74 | 20k | devPanel, nextDay, paneBeef, paneBlock | ---- the daily run ---- |
 | skin89 | 7k | nextDay, paneBlock, render | ---- 3-tap re-up ---- |
@@ -80,8 +80,8 @@ Feature source copies: dev/skins/. Tests: dev/tests/ (crash test: dev/tests/t_fu
 |---|---|---|---|
 | skin9 | 3k | modal |  |
 | skin17 | 0k | paneBlock |  |
-| skin61 | 4k | paneBlock, render | the trap house is run in person, on one of your blocks |
-| skin62 | 2k | mgrBtn, render | manager button always shows, and says what is missing |
+| skin61 | 3k | paneBlock | the trap house is run in person, on one of your blocks |
+| skin62 | 1k | mgrBtn, render | manager button always shows, and says what is missing |
 | skin79 | 5k | devPanel, mdBody, render | stash spots |
 | skin80 | 2k | devPanel, jsBudget, nextDay |  |
 | skin81 | 9k | bizMul, devPanel, nextDay, render | majors |
@@ -141,7 +141,7 @@ Feature source copies: dev/skins/. Tests: dev/tests/ (crash test: dev/tests/t_fu
 ## Functions wrapped by 4+ features (change these carefully)
 
 - devPanel (33): skin5, skin10, skin18, skin27, skin31, skin35, skin36, skin37, skin38, skin39, skin40, skin42, skin43, skin46, skin48, skin49, skin53, skin68, skin73, skin74, skin75, skin76, skin77, skin78, skin79, skin80, skin81, skin82, skin84, skin85, skin86, skin87, skin88
-- render (31): skin1, skin8, skin10, skin16, skin20, skin21, skin24, skin25, skin31, skin36, skin40, skin42, skin50, skin51, skin54, skin56, skin57, skin59, skin61, skin62, skin63, skin64, skin68, skin73, skin75, skin76, skin79, skin81, skin82, skin87, skin89
+- render (30): skin1, skin8, skin10, skin16, skin20, skin21, skin24, skin25, skin31, skin36, skin40, skin42, skin50, skin51, skin54, skin56, skin57, skin59, skin62, skin63, skin64, skin68, skin73, skin75, skin76, skin79, skin81, skin82, skin87, skin89
 - nextDay (15): skin18, skin31, skin68, skin69, skin74, skin75, skin77, skin80, skin81, skin82, skin85, skin86, skin87, skin88, skin89
 - paneBlock (12): skin7, skin8, skin17, skin31, skin40, skin51, skin61, skin68, skin74, skin77, skin84, skin89
 - openPlace (12): skin24, skin27, skin33, skin34, skin36, skin38, skin42, skin58, skin59, skin60, skin77, skin86

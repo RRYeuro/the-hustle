@@ -10,6 +10,5 @@ try{const _o=window.l61open;if(_o)window.l61open=function(){_o.apply(this,argume
 /* Circle tab: friends are people you text, not a menu */
 try{const _r=render;render=function(){const r=_r.apply(this,arguments);try{if(typeof tab!=='undefined'&&tab==='beef'){document.querySelectorAll('#pane [data-a="fhang"]').forEach(b=>{const card=b.closest('.row');if(!card||card.dataset.f62)return;card.dataset.f62=1;const f=(S.friends||[])[+b.dataset.i];if(!f)return;const bt=b.closest('.btns');if(bt)bt.outerHTML=`<div class="btns"><button class="btn go" data-tx50="${E(encodeURIComponent(f.name))}">💬 Text ${E(f.name)}</button></div>`})}}catch(e){}return r}}catch(e){}
 /* phone: Crew and Family apps are gone (crew is managed in Your Circle, family is in Contacts) */
-try{const R=window.l57open;window.l57open=id=>(id==='crew'||id==='family'||id==='orders')?false:(R?R(id):true)}catch(e){}
-try{const _r2=render;render=function(){const r=_r2.apply(this,arguments);try{document.querySelectorAll('.ph-home .ph-ic button[data-rph="crew"],.ph-home .ph-ic button[data-rph="family"],.ph-home .ph-ic button[data-rph="orders"]').forEach(b=>b.remove())}catch(e){}return r}}catch(e){}
+/* crew/family/orders app removal now lives in skin57 GONE */
 })();</script>
