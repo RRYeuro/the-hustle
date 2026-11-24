@@ -19,10 +19,10 @@ function snatch(){if(home()||done())return;if(typeof spendEn==='function'&&spend
  else{say('They saw you coming and started yelling. Run!');try{chase(ok=>{if(ok){say('You lost them. Nothing to show for it though.');render()}else{try{busted()}catch(e){}render()}})}catch(e){S.heat=Math.min(100,S.heat+8);render()}}}
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-sn84]');if(!b||b.disabled)return;e.preventDefault();e.stopPropagation();snatch()},true);
 /* Block tab before robbery opens; Heists tab list after */
-function inject(){try{const p=el('pane');if(!p||p.querySelector('[data-sn84r]'))return;
- if(tab==='block'&&!S.robOn){const h=row();if(!h)return;const ref=p.querySelector('[data-pr77]')||p.querySelector('[data-uc77]')||p.querySelector('.ns75');if(ref)ref.insertAdjacentHTML('afterend',h);else p.insertAdjacentHTML('afterbegin',h)}
- if(tab==='rob'){const h=row();if(!h)return;const sec=[...p.querySelectorAll('.sec')].find(s=>/Licks today/.test(s.textContent));if(sec)sec.insertAdjacentHTML('afterend',h);else p.insertAdjacentHTML('afterbegin',h)}}catch(e){console.error('sk84',e)}}
-try{const _r=render;render=function(){const r=_r.apply(this,arguments);try{inject()}catch(e){}return r}}catch(e){}
+function inject(){}
+/* fold: built with the Block tab (before robbery opens) and the Heists tab (after Licks today) */
+try{const _pb=paneBlock;paneBlock=function(){const h=_pb.apply(this,arguments);try{if(S.robOn)return h;const r=row();if(!r)return h;const k=h.indexOf('<!--e77-->');return k>=0?h.slice(0,k)+r+h.slice(k):r+h}catch(e){return h}}}catch(e){}
+try{const _pr=paneRob;paneRob=function(){const h=_pr.apply(this,arguments);try{const r=row();if(!r)return h;const m=/<div class="sec">Licks today<\/div>/.exec(h);return m?h.slice(0,m.index+m[0].length)+r+h.slice(m.index+m[0].length):r+h}catch(e){return h}}}catch(e){}
 try{const _dp=devPanel;devPanel=function(){const r=_dp.apply(this,arguments);try{const mc=el('mcard');if(mc&&!mc.querySelector('[data-d84]')){const d=document.createElement('div');d.innerHTML='<div class="sec">Snatching (new)</div><div class="btns"><button class="btn" data-d84="r">Reset snatches today</button></div>';const h2=mc.querySelector('h2');(h2&&h2.parentNode?h2.parentNode:mc).insertBefore(d,h2?h2.nextSibling:mc.firstChild);
  d.querySelector('[data-d84]').onclick=ev=>{ev.stopPropagation();el('modal').hidden=true;S.sn84={};render()}}}catch(e){}return r}}catch(e){}
 try{TUT.push(['Snatching','The first step into robbery (14+). On any block that is not your home block, tap Snatch something: grab a purse or phone and run. Small dirty cash, sometimes a phone to sell at the pawn shop. Miss and they chase you. Once per block a day, heat +3. Your first clean snatch opens the Heists tab.'])}catch(e){}

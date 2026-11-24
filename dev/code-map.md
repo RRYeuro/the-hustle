@@ -50,7 +50,7 @@ Feature source copies: dev/skins/. Tests: dev/tests/ (crash test: dev/tests/t_fu
 | skin57 | 2k | render | opening a locked app another way (old saves, links) says why |
 | skin68 | 15k | devPanel, nextDay, paneBeef, paneBlock, render | move n of gid into worker w: stash house first, then your stash |
 | skin74 | 20k | devPanel, nextDay, paneBeef, paneBlock | ---- the daily run ---- |
-| skin89 | 7k | nextDay, render | ---- 3-tap re-up ---- |
+| skin89 | 7k | nextDay, paneBlock, render | ---- 3-tap re-up ---- |
 
 ## Licks & heists
 
@@ -61,10 +61,10 @@ Feature source copies: dev/skins/. Tests: dev/tests/ (crash test: dev/tests/t_fu
 | skin59 | 8k | openPlace, paneLicks, render | where each lick is today |
 | skin64 | 1k | render | skip time is one tap away: a Skip button next to Next day / Lay low / Nap |
 | skin71 | 1k | paneRob | skin71: Heists tab lists today's licks (car, house tip, strap tip, store, pharmacy) with a button that opens the lick card |
-| skin77 | 8k | devPanel, nextDay, openPlace, plugPrice, render | ---- Unc ---- |
+| skin77 | 8k | devPanel, nextDay, openPlace, paneBlock, plugPrice | ---- Unc ---- |
 | skin82 | 4k | devPanel, lickDone, nextDay, render, spendEn, street |  |
 | skin83 | 2k | mainMenu | the menu's How to play button opens the list |
-| skin86 | 11k | devPanel, lick, lickDone, nextDay, openPlace, render, safeGame | --- which lick is running --- |
+| skin86 | 11k | devPanel, lick, lickDone, nextDay, openPlace, paneRob, safeGame | --- which lick is running --- |
 
 ## Map, places & moving
 
@@ -97,7 +97,7 @@ Feature source copies: dev/skins/. Tests: dev/tests/ (crash test: dev/tests/t_fu
 | skin43 | 11k | devPanel, livingDay, paneExp | ---------- Bills that bite ---------- |
 | skin53 | 3k | devPanel, paneExp | the more street money you sit on, the more eyes on you |
 | skin75 | 7k | devPanel, nextDay, phoneMsg, render, say, srvTick, street | --- oversold blocks --- |
-| skin84 | 4k | devPanel, render | Block tab before robbery opens; Heists tab list after |
+| skin84 | 4k | devPanel, paneBlock, paneRob | Block tab before robbery opens; Heists tab list after |
 | skin87 | 8k | bizMul, connectLand, devPanel, nextDay, render, shipRisk | Right Hand picks up loads |
 | skin88 | 4k | connectOrder, devPanel, endStory, nextDay, shipRisk, w6Path, wMax | loads home |
 | skin90 | 5k | - | deep copy + restore in place (keeps object identity so the real click still works) |
@@ -140,11 +140,11 @@ Feature source copies: dev/skins/. Tests: dev/tests/ (crash test: dev/tests/t_fu
 
 ## Functions wrapped by 4+ features (change these carefully)
 
-- render (35): skin1, skin8, skin10, skin16, skin20, skin21, skin24, skin25, skin31, skin36, skin40, skin42, skin50, skin51, skin54, skin56, skin57, skin59, skin61, skin62, skin63, skin64, skin68, skin73, skin75, skin76, skin77, skin79, skin81, skin82, skin84, skin85, skin86, skin87, skin89
 - devPanel (33): skin5, skin10, skin18, skin27, skin31, skin35, skin36, skin37, skin38, skin39, skin40, skin42, skin43, skin46, skin48, skin49, skin53, skin68, skin73, skin74, skin75, skin76, skin77, skin78, skin79, skin80, skin81, skin82, skin84, skin85, skin86, skin87, skin88
+- render (32): skin1, skin8, skin10, skin16, skin20, skin21, skin24, skin25, skin31, skin36, skin40, skin42, skin50, skin51, skin54, skin56, skin57, skin59, skin61, skin62, skin63, skin64, skin68, skin73, skin75, skin76, skin79, skin81, skin82, skin85, skin87, skin89
 - nextDay (15): skin18, skin31, skin68, skin69, skin74, skin75, skin77, skin80, skin81, skin82, skin85, skin86, skin87, skin88, skin89
+- paneBlock (12): skin7, skin8, skin17, skin31, skin40, skin51, skin61, skin68, skin74, skin77, skin84, skin89
 - openPlace (12): skin24, skin27, skin33, skin34, skin36, skin38, skin42, skin58, skin59, skin60, skin77, skin86
-- paneBlock (9): skin7, skin8, skin17, skin31, skin40, skin51, skin61, skin68, skin74
 - modal (7): skin9, skin16, skin24, skin26, skin45, skin47, skin63
 - paneBeef (5): skin2, skin6, skin13, skin68, skin74
 - lickDone (5): skin36, skin39, skin82, skin85, skin86

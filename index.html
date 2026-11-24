@@ -636,8 +636,8 @@ function waveGoal(){const cc=cleanCash();let g;
   const f=n=>g.$?money(n):Math.round(n).toLocaleString();
   return `<div class="wgoal wspan"><div class="t">🎯 <b>Next:</b> ${g.t} <span style="color:var(--dim)">${f(Math.min(g.c,g.m))} / ${f(g.m)}</span></div><div class="bar"><i style="width:${Math.min(100,g.c/g.m*100)}%;background:var(--accent)"></i></div></div>`}
 function waveQuick(){const u=W().use||{},c=['adv','lay','nap','skipn','lay7'],lb={adv:'Next day',lay:'Lay low',nap:'Nap',skipn:'Skip ahead',lay7:'Lay low a week'};
-  const top=c.filter(k=>u[k]).sort((a,b)=>u[b]-u[a]).concat(['adv','lay','nap']).filter((k,i,a)=>a.indexOf(k)===i).slice(0,3);
-  return `<div class="wq wspan">${top.map(k=>`<button class="btn" data-a="wq" data-k="${k}">${lb[k]}</button>`).join('')}</div>`}
+  const top=c.filter(k=>u[k]).sort((a,b)=>u[b]-u[a]).concat(['adv','lay','nap']).filter((k,i,a)=>a.indexOf(k)===i).slice(0,3);if(!top.includes('lay'))top[2]='lay';
+  return `<div class="wq wspan">${top.map(k=>`<button class="btn" data-a="wq" data-k="${k}"${k==='lay'?' title="Stay in a day: heat −15, health +15, stress −25, energy back. Only at your place."':''}>${lb[k]}</button>`).join('')}</div>`}
 function waveTop(){let h='';try{h+=waveGoal()}catch(e){}try{h+=waveSummary()}catch(e){}try{if(!S.pr&&!S.inJail)h+=waveQuick()}catch(e){}return h}
 /* danger, tint, badges */
 function waveDecor(){try{
@@ -1470,7 +1470,7 @@ function placeAct(k,id){const back=()=>{render();openPlace(id)};try{if(wavePlace
 function whyNot(){if(!S||S.pr)return '';if(S.ha&&S.haOK!==S.day)return `House arrest until ${dayTxt(S.ha.until)}. The ankle monitor keeps you on ${BLOCKS[S.at]}. Places on this block still work.`;if(S.grounded>S.day&&S.sneakOK!==S.day)return `Grounded until ${dayTxt(S.grounded)}. ${S.par?S.par.name:'They'} won't let you leave the house. Do chores to cut it short.`;return ''}
 function whyChip(){const w=whyNot();return w?(S.djjG&&S.grounded>S.day&&S.djjG>=S.grounded?a2('g_djj',300):'')+`<div class="row" style="border:1px solid var(--blood)"><div class="info"><div class="t" style="color:var(--blood)">🔒 Why you can't go anywhere</div><div class="s">${w}</div></div></div>`:''}
 function paneMove(){
-  let h=whyChip()+`${S.cal&&S.age&&S.age<18?`<div class="s" style="padding:4px 2px;opacity:.85">${S.freeMv===S.day?'You used your free move today.':'Your first move each school day or weekend is free.'}</div>`:''}<div class="row" style="border:1px solid var(--accent);background:rgba(0,0,0,.25)"><div class="info"><div class="t">🌙 Lay low</div><div class="s">Stay in a day: heat −15, health +15, stress −25, energy back.${atHome()?'':` <b style="color:var(--blood)">Head to your place on ${BLOCKS[homeBlock()]} first.</b>`}</div></div><button class="btn go" data-a="lay" ${atHome()?'':'disabled'}>Lay low</button></div>${skipRows()}<div class="sec">The city</div>`+cityMap()+demandList();
+  let h=whyChip()+`${S.cal&&S.age&&S.age<18?`<div class="s" style="padding:4px 2px;opacity:.85">${S.freeMv===S.day?'You used your free move today.':'Your first move each school day or weekend is free.'}</div>`:''}${skipRows()}<div class="sec">The city</div>`+cityMap()+demandList();
   if(adult())h+=a2('g_rideapp',300);
   h+=BLOCKS.map((b,i)=>{
     const o=S.owner[i];
@@ -11187,21 +11187,17 @@ function famDay(){try{S.fam77=S.fam77||{};(S.known||[]).forEach(bi=>{if(fam(bi)&
  const F=(S.known||[]).filter(fam);if(F.length&&S.heat>=50&&Math.random()<.3){const bi=F[Math.floor(Math.random()*F.length)];S.heat=Math.max(0,S.heat-4);try{phoneMsg(plugName(bi),'Heads up. Task force been asking about you by the store. Sit down a couple days.')}catch(e){}}}catch(e){}}
 /* ---- undercover tell ---- */
 const TELLS=['new face, brand new shoes, asking too many questions','keeps asking where you get it from','wants a lot for a first time and won\'t say who sent him','talking like a cop show, calling it "narcotics"'];
-function ucRow(){try{if(tab!=='block'||S.meet)return;const a=(S.att||[])[S.at]||0;if(a<30)return;const k=S.day+':'+S.at;if(S.uc77===k)return;const p=el('pane');if(!p||p.querySelector('[data-uc77]'))return;
- const t=TELLS[(S.day+S.at)%TELLS.length];const d=document.createElement('div');d.className='row';d.dataset.uc77=1;
- d.innerHTML=`<div class="info"><div class="t">👀 Something off about one of the Js</div><div class="s">A ${t}. Could be twelve.</div></div><button class="btn red" data-uc77b="1">Don't serve him</button>`;
- const ns=p.querySelector('.ns75');if(ns)ns.after(d);else p.prepend(d)}catch(e){}}
+function ucHTML(){try{if(S.meet)return '';const a=(S.att||[])[S.at]||0;if(a<30)return '';const k=S.day+':'+S.at;if(S.uc77===k)return '';const t=TELLS[(S.day+S.at)%TELLS.length];
+ return `<div class="row" data-uc77="1"><div class="info"><div class="t">👀 Something off about one of the Js</div><div class="s">A ${t}. Could be twelve.</div></div><button class="btn red" data-uc77b="1">Don't serve him</button></div>`}catch(e){return ''}}
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-uc77b]');if(!b)return;e.preventDefault();e.stopPropagation();S.uc77=S.day+':'+S.at;try{S.jsLeft[S.at]=Math.round(jsLeftAt(S.at)*.92)}catch(x){}say('You waved him off. Probably saved yourself a case. Nobody undercover gets served on this block today.');render()},true);
 /* ---- 3D printer ---- */
 function pr(){S.p3=S.p3||{has:0,sw:0,d:-9};return S.p3}
 try{const _op=openPlace;openPlace=function(id){const r=_op.apply(this,arguments);try{if(id==='pawn'&&!el('modal').hidden){const mc=el('mcard'),p=mc&&(mc.querySelector('.pane')||mc);if(p&&!mc.querySelector('[data-p377]')){const P=pr();
  const h=P.has?`<div class="row"><div class="info"><div class="t">🖨️ 3D printer</div><div class="s">You got one at home. Print switches there, sell them on a block.</div></div></div>`:`<div class="row" data-p377="1"><div class="info"><div class="t">🖨️ 3D printer</div><div class="s">Print switches at home and sell them for dirty cash. Big charge if you get caught with them. 18+.</div></div><button class="btn go" data-p377b="1" ${age()>=18&&S.cash>=1200?'':'disabled'}>${age()<18?'18+':'$1,200'}</button></div>`;
  p.insertAdjacentHTML('beforeend',h);const b=p.querySelector('[data-p377b]');if(b)b.onclick=ev=>{ev.stopPropagation();if(S.cash<1200||age()<18)return;S.cash-=1200;S.clean=Math.min(S.clean||0,S.cash);pr().has=1;say('Bought a 3D printer. It\'s set up at your place. Print switches on your home block.');el('modal').hidden=true;render()}}}}catch(e){console.error('sk77 pawn',e)}return r}}catch(e){}
-function prRow(){try{if(tab!=='block'||S.meet)return;const P=pr();if(!P.has)return;const p=el('pane');if(!p||p.querySelector('[data-pr77]'))return;const home=(()=>{try{return homeBlock()===S.at}catch(e){return true}})();
- const d=document.createElement('div');d.className='row';d.dataset.pr77=1;d.style.flexWrap='wrap';
- d.innerHTML=`<div class="info" style="flex:1 1 180px"><div class="t">🖨️ Switches: ${P.sw}</div><div class="s">${home?'Print 2 to 4 at home (10 energy, once a day).':'Your printer is at home.'} Sell for about $200 each, dirty. Heat on every sale and some buyers are cops.</div></div>
-  <div class="btns">${home?`<button class="btn" data-pr77b="p" ${P.d===S.day?'disabled':''}>${P.d===S.day?'Printed today':'Print'}</button>`:''}<button class="btn go" data-pr77b="s" ${P.sw?'':'disabled'}>Sell ${P.sw||''}</button></div>`;
- const ref=p.querySelector('[data-uc77]')||p.querySelector('.ns75');if(ref)ref.after(d);else p.prepend(d)}catch(e){}}
+function prHTML(){try{if(S.meet)return '';const P=pr();if(!P.has)return '';const home=(()=>{try{return homeBlock()===S.at}catch(e){return true}})();
+ return `<div class="row" data-pr77="1" style="flex-wrap:wrap"><div class="info" style="flex:1 1 180px"><div class="t">🖨️ Switches: ${P.sw}</div><div class="s">${home?'Print 2 to 4 at home (10 energy, once a day).':'Your printer is at home.'} Sell for about $200 each, dirty. Heat on every sale and some buyers are cops.</div></div>
+  <div class="btns">${home?`<button class="btn" data-pr77b="p" ${P.d===S.day?'disabled':''}>${P.d===S.day?'Printed today':'Print'}</button>`:''}<button class="btn go" data-pr77b="s" ${P.sw?'':'disabled'}>Sell ${P.sw||''}</button></div></div>`}catch(e){return ''}}
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-pr77b]');if(!b||b.disabled)return;e.preventDefault();e.stopPropagation();const P=pr();
  if(b.dataset.pr77b==='p'){if(P.d===S.day)return;if(typeof spendEn==='function'&&spendEn(10)===false)return;P.d=S.day;let n=R(2,4);if(Math.random()<.15){n=Math.max(0,n-2);say('The filament jammed. Only printed '+n+'.')}P.sw+=n;if(n)say(`Printed ${n} switch${n>1?'es':''}. You got ${P.sw}.`)}
  else{const n=P.sw;if(!n)return;if(Math.random()<.08+((S.att||[])[S.at]||0)/1000){P.sw=0;S.heat=Math.min(100,S.heat+15);say('The buyer was undercover. They took the switches.');try{lickDone('Caught with switches','The guy buying your switches was a fed. Machine gun conversion devices are a federal charge.',false,true);const ok=el('ok');if(ok)ok.onclick=()=>{el('modal').hidden=true;busted();render()}}catch(x){busted()}return}
@@ -11209,7 +11205,8 @@ document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest
  render()},true);
 /* hooks */
 try{const _nd=nextDay;nextDay=function(){const r=_nd.apply(this,arguments);try{famDay()}catch(e){}return r}}catch(e){}
-try{const _r=render;render=function(){const r=_r.apply(this,arguments);try{ucRow();prRow()}catch(e){}return r}}catch(e){}
+/* fold: rows built with the Block tab */
+try{const _pb=paneBlock;paneBlock=function(){const h=_pb.apply(this,arguments);try{return ucHTML()+prHTML()+'<!--e77-->'+h}catch(e){return h}}}catch(e){}
 try{const _dp=devPanel;devPanel=function(){const r=_dp.apply(this,arguments);try{const mc=el('mcard');if(mc&&!mc.querySelector('[data-d77]')){const d=document.createElement('div');d.innerHTML='<div class="sec">Unc, family plugs, Js, printer (new)</div><div class="btns"><button class="btn" data-d77="f">Make all plugs family (90)</button><button class="btn" data-d77="u">Attention 40 here</button><button class="btn" data-d77="p">Give 3D printer + 5 switches</button><button class="btn" data-d77="c">Unc trust +5</button></div>';const h2=mc.querySelector('h2');(h2&&h2.parentNode?h2.parentNode:mc).insertBefore(d,h2?h2.nextSibling:mc.firstChild);
  d.querySelectorAll('[data-d77]').forEach(b=>b.onclick=ev=>{ev.stopPropagation();el('modal').hidden=true;const k=b.dataset.d77;if(k==='f')(S.known||[]).forEach(i=>S.trust[i]=Math.max(S.trust[i]||0,90));if(k==='u'){S.att=S.att||[0,0,0,0,0,0];S.att[S.at]=40;S.uc77=null}if(k==='p'){pr().has=1;pr().sw+=5}if(k==='c')unc().t+=5;render()})}}catch(e){}return r}}catch(e){}
 try{TUT.push(["Unc's, family plugs, undercover Js, 3D printer","No chop shop? Stolen cars go to Unc's tire shop. He strips them and keeps a cut (55% at first, down to 35% as he trusts you). Own a chop shop and you keep it all. Plugs at 90 trust are family: 5% off and they warn you when the task force asks about you. On a block with attention 30+, watch for a J with a tell (new shoes, too many questions) and tap Don't serve him. 3D printer (18+, pawn shop, $1,200): print switches at home once a day, sell them on any block. Heat on every sale, some buyers are feds."])}catch(e){}
@@ -11429,10 +11426,10 @@ function snatch(){if(home()||done())return;if(typeof spendEn==='function'&&spend
  else{say('They saw you coming and started yelling. Run!');try{chase(ok=>{if(ok){say('You lost them. Nothing to show for it though.');render()}else{try{busted()}catch(e){}render()}})}catch(e){S.heat=Math.min(100,S.heat+8);render()}}}
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-sn84]');if(!b||b.disabled)return;e.preventDefault();e.stopPropagation();snatch()},true);
 /* Block tab before robbery opens; Heists tab list after */
-function inject(){try{const p=el('pane');if(!p||p.querySelector('[data-sn84r]'))return;
- if(tab==='block'&&!S.robOn){const h=row();if(!h)return;const ref=p.querySelector('[data-pr77]')||p.querySelector('[data-uc77]')||p.querySelector('.ns75');if(ref)ref.insertAdjacentHTML('afterend',h);else p.insertAdjacentHTML('afterbegin',h)}
- if(tab==='rob'){const h=row();if(!h)return;const sec=[...p.querySelectorAll('.sec')].find(s=>/Licks today/.test(s.textContent));if(sec)sec.insertAdjacentHTML('afterend',h);else p.insertAdjacentHTML('afterbegin',h)}}catch(e){console.error('sk84',e)}}
-try{const _r=render;render=function(){const r=_r.apply(this,arguments);try{inject()}catch(e){}return r}}catch(e){}
+function inject(){}
+/* fold: built with the Block tab (before robbery opens) and the Heists tab (after Licks today) */
+try{const _pb=paneBlock;paneBlock=function(){const h=_pb.apply(this,arguments);try{if(S.robOn)return h;const r=row();if(!r)return h;const k=h.indexOf('<!--e77-->');return k>=0?h.slice(0,k)+r+h.slice(k):r+h}catch(e){return h}}}catch(e){}
+try{const _pr=paneRob;paneRob=function(){const h=_pr.apply(this,arguments);try{const r=row();if(!r)return h;const m=/<div class="sec">Licks today<\/div>/.exec(h);return m?h.slice(0,m.index+m[0].length)+r+h.slice(m.index+m[0].length):r+h}catch(e){return h}}}catch(e){}
 try{const _dp=devPanel;devPanel=function(){const r=_dp.apply(this,arguments);try{const mc=el('mcard');if(mc&&!mc.querySelector('[data-d84]')){const d=document.createElement('div');d.innerHTML='<div class="sec">Snatching (new)</div><div class="btns"><button class="btn" data-d84="r">Reset snatches today</button></div>';const h2=mc.querySelector('h2');(h2&&h2.parentNode?h2.parentNode:mc).insertBefore(d,h2?h2.nextSibling:mc.firstChild);
  d.querySelector('[data-d84]').onclick=ev=>{ev.stopPropagation();el('modal').hidden=true;S.sn84={};render()}}}catch(e){}return r}}catch(e){}
 try{TUT.push(['Snatching','The first step into robbery (14+). On any block that is not your home block, tap Snatch something: grab a purse or phone and run. Small dirty cash, sometimes a phone to sell at the pawn shop. Miss and they chase you. Once per block a day, heat +3. Your first clean snatch opens the Heists tab.'])}catch(e){}
@@ -11506,8 +11503,7 @@ try{const _ld=lickDone;lickDone=function(t,txt,ok){let extra='';try{if(ok&&cur&&
 function contractDay(){if(!S.robOn||(S.age||14)<16||S.pr||S.inJail)return;if(S.ct86&&S.ct86.d>=S.day-2)return;if(Math.random()>.35)return;
  const who=pick(['Unknown number','Lil Mike','Your cousin','Pooh']),b=R(3,8)*100;S.ct86={d:S.day,b,who};try{S.lt=S.lt||{};S.lt.house=S.day+1}catch(e){}
  try{phoneMsg(who,`Got a house for you. Pin's on your map. Hit it today and I'll throw you ${money(b)} on top.`)}catch(e){}}
-function ctRow(){try{if(tab!=='rob')return;const C=S.ct86;if(!C||C.d!==S.day||C.done)return;const p=el('pane');if(!p||p.querySelector('[data-ct86]'))return;
- const d=document.createElement('div');d.className='row';d.dataset.ct86=1;d.innerHTML=`<div class="info"><div class="t">📃 Contract from ${esc(C.who)}</div><div class="s">Hit a house today: +${money(C.b)} bonus on top of the loot. The tipped house is on your map.</div></div>`;p.prepend(d)}catch(e){}}
+function ctHTML(){try{const C=S.ct86;if(!C||C.d!==S.day||C.done)return '';return `<div class="row" data-ct86="1"><div class="info"><div class="t">📃 Contract from ${esc(C.who)}</div><div class="s">Hit a house today: +${money(C.b)} bonus on top of the loot. The tipped house is on your map.</div></div></div>`}catch(e){return ''}}
 /* --- pawn buyback --- */
 function tickets(){S.pt86=(S.pt86||[]).filter(t=>t.due>=S.day||(()=>{try{phoneMsg('Pawn shop',`Your ticket on the ${JEWEL[t.k].n.toLowerCase()} ran out. It's for sale now.`)}catch(e){}return false})());return S.pt86}
 try{const _op=openPlace;openPlace=function(id){const r=_op.apply(this,arguments);try{if(id==='pawn'&&!el('modal').hidden){const mc=el('mcard'),p=mc&&(mc.querySelector('.pane')||mc);if(p&&!mc.querySelector('[data-pb86]')){
@@ -11548,7 +11544,8 @@ window.memGame=memGame;window.rotGame=rotGame;
 try{const _sg=safeGame;safeGame=function(o,done){try{if(!window._f86&&Math.random()<.4)return (Math.random()<.5?memGame:rotGame)({title:(o&&o.title)||'The safe'},done)}catch(e){}return _sg.apply(this,arguments)}}catch(e){}
 /* hooks */
 try{const _nd=nextDay;nextDay=function(){const r=_nd.apply(this,arguments);try{contractDay();tickets()}catch(e){}return r}}catch(e){}
-try{const _r=render;render=function(){const r=_r.apply(this,arguments);try{ctRow()}catch(e){}return r}}catch(e){}
+/* fold: built with the Heists tab */
+try{const _pr=paneRob;paneRob=function(){const h=_pr.apply(this,arguments);try{return ctHTML()+h}catch(e){return h}}}catch(e){}
 try{const _dp=devPanel;devPanel=function(){const r=_dp.apply(this,arguments);try{const mc=el('mcard');if(mc&&!mc.querySelector('[data-d86]')){const d=document.createElement('div');d.innerHTML='<div class="sec">Robbery batch (new)</div><div class="btns"><button class="btn" data-d86="m">Test Memory tiles</button><button class="btn" data-d86="r">Test Rotating locks</button><button class="btn" data-d86="c">Lick contract now</button><button class="btn" data-d86="j">Give a gold chain</button></div>';const h2=mc.querySelector('h2');(h2&&h2.parentNode?h2.parentNode:mc).insertBefore(d,h2?h2.nextSibling:mc.firstChild);
  d.querySelectorAll('[data-d86]').forEach(b=>b.onclick=ev=>{ev.stopPropagation();el('modal').hidden=true;const k=b.dataset.d86;if(k==='m')memGame({},ok=>say('Memory tiles: '+(ok?'cracked':'failed')));if(k==='r')rotGame({},ok=>say('Rotating locks: '+(ok?'open':'failed')));if(k==='c'){S.robOn=1;S.ct86=null;const a=S.age;S.age=Math.max(16,S.age||16);const rr=Math.random;Math.random=()=>0;try{contractDay()}finally{Math.random=rr;S.age=a}render()}if(k==='j'){S.jew=S.jew||{};S.jew.chain=1;say('Dev: gold chain added.')}})}}catch(e){}return r}}catch(e){}
 try{TUT.push(['Loot, contracts, pawn tickets, new locks','House and store licks can turn up Percs (go in your stash) or a pistol. Every few days somebody may text a lick contract: hit a house that day for a bonus (the house is pinned on your map). At the pawn shop you can pawn your own jewelry for half and buy it back within 7 days for 60% of its price. Safes sometimes use Memory tiles (match 8 pairs) or Rotating locks (turn 4 rings until every notch points up).'])}catch(e){}
@@ -11674,13 +11671,14 @@ try{const _nd=nextDay;nextDay=function(){const r=_nd.apply(this,arguments);try{i
 /* ---- 3-tap re-up ---- */
 function best(){const K=(S.known||[]).filter(bi=>bi!==S.at||true);if(!K.length)return null;return K.slice().sort((a,b)=>(S.trust[b]||0)-(S.trust[a]||0))[0]}
 function how(bi){const t=S.trust[bi]||0;if(t>=90&&S.dropDay!==S.day&&bi!==S.at)return 'drop';if(t>=40)return 'pull';return 'go'}
-function reRow(){try{if(tab!=='block'||S.meet||S.pr||S.inJail)return;const p=el('pane');if(!p||p.querySelector('[data-re89]'))return;const bi=best();if(bi==null)return;const h=how(bi),nm=plugName(bi);
+function reHTML(){try{if(S.meet||S.pr||S.inJail)return '';const bi=best();if(bi==null)return '';const h=how(bi),nm=plugName(bi);
  const sub=h==='drop'?`${nm} drops it off (10% trip fee). Pick amounts, Buy all.`:h==='pull'?`${nm} pulls up to you (8% delivery). Buy right there.`:`Text ${nm} and head to the spot.`;
- const d=document.createElement('div');d.className='row';d.dataset.re89=1;d.innerHTML=`<div class="info"><div class="t">🔌 Quick re-up</div><div class="s">${sub} Trust ${S.trust[bi]||0}.</div></div><button class="btn go" data-re89b="${bi}">Re-up</button>`;
- const ref=p.querySelector('.ns75');if(ref)ref.after(d);else p.prepend(d)}catch(e){}}
+ return `<div class="row" data-re89="1"><div class="info"><div class="t">🔌 Quick re-up</div><div class="s">${sub} Trust ${S.trust[bi]||0}.</div></div><button class="btn go" data-re89b="${bi}">Re-up</button></div>`}catch(e){return ''}}
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-re89b]');if(!b)return;e.preventDefault();e.stopPropagation();const bi=+b.dataset.re89b,h=how(bi);
  try{if(h==='drop')return plugDrop(bi);if(h==='pull'){window.l31PullUp(bi);if(!S.meet){window.l31Text&&l31Text(bi);window.l31Go&&l31Go(bi)}return}window.l31Text&&l31Text(bi);window.l31Go&&l31Go(bi)}catch(x){console.error('sk89 reup',x)}},true);
-try{const _r=render;render=function(){try{if(typeof S!=='undefined'&&S)['workers','crewM','cands','friends'].forEach(k=>{if(Array.isArray(S[k])&&S[k].some(x=>!x))S[k]=S[k].filter(Boolean)})}catch(e){}const r=_r.apply(this,arguments);try{reRow()}catch(e){}return r}}catch(e){}
+try{const _r=render;render=function(){try{if(typeof S!=='undefined'&&S)['workers','crewM','cands','friends'].forEach(k=>{if(Array.isArray(S[k])&&S[k].some(x=>!x))S[k]=S[k].filter(Boolean)})}catch(e){}return _r.apply(this,arguments)}}catch(e){}
+/* fold: Quick re-up is built with the Block tab */
+try{const _pb=paneBlock;paneBlock=function(){const h=_pb.apply(this,arguments);try{return reHTML()+h}catch(e){return h}}}catch(e){}
 try{TUT.push(['Branches and quick re-up','Crew Ops → open a ring → Branches: send a free crew member to run that ring in another city ($5,000, Supplier rank). Bigger cities pay more, no heat at home, but they can get locked up out there. Quick re-up on the Block tab buys from your best plug in about 3 taps: 90+ trust they drop it off, 40+ they pull up to you, lower you text them and head over.'])}catch(e){}
 })();</script>
 <script id="skin90js">
