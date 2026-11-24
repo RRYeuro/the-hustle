@@ -15,7 +15,8 @@ window.l77unc=function(pay){const U=unc(),cut=Math.min(.65,.45+U.t*.02),got=Math
  lickDone("Unc's tire shop",`You drove it to Unc's. He strips it and keeps his cut. You got ${money(got)} dirty (${Math.round(cut*100)}%). Every car you bring raises his trust and your cut. Own a chop shop ($8,000) and you keep all of it.${x}`,true)};
 /* ---- plug family tier ---- */
 const fam=bi=>(S.trust&&S.trust[bi]||0)>=90;
-try{const _pp=plugPrice;plugPrice=function(kind){const p=_pp.apply(this,arguments);try{if(kind==='buy'&&typeof p==='number'&&fam(S.at))return Math.max(1,Math.round(p*.95))}catch(e){}return p}}catch(e){}
+/* plug price modifiers live here: family plug 5% off, jack-boy rep 5% more (from skin81) */
+try{const _pp=plugPrice;plugPrice=function(kind){const p=_pp.apply(this,arguments);try{if(kind==='buy'&&typeof p==='number'){let m=1;if(fam(S.at))m*=.95;if(S.jb81)m*=1.05;if(m!==1)return Math.max(1,Math.round(p*m))}}catch(e){}return p}}catch(e){}
 function famDay(){try{S.fam77=S.fam77||{};(S.known||[]).forEach(bi=>{if(fam(bi)&&!S.fam77[bi]){S.fam77[bi]=1;try{phoneMsg(plugName(bi),'You family now. Prices a little better for you, and I\'ll let you know if anybody asking about you.')}catch(e){}}});
  const F=(S.known||[]).filter(fam);if(F.length&&S.heat>=50&&Math.random()<.3){const bi=F[Math.floor(Math.random()*F.length)];S.heat=Math.max(0,S.heat-4);try{phoneMsg(plugName(bi),'Heads up. Task force been asking about you by the store. Sit down a couple days.')}catch(e){}}}catch(e){}}
 /* ---- undercover tell ---- */

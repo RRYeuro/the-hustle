@@ -8673,7 +8673,7 @@ function textPlug(bi){const P=pk(bi);if(locked()||away()||!kn(bi)||gone(bi)||tr(
 window.l31PullUp=pullUp;window.l31End=endMeet;window.l31Meet=meet;window.l31Go=goSpot;window.l31Text=textPlug;
 function drawMeet(){const M=S.meet;if(!M)return;let o=el('mt31');if(!o){o=document.createElement('div');o.id='mt31';document.body.appendChild(o);o.addEventListener('click',e=>{const b=e.target.closest('button[data-a]');if(!b||b.disabled)return;try{sfx('tap')}catch(_){}try{act(b.dataset.a,b)}catch(err){console.error('sk31 act',err)}})}
  const sc=o.scrollTop,pull=M.how==='pull';
- o.innerHTML=`<div class="mt31w">${window.l45greet?l45greet(M):''}<div class="mt31h"><div><b>${esc(plugName(M.bi))}${pull?' came to you':'\'s spot'}</b><small>${pull?`You are still on ${esc(BLOCKS[M.from])}. No day passes. ${tie(M.bi)?tie(M.bi)+': no delivery charge.':'Prices are 8% higher for the delivery.'}`:`On ${esc(BLOCKS[M.bi])}. The meet itself does not use the day.`} Sells by: ${lvlSells(M.bi)}.</small></div><button class="btn go" id="mt31x">Done</button></div><div class="pane" id="mt31p">${_pb()}</div><div class="btns" style="justify-content:center;margin-top:10px"><button class="btn" id="mt31y">Done dealing</button></div></div>`;
+ o.innerHTML=`<div class="mt31w">${window.l45greet?l45greet(M):''}<div class="mt31h"><div><b>${esc(plugName(M.bi))}${pull?' came to you':'\'s spot'}</b><small>${pull?`You are still on ${esc(BLOCKS[M.from])}. No day passes. ${tie(M.bi)?tie(M.bi)+': no delivery charge.':'Prices are 8% higher for the delivery.'}`:`On ${esc(BLOCKS[M.bi])}. The meet itself does not use the day.`} Sells by: ${lvlSells(M.bi)}.</small></div><button class="btn go" id="mt31x">Done</button></div><div class="pane" id="mt31p">${window.l51slim?l51slim(_pb()):_pb()}</div><div class="btns" style="justify-content:center;margin-top:10px"><button class="btn" id="mt31y">Done dealing</button></div></div>`;
  o.scrollTop=sc;el('mt31x').onclick=el('mt31y').onclick=()=>{endMeet();render()}}
 /* ---------- Move map: plug spots ---------- */
 const LV={Low:[100,1],Mid:[300,.5],Big:[800,.38]};
@@ -9669,12 +9669,12 @@ document.addEventListener('click',e=>{
 try{const _r=render;render=function(){const r=_r.apply(this,arguments);try{const th=document.querySelector('.phx[data-app="messages"] .mth-th');if(th&&window._mth){const bi=bOf(window._mth),kb=th.querySelector('.mth-kb');
   th.querySelectorAll('.bub').forEach(x=>{if(/^ℹ️ /.test(x.textContent)&&!x.classList.contains('sys51')){x.classList.add('sys51');x.textContent=x.textContent.replace(/^ℹ️ /,'')}})}}catch(e){console.error('sk51 r',e)}return r}}catch(e){}
 /* meet: slim plug line instead of the big card; street business stays on the Block tab */
-function slimMeet(){const p=document.getElementById('mt31p'),M=S.meet;if(!p||!M||p.dataset.s51)return;p.dataset.s51=1;const bi=M.bi;
+window.l51slim=function(h){const M=S.meet;if(!M)return h;const tp=document.createElement('template');tp.innerHTML=h;const p=tp.content;const bi=M.bi;
  try{const b=p.querySelector('[data-tx50]');if(b&&S.known.includes(bi)&&!(S.recr&&S.recr[bi])){let card=b.closest('.row')||b.parentNode.parentNode;while(card&&card.parentNode!==p&&card.parentNode&&card.parentNode.id!=='mt31p')card=card.parentNode;
   if(card){const img=card.querySelector('img'),rob=card.querySelector('[data-rb51]'),w=document.createElement('div');w.className='row pc51';w.style.cssText='display:flex;gap:10px;align-items:center;flex-wrap:wrap';
    w.innerHTML=`${img?`<img src="${img.getAttribute('src')}" alt="" style="width:44px;height:44px;border-radius:8px;object-fit:cover;flex:none">`:''}<div class="info" style="flex:1 1 140px;min-width:0"><div class="t">${E(plugName(bi))} <span class="chip">${lvl(bi)} plug</span></div><div class="s">Trust ${tr(bi)}/100 · tap Buy or Sell to talk price</div></div><div class="btns" style="margin:0">${b.outerHTML}${rob?rob.outerHTML:''}</div>`;card.replaceWith(w)}}}catch(e){console.error('sk51 meet',e)}
- try{let blockHas=false;try{blockHas=/w4_post|w4_cook/.test(paneBlock())}catch(e){}if(blockHas){const sec=[...p.querySelectorAll('.sec')].find(x=>/street business/i.test(x.textContent));if(sec){let n=sec;const rm=[];while(n){rm.push(n);n=n.nextElementSibling}rm.forEach(x=>x.remove())}}}catch(e){}}
-try{const _r2=render;render=function(){const r=_r2.apply(this,arguments);try{slimMeet();const o=document.getElementById('mt31');if(o){const hide=window._mt51h&&tab==='phone'&&window._mth;if(!hide)window._mt51h=false;o.style.display=hide?'none':''}}catch(e){}return r}}catch(e){}
+ try{let blockHas=false;try{blockHas=/w4_post|w4_cook/.test(paneBlock())}catch(e){}if(blockHas){const sec=[...p.querySelectorAll('.sec')].find(x=>/street business/i.test(x.textContent));if(sec){let n=sec;const rm=[];while(n){rm.push(n);n=n.nextElementSibling}rm.forEach(x=>x.remove())}}}catch(e){}return tp.innerHTML};
+try{const _r2=render;render=function(){const r=_r2.apply(this,arguments);try{const o=document.getElementById('mt31');if(o){const hide=window._mt51h&&tab==='phone'&&window._mth;if(!hide)window._mt51h=false;o.style.display=hide?'none':''}}catch(e){}return r}}catch(e){}
 document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('[data-tx50]');if(t&&S.meet){window._mt51h=true;tab='phone'}},true);
 /* plug card on the block: slim line, everything else is in the phone */
 try{const _pb=paneBlock;paneBlock=function(){let h=_pb.apply(this,arguments);try{const bi=S.at;if(!S.known||!S.known.includes(bi)||(S.recr&&S.recr[bi])||(S.enemies||{})[bi]||(S.burned&&S.burned[bi]>S.day))return h;const t=document.createElement('template');t.innerHTML=h;const b=t.content.querySelector('[data-tx50]');if(!b)return h;
@@ -11171,7 +11171,8 @@ window.l77unc=function(pay){const U=unc(),cut=Math.min(.65,.45+U.t*.02),got=Math
  lickDone("Unc's tire shop",`You drove it to Unc's. He strips it and keeps his cut. You got ${money(got)} dirty (${Math.round(cut*100)}%). Every car you bring raises his trust and your cut. Own a chop shop ($8,000) and you keep all of it.${x}`,true)};
 /* ---- plug family tier ---- */
 const fam=bi=>(S.trust&&S.trust[bi]||0)>=90;
-try{const _pp=plugPrice;plugPrice=function(kind){const p=_pp.apply(this,arguments);try{if(kind==='buy'&&typeof p==='number'&&fam(S.at))return Math.max(1,Math.round(p*.95))}catch(e){}return p}}catch(e){}
+/* plug price modifiers live here: family plug 5% off, jack-boy rep 5% more (from skin81) */
+try{const _pp=plugPrice;plugPrice=function(kind){const p=_pp.apply(this,arguments);try{if(kind==='buy'&&typeof p==='number'){let m=1;if(fam(S.at))m*=.95;if(S.jb81)m*=1.05;if(m!==1)return Math.max(1,Math.round(p*m))}}catch(e){}return p}}catch(e){}
 function famDay(){try{S.fam77=S.fam77||{};(S.known||[]).forEach(bi=>{if(fam(bi)&&!S.fam77[bi]){S.fam77[bi]=1;try{phoneMsg(plugName(bi),'You family now. Prices a little better for you, and I\'ll let you know if anybody asking about you.')}catch(e){}}});
  const F=(S.known||[]).filter(fam);if(F.length&&S.heat>=50&&Math.random()<.3){const bi=F[Math.floor(Math.random()*F.length)];S.heat=Math.max(0,S.heat-4);try{phoneMsg(plugName(bi),'Heads up. Task force been asking about you by the store. Sit down a couple days.')}catch(e){}}}catch(e){}}
 /* ---- undercover tell ---- */
@@ -11319,7 +11320,7 @@ function day(){try{rapDay()}catch(e){}
  if(S.job&&S.rg74&&Object.values(S.rg74).some(r=>r.on&&r.mem.length)&&Math.random()<.5)S.heat=Math.max(0,S.heat-1);
  try{if(S.gf&&S.gf.rel!=null){if(S.heat>=60&&Math.random()<.25){S.gf.rel=Math.max(0,S.gf.rel-2);phoneMsg(S.gf.name,pick(["Baby you hot right now. I don't want twelve kicking in my door.","I'm scared for you. Can you chill for a minute?","My mama asking why cops keep riding past. Fix it."]))}else if(S.job&&S.heat<25&&S.day%7===0)S.gf.rel=Math.min(100,S.gf.rel+2)}}catch(e){}
  const lk=(S.st&&S.st.licks)||0;if(lk>=15&&!S.jb81){S.jb81=1;try{phoneMsg('Your cousin','Word is you a jack boy now. Plugs talking about it. Watch who you meet with.')}catch(e){}say('Jack-boy rep: plugs charge you 5% more, but your robbery crew moves different.')}}
-try{const _pp=plugPrice;plugPrice=function(kind){const p=_pp.apply(this,arguments);try{if(kind==='buy'&&S.jb81&&typeof p==='number')return Math.max(1,Math.round(p*1.05))}catch(e){}return p}}catch(e){}
+/* jack-boy price markup moved to skin77's plug price check */
 try{const _nd=nextDay;nextDay=function(){const r=_nd.apply(this,arguments);try{day();if(typeof weekTick==='function'&&weekTick())week()}catch(e){console.error('sk81',e)}return r}}catch(e){}
 /* UI bits */
 function ui(){path();tape()}
