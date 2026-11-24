@@ -45,8 +45,8 @@ document.addEventListener('click',e=>{const x=e.target.closest&&e.target.closest
  else if(k==='heat'){const l=document.querySelector('[data-a="wq"][data-k="lay"]');if(l&&l.getBoundingClientRect().width)l.click();else{tab='block';render();say('Lay low is on the Block tab of your home block.')}}
  else if(k==='ov'){tab='move';render()}},true);
 /* block card: show the price trend */
-function trend(){try{const h=el('here');if(!h||h.querySelector('.tr75'))return;const o=ov(S.at);if(o<.03)return;const s=document.createElement('div');s.className='tr75';s.textContent=`▼ Prices ${Math.round(o*100)}% lower here (oversold). They come back in a few days.`;h.appendChild(s)}catch(e){}}
-try{const _r=render;render=function(){const r=_r.apply(this,arguments);try{juice();chips();trend()}catch(e){}return r}}catch(e){}
+window.l75trend=()=>{try{const o=ov(S.at);return o<.03?'':`<div class="tr75">▼ Prices ${Math.round(o*100)}% lower here (oversold). They come back in a few days.</div>`}catch(e){return ''}};
+try{const _r=render;render=function(){const r=_r.apply(this,arguments);try{juice();chips()}catch(e){}return r}}catch(e){}
 /* dev */
 try{const _dp=devPanel;devPanel=function(){const r=_dp.apply(this,arguments);try{const mc=el('mcard');if(mc&&!mc.querySelector('[data-d75]')){const d=document.createElement('div');d.innerHTML='<div class="sec">Polish (new)</div><div class="btns"><button class="btn" data-d75="rp">Reset block prices</button><button class="btn" data-d75="ov">Oversell this block</button><button class="btn" data-d75="mu">Sound on/off</button><button class="btn" data-d75="ht">Heat +10 (shake)</button></div>';const h2=mc.querySelector('h2');(h2&&h2.parentNode?h2.parentNode:mc).insertBefore(d,h2?h2.nextSibling:mc.firstChild);
  d.querySelectorAll('[data-d75]').forEach(b=>b.onclick=ev=>{ev.stopPropagation();el('modal').hidden=true;const k=b.dataset.d75;if(k==='rp')S.ov75=[0,0,0,0,0,0];if(k==='ov'){ov(0);S.ov75[S.at]=.35}if(k==='mu'){SND.sfx=!SND.sfx;sndSave();say('Sound '+(SND.sfx?'on':'off'))}if(k==='ht')S.heat=Math.min(100,S.heat+10);render()})}}catch(e){}return r}}catch(e){}
