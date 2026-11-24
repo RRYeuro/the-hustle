@@ -6490,7 +6490,7 @@ function act(a,el){
   if(a==='sk'&&S.pts>0&&S.sk[el.dataset.k]<10){S.pts--;S.sk[el.dataset.k]++;say(`${SKN[el.dataset.k]} went up to ${S.sk[el.dataset.k]}.`)}
   if(a==='hoops')return hoops();
   if(a==='trap'){if(proStop())return;if(S.age&&S.age<16){say('Opening a trap house starts at 16.');return render()}const bi=+el.dataset.i;S.cash-=trapCost();S.traps[bi]={w:null,g:null};say(`Opened a trap house on ${BLOCKS[bi]}.`)}
-  if(a==='hirew'){if(S.age&&S.age<16)return say('Hiring workers starts at 16.');if(S.workers.length>=wMax())return say(`You can only run ${wMax()} workers right now. Each trap house you own lets you run 1 more.`);const c=S.cands.splice(+el.dataset.i,1)[0];S.cash-=500;S.workers.push(c);say(`Put ${c.name} on the team for $500 up front and ${money(c.wage)} a day.`)}
+  if(a==='hirew'){if(S.age&&S.age<16)return say('Hiring workers starts at 16.');if(S.workers.length>=wMax())return say(`You can only run ${wMax()} workers right now. Each trap house you own lets you run 1 more.`);const c=(S.cands||[])[+el.dataset.i];if(!c){render();return say('That person already left. Check who is still around.')}S.cands.splice(+el.dataset.i,1);S.cash-=500;S.workers.push(c);say(`Put ${c.name} on the team for $500 up front and ${money(c.wage)} a day.`)}
   if(a==='precruit'){recruitAsk(+el.dataset.i);return}
   if(a==='wstash')return wStashModal(+el.dataset.i);
   if(a==='wgive')return wGive(+el.dataset.i,el.dataset.g,el.dataset.m);
