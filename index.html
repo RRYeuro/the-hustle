@@ -9672,7 +9672,7 @@ try{WD.push(()=>{try{const R=S.rb51;if(R&&S.day>R.d){const n=plugName(R.bi);addT
 try{const _g=window.l45greet;window.l45greet=function(M){let h=_g?_g(M):'';try{const R=S.rb51;if(M&&R&&R.bi===M.bi&&S.day>=R.d)h+=`<div class="btns" style="margin:6px 10px 0"><button class="btn red" data-a="prob" data-i="${M.bi}" data-rb51="1">🔫 Rob ${plugFem(M.bi)?'her':'him'} now</button></div>`}catch(e){}return h}}catch(e){}
 document.addEventListener('click',e=>{
  const r=e.target.closest&&e.target.closest('[data-rb51]');if(r)S.rb51=null;
- const b=e.target.closest&&e.target.closest('[data-p51]');if(!b||b.disabled)return;const bi=+b.dataset.i,a=b.dataset.p51;
+ const b=e.target.closest&&e.target.closest('button[data-p51]');if(!b||b.disabled)return;const bi=+b.dataset.i,a=b.dataset.p51;
  if(a==='setup'){e.preventDefault();e.stopPropagation();setup(bi);render();return}
  if(S.at!==bi&&a!=='ppay'){e.preventDefault();e.stopPropagation();remote(bi,a);render();return}
  /* you are there: the action runs, the plug answers */
