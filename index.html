@@ -11868,4 +11868,75 @@ try{TUT.push(['Day recap, break down, plug chat','After Next day a card shows wh
 })();
 
 </script>
+<script id="gc93js">
+/* gc93: custom group chats. Messages > pencil > New group chat. Friends get pinned in Messages. */
+(function(){if(window._gc93)return;window._gc93=1;
+const E=x=>String(x==null?'':x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])),pk=a=>a[Math.floor(Math.random()*a.length)];
+const G=()=>{S.gcs=S.gcs||[];return S.gcs},gOf=n=>G().find(g=>g.name===n);
+const MC=()=>{try{return window._MC?window._MC():[]}catch(e){return[]}};
+function kind(n){const f=(S.friends||[]).find(x=>x.name===n);if(f)return {k:'fr',t:f.trait||'loyal',close:f.close||0,f};const c=MC().find(x=>x.n===n),s=(c&&c.sub)||'';if(/^Family/i.test(s)||/^(Mama|Dad|Mom|Auntie|Grandma)/i.test(n))return {k:'fam'};if(/plug/i.test(s))return {k:'plug'};return {k:'any'}}
+function post(g,who,t,you){S.inbox=S.inbox||[];S.gcSeq=(S.gcSeq||0)+1;const m=you?{d:S.day,f:'You',to:g.name,t,gc:g.id+':'+S.gcSeq}:{d:S.day,f:g.name,t:who+': '+t,gc:g.id+':'+S.gcSeq};S.inbox.unshift(m);S.inbox=S.inbox.slice(0,150);g.log=g.log||[];g.log.unshift(m);g.log=g.log.slice(0,40)}
+/* group history survives other texts trimming the inbox */
+function fix(){try{const ids=new Set((S.inbox||[]).map(m=>m&&m.gc).filter(Boolean));G().forEach(g=>(g.log||[]).forEach(m=>{if(!ids.has(m.gc)){S.inbox.push(m);ids.add(m.gc)}}))}catch(e){}}
+try{const _ms=window._MS;if(_ms){window._MS=function(){fix();return _ms.apply(this,arguments)};Object.keys(_ms).forEach(k=>window._MS[k]=_ms[k]);const _u=_ms.unread;window._MS.unread=function(){fix();return _u.apply(this,arguments)}}}catch(e){console.error('gc93 ms',e)}
+/* replies by person type */
+const R={
+ link:{loyal:['I\'m down, say when.','Bet, I\'m free.'],wild:['Say less, pull up 🔥','I\'m outside already lol'],snake:['Yeah yeah, where at?'],fam:['I\'m working, y\'all be safe.','Can\'t, but be careful.'],plug:['Stay off the group text.'],any:['Bet.','Maybe.']},
+ low:{loyal:['Appreciate it, staying in.','Say no more.'],wild:['Bet, I\'ll lay low 😤'],snake:['Aight.'],fam:['Okay baby, you be careful too.'],plug:['Noted.'],any:['Seen.']},
+ hi:{loyal:['Yo!','What\'s good fam'],wild:['Wassup 🔥','Boy finally texted'],snake:['Yeah, what you need?'],fam:['Hey baby.'],plug:['What.'],any:['Yo.']},
+ no:{loyal:['I\'m low right now, my bad.'],wild:['Broke as a joke 😭'],snake:['Not this week.'],fam:['Baby I wish I could. Come eat.'],plug:['Not here.'],any:['Can\'t.']}};
+const typ=q=>q.k==='fr'?q.t:q.k==='fam'?'fam':q.k==='plug'?'plug':'any';
+const ACTS=[['link','Who tryna link up?','Who tryna link up later?'],['low','Heads up, stay low today','Heads up. Stay low today.'],['cash','Anybody got $100?','Anybody got $100? I\'ll pay you back.'],['hi','What\'s good?','What\'s good everybody?']];
+function kb(g){const o=ACTS.map(([a,l],i)=>{const used=a==='cash'?S.gcCash===S.day:(g.act||{})[a]===S.day;return `<button class="mth-opt${i===0?' hot':''}" data-gca="${a}" data-gci="${g.id}" ${used&&a!=='hi'?'disabled':''}>${E(l)}${used&&a!=='hi'?' (done today)':''}</button>`}).join('');
+ return `<div class="mth-kb" data-gcw="1"><div class="mth-kt">Text ${E(g.name)} (${g.mem.length})</div>${o}<button class="mth-opt" data-gcdel="${g.id}">Delete this group</button></div>`}
+try{const _k=window.l91kb;window.l91kb=function(t){const g=gOf(t&&t.n);if(g)return kb(g);return _k?_k(t):null}}catch(e){}
+function act(g,a){if(!g.act)g.act={};const txt=ACTS.find(x=>x[0]===a)[2];post(g,'',txt,true);render();
+ let seq=[],i=0;const mem=g.mem.filter(n=>true);
+ let gave=0;
+ mem.forEach(n=>{const q=kind(n),T=typ(q);let line,fx=null;
+  if(a==='link'){if(q.k==='fr'&&(q.t==='wild'||q.close>=30||q.t==='snake')){line=pk(R.link[T]);fx='close2'}else line=q.k==='fr'?'Maybe, let me see.':pk(R.link[T])}
+  else if(a==='low'){line=pk(R.low[T]);if(q.k==='fr')fx='close1'}
+  else if(a==='cash'){if(q.k==='fr'&&q.close>=50&&q.t!=='snake'&&gave<2){gave++;line='Sent $100. Pay me back when you can.';fx='give'}else line=pk(R.no[T])}
+  else line=pk(R.hi[T]);
+  seq.push([n,line,fx,q])});
+ if(a==='hi')seq=seq.sort(()=>Math.random()-.5).slice(0,3);
+ if(a==='cash')S.gcCash=S.day;else if(a!=='hi')g.act[a]=S.day;
+ seq.forEach(([n,line,fx,q],k)=>setTimeout(()=>{try{post(g,n,line,false);
+  if(q.f){if(fx==='close2')q.f.close=Math.min(100,(q.f.close||0)+2);if(fx==='close1')q.f.close=Math.min(100,(q.f.close||0)+1);if(fx==='give'){q.f.close=Math.max(0,(q.f.close||0)-3);S.cash+=100;S.clean=(S.clean||0)+100;try{say('💵 '+n+' sent you $100.')}catch(e){}}}
+  if(k===seq.length-1&&a==='link'&&seq.some(s=>s[2]==='close2')){try{addStress(-2)}catch(e){}}
+  render()}catch(e){console.error('gc93 reply',e)}},700+k*650)) }
+function mk(name,sel){const gs=G();let nm=(name||'').trim().slice(0,18)||sel.slice(0,2).join(' & ');while(gs.some(g=>g.name===nm)||MC().some(c=>c.n===nm))nm+=' 2';
+ S.gcId=(S.gcId||0)+1;const g={id:S.gcId,name:nm,mem:sel.slice(0,6),act:{},log:[]};gs.push(g);post(g,'','Made the group chat.',true);
+ const q=kind(g.mem[0]);post(g,g.mem[0],q.k==='plug'?'Why am I in a group chat?':pk(['yo what\'s this','Okay, who else is in here?','Bet, I\'m here']),false);return g}
+/* picker */
+function pickHTML(){const P=window._gcpick,L=MC().filter(c=>!/^Group/i.test(c.sub||''));
+ return `<div class="msx-sub"><b>New group chat</b> · pick 2 to 6 people</div><input id="gcName" class="mth-in" style="width:100%;margin:6px 0;padding:10px;box-sizing:border-box" maxlength="18" placeholder="Group name (optional)" value="${E(P.name||'')}">${L.map(c=>`<button class="mth-row" data-gcpick="${E(encodeURIComponent(c.n))}"><span class="mth-bd"><span class="mth-l1"><b>${E(c.n)}</b></span><span class="mth-pv">${E(c.sub||'')}</span></span><span class="mth-ch" style="font-size:18px">${P.sel.includes(c.n)?'✅':'⬜'}</span></button>`).join('')}<div class="msx-act" style="margin-top:8px"><button class="go" data-gccreate="1" ${P.sel.length>=2?'':'disabled'}>Create (${P.sel.length})</button><button data-gccancel="1">Cancel</button></div>`}
+const avp=n=>{try{const r=window._AVX&&window._AVX(n,46);if(r&&r.pic)return `<span class="mavw">${r.pic}</span>`}catch(e){}return `<span class="mav" style="background:#3a3350">${E(String(n).replace(/[^A-Za-z0-9]/g,'').charAt(0).toUpperCase()||'?')}</span>`};
+function after(){try{const ph=document.querySelector('.phx[data-app="messages"]');if(!ph)return;
+ const sh=ph.querySelector('.mth-sheet');
+ if(sh){if(window._gcpick)sh.innerHTML=pickHTML();else if(!sh.querySelector('[data-gcnew]'))sh.insertAdjacentHTML('afterbegin',`<button class="mth-row" data-gcnew="1"><span class="mth-bd"><span class="mth-l1"><b>👥 New group chat</b></span><span class="mth-pv">Pick 2 to 6 people</span></span><span class="mth-ch">&#8250;</span></button>`)}
+ const list=ph.querySelector('.mth-list');
+ if(list){let pins=list.querySelector('.mth-pins');if(!pins){const rows=list.querySelector('#mthRows');if(!rows)return;pins=document.createElement('div');pins.className='mth-pins';rows.parentNode.insertBefore(pins,rows)}
+  const have=new Set([...pins.querySelectorAll('[data-mth]')].map(b=>decodeURIComponent(b.dataset.mth)));
+  const add=[].concat(G().map(g=>g.name),(S.friends||[]).map(f=>f.name));
+  add.forEach(n=>{if(have.has(n))return;have.add(n);pins.insertAdjacentHTML('beforeend',`<button class="mth-pin" data-mth="${E(encodeURIComponent(n))}">${avp(n)}<span>${E(n)}</span></button>`)})}
+ const th=ph.querySelector('.mth-th'),g=th&&window._mth&&gOf(window._mth);
+ if(g)th.querySelectorAll('.ph-chat .bub:not(.me)').forEach(b=>{if(b.dataset.g93)return;b.dataset.g93=1;const m=b.textContent.match(/^([^:]{1,20}): ([\s\S]*)$/);if(m&&g.mem.includes(m[1]))b.innerHTML=`<small style="display:block;opacity:.6;font-size:11px;margin-bottom:2px">${E(m[1])}</small>${E(m[2])}`})
+}catch(e){console.error('gc93 after',e)}}
+try{const _r=render;render=function(){const r=_r.apply(this,arguments);try{after()}catch(e){}return r}}catch(e){}
+document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('[data-gcnew],[data-gcpick],[data-gccreate],[data-gccancel],[data-gca],[data-gcdel]');if(!t||t.disabled)return;e.preventDefault();e.stopImmediatePropagation();
+ const d=t.dataset;
+ if(d.gcnew!==undefined){if(G().length>=5){toast&&toast('Max 5 group chats. Delete one first.');return}window._gcpick={sel:[],name:''};render();return}
+ if(d.gcpick!==undefined){const P=window._gcpick;if(!P)return;const inp=document.getElementById('gcName');if(inp)P.name=inp.value;const n=decodeURIComponent(d.gcpick),i=P.sel.indexOf(n);if(i>=0)P.sel.splice(i,1);else if(P.sel.length<6)P.sel.push(n);render();return}
+ if(d.gccancel!==undefined){window._gcpick=null;render();return}
+ if(d.gccreate!==undefined){const P=window._gcpick;if(!P||P.sel.length<2)return;const inp=document.getElementById('gcName');if(inp)P.name=inp.value;const g=mk(P.name,P.sel);window._gcpick=null;window._mcomp=false;window._mth=g.name;render();return}
+ if(d.gca){const g=G().find(x=>x.id==d.gci);if(g)act(g,d.gca);return}
+ if(d.gcdel!==undefined){const g=G().find(x=>x.id==d.gcdel);if(!g)return;S.gcs=G().filter(x=>x!==g);S.inbox=(S.inbox||[]).filter(m=>!(m&&(m.f===g.name||m.to===g.name)));window._mth=null;render();return}
+},true);
+/* tutorial + dev menu */
+try{TUT.push(['Group chats','Phone > Messages > the pencil > New group chat. Pick 2 to 6 contacts and name it. Ask who wants to link up (friends get a little closer), tell them to stay low, or ask for $100 (close friends may send it, once a day). Plugs do not like group texts. Friends are pinned at the top of Messages now.'])}catch(e){}
+try{const _dp=devPanel;devPanel=function(){const r=_dp.apply(this,arguments);try{const mc=document.getElementById('mcard');if(mc&&!document.getElementById('modal').hidden&&!mc.querySelector('[data-d93]')){const d=document.createElement('div');d.innerHTML=`<div class="sec">Group chat (new)</div><div class="btns"><button class="btn" data-d93="1">Make a test group chat</button></div>`;const h2=mc.querySelector('h2');if(h2&&h2.parentNode)h2.parentNode.insertBefore(d,h2.nextSibling);else mc.appendChild(d);
+ d.querySelector('[data-d93]').onclick=ev=>{ev.stopPropagation();document.getElementById('modal').hidden=true;S.friends=S.friends||[];[['Kash','loyal',60],['Bean','wild',30],['Lil Mo','snake',70]].forEach(([n,t,c])=>{if(!S.friends.some(f=>f.name===n))S.friends.push({name:n,trait:t,role:'none',close:c})});const g=mk('Test gang',['Kash','Bean','Lil Mo']);tab='phone';window._phLock=S.day;window._rph='messages';window._mth=g.name;render()}}}catch(e){console.error('gc93 dev',e)}return r}}catch(e){}
+})();
+</script>
 <script>if('serviceWorker' in navigator){addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}</script></body></html>
