@@ -73,7 +73,7 @@ document.addEventListener('toggle',e=>{const d=e.target;if(d&&d.dataset&&d.datas
 
 /* ---- phone tab: count of people waiting on you ---- */
 function waiting(){let n=(S.texts||[]).length;try{n+=(b5().ord||[]).length}catch(e){}return n}
-try{const _r=render;render=function(){const r=_r.apply(this,arguments);try{const t=el('phtab');if(t){const n=S&&!S.over?waiting():0;if(n>0)t.dataset.n92=n>9?'9+':String(n);else delete t.dataset.n92}}catch(e){}return r}}catch(e){}
+try{const _r=render;render=function(){const r=_r.apply(this,arguments);try{const t=el('phtab');if(t){const n=S&&!S.over&&!(window.prNoPhone&&prNoPhone())?waiting():0;if(n>0)t.dataset.n92=n>9?'9+':String(n);else delete t.dataset.n92}}catch(e){}return r}}catch(e){}
 
 /* ---- day recap after Next day ---- */
 const dirty=()=>{try{return Math.floor(dirtyCash())}catch(e){return Math.floor(S.cash)}};
@@ -88,21 +88,23 @@ function recap(a,b,force){
  try{if(b.h>=60)tip='Heat is high. Lay low or switch blocks tomorrow.';else if(daysToCheck&&daysToCheck()<=1)tip='Checks hit tomorrow. Js will be out with money.'}catch(e){}
  modal(`<p class="s" style="letter-spacing:.1em;margin:0">DAY ${a.d} IS DONE</p><h2 style="margin-top:2px">${mood} on ${E(BLOCKS[S.at]||'the block')}</h2><div class="g92"><div><small>Dirty cash</small><b style="color:${dd>=0?'var(--money)':'var(--blood)'}">${sg(dd)}</b></div><div><small>Clean cash</small><b style="color:${dc>=0?'var(--money)':'var(--blood)'}">${sg(dc)}</b></div><div><small>Heat</small><b style="color:${b.h>a.h?'var(--blood)':'var(--money)'}">${a.h} → ${b.h}</b></div><div><small>Rep</small><b style="color:var(--accent)">${a.r} → ${b.r}</b></div></div>${top.length?'<div class="s" style="margin:6px 0">'+top.map(t=>'• '+E(t)).join('<br>')+'</div>':'<p class="s">Nothing big happened.</p>'}${tip?`<p class="s"><b>Tomorrow:</b> ${tip}</p>`:''}<div class="btns"><button class="btn go" id="dr92ok">Start day ${S.day}</button><button class="btn" id="dr92off">Turn day recap off</button></div>`);
  el('dr92ok').onclick=close;el('dr92off').onclick=()=>{S.dr92off=1;close()}}
+try{const _st=skipTime;skipTime=function(){window._sk92=1;try{return _st.apply(this,arguments)}finally{window._sk92=0}}}catch(e){}
 window.l92recap=()=>{const b=snap(),a=S.dr92||Object.assign({},b,{d:S.day-1});recap(a,b,1)};
 try{const _nd=nextDay;nextDay=function(){const end=S&&!S.over?snap():null,start=S&&S.dr92;const r=_nd.apply(this,arguments);
- try{if(S&&!S.over){const ok=end&&start&&start.d===end.d&&!S.dr92off&&!window.FF&&!S.pr&&!S.inJail&&!(el('tu73b'))&&el('modal').hidden&&S.day>1;S.dr92=snap();if(ok)recap(start,end)}}catch(e){console.error('dr92',e)}return r}}catch(e){}
+ try{if(S&&!S.over){const ok=end&&start&&start.d===end.d&&!S.dr92off&&!window.FF&&!window._sk92&&!S.pr&&!S.inJail&&!(el('tu73b'))&&el('modal').hidden&&S.day>1;S.dr92=snap();if(ok)recap(start,end)}}catch(e){console.error('dr92',e)}return r}}catch(e){}
 
 /* ---- break down: bag up weight for the Js ---- */
 const SZ=[['g','Grams','for the Js',.15],['e','Eighths','steady sellers',.10],['o','Ounces','for regulars',.05]];
 const bg=id=>{S.bg92=S.bg92||{};const b=S.bg92[id]||{n:0,p:0};b.n=Math.min(b.n,S.inv[id]||0);return b};
+const home=()=>{try{return !S.pr&&!S.inJail&&S.at===homeBlock()}catch(e){return false}};
 function bagRows(){let h='';GOODS.forEach(g=>{if(g.unit!=='g')return;const inv=S.inv[g.id]||0;if(inv<=0)return;const b=bg(g.id),loose=Math.round((inv-b.n)*10)/10;
  if(loose<28&&b.n<=0)return;
- h+=`<div class="row"><div class="info"><div class="t">${E(g.name)}</div><div class="s">${b.n>0?`${amt(b.n,g)} bagged (+${Math.round(b.p*100)}% from Js) · `:''}${amt(loose,g)} loose</div></div>${loose>=28?`<div class="btns"><button class="btn go" data-bd92="${g.id}">Break down</button></div>`:''}</div>`});
+ h+=`<div class="row"><div class="info"><div class="t">${E(g.name)}</div><div class="s">${b.n>0?`${amt(b.n,g)} bagged (+${Math.round(b.p*100)}% from Js) · `:''}${amt(loose,g)} loose</div></div>${loose>=28?(home()?`<div class="btns"><button class="btn go" data-bd92="${g.id}">Break down</button></div>`:`<div class="s" style="color:var(--dim);max-width:120px;text-align:right">Break down at your place (${E(BLOCKS[homeBlock()])})</div>`):''}</div>`});
  return h?`<div class="sec">Break it down</div>`+h:''}
 window.l92bag=()=>{try{return bagRows()}catch(e){console.error('bd92',e);return ''}};
 function pick(id){const g=G(id),b=bg(id),loose=(S.inv[id]||0)-b.n,n=Math.min(448,Math.floor(loose));
  modal(`<h2>Break down</h2><p>Bag up <b>${amt(n,g)}</b> of loose ${E(g.name)}${loose>448?' (1 lb at a time)':''}. Bagged product sells for more when Js buy it.</p><div class="bd92">${SZ.map(z=>`<button class="btn${z[0]==='e'?' go':''}" data-bz92="${z[0]}" data-g="${id}"><b>${z[1]}</b><br><small>${z[2]} · +${Math.round(z[3]*100)}%</small></button>`).join('')}</div><p class="s">Takes 1 hour and 10 energy. Smaller bags sell for more each.</p><div class="btns"><button class="btn" id="bd92x">Never mind</button></div>`);el('bd92x').onclick=()=>{close();invModal()}}
-function bagUp(id,k){const z=SZ.find(x=>x[0]===k),g=G(id);if(!z||!g)return;const b=bg(id),loose=(S.inv[id]||0)-b.n,n=Math.min(448,Math.floor(loose));if(n<1)return close();
+function bagUp(id,k){const z=SZ.find(x=>x[0]===k),g=G(id);if(!z||!g||!home())return;const b=bg(id),loose=(S.inv[id]||0)-b.n,n=Math.min(448,Math.floor(loose));if(n<1)return close();
  close();if(!spendEn(10))return;try{if(window.l82add)l82add(60)}catch(e){}
  b.p=(b.n*b.p+n*z[3])/(b.n+n);b.n+=n;S.bg92[id]=b;say(`You bagged up ${amt(n,g)} of ${g.name} into ${z[1].toLowerCase()}. Js pay about ${Math.round(z[3]*100)}% more for it.`);render();invModal()}
 document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('[data-bd92],[data-bz92]');if(!t)return;e.preventDefault();e.stopPropagation();
@@ -113,7 +115,7 @@ try{const _sc=serveCusto;serveCusto=function(ci){const inv0={},c0=S.cash;GOODS.f
 /* ---- dev + how to play ---- */
 try{const _dp=devPanel;devPanel=function(){const r=_dp.apply(this,arguments);try{const mc=el('mcard');if(mc&&!mc.querySelector('[data-d92]')){const d=document.createElement('div');d.innerHTML='<div class="sec">UI set (new)</div><div class="btns"><button class="btn" data-d92="r">Show day recap</button><button class="btn" data-d92="w">Give 1 lb weed</button></div>';mc.insertBefore(d,mc.querySelector('.btns:last-child'));
  d.addEventListener('click',e=>{const k=(e.target.closest('[data-d92]')||{}).dataset;if(!k||!k.d92)return;if(k.d92==='r'){close();l92recap()}else if(k.d92==='w'){S.inv.loud=(S.inv.loud||0)+448;close();say('+1 lb weed. Tap Stash to break it down.');render()}})}}catch(e){}return r}}catch(e){}
-try{TUT.push(['Day recap, break down, plug chat','After Next day a card shows what you made (dirty and clean), heat and rep, and what happened. You can turn it off on the card. In Stash (tap Stash ›), Break down bags up loose weight (1 lb at a time, 1 hour, 10 energy): grams +15%, eighths +10%, ounces +5% when Js buy it. Plug meets now look like a text chat: his menu comes in as a message, tap Respect, Haggle or Flex to talk. Street business on the Block tab folds into one row, tap it to open. The red number on Phone is how many people are waiting on you. Tap your face for your profile card (fit, jewelry, ride, gun, home, drip, stash). Stash has tabs: Active, Storage, On the way.'])}catch(e){}
+try{TUT.push(['Day recap, break down, plug chat','After Next day a card shows what you made (dirty and clean), heat and rep, and what happened. You can turn it off on the card. In Stash (tap Stash ›), at your place, Break down bags up loose weight (1 lb at a time, 1 hour, 10 energy): grams +15%, eighths +10%, ounces +5% when Js buy it. Plug meets now look like a text chat: his menu comes in as a message, tap Respect, Haggle or Flex to talk. Street business on the Block tab folds into one row, tap it to open. The red number on Phone is how many people are waiting on you. Tap your face for your profile card (fit, jewelry, ride, gun, home, drip, stash). Stash has tabs: Active, Storage, On the way.'])}catch(e){}
 })();
 
 </script>

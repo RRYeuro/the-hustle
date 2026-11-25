@@ -24,7 +24,7 @@ with sync_playwright() as p:
   # recap
   J("()=>{document.getElementById('modal').hidden=true;S.dr92=null;nextDay();document.getElementById('modal').hidden=true;S.cash+=700;S.heat+=5;S.log.push({d:S.day,t:'Sold to a J for $700'});nextDay()}");pg.wait_for_timeout(500)
   ok('recap shown',J("()=>!!document.getElementById('dr92ok')"));pg.screenshot(path='/tmp/a_recap.png')
-  J("()=>{document.getElementById('modal').hidden=true;S.inv.loud=600;S.en=60;render();invModal()}")
+  J("()=>{document.getElementById('modal').hidden=true;S.inv.loud=600;S.en=60;S.at=homeBlock();render();invModal()}")
   ok('bag rows',J("()=>!!document.querySelector('[data-bd92=loud]')"))
   J("()=>document.querySelector('[data-bd92=loud]').click()");pg.wait_for_timeout(200);pg.screenshot(path='/tmp/a_bd.png')
   J("()=>document.querySelector('[data-bz92=g]').click()");pg.wait_for_timeout(200)

@@ -130,7 +130,7 @@ Feature source copies: dev/skins/. Tests: dev/tests/ (crash test: dev/tests/t_fu
 | skin60 | 0k | openPlace | Javi and Mateo cards in texts: face thumbnail instead of the whole collage |
 | skin73 | 10k | devPanel, render | {steps,i,t0,base,miss} |
 | skin76 | 3k | devPanel, render, sfx | popups slide in + panel reveal |
-| skin92 | 13k | devPanel, nextDay, paneBlock, render, serveCusto | skin92: UI set. Block fold, phone tab count, day recap, break down (bag up), tap sizes |
+| skin92 | 14k | devPanel, nextDay, paneBlock, render, serveCusto, skipTime | skin92: UI set. Block fold, phone tab count, day recap, break down (bag up), tap sizes |
 
 ## Other
 
