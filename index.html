@@ -7142,7 +7142,7 @@ function mainMenu(canContinue){
   window.pendingDaily=0;if($('mdaily'))$('mdaily').onclick=dcStart;
   if($('mhall'))$('mhall').onclick=()=>hallModal(()=>mainMenu(canContinue));
   if($('mc'))$('mc').onclick=()=>{$('modal').hidden=true;render()};
-  $('ms').onclick=()=>slotsModal('new','story');$('mb').onclick=()=>slotsModal('new','sandbox');$('ml').onclick=()=>slotsModal('load');if($('mret'))$('mret').onclick=()=>{$('modal').classList.remove('splash');$('retire').click()};$('mlife').onclick=()=>slotsModal('new','life');
+  $('ms').onclick=()=>slotsModal('new','story');$('mb').onclick=()=>slotsModal('new','sandbox');$('ml').onclick=()=>slotsModal('load');if($('mret'))$('mret').onclick=()=>{$('modal').classList.remove('splash');$('retire').onclick()};$('mlife').onclick=()=>slotsModal('new','life');
   $('mh').onclick=()=>tutorial(0,()=>mainMenu(canContinue));
   $('mbak').onclick=()=>backupModal(()=>mainMenu(canContinue));
   $('mcode').onclick=()=>{modal(`<h2>Enter a code</h2><input id="cin" maxlength="24" autocomplete="off" autocapitalize="characters" placeholder="Code" style="width:100%;padding:10px;border-radius:6px;border:1px solid var(--line);background:var(--bg);color:var(--fg);font:inherit;text-transform:uppercase"><p id="cmsg" class="s" style="min-height:1.2em"></p><div class="btns"><button class="btn go" id="cok">Enter</button><button class="btn" id="cbk">Back</button></div>`);
@@ -11716,7 +11716,7 @@ function label(btn){const fn=btn.onclick;if(typeof fn!=='function')return;const 
   if(k==='cash'&&!all){parts.push('maybe '+fmt(k,lo,hi));return}parts.push((!all&&k!=='cash'?'maybe ':'')+(k==='cash'?fmt(k,lo,hi):fmt(k,lo,hi).replace(/^maybe /,'')))});
  if(R.every(d=>d.day>=1))parts.push('takes the day');
  if(!parts.length)return;btn.textContent=btn.textContent.trim()+' · '+parts.slice(0,3).join(' · ');btn.dataset.x90=1}
-function scan(){try{const M=el('modal'),mc=el('mcard');if(!M||M.hidden||!mc||mc.dataset.s90===mc.innerHTML.length+'')return;if(window.__sim90||(typeof mgOn!=='undefined'&&mgOn))return;
+function scan(){try{const M=el('modal'),mc=el('mcard');if(!M||M.hidden||M.classList.contains('splash')||!mc||mc.dataset.s90===mc.innerHTML.length+'')return;if(window.__sim90||(typeof mgOn!=='undefined'&&mgOn))return;
  if(!mc.querySelector('h2')||mc.querySelectorAll('.row').length>1||mc.querySelector('input,select,textarea,#again'))return;
  const bs=[...mc.querySelectorAll('button')].filter(b=>!b.classList.contains('xbtn')&&!b.disabled&&b.offsetParent&&!/·/.test(b.textContent)&&!(b.id&&SKIP.test(b.id))&&typeof b.onclick==='function'&&!/^(next day|stay, next day|lay low|nap|close|leave|cancel|back|done|okay|ok|got it|not yet|start)\b/i.test(b.textContent.trim()));
  const all=[...mc.querySelectorAll('.btns button')].filter(b=>!b.classList.contains('xbtn')&&b.offsetParent);if(all.length<2||all.length>5||!bs.length)return;
