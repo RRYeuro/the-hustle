@@ -4035,7 +4035,7 @@ function invModal(){
   const note=home?`You're home on ${hb}. The safe is open.`:`<b style="color:var(--blood)">The safe is at your place on ${hb}.</b> You're on ${BLOCKS[S.at]}. Go home to put things in or take them out.`;
   const cb=(lab,u,c)=>{const pc=c>0?Math.min(100,Math.round(u/c*100)):0,col=pc<60?'var(--money)':pc<85?'var(--heat)':'var(--blood)';return `<div class="s" style="display:flex;justify-content:space-between"><span>${lab}</span><span>${Math.round(u)}/${c} (${pc}%)</span></div><div class="bar" style="height:8px;margin-bottom:6px"><i style="width:${pc}%;background:${col}"></i></div>`};
   modal(`<h2>Inventory</h2><p class="s" style="color:var(--dim)">${HOMES[S.home].name}<br>${note}</p>${cb('On you (stash)',used(),S.cap)}${cb('Safe',vUsed(),vaultCap())}
-    <div class="btns" style="margin:4px 0 8px">${[['active','Active'],['storage','Storage'],['ship','Recent shipments']].map(([k,l])=>`<button class="btn ${(window.__invT||'active')===k?'go':''}" data-it="${k}">${l}</button>`).join('')}<button class="btn ${S.smartBuy?'go':''}" data-it="sb" title="Buys never spend your last 15% of cash">Smart Buy ${S.smartBuy?'ON':'OFF'}</button></div>
+    <div class="i93tabs">${[['active','Active'],['storage','Storage'],['ship','On the way']].map(([k,l])=>`<button class="btn ${(window.__invT||'active')===k?'go':''}" data-it="${k}">${l}</button>`).join('')}</div><div class="i93sb"><span>Smart Buy: buys never spend your last 15% of cash</span><button class="btn ${S.smartBuy?'go':''}" data-it="sb">${S.smartBuy?'ON':'OFF'}</button></div>
     <div id="invship" style="display:none">${(S.ship||[]).length?(S.ship||[]).map(x=>`<div class="row"><div class="info"><div class="t">${amt(x.n,G(x.g))} ${G(x.g).name}</div><div class="s">From ${x.c} · lands ${x.day<=S.day?'today':dayTxt(x.day)}</div></div></div>`).join(''):'<div class="row"><div class="info"><div class="s">Nothing on the way.</div></div></div>'}${(S.log||[]).filter(l=>/shipment|package|landed|just dropped/i.test(l.t)).slice(0,6).map(l=>`<div class="row"><div class="info"><div class="s">${esc(l.t)}</div></div></div>`).join('')}</div>${S.habit>=6&&ad?'<p class="s" style="color:var(--blood)">You are hooked. Stress climbs every day you do not use. The hospital on Northline can detox you.</p>':''}
     ${window.l92bag?l92bag():''}<div class="invg"><div class="invc">${L}</div><div class="invc">${R}</div></div>
     <p class="s" style="color:var(--dim)">Whatever is in the safe can not get jacked, raided, snitched on or busted with you.</p><div class="btns"><button class="btn go" id="invx">Done</button></div>`);
@@ -7098,7 +7098,7 @@ $('pane').onclick=e=>{sfx('tap');const pp=e.target.closest('.mapp');if(pp)return
 $('retire').onclick=()=>{modal(`${a2('retire',320)}<h2>Retire your career?</h2><p>This ends the run and shows your final score. You cannot undo it.</p><div class="btns"><button class="btn red" id="rok">Retire</button><button class="btn" id="rno">Keep playing</button></div>`);$('rok').onclick=()=>{$('modal').hidden=true;S.over=true;checkEnd()};$('rno').onclick=close};
 const BUILD='v216';
 const DISCORD_INVITE='https://discord.gg/bVsvWzbGW';const OG_UNTIL=Infinity;
-const ogBox=()=>DISCORD_INVITE&&Date.now()<OG_UNTIL?`<a href="${DISCORD_INVITE}" target="_blank" rel="noopener" style="display:block;text-decoration:none;border:2px solid var(--accent);border-radius:10px;padding:10px 12px;background:rgba(0,0,0,.55);color:#fff;text-align:left"><div style="font-family:var(--label);font-weight:700;letter-spacing:.14em;color:var(--accent);font-size:12px">THE HUSTLE COMMUNITY</div><div style="font-size:13px;margin-top:3px">Join the Discord to pitch ideas, report bugs and back the game when it launches. Tap to join →</div></a>`:'';
+
 
 function backupModal(back){
   const keys=()=>{const o={};for(let n=1;n<=9;n++){const r=readSlot(n);if(r)o[n]=r}return o};
@@ -7127,23 +7127,21 @@ function mainMenu(canContinue){
     <div class="stitle"><h2 style="font-size:54px;color:var(--accent);line-height:1">THE HUSTLE</h2><div style="font-family:var(--label);font-weight:700;letter-spacing:.24em;color:#fff;margin-top:6px">NO DAYS OFF</div></div>
     <p style="color:#ddd;text-shadow:0 1px 6px #000;margin:0">Columbia, SC. Six blocks. Four crews. One way to the top.</p>
     <div style="color:#bbb;font-size:12px;letter-spacing:.08em">Build ${BUILD}</div>
-    ${ogBox()}
     ${canContinue?'<button class="btn go" id="mc" style="padding:12px">Continue</button>':''}
-    <button class="btn ${canContinue?'':'go'}" id="ms" style="padding:12px">Story mode</button>
-    <button class="btn" id="mb" style="padding:12px">Sandbox</button>
-    <button class="btn" id="mlife" style="padding:12px">Life mode</button>
-    <button class="btn" id="mdaily" style="padding:12px">📅 Daily challenge</button>
-    <button class="btn" id="ml" style="padding:12px">Load game</button>
-    ${canContinue&&typeof S!=='undefined'&&S&&!S.over?'<button class="btn" id="mret" style="padding:12px">Retire and see your score</button>':''}
-    ${hallGet().length?'<button class="btn" id="mhall" style="padding:12px">🏆 Hall of the block</button>':''}
-    <button class="btn" id="mh" style="padding:12px">How to play</button>
-    <div class="btns" style="justify-content:center"><button class="btn" id="msnd">Sound: ${SND.sfx?'On':'Off'}</button><button class="btn" id="mmus">Music: ${SND.music?'On':'Off'}</button><button class="btn" id="mcode">Codes</button><button class="btn" id="mbak">Backup</button></div></div>`);
+    <div class="m93g"><button class="btn ${canContinue?'':'go'}" id="ms">New story</button><button class="btn" id="mb">New sandbox</button><button class="btn" id="mlife">New life</button></div>
+    <div class="m93g2"><button class="btn" id="mdaily">Daily challenge</button><button class="btn" id="ml">Load game</button>${hallGet().length?'<button class="btn" id="mhall">Hall of the block</button>':''}<button class="btn" id="mh">How to play</button>${typeof S!=='undefined'&&S&&S.char&&!S.over?'<button class="btn" id="tu73r">Replay tutorial</button>':''}</div>
+    ${DISCORD_INVITE&&Date.now()<OG_UNTIL?`<a class="m93d" href="${DISCORD_INVITE}" target="_blank" rel="noopener">💬 Join the Discord: ideas, bugs, launch news →</a>`:''}
+    <div class="m93s"><button class="btn" id="msnd">🔊 ${SND.sfx?'On':'Off'}</button><button class="btn" id="mmus">🎵 ${SND.music?'On':'Off'}</button><button class="btn" id="mcln">🗣 ${window.l45Clean&&l45Clean()?'Clean':'Raw'}</button><button class="btn" id="mcode">Codes</button><button class="btn" id="mbak">Backup</button></div>
+    ${canContinue&&typeof S!=='undefined'&&S&&!S.over?'<button class="m93r" id="mret">Retire and see your score</button>':''}</div>`);
+  $('mcard').classList.add('m93');
   {const m=$('modal');m.classList.add('splash');m.style.setProperty('--sp',`url(${SPLASHP})`)}
   window.pendingDaily=0;if($('mdaily'))$('mdaily').onclick=dcStart;
   if($('mhall'))$('mhall').onclick=()=>hallModal(()=>mainMenu(canContinue));
   if($('mc'))$('mc').onclick=()=>{$('modal').hidden=true;render()};
   $('ms').onclick=()=>slotsModal('new','story');$('mb').onclick=()=>slotsModal('new','sandbox');$('ml').onclick=()=>slotsModal('load');if($('mret'))$('mret').onclick=()=>{$('modal').classList.remove('splash');$('retire').onclick()};$('mlife').onclick=()=>slotsModal('new','life');
-  $('mh').onclick=()=>tutorial(0,()=>mainMenu(canContinue));
+  $('mh').onclick=()=>window.l83help?l83help(()=>mainMenu(canContinue)):tutorial(0,()=>mainMenu(canContinue));
+  if($('tu73r'))$('tu73r').onclick=()=>{$('modal').hidden=true;$('modal').classList.remove('splash');if(window.l73tour)l73tour()};
+  if($('mcln'))$('mcln').onclick=()=>{try{localStorage.setItem('tl-clean',window.l45Clean&&l45Clean()?'0':'1')}catch(e){}mainMenu(canContinue)};
   $('mbak').onclick=()=>backupModal(()=>mainMenu(canContinue));
   $('mcode').onclick=()=>{modal(`<h2>Enter a code</h2><input id="cin" maxlength="24" autocomplete="off" autocapitalize="characters" placeholder="Code" style="width:100%;padding:10px;border-radius:6px;border:1px solid var(--line);background:var(--bg);color:var(--fg);font:inherit;text-transform:uppercase"><p id="cmsg" class="s" style="min-height:1.2em"></p><div class="btns"><button class="btn go" id="cok">Enter</button><button class="btn" id="cbk">Back</button></div>`);
     const go=()=>{const c=$('cin').value.trim().toUpperCase().replace(/\s+/g,'');const r=CODES[CH(c)];$('cmsg').textContent=r?r():'That code ain\'t it.';$('cmsg').style.color=r?'var(--money)':'var(--blood)'};
@@ -7341,12 +7339,19 @@ document.addEventListener('click',e=>{let b=e.target.closest&&e.target.closest('
  b=e.target.closest&&e.target.closest('.tabs button[data-t="phone"]');if(b)window._rph=null},true);
 /* character card replaces Bag */
 document.addEventListener('click',e=>{const m=e.target.closest&&e.target.closest('#me');if(!m||e.target.closest('button'))return;e.preventDefault();e.stopPropagation();
- let h='<div class="sec">Your fit</div>';try{const bag=document.createElement('div');bag.innerHTML=paneBag();bag.querySelectorAll('.sec').forEach(s=>{if(/^On you/.test(s.textContent))return;let n=s;h+=s.outerHTML;while((n=n.nextElementSibling)&&!n.classList.contains('sec'))h+=n.outerHTML})}catch(er){}
- try{const gk=Object.keys(S.guns||{}).sort((a,b)=>gStr(b)-gStr(a));h+=`<div class="sec">Your gun</div><div class="row"><div class="info"><div class="s">${gk.length?gk.map(k=>GUNS[k].name).join(', '):'No gun on you'}</div></div></div>`}catch(er){}try{let hs='';const H0=HOMES[S.home]||{},hn=S.home==='family'?"Family's house":(H0.name||'Home');hs+=`<div class="row"><div class="info"><div class="t">🏠 ${esc(hn)}</div><div class="s">Where you stay · ${BLOCKS[homeBlock()]}</div></div></div>`;
- const re=(b5().re||[]);re.forEach(q=>{hs+=`<div class="row"><div class="info"><div class="t">🏘️ ${esc(q.n)}</div><div class="s">Rental you own · worth ${money(Math.round(q.v))} · rent ${money(q.rent)} a week${q.vac>S.day?' · empty':''}</div></div></div>`});
- try{if(shSt().own)hs+=`<div class="row"><div class="info"><div class="t">🔒 Stash house</div><div class="s">${BLOCKS[homeBlock()]} · holds your stash</div></div></div>`}catch(er){}
- if(hs)h+=`<div class="sec">Your houses</div>${hs}`}catch(er){}
- h+='<div class="btns" style="margin-top:8px"><button class="btn" data-mclose="1">Close</button></div>';modal(h)},true);
+ const T=(k,b,sp,w)=>`<div class="${w?'f93w':''}"><small>${k}</small><b>${b}</b>${sp?`<span>${sp}</span>`:''}</div>`;let h='',nm='You',face='';
+ try{nm=(document.querySelector('#me .info .t')||{}).textContent||'You';face=(document.querySelector('#me img')||{}).src||''}catch(er){}
+ h+=`<div class="f93h">${face?`<img src="${face}" alt="">`:''}<div><b>${esc(nm)}</b><small>${esc(($('rk')||{}).textContent||'')} · Level ${S.lvl||1} · Rep ${S.rep||0}</small></div></div><div class="f93g">`;
+ try{const F=FITS[S.fit||'street']||{},fo=Object.keys(S.fits||{street:1}).filter(k=>(S.fits||{street:1})[k]&&FITS[k]).length;h+=T('Fit',esc(F.n||'Street fit'),`${fo} owned · change at the mall`)}catch(er){}
+ try{const jw=Object.keys(JEWEL).filter(k=>(S.jew||{})[k]);h+=T('Jewelry',jw.length?esc(jw.map(k=>JEWEL[k].n).join(', ')):'None yet','Chains at the mall build drip')}catch(er){}
+ try{h+=T('Ride',S.car?esc(CARS[S.car].name):'No car',S.car?`+${CARS[S.car].trunk} stash space`:'You walk. Car lot is in Move.')}catch(er){}
+ try{const gk=Object.keys(S.guns||{}).sort((a,b)=>gStr(b)-gStr(a));h+=T('Gun',gk.length?esc(gk.map(k=>GUNS[k].name).join(', ')):'None',gk.length?'On you':'Unc at the tire shop sells them')}catch(er){}
+ try{let hs='';const H0=HOMES[S.home]||{},hn=S.home==='family'?"Family's house":(H0.name||'Home');hs+=`🏠 ${esc(hn)} · ${BLOCKS[homeBlock()]}`;
+  (b5().re||[]).forEach(q=>{hs+=`<br>🏘️ ${esc(q.n)} · rent ${money(q.rent)}/wk${q.vac>S.day?' · empty':''}`});try{if(shSt().own)hs+=`<br>🔒 Stash house · ${BLOCKS[homeBlock()]}`}catch(er){}
+  h+=`<div class="f93w"><small>Home</small><span style="color:var(--fg)">${hs}</span></div>`}catch(er){}
+ try{if(window.l38HTML){const d=l38HTML().replace(/<div class="sec">[^<]*<\/div>/,'').replace(/<div class="row"[^>]*>/,'').replace(/<\/div>$/,'');h+=`<div class="f93w"><small>Drip</small>${d}</div>`}}catch(er){}
+ try{h+=`<div class="f93w" style="flex-direction:row;align-items:center"><div style="flex:1"><small style="display:block">Stash space</small><b>${Math.round(used())} of ${S.cap} used</b></div><button class="btn" data-a="inv">Stash</button></div>`}catch(er){}
+ h+='</div><div class="btns" style="margin-top:10px"><button class="btn" data-mclose="1">Close</button></div>';modal(h)},true);
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-mclose]');if(b){e.preventDefault();e.stopPropagation();close()}},true);
 })();
 </script>
@@ -9429,8 +9434,7 @@ function courtLines(title,text){const C=crtCourt(),ch=((/Court:[^.]*\.[^.]*\.\s*
 const _wc=wCard;wCard=function(art,title,text,opts,tag){try{if(tag==='Court'&&['Court date','Trial day','Your strategy'].includes(title)){const h=courtLines(title,text||'');if(h)text=h+`<span class="vi45">${text}</span>`}}catch(e){console.error('sk45 court',e)}return _wc.call(this,art,title,cl(text),opts,tag)};
 /* remember which lawyer you picked so they talk like it */
 try{const _wcs=w4Counsel;w4Counsel=function(){const o=_wcs.apply(this,arguments);try{return o.map(x=>({...x,f:()=>{try{const X=w4();X.law=/Public defender/.test(x.l)?'pd':/Top attorney/.test(x.l)?'top':/Private lawyer/.test(x.l)?'mid':X.law}catch(e){}return x.f()}}))}catch(e){return o}}}catch(e){}
-/* ---------- clean language switch on the main menu ---------- */
-try{const _mm=mainMenu;mainMenu=function(c){const r=_mm.apply(this,arguments);try{const m=document.getElementById('mmus');if(m&&!document.getElementById('mcln')){m.insertAdjacentHTML('afterend',`<button class="btn" id="mcln">Language: ${l45Clean()?'Clean':'Raw'}</button>`);document.getElementById('mcln').onclick=()=>{try{localStorage.setItem('tl-clean',l45Clean()?'0':'1')}catch(e){}mainMenu(c)}}}catch(e){}return r}}catch(e){}
+
 try{TUT.push(['Talking','People talk like themselves now. Low plugs are loose, Big plugs say little, and the more a plug trusts you the warmer they get. In court the judge, the solicitor and your lawyer speak, and the facts sit under it in small text. There is cursing. Turn on Language: Clean on the main menu to swap it out.'])}catch(e){}
 })();</script>
 <script id="skin46js">
@@ -10886,8 +10890,7 @@ function unlocks(){if(typeof S==='undefined'||!S||S.over||modalOpen()||!S.char)r
   S.ul73[id]=1;const more=vis('.moretab');const t=vis('#'+id)?()=>vis('#'+id):()=>vis('.moretab');start([{el:t,txt:txt+(vis('#'+id)?'':' Find it under ☰ More.'),next:1}],1);return}}
 /* the old saves: anyone past day 1 never sees the choice card */
 try{const _r=render;render=function(){const r=_r.apply(this,arguments);try{if(S&&!S.tut73&&S.day>1)S.tut73='old'}catch(e){}return r}}catch(e){}
-/* main menu: replay */
-try{const _mm=mainMenu;mainMenu=function(){const r=_mm.apply(this,arguments);try{const mh=document.getElementById('mh');if(mh&&!document.getElementById('tu73r')&&typeof S!=='undefined'&&S&&S.char&&!S.over){const b=document.createElement('button');b.className='btn';b.id='tu73r';b.style.padding='12px';b.textContent='▶ Replay tutorial';mh.after(b);b.onclick=()=>{document.getElementById('modal').hidden=true;window.l73tour()}}}catch(e){}return r}}catch(e){}
+
 /* dev */
 try{const _dp=devPanel;devPanel=function(){const r=_dp.apply(this,arguments);try{const mc=document.getElementById('mcard');if(mc&&!mc.querySelector('[data-d73]')){const d=document.createElement('div');d.innerHTML='<div class="sec">Tutorial (new)</div><div class="btns"><button class="btn" data-d73="t">Start tutorial</button><button class="btn" data-d73="c">Show Play/Skip card</button><button class="btn" data-d73="u">Reset unlock spotlights</button></div>';const h2=mc.querySelector('h2');(h2&&h2.parentNode?h2.parentNode:mc).insertBefore(d,h2?h2.nextSibling:mc.firstChild);
  d.querySelectorAll('[data-d73]').forEach(b=>b.onclick=ev=>{ev.stopPropagation();const k=b.dataset.d73;document.getElementById('modal').hidden=true;if(k==='t')window.l73tour();else if(k==='c')window.l73start();else{S.ul73={};say('Unlock spotlights reset.');render()}})}}catch(e){}return r}}catch(e){}
@@ -11764,7 +11767,29 @@ details.f92>.in{padding:0 8px 8px}
 .g92 small{display:block;color:var(--dim);font-size:12px}.g92 b{font-size:20px}
 .bd92{display:grid;grid-template-columns:1fr;gap:8px;margin:10px 0}
 .bd92 .btn{min-height:52px;line-height:1.25;text-transform:none;padding:8px 14px;text-align:left}`;
-css.textContent+=`#mt31.c92{padding:0}
+css.textContent+=`.f93h{display:flex;gap:12px;align-items:center;margin:4px 0 12px}
+.f93h img{width:64px;height:64px;border-radius:14px;object-fit:cover;border:2px solid var(--accent);flex:none}
+.f93h b{font-size:20px;display:block}.f93h small{color:var(--dim)}
+.f93g{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.f93g>div{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:10px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.f93g small{color:var(--dim);font-size:11px;letter-spacing:.08em;text-transform:uppercase}
+.f93g b{font-size:15px}.f93g span,.f93g .s{font-size:12px;color:var(--dim)}.f93g .t{font-size:14px}
+.f93w{grid-column:1/-1}
+.i93tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));background:rgba(255,255,255,.06);border-radius:12px;padding:3px;gap:3px;margin:6px 0}
+.i93tabs .btn{min-height:40px;border:0;border-radius:10px;background:transparent;font-size:12px}
+.i93tabs .btn.go{background:var(--accent);color:#1a1205}
+.i93sb{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:12px;color:var(--dim);margin:0 0 8px}
+.i93sb .btn{min-height:36px!important;font-size:11px;flex:none}
+.m93 .swrap{gap:8px!important}
+.m93g{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.m93g2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.m93 .m93g .btn,.m93 .m93g2 .btn{padding:9px 4px;font-size:12px}
+.m93 #mc{padding:12px}
+.m93d{display:block;text-decoration:none;border:1px solid var(--accent);border-radius:10px;padding:8px 12px;background:rgba(0,0,0,.55);color:#fff;font-size:12px;text-align:left}
+.m93s{display:flex;flex-wrap:nowrap;gap:4px;justify-content:center}
+.m93 .m93s .btn{min-height:34px;padding:4px 7px;font-size:10px;letter-spacing:0}
+.m93r{background:none;border:0;color:#e8504a;font:600 12px var(--label,inherit);letter-spacing:.06em;text-decoration:underline;padding:6px;cursor:pointer;align-self:center}
+#mt31.c92{padding:0}
 #mt31.c92 .mt31w{display:flex;flex-direction:column;min-height:100%}
 .h92{position:sticky;top:0;z-index:2;display:flex;align-items:center;gap:10px;padding:12px;padding-top:max(12px,env(safe-area-inset-top));background:rgba(18,15,24,.97);border-bottom:1px solid rgba(255,255,255,.08)}
 .h92 img{width:44px;height:44px;border-radius:50%;object-fit:cover;border:2px solid var(--accent,#f5b72a);flex:none}
@@ -11837,7 +11862,7 @@ try{const _sc=serveCusto;serveCusto=function(ci){const inv0={},c0=S.cash;GOODS.f
 /* ---- dev + how to play ---- */
 try{const _dp=devPanel;devPanel=function(){const r=_dp.apply(this,arguments);try{const mc=el('mcard');if(mc&&!mc.querySelector('[data-d92]')){const d=document.createElement('div');d.innerHTML='<div class="sec">UI set (new)</div><div class="btns"><button class="btn" data-d92="r">Show day recap</button><button class="btn" data-d92="w">Give 1 lb weed</button></div>';mc.insertBefore(d,mc.querySelector('.btns:last-child'));
  d.addEventListener('click',e=>{const k=(e.target.closest('[data-d92]')||{}).dataset;if(!k||!k.d92)return;if(k.d92==='r'){close();l92recap()}else if(k.d92==='w'){S.inv.loud=(S.inv.loud||0)+448;close();say('+1 lb weed. Tap Stash to break it down.');render()}})}}catch(e){}return r}}catch(e){}
-try{TUT.push(['Day recap, break down, plug chat','After Next day a card shows what you made (dirty and clean), heat and rep, and what happened. You can turn it off on the card. In Stash (tap Stash ›), Break down bags up loose weight (1 lb at a time, 1 hour, 10 energy): grams +15%, eighths +10%, ounces +5% when Js buy it. Plug meets now look like a text chat: his menu comes in as a message, tap Respect, Haggle or Flex to talk. Street business on the Block tab folds into one row, tap it to open. The red number on Phone is how many people are waiting on you.'])}catch(e){}
+try{TUT.push(['Day recap, break down, plug chat','After Next day a card shows what you made (dirty and clean), heat and rep, and what happened. You can turn it off on the card. In Stash (tap Stash ›), Break down bags up loose weight (1 lb at a time, 1 hour, 10 energy): grams +15%, eighths +10%, ounces +5% when Js buy it. Plug meets now look like a text chat: his menu comes in as a message, tap Respect, Haggle or Flex to talk. Street business on the Block tab folds into one row, tap it to open. The red number on Phone is how many people are waiting on you. Tap your face for your profile card (fit, jewelry, ride, gun, home, drip, stash). Stash has tabs: Active, Storage, On the way.'])}catch(e){}
 })();
 
 </script>

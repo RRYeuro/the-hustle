@@ -74,8 +74,7 @@ function unlocks(){if(typeof S==='undefined'||!S||S.over||modalOpen()||!S.char)r
   S.ul73[id]=1;const more=vis('.moretab');const t=vis('#'+id)?()=>vis('#'+id):()=>vis('.moretab');start([{el:t,txt:txt+(vis('#'+id)?'':' Find it under ☰ More.'),next:1}],1);return}}
 /* the old saves: anyone past day 1 never sees the choice card */
 try{const _r=render;render=function(){const r=_r.apply(this,arguments);try{if(S&&!S.tut73&&S.day>1)S.tut73='old'}catch(e){}return r}}catch(e){}
-/* main menu: replay */
-try{const _mm=mainMenu;mainMenu=function(){const r=_mm.apply(this,arguments);try{const mh=document.getElementById('mh');if(mh&&!document.getElementById('tu73r')&&typeof S!=='undefined'&&S&&S.char&&!S.over){const b=document.createElement('button');b.className='btn';b.id='tu73r';b.style.padding='12px';b.textContent='▶ Replay tutorial';mh.after(b);b.onclick=()=>{document.getElementById('modal').hidden=true;window.l73tour()}}}catch(e){}return r}}catch(e){}
+
 /* dev */
 try{const _dp=devPanel;devPanel=function(){const r=_dp.apply(this,arguments);try{const mc=document.getElementById('mcard');if(mc&&!mc.querySelector('[data-d73]')){const d=document.createElement('div');d.innerHTML='<div class="sec">Tutorial (new)</div><div class="btns"><button class="btn" data-d73="t">Start tutorial</button><button class="btn" data-d73="c">Show Play/Skip card</button><button class="btn" data-d73="u">Reset unlock spotlights</button></div>';const h2=mc.querySelector('h2');(h2&&h2.parentNode?h2.parentNode:mc).insertBefore(d,h2?h2.nextSibling:mc.firstChild);
  d.querySelectorAll('[data-d73]').forEach(b=>b.onclick=ev=>{ev.stopPropagation();const k=b.dataset.d73;document.getElementById('modal').hidden=true;if(k==='t')window.l73tour();else if(k==='c')window.l73start();else{S.ul73={};say('Unlock spotlights reset.');render()}})}}catch(e){}return r}}catch(e){}

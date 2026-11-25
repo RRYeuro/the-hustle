@@ -78,7 +78,6 @@ function courtLines(title,text){const C=crtCourt(),ch=((/Court:[^.]*\.[^.]*\.\s*
 const _wc=wCard;wCard=function(art,title,text,opts,tag){try{if(tag==='Court'&&['Court date','Trial day','Your strategy'].includes(title)){const h=courtLines(title,text||'');if(h)text=h+`<span class="vi45">${text}</span>`}}catch(e){console.error('sk45 court',e)}return _wc.call(this,art,title,cl(text),opts,tag)};
 /* remember which lawyer you picked so they talk like it */
 try{const _wcs=w4Counsel;w4Counsel=function(){const o=_wcs.apply(this,arguments);try{return o.map(x=>({...x,f:()=>{try{const X=w4();X.law=/Public defender/.test(x.l)?'pd':/Top attorney/.test(x.l)?'top':/Private lawyer/.test(x.l)?'mid':X.law}catch(e){}return x.f()}}))}catch(e){return o}}}catch(e){}
-/* ---------- clean language switch on the main menu ---------- */
-try{const _mm=mainMenu;mainMenu=function(c){const r=_mm.apply(this,arguments);try{const m=document.getElementById('mmus');if(m&&!document.getElementById('mcln')){m.insertAdjacentHTML('afterend',`<button class="btn" id="mcln">Language: ${l45Clean()?'Clean':'Raw'}</button>`);document.getElementById('mcln').onclick=()=>{try{localStorage.setItem('tl-clean',l45Clean()?'0':'1')}catch(e){}mainMenu(c)}}}catch(e){}return r}}catch(e){}
+
 try{TUT.push(['Talking','People talk like themselves now. Low plugs are loose, Big plugs say little, and the more a plug trusts you the warmer they get. In court the judge, the solicitor and your lawyer speak, and the facts sit under it in small text. There is cursing. Turn on Language: Clean on the main menu to swap it out.'])}catch(e){}
 })();</script>

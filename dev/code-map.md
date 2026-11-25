@@ -25,7 +25,7 @@ Feature source copies: dev/skins/. Tests: dev/tests/ (crash test: dev/tests/t_fu
 | skin20 | 2k | render |  |
 | skin31 | 23k | busted, devPanel, jsBudget, nextDay, paneBlock, paneMove, plugPrice, qtyModal, render | story ties: Lucky's ex or cousin's homeboy, and a plug you are dating, treat you like family |
 | skin40 | 4k | devPanel, paneBlock, render, teenStart | New player help: a first-day guide on the Block tab, teens start with plugs they can afford, and hidden rules say why. |
-| skin45 | 12k | mainMenu, modal, phoneMsg, say, w4Counsel, wCard | ---------- clean language ---------- |
+| skin45 | 11k | modal, phoneMsg, say, w4Counsel, wCard | ---------- clean language ---------- |
 | skin51 | 10k | paneBlock, plugActions, render, w4Phone | every plug you know is a contact |
 | skin55 | 6k | - | ---------- Contacts: one A-Z list, search, groups, contact cards ---------- |
 | skin65 | 2k | connectOrder | The connect texts like a person: chat bubbles and reply chips in the phone thread, a chat-style header and bubbles on the order screen. |
@@ -40,7 +40,6 @@ Feature source copies: dev/skins/. Tests: dev/tests/ (crash test: dev/tests/t_fu
 |---|---|---|---|
 | skin2 | 1k | paneBeef |  |
 | skin5 | 1k | devPanel |  |
-| skin6 | 9k | paneBeef, paneBiz, paneCrew, paneMoney, paneMove, panePhone, paneSpots | Move: board, here sections, rest |
 | skin10 | 19k | act, cmResolve, crewHTML, custoPrice, devPanel, mdBody, placeAct, raid, render, serveCusto | random street events |
 | skin35 | 14k | cmResolve, devPanel, heist, paneLicks | Licks app: a door to the heists |
 | skin38 | 5k | devPanel, openPlace, paneBag | daily: respect from crews and your own crew's loyalty |
@@ -107,6 +106,7 @@ Feature source copies: dev/skins/. Tests: dev/tests/ (crash test: dev/tests/t_fu
 | Feature | Size | Wraps | Note |
 |---|---|---|---|
 | skin1 | 1k | render |  |
+| skin6 | 10k | paneBeef, paneBiz, paneCrew, paneMoney, paneMove, panePhone, paneSpots | Move: board, here sections, rest |
 | skin7 | 1k | paneBlock |  |
 | skin8 | 2k | newsHTML, newsPush, paneBlock, render | street news with a source + pop-up on new news |
 | skin13 | 7k | paneBeef, paneCards, paneCrew, paneExp | Cards |
@@ -128,9 +128,9 @@ Feature source copies: dev/skins/. Tests: dev/tests/ (crash test: dev/tests/t_fu
 | skin47 | 1k | modal, streetEvent, wCard | long cards: picture becomes a thin strip |
 | skin56 | 0k | render |  |
 | skin60 | 0k | openPlace | Javi and Mateo cards in texts: face thumbnail instead of the whole collage |
-| skin73 | 11k | devPanel, mainMenu, render | {steps,i,t0,base,miss} |
+| skin73 | 10k | devPanel, render | {steps,i,t0,base,miss} |
 | skin76 | 3k | devPanel, render, sfx | popups slide in + panel reveal |
-| skin92 | 11k | devPanel, nextDay, paneBlock, render, serveCusto | skin92: UI set. Block fold, phone tab count, day recap, break down (bag up), tap sizes |
+| skin92 | 13k | devPanel, nextDay, paneBlock, render, serveCusto | skin92: UI set. Block fold, phone tab count, day recap, break down (bag up), tap sizes |
 
 ## Other
 

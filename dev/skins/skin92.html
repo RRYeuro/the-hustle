@@ -18,7 +18,29 @@ details.f92>.in{padding:0 8px 8px}
 .g92 small{display:block;color:var(--dim);font-size:12px}.g92 b{font-size:20px}
 .bd92{display:grid;grid-template-columns:1fr;gap:8px;margin:10px 0}
 .bd92 .btn{min-height:52px;line-height:1.25;text-transform:none;padding:8px 14px;text-align:left}`;
-css.textContent+=`#mt31.c92{padding:0}
+css.textContent+=`.f93h{display:flex;gap:12px;align-items:center;margin:4px 0 12px}
+.f93h img{width:64px;height:64px;border-radius:14px;object-fit:cover;border:2px solid var(--accent);flex:none}
+.f93h b{font-size:20px;display:block}.f93h small{color:var(--dim)}
+.f93g{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.f93g>div{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:10px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.f93g small{color:var(--dim);font-size:11px;letter-spacing:.08em;text-transform:uppercase}
+.f93g b{font-size:15px}.f93g span,.f93g .s{font-size:12px;color:var(--dim)}.f93g .t{font-size:14px}
+.f93w{grid-column:1/-1}
+.i93tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));background:rgba(255,255,255,.06);border-radius:12px;padding:3px;gap:3px;margin:6px 0}
+.i93tabs .btn{min-height:40px;border:0;border-radius:10px;background:transparent;font-size:12px}
+.i93tabs .btn.go{background:var(--accent);color:#1a1205}
+.i93sb{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:12px;color:var(--dim);margin:0 0 8px}
+.i93sb .btn{min-height:36px!important;font-size:11px;flex:none}
+.m93 .swrap{gap:8px!important}
+.m93g{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.m93g2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.m93 .m93g .btn,.m93 .m93g2 .btn{padding:9px 4px;font-size:12px}
+.m93 #mc{padding:12px}
+.m93d{display:block;text-decoration:none;border:1px solid var(--accent);border-radius:10px;padding:8px 12px;background:rgba(0,0,0,.55);color:#fff;font-size:12px;text-align:left}
+.m93s{display:flex;flex-wrap:nowrap;gap:4px;justify-content:center}
+.m93 .m93s .btn{min-height:34px;padding:4px 7px;font-size:10px;letter-spacing:0}
+.m93r{background:none;border:0;color:#e8504a;font:600 12px var(--label,inherit);letter-spacing:.06em;text-decoration:underline;padding:6px;cursor:pointer;align-self:center}
+#mt31.c92{padding:0}
 #mt31.c92 .mt31w{display:flex;flex-direction:column;min-height:100%}
 .h92{position:sticky;top:0;z-index:2;display:flex;align-items:center;gap:10px;padding:12px;padding-top:max(12px,env(safe-area-inset-top));background:rgba(18,15,24,.97);border-bottom:1px solid rgba(255,255,255,.08)}
 .h92 img{width:44px;height:44px;border-radius:50%;object-fit:cover;border:2px solid var(--accent,#f5b72a);flex:none}
@@ -91,7 +113,7 @@ try{const _sc=serveCusto;serveCusto=function(ci){const inv0={},c0=S.cash;GOODS.f
 /* ---- dev + how to play ---- */
 try{const _dp=devPanel;devPanel=function(){const r=_dp.apply(this,arguments);try{const mc=el('mcard');if(mc&&!mc.querySelector('[data-d92]')){const d=document.createElement('div');d.innerHTML='<div class="sec">UI set (new)</div><div class="btns"><button class="btn" data-d92="r">Show day recap</button><button class="btn" data-d92="w">Give 1 lb weed</button></div>';mc.insertBefore(d,mc.querySelector('.btns:last-child'));
  d.addEventListener('click',e=>{const k=(e.target.closest('[data-d92]')||{}).dataset;if(!k||!k.d92)return;if(k.d92==='r'){close();l92recap()}else if(k.d92==='w'){S.inv.loud=(S.inv.loud||0)+448;close();say('+1 lb weed. Tap Stash to break it down.');render()}})}}catch(e){}return r}}catch(e){}
-try{TUT.push(['Day recap, break down, plug chat','After Next day a card shows what you made (dirty and clean), heat and rep, and what happened. You can turn it off on the card. In Stash (tap Stash ›), Break down bags up loose weight (1 lb at a time, 1 hour, 10 energy): grams +15%, eighths +10%, ounces +5% when Js buy it. Plug meets now look like a text chat: his menu comes in as a message, tap Respect, Haggle or Flex to talk. Street business on the Block tab folds into one row, tap it to open. The red number on Phone is how many people are waiting on you.'])}catch(e){}
+try{TUT.push(['Day recap, break down, plug chat','After Next day a card shows what you made (dirty and clean), heat and rep, and what happened. You can turn it off on the card. In Stash (tap Stash ›), Break down bags up loose weight (1 lb at a time, 1 hour, 10 energy): grams +15%, eighths +10%, ounces +5% when Js buy it. Plug meets now look like a text chat: his menu comes in as a message, tap Respect, Haggle or Flex to talk. Street business on the Block tab folds into one row, tap it to open. The red number on Phone is how many people are waiting on you. Tap your face for your profile card (fit, jewelry, ride, gun, home, drip, stash). Stash has tabs: Active, Storage, On the way.'])}catch(e){}
 })();
 
 </script>
