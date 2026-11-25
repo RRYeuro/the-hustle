@@ -7553,10 +7553,10 @@ const hue=n=>{let h=0;for(const ch of String(n))h=(h*31+ch.charCodeAt(0))%360;re
 const av0=(n,big)=>`<span class="mav${big?' big':''}" style="background:linear-gradient(160deg,hsl(${hue(n)} 30% 40%),hsl(${hue(n)} 32% 22%))">${n==='Everybody'?'&#9679;&#9679;':E(String(n).replace(/[^A-Za-z0-9]/g,'').charAt(0).toUpperCase()||'?')}</span>`;
  const av=(n,big)=>{try{if(window._AVX){const r=window._AVX(n,big?62:46);if(r)return `<span class="mavw${big?' big':''}">${r.pic||av0(n,big)}${r.ic?`<i class="mavb">${r.ic}</i>`:''}</span>`}}catch(e){}return av0(n,big)};
 const dayL=d=>d===S.day?'Today':S.day-d===1?'Yesterday':'Day '+d;
-function build(){const T={},get=(k,o)=>T[k]||(T[k]=Object.assign({k,n:k,m:[],ord:[],tx:[],last:-1,inc:0},o||{}));
+function build(){const T={},get=(k,o)=>{k=(k==null||k==='')?'Unknown':String(k);return T[k]||(T[k]=Object.assign({k,n:k,m:[],ord:[],tx:[],last:-1,inc:0},o||{}))};
  get('__all',{n:'Everybody',grp:1});
  const L=(S.inbox||[]).slice().reverse(),you={};
- L.forEach((m,i)=>{if(m.f==='You'&&m.to){const t=get(m.to);t.m.push(m);t.last=i;return}if(m.f==='You'){you[m.d]=m}if(m.f==='You'||m.f==='Blast'){const t=get('__all',{n:'Everybody',grp:1});t.m.push(m);t.last=i;return}const t=get(m.f);t.m.push(m);t.last=i;t.inc++;if(you[m.d]){const g=T.__all;g.m.push(m);g.last=i}});
+ L.forEach((m,i)=>{if(!m||!m.f)return;if(m.f==='You'&&m.to){const t=get(m.to);t.m.push(m);t.last=i;return}if(m.f==='You'){you[m.d]=m}if(m.f==='You'||m.f==='Blast'){const t=get('__all',{n:'Everybody',grp:1});t.m.push(m);t.last=i;return}const t=get(m.f);t.m.push(m);t.last=i;t.inc++;if(you[m.d]){const g=T.__all;g.m.push(m);g.last=i}});
  Object.values(T).forEach(t=>{if(t.grp)return;const ds=[...new Set(t.m.map(m=>m.d))];t.m=ds.flatMap(d=>[you[d]].filter(Boolean).concat(t.m.filter(m=>m.d===d)))});
  try{const B=b5(),dl=w5bDealers();(B.ord||[]).forEach((o,i)=>{const d=dl[o.d],t=get(d.n);t.ord.push([o,i,d]);t.inc++;t.last=1e6})}catch(e){}
   try{(S.texts||[]).forEach((x,i)=>{const c=(S.custos||[])[x.ci];if(!c)return;const t=get(c.name);t.tx.push([x,i,c]);t.inc++;t.last=Math.max(t.last,1e6-1)})}catch(e){}
