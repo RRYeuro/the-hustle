@@ -6,7 +6,7 @@ const el=id=>document.getElementById(id);
 const calm=()=>{try{return matchMedia('(prefers-reduced-motion: reduce)').matches}catch(e){return false}};
 /* popups slide in + panel reveal */
 function reveal(){const mc=el('mcard');if(!mc)return;mc.classList.remove('op76');void mc.offsetWidth;mc.classList.add('op76');
- mc.querySelectorAll('img').forEach(im=>{if(im.dataset.rv76||im.closest('.rv76'))return;const go=()=>{const w=im.naturalWidth,h=im.naturalHeight;if(!w||Math.abs(w-h)>w*.12||im.getBoundingClientRect().width<120)return;
+ mc.querySelectorAll('img').forEach(im=>{if(im.dataset.rv76||im.closest('.rv76')||im.closest('.scn26-bg'))return;const go=()=>{const w=im.naturalWidth,h=im.naturalHeight;if(!w||Math.abs(w-h)>w*.12||im.getBoundingClientRect().width<120)return;
   im.dataset.rv76=1;const wr=document.createElement('div');wr.className='rv76';im.parentNode.insertBefore(wr,im);wr.appendChild(im);
   for(let i=0;i<4;i++){const q=document.createElement('i');q.style.animationDelay=(.12+i*.28)+'s';wr.appendChild(q)}};
   if(im.complete)go();else im.addEventListener('load',go,{once:true})})}
