@@ -23,7 +23,7 @@ Feature source copies: dev/skins/. Tests: dev/tests/ (crash test: dev/tests/t_fu
 | Feature | Size | Wraps | Note |
 |---|---|---|---|
 | skin20 | 2k | render |  |
-| skin31 | 22k | busted, devPanel, jsBudget, nextDay, paneBlock, paneMove, plugPrice, qtyModal, render | story ties: Lucky's ex or cousin's homeboy, and a plug you are dating, treat you like family |
+| skin31 | 23k | busted, devPanel, jsBudget, nextDay, paneBlock, paneMove, plugPrice, qtyModal, render | story ties: Lucky's ex or cousin's homeboy, and a plug you are dating, treat you like family |
 | skin40 | 4k | devPanel, paneBlock, render, teenStart | New player help: a first-day guide on the Block tab, teens start with plugs they can afford, and hidden rules say why. |
 | skin45 | 12k | mainMenu, modal, phoneMsg, say, w4Counsel, wCard | ---------- clean language ---------- |
 | skin51 | 10k | paneBlock, plugActions, render, w4Phone | every plug you know is a contact |
@@ -130,6 +130,7 @@ Feature source copies: dev/skins/. Tests: dev/tests/ (crash test: dev/tests/t_fu
 | skin60 | 0k | openPlace | Javi and Mateo cards in texts: face thumbnail instead of the whole collage |
 | skin73 | 11k | devPanel, mainMenu, render | {steps,i,t0,base,miss} |
 | skin76 | 3k | devPanel, render, sfx | popups slide in + panel reveal |
+| skin92 | 11k | devPanel, nextDay, paneBlock, render, serveCusto | skin92: UI set. Block fold, phone tab count, day recap, break down (bag up), tap sizes |
 
 ## Other
 
@@ -140,10 +141,10 @@ Feature source copies: dev/skins/. Tests: dev/tests/ (crash test: dev/tests/t_fu
 
 ## Functions wrapped by 4+ features (change these carefully)
 
-- devPanel (33): skin5, skin10, skin18, skin27, skin31, skin35, skin36, skin37, skin38, skin39, skin40, skin42, skin43, skin46, skin48, skin49, skin53, skin68, skin73, skin74, skin75, skin76, skin77, skin78, skin79, skin80, skin81, skin82, skin84, skin85, skin86, skin87, skin88
-- render (30): skin1, skin8, skin10, skin16, skin20, skin21, skin24, skin25, skin31, skin36, skin40, skin42, skin50, skin51, skin54, skin56, skin57, skin59, skin62, skin63, skin64, skin68, skin73, skin75, skin76, skin79, skin81, skin82, skin87, skin89
-- nextDay (15): skin18, skin31, skin68, skin69, skin74, skin75, skin77, skin80, skin81, skin82, skin85, skin86, skin87, skin88, skin89
-- paneBlock (12): skin7, skin8, skin17, skin31, skin40, skin51, skin61, skin68, skin74, skin77, skin84, skin89
+- devPanel (34): skin5, skin10, skin18, skin27, skin31, skin35, skin36, skin37, skin38, skin39, skin40, skin42, skin43, skin46, skin48, skin49, skin53, skin68, skin73, skin74, skin75, skin76, skin77, skin78, skin79, skin80, skin81, skin82, skin84, skin85, skin86, skin87, skin88, skin92
+- render (31): skin1, skin8, skin10, skin16, skin20, skin21, skin24, skin25, skin31, skin36, skin40, skin42, skin50, skin51, skin54, skin56, skin57, skin59, skin62, skin63, skin64, skin68, skin73, skin75, skin76, skin79, skin81, skin82, skin87, skin89, skin92
+- nextDay (16): skin18, skin31, skin68, skin69, skin74, skin75, skin77, skin80, skin81, skin82, skin85, skin86, skin87, skin88, skin89, skin92
+- paneBlock (13): skin7, skin8, skin17, skin31, skin40, skin51, skin61, skin68, skin74, skin77, skin84, skin89, skin92
 - openPlace (12): skin24, skin27, skin33, skin34, skin36, skin38, skin42, skin58, skin59, skin60, skin77, skin86
 - modal (7): skin9, skin16, skin24, skin26, skin45, skin47, skin63
 - paneBeef (5): skin2, skin6, skin13, skin68, skin74

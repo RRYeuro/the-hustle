@@ -11,9 +11,9 @@ with sync_playwright() as p:
     bi=J("()=>S.known[0]")
     # meet tones
     J("(bi)=>{S.trust[bi]=50;S.meet={bi,how:'go',from:S.at};S.at=bi;render()}",bi);pg.wait_for_timeout(200)
-    ck('meet shows greeting + tone buttons',J("()=>document.querySelectorAll('#mt31 [data-t46]').length>=3&&!!document.querySelector('#mt31 .vb45')"))
+    ck('meet shows greeting + tone buttons',J("()=>document.querySelectorAll('#mt31 [data-t46]').length>=3&&document.querySelectorAll('#mt31 .c92c .bub').length>=2"))
     t0=J("(bi)=>S.trust[bi]",bi);J("()=>document.querySelector('#mt31 [data-t46=\"r\"]').click()");pg.wait_for_timeout(200)
-    r=J("(bi)=>({tr:S.trust[bi],btn:document.querySelectorAll('#mt31 [data-t46]').length,v:document.querySelectorAll('#mt31 .vb45').length})",bi)
+    r=J("(bi)=>({tr:S.trust[bi],btn:document.querySelectorAll('#mt31 [data-t46]').length,v:document.querySelectorAll('#mt31 .c92c .bub:not(.me):not(.menu)').length})",bi)
     ck('respect: trust +2, plug answers, buttons gone',r['tr']==t0+2 and r['btn']==0 and r['v']==2,json.dumps(r))
     # haggle forced success -> price drops
     r=J("(bi)=>{const g=GOODS.find(x=>x.id===S.known_g)||GOODS[0];delete S.meet.tone46;delete S.meet.r46;S.hg46=null;const p0=plugPrice('buy',g);Math._r=Math.random;Math.random=()=>0.01;document.querySelector('#mt31')||render();render();return p0}",bi);pg.wait_for_timeout(200)
