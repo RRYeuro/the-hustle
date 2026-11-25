@@ -7,5 +7,4 @@ Last cleaned: Nov 20 (every line checked against the game code).
 - Simple analytics to see where players quit.
 
 ## UI
-- Count faces still missing (Sonnet said 18; art list says none) and list them.
 - List older screens that don't match the new look, for Chris to pick.
