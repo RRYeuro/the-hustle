@@ -407,7 +407,7 @@ function render(){try{heatSync()}catch(e){}try{wTabBtns()}catch(e){}setTimeout(a
   $('hp').textContent=S.hp<=35?S.hp+' · low':S.hp;$('hp').title=S.hp<=35?'Under 35: one bad night and you are in the hospital.':'';$('hp').style.color=S.hp<=35?'var(--blood)':'';$('hpb').style.width=S.hp+'%';$('hpb').style.background=S.hp<=35?'var(--blood)':'var(--money)';
   $('heat').textContent=S.heat;$('heatb').style.width=S.heat+'%';{const hw=$('heatwhy');if(hw)hw.textContent=heatWhyTxt()}
   $('rep').textContent=S.rep;{const M=enMax(),e=S.en==null?M:S.en;$('en').textContent=e<=0?'· wiped, advance the day':e<M*.25?'· low':`${Math.round(e)}/${M}`;$('enb').style.width=Math.max(0,Math.min(100,e/M*100))+'%'}
-  $('here').innerHTML=esc(BLOCKS[S.at]+(droughtAt(S.at)?' · 🏜️ Drought szn':''))+(window.l75trend?l75trend():'');{const w=document.querySelector('.where'),art=BLOCKART[S.at];w.style.backgroundImage=art?`linear-gradient(90deg,rgba(20,17,24,.92) 30%,rgba(20,17,24,.45)),url(${art})`:'';w.style.backgroundSize=art?'cover':'';w.style.backgroundPosition=art?'center 60%':''}
+  $('here').innerHTML=esc(BLOCKS[S.at]+(droughtAt(S.at)?' · 🏜️ Drought szn':''))+(window.l75trend?l75trend():'')+(window.l97line?l97line():'');{const w=document.querySelector('.where'),art=BLOCKART[S.at];w.style.backgroundImage=art?`linear-gradient(90deg,rgba(20,17,24,.92) 30%,rgba(20,17,24,.45)),url(${art})`:'';w.style.backgroundSize=art?'cover':'';w.style.backgroundPosition=art?'center 60%':''}
   const o=S.owner[S.at];
   $('owner').innerHTML=o==='me'?'<span class="chip mine">Your turf</span>':o==='none'?'<span class="chip">Nobody\'s turf</span>':
     `<span class="chip" style="color:${cdef(o).color};border-color:${cdef(o).color}">${cdef(o).name} turf</span>`;
@@ -12224,11 +12224,46 @@ window.l98=function(){if(!S||S.over)return '';const D=S.dy98;if(!D||D.d!==S.day|
 document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('[data-b98]');if(!t)return;e.preventDefault();e.stopPropagation();choose(+t.dataset.b98,t.dataset.k)},true);
 try{const _pb=paneBlock;paneBlock=function(){const h=_pb.apply(this,arguments);try{const t=window.l98();if(!t)return h;const i=h.indexOf('<div class="sec"');return i<0?t+h:h.slice(0,i)+t+h.slice(i)}catch(e){return h}}}catch(e){}
 /* the one nextDay wrapper */
-try{const _nd=nextDay;nextDay=function(){const r=_nd.apply(this,arguments);try{if(S&&!S.over&&!window.FF&&!S.pr&&!S.inJail&&!window._sk92)roll()}catch(e){console.error('dy98',e)}return r}}catch(e){}
+try{const _nd=nextDay;nextDay=function(){const r=_nd.apply(this,arguments);let notes=[];try{if(S&&!S.over&&window.N97)notes=N97.tick()||[]}catch(e){console.error('nb97 tick',e)}try{if(S&&!S.over&&!window.FF&&!S.pr&&!S.inJail&&!window._sk92){roll();const D=T();notes.forEach(n=>{if(D.b.length<6){D.b.push(Object.assign({id:'nb',cat:'block'},n));try{say(`${n.ic} ${n.t}`)}catch(_){}}})}}catch(e){console.error('dy98',e)}return r}}catch(e){}
 const css=document.createElement('style');css.textContent=`.t98{border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:8px 10px;margin:6px 0;background:rgba(255,255,255,.03)}.t98h{font:700 11px var(--label,inherit);letter-spacing:.16em;color:var(--accent);text-transform:uppercase;margin-bottom:4px}.t98r{display:flex;gap:8px;align-items:flex-start;padding:5px 0;font-size:13px;line-height:1.35}.t98r>span{flex:none;width:20px;text-align:center}.t98r.luck{color:var(--money)}.t98c{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}.t98c .btn{min-height:40px;font-size:12px;padding:6px 10px}`;document.head.appendChild(css);
+/* beats call N97.bump when nb97 is loaded */
 try{TUT.push(['Every day is different','Each new day brings a few things: something personal, something on the blocks, a money chance, a problem, and someone from your life. Some are lucky. They show in the Today box on the Block tab and they change real numbers: cash, energy, stress, heat, your business demand, plug stock and how busy each block is. Some need a choice, like lending a friend money. People remember: pay them back or turn them down and it comes back later.'])}catch(e){}
 try{const _dp=devPanel;devPanel=function(){const r=_dp.apply(this,arguments);try{const mc=document.getElementById('mcard');if(mc&&!mc.querySelector('[data-d98]')){const d=document.createElement('div');d.innerHTML='<div class="sec">Day engine (new)</div><div class="btns"><button class="btn" data-d98="r">Re-roll today</button></div>';mc.insertBefore(d,mc.querySelector('.btns:last-child'));d.addEventListener('click',e=>{if(!e.target.closest('[data-d98]'))return;S.dy98=null;try{S.ev&&S.ev.cd&&Object.keys(S.ev.cd).filter(k=>k.startsWith('b98:')).forEach(k=>delete S.ev.cd[k])}catch(_){}roll();close();tab='block';render()})}}catch(e){}return r}}catch(e){}
 window.l98roll=roll;
+})();
+
+</script>
+<script id="nb97js">
+/* nb97: neighborhoods. Each block has busy (people out), money (prosperity), rivals (competition)
+   and cops (safety) from 0-100, plus a count of shops. Values drift slowly back toward each block's
+   normal, so skipping days never punishes you. Events bump them. They change real numbers:
+   what Js pay on that block, how your businesses sell, and a little heat where cops are thick. */
+(function(){
+const cl=(v,a,b)=>Math.max(a,Math.min(b,v));
+const BASE={Downtown:{pop:68,pros:70,comp:45,safe:66,shops:14},Westgate:{pop:55,pros:60,comp:40,safe:55,shops:10},Northline:{pop:50,pros:50,comp:50,safe:48,shops:8},Eastside:{pop:52,pros:40,comp:55,safe:40,shops:7},Southpark:{pop:48,pros:36,comp:52,safe:42,shops:6},'The Bottom':{pop:46,pros:25,comp:60,safe:30,shops:4}};
+const K=['pop','pros','comp','safe'],LAB={pop:'Busy',pros:'Wealth',comp:'Rivals',safe:'Cops'};
+function base(bi){const b=BASE[BLOCKS[bi]]||{pop:50,pros:45,comp:50,safe:45,shops:6};let comp=b.comp;try{const alive=(S.crews||[]).filter(c=>c.alive).length;comp+= (alive-3)*4;if(bi===homeBlock()&&S.soldiers)comp-=Math.min(20,S.soldiers*2)}catch(e){}return {pop:b.pop,pros:b.pros,comp:cl(comp,10,90),safe:b.safe,shops:b.shops}}
+function all(){if(!S.nb97||!S.nb97.v){S.nb97={v:{},p:{},pd:S.day}};BLOCKS.forEach((_,bi)=>{if(!S.nb97.v[bi]){const b=base(bi);S.nb97.v[bi]={pop:b.pop,pros:b.pros,comp:b.comp,safe:b.safe,shops:b.shops}}});return S.nb97}
+const get=bi=>all().v[bi];
+function bump(bi,ch){if(bi==null||!BLOCKS[bi])return;const v=get(bi);Object.keys(ch||{}).forEach(k=>{if(k==='shops')v.shops=cl((v.shops||0)+ch[k],0,30);else if(K.includes(k))v[k]=cl(v[k]+ch[k],0,100)})}
+function tick(){const A=all(),notes=[];if(S.day-(A.pd||0)>=3){A.p=JSON.parse(JSON.stringify(A.v));A.pd=S.day}
+ BLOCKS.forEach((nm,bi)=>{const v=A.v[bi],b=base(bi);const target={pop:b.pop+(v.shops-b.shops)*.6,pros:b.pros+(v.shops-b.shops)*.8,comp:b.comp,safe:b.safe};
+  K.forEach(k=>{v[k]=cl(v[k]+(target[k]-v[k])*.08+(Math.random()-.5)*3,0,100)});
+  const mine=bi===S.at||bi===homeBlock();
+  if(v.pros>58&&Math.random()<.08&&v.shops<30){v.shops++;if(mine)notes.push({ic:'🏪',t:`A new spot opened on ${nm}. More money coming through.`})}
+  else if(v.pros<35&&Math.random()<.08&&v.shops>0){v.shops--;if(mine)notes.push({ic:'🚪',t:`A store on ${nm} closed down. Fewer people out.`})}
+  if(v.comp>70&&Math.random()<.05){v.comp-=8;v.safe=cl(v.safe+6,0,100);if(mine)notes.push({ic:'💥',t:`Rivals got into it on ${nm}. Cops flooded in after.`})}});
+ if(!window.FF){try{const v=A.v[S.at];if(v&&v.safe>72&&Math.random()<.5)S.heat=Math.min(100,S.heat+1)}catch(e){}}
+ return notes.slice(0,1)}
+function priceMul(bi){const v=get(bi==null?S.at:bi);return cl(1+(v.pop-50)/500+(v.pros-50)/400-(v.comp-50)/400,.85,1.15)}
+window.l97biz=()=>{try{const v=get(homeBlock());return cl(1+(v.pros-50)/250+(v.pop-50)/400,.85,1.2)}catch(e){return 1}};
+window.N97={get,bump,tick,priceMul,LAB};
+try{const _cp=custoPrice;custoPrice=function(){const p=_cp.apply(this,arguments);try{return Math.round(p*priceMul(S.at))}catch(e){return p}}}catch(e){}
+window.l97line=function(){try{if(!S||S.over)return '';const A=all(),v=A.v[S.at],p=(A.p||{})[S.at]||v;const ar=k=>v[k]-p[k]>3?'↑':v[k]-p[k]<-3?'↓':'';
+ return `<div class="n97">${K.map(k=>`<span title="${LAB[k]}">${LAB[k]} ${Math.round(v[k])}${ar(k)}</span>`).join('')}<span>Shops ${v.shops}</span></div>`}catch(e){return ''}};
+const css=document.createElement('style');css.textContent=`.n97{display:flex;flex-wrap:wrap;gap:4px 8px;font:600 10px var(--label,inherit);letter-spacing:.06em;color:var(--dim);margin-top:3px;text-transform:uppercase}`;document.head.appendChild(css);
+try{TUT.push(['Neighborhoods change','Every block has four numbers under its name: Busy (people out), Wealth (how much they spend), Rivals (competition) and Cops (how watched it is), plus how many shops are open. They move slowly. Busy, money-rich blocks pay more per sale, rivals cut into it, heavy cops add a little heat. Your businesses do better when your home block is doing well. Shops open where money is good and close where it dries up. Things that happen (sweeps, block parties, new shops, rival fights) change the numbers for real. Skipping days does not hurt you: blocks drift back toward normal.'])}catch(e){}
+try{const _dp=devPanel;devPanel=function(){const r=_dp.apply(this,arguments);try{const mc=document.getElementById('mcard');if(mc&&!mc.querySelector('[data-d97]')){const d=document.createElement('div');d.innerHTML='<div class="sec">Neighborhoods (new)</div><div class="btns"><button class="btn" data-d97="hot">This block: busy + rich</button><button class="btn" data-d97="dead">This block: dead + rivals</button><button class="btn" data-d97="t">Run 30 neighborhood days</button></div>';mc.insertBefore(d,mc.querySelector('.btns:last-child'));d.addEventListener('click',e=>{const k=(e.target.closest('[data-d97]')||{}).dataset;if(!k||!k.d97)return;if(k.d97==='hot')bump(S.at,{pop:40,pros:40,comp:-30});else if(k.d97==='dead')bump(S.at,{pop:-40,pros:-40,comp:40});else for(let i=0;i<30;i++)tick();close();render()})}}catch(e){}return r}}catch(e){}
 })();
 
 </script>
