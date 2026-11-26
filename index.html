@@ -3637,7 +3637,7 @@ function paneRap(){const R=S.rap,top=R.songs.slice().sort((a,b)=>b.q-a.q)[0];
 }
 const rapFat=()=>S.rap.fat||0;
 const listeners=()=>Math.round(S.rap.fans*.12*(.35+S.rap.hype/100));
-const songPay=x=>+(4*x.q*.07*(1+listeners()/600)*Math.pow(.93,S.day-x.day)*dealMul()*(x.viral&&x.viral.until>=S.day?x.viral.mult:1)).toFixed(1);
+const songPay=x=>+(4*x.q*.07*(1+listeners()/600)*Math.pow(.93,S.day-x.day)*dealMul()*(x.viral&&x.viral.until>=S.day?x.viral.mult:1)*(x.pb&&S.day-x.day<7?1+x.pb:1)).toFixed(1);
 const vidCost=()=>Math.round(1000+S.rap.fans*.5+(S.rap.vid||0)*750);
 const vidGain=()=>Math.max(6,Math.round(25/(1+(S.rap.vid||0)*.3)));
 const rapCut=()=>S.rap.bad&&S.rap.bad.until>S.day?1-S.rap.bad.cut:1;
@@ -3696,19 +3696,22 @@ function recordSong(diss,crewId){if(rapFat()>=4){say('Your voice is shot and the
     const esc=t=>t.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
     modal(`<h2>Name your song</h2><p>The take came out <b>${q>=80?'crazy':q>=50?'solid':'rough'}</b>. What are you calling it?</p>
       <input id="stl" maxlength="28" value="${esc(gen())}" autocomplete="off" style="width:100%;padding:10px;border-radius:6px;border:1px solid var(--line);background:var(--bg);color:var(--fg);font:inherit">
-      <div class="btns"><button class="btn" id="sg">Generate title</button><button class="btn go" id="sd">Drop it</button></div>`);
-    $('sg').onclick=()=>{$('stl').value=gen()};
+      <div class="btns"><button class="btn" id="sg">Generate title</button>${window.l99vault?'<button class="btn" id="sv">Save for later</button>':''}<button class="btn go" id="sd">Drop it now</button></div>${window.l99vault?'<p class="s">Save for later puts it in your vault. Promote first, then release it from the Studio tab for a bigger first week.</p>':''}`);
+    $('sg').onclick=()=>{$('stl').value=gen()};if($('sv'))$('sv').onclick=()=>{const t=($('stl').value||'').replace(/[<>&"]/g,'').trim().slice(0,28)||gen();l99vault(t,q,!!diss,crewId)};
     $('sd').onclick=()=>{const t=($('stl').value||'').replace(/[<>&"]/g,'').trim().slice(0,28)||gen();release(t,q)}});
-  function release(title,q){
-    S.cash-=300;
-    const fat=rapFat(),gain=Math.round((q*1.5*(1+S.rap.hype/120)+(diss?60:0))/(1+fat*.35)*charmMul());S.rap.fat=fat+1;
-    const vp=.03+q/1500+S.rap.hype/900+skv('luck')*.003+skv('talk')*.003,viral=Math.random()<vp;S.rap.songs.push({title,q,day:S.day,diss:!!diss,viral:viral?{until:S.day+10,mult:+(2.2+Math.random()*1.6).toFixed(1)}:null});const gain2=viral?gain*rnd(3,6):gain;S.rap.fans+=gain2;if(viral)S.rap.hype=Math.min(100,S.rap.hype+30);S.rap.hype=Math.min(100,S.rap.hype+(diss?25:12));addXP(3);addStress(-5);
-    if(diss){const c=crew(crewId);c.beef=Math.min(100,c.beef+25);}
-    say(viral?`"${title}" BLEW UP. +${gain2} fans.`:`Dropped "${title}" (quality ${q}). +${gain2} fans.`);
-    modal(`<h2>"${title}" is out</h2><p>Quality <b>${q}/100</b>. ${viral?'<b style="color:var(--money)">IT BLEW UP.</b> Everybody is posting it. Streams are way up for about a week and your hype jumped.':q>=80?'This one is going crazy.':q>=50?'Solid song.':'Nobody is really feeling it.'}</p><p>+${gain2.toLocaleString()} fans${diss?`. The ${cdef(crewId).name} heard it and they are not happy.`:''}</p>
+  function release(title,q){const r=rapDrop(title,q,diss,crewId,{});const gain2=r.gain2,viral=r.viral;
+    modal(`<h2>"${title}" is out</h2><p>Quality <b>${q}/100</b>. ${viral?'<b style="color:var(--money)">IT BLEW UP.</b> Everybody is posting it. Streams are way up for about a week and your hype jumped.':q>=80?'This one is going crazy.':q>=50?'Solid song.':'Nobody is really feeling it.'}</p><p>+${gain2.toLocaleString()} fans${diss?`. The ${cdef(crewId).name} heard it and they are not happy.`:''}${r.boost?` Your promo push added ${Math.round(r.boost*100)}%.`:''}</p>
       <div class="btns"><button class="btn go" id="ok">Continue</button></div>`);
     $('ok').onclick=()=>{$('modal').hidden=true;nextDay();checkEnd();render()}}
 }
+/* one place that puts a song out: fans, viral roll, hype, beef. o.paid: studio cost already paid. o.boost: promo (0-0.8) */
+function rapDrop(title,q,diss,crewId,o){o=o||{};if(!o.paid)S.cash-=300;
+  const fat=rapFat(),boost=Math.max(0,Math.min(.8,o.boost!=null?o.boost:(window.l99boost?l99boost():0))),repF=.9+Math.min(100,S.rep||0)/500;
+  const gain=Math.round((q*1.5*(1+S.rap.hype/120)+(diss?60:0))/(1+fat*.35)*charmMul()*(1+boost)*repF);if(!o.paid)S.rap.fat=fat+1;
+  const vp=.03+q/1500+S.rap.hype/900+skv('luck')*.003+skv('talk')*.003+boost*.04,viral=Math.random()<vp;S.rap.songs.push({title,q,day:S.day,diss:!!diss,pb:boost?+boost.toFixed(2):0,viral:viral?{until:S.day+10,mult:+(2.2+Math.random()*1.6).toFixed(1)}:null});const gain2=viral?gain*rnd(3,6):gain;S.rap.fans+=gain2;if(viral)S.rap.hype=Math.min(100,S.rap.hype+30);S.rap.hype=Math.min(100,S.rap.hype+(diss?25:12));addXP(3);addStress(-5);
+  if(diss&&crewId){const c=crew(crewId);if(c)c.beef=Math.min(100,c.beef+25);}
+  try{if(boost&&window.l99used)l99used()}catch(e){}
+  say(viral?`"${title}" BLEW UP. +${gain2} fans.`:`Dropped "${title}" (quality ${q}). +${gain2} fans.`);return {gain2,viral,boost}}
 function dissPick(){const live=S.crews.filter(c=>c.alive);
   modal(`<h2>Who you going at?</h2><div class="btns">${live.map(c=>`<button class="btn red" data-c="${c.id}">${cdef(c.id).name}</button>`).join('')}</div><div class="btns"><button class="btn" id="no">Cancel</button></div>`);
   $('no').onclick=close;$('mcard').querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>recordSong(true,b.dataset.c));
@@ -12224,7 +12227,7 @@ window.l98=function(){if(!S||S.over)return '';const D=S.dy98;if(!D||D.d!==S.day|
 document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('[data-b98]');if(!t)return;e.preventDefault();e.stopPropagation();choose(+t.dataset.b98,t.dataset.k)},true);
 try{const _pb=paneBlock;paneBlock=function(){const h=_pb.apply(this,arguments);try{const t=window.l98();if(!t)return h;const i=h.indexOf('<div class="sec"');return i<0?t+h:h.slice(0,i)+t+h.slice(i)}catch(e){return h}}}catch(e){}
 /* the one nextDay wrapper */
-try{const _nd=nextDay;nextDay=function(){const r=_nd.apply(this,arguments);let notes=[];try{if(S&&!S.over&&window.N97)notes=N97.tick()||[]}catch(e){console.error('nb97 tick',e)}try{if(S&&!S.over&&!window.FF&&!S.pr&&!S.inJail&&!window._sk92){roll();const D=T();notes.forEach(n=>{if(D.b.length<6){D.b.push(Object.assign({id:'nb',cat:'block'},n));try{say(`${n.ic} ${n.t}`)}catch(_){}}})}}catch(e){console.error('dy98',e)}return r}}catch(e){}
+try{const _nd=nextDay;nextDay=function(){const r=_nd.apply(this,arguments);let notes=[];try{if(S&&!S.over&&window.N97)notes=N97.tick()||[]}catch(e){console.error('nb97 tick',e)}try{if(S&&!S.over&&window.l99day){const m=l99day();if(m)notes.unshift(m)}}catch(e){console.error('mc99 tick',e)}try{if(S&&!S.over&&!window.FF&&!S.pr&&!S.inJail&&!window._sk92){roll();const D=T();notes.forEach(n=>{if(D.b.length<6){D.b.push(Object.assign({id:'nb',cat:'block'},n));try{say(`${n.ic} ${n.t}`)}catch(_){}}})}}catch(e){console.error('dy98',e)}return r}}catch(e){}
 const css=document.createElement('style');css.textContent=`.t98{border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:8px 10px;margin:6px 0;background:rgba(255,255,255,.03)}.t98h{font:700 11px var(--label,inherit);letter-spacing:.16em;color:var(--accent);text-transform:uppercase;margin-bottom:4px}.t98r{display:flex;gap:8px;align-items:flex-start;padding:5px 0;font-size:13px;line-height:1.35}.t98r>span{flex:none;width:20px;text-align:center}.t98r.luck{color:var(--money)}.t98c{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}.t98c .btn{min-height:40px;font-size:12px;padding:6px 10px}`;document.head.appendChild(css);
 /* beats call N97.bump when nb97 is loaded */
 try{TUT.push(['Every day is different','Each new day brings a few things: something personal, something on the blocks, a money chance, a problem, and someone from your life. Some are lucky. They show in the Today box on the Block tab and they change real numbers: cash, energy, stress, heat, your business demand, plug stock and how busy each block is. Some need a choice, like lending a friend money. People remember: pay them back or turn them down and it comes back later.'])}catch(e){}
@@ -12264,6 +12267,56 @@ window.l97line=function(){try{if(!S||S.over)return '';const A=all(),v=A.v[S.at],
 const css=document.createElement('style');css.textContent=`.n97{display:flex;flex-wrap:wrap;gap:4px 8px;font:600 10px var(--label,inherit);letter-spacing:.06em;color:var(--dim);margin-top:3px;text-transform:uppercase}`;document.head.appendChild(css);
 try{TUT.push(['Neighborhoods change','Every block has four numbers under its name: Busy (people out), Wealth (how much they spend), Rivals (competition) and Cops (how watched it is), plus how many shops are open. They move slowly. Busy, money-rich blocks pay more per sale, rivals cut into it, heavy cops add a little heat. Your businesses do better when your home block is doing well. Shops open where money is good and close where it dries up. Things that happen (sweeps, block parties, new shops, rival fights) change the numbers for real. Skipping days does not hurt you: blocks drift back toward normal.'])}catch(e){}
 try{const _dp=devPanel;devPanel=function(){const r=_dp.apply(this,arguments);try{const mc=document.getElementById('mcard');if(mc&&!mc.querySelector('[data-d97]')){const d=document.createElement('div');d.innerHTML='<div class="sec">Neighborhoods (new)</div><div class="btns"><button class="btn" data-d97="hot">This block: busy + rich</button><button class="btn" data-d97="dead">This block: dead + rivals</button><button class="btn" data-d97="t">Run 30 neighborhood days</button></div>';mc.insertBefore(d,mc.querySelector('.btns:last-child'));d.addEventListener('click',e=>{const k=(e.target.closest('[data-d97]')||{}).dataset;if(!k||!k.d97)return;if(k.d97==='hot')bump(S.at,{pop:40,pros:40,comp:-30});else if(k.d97==='dead')bump(S.at,{pop:-40,pros:-40,comp:40});else for(let i=0;i<30;i++)tick();close();render()})}}catch(e){}return r}}catch(e){}
+})();
+
+</script>
+<script id="mc99js">
+/* mc99: music career loop. Record (Save for later) -> Promote -> Release -> fans -> Book shows.
+   Promo only boosts the next release's fans and first-week streams. Fans never multiply other income.
+   Show day runs from the day-engine tick (no new nextDay wrapper). */
+(function(){
+const E=x=>String(x==null?'':x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]);
+const R=()=>S.rap,P=()=>{const r=R();if(!r.pr99||typeof r.pr99!=='object')r.pr99={v:0};if(!Array.isArray(r.vault))r.vault=[];return r.pr99};
+const VEN=[{k:'club',n:'Club',fans:1500,cap:500,price:25,dep:1000,lead:3},{k:'theater',n:'Theater',fans:6000,cap:2000,price:40,dep:5000,lead:5},{k:'arena',n:'Arena',fans:20000,cap:9000,price:60,dep:20000,lead:7}];
+const LP=(amt,lab,cl)=>{try{if(window.L95&&amt)L95.post('music',amt,lab,cl)}catch(e){}};
+window.l99boost=()=>{try{return Math.min(.8,(P().v||0)/100*.8)}catch(e){return 0}};
+window.l99used=()=>{const p=P();p.v=Math.round(p.v*.3)};
+window.l99vault=function(title,q,diss,crewId){const r=R();P();S.cash-=300;r.fat=(r.fat||0)+1;r.vault.push({title,q,diss:!!diss,c:crewId||null,d:S.day});if(r.vault.length>6)r.vault.shift();
+ try{addXP(2)}catch(e){}say(`Saved "${title}" to the vault (quality ${q}). Promote it, then release it.`);
+ modal(`<h2>"${E(title)}" is in the vault</h2><p>Quality <b>${q}/100</b>. It is not out yet. Build a promo push in the Studio tab, then release it for a bigger first week.</p><div class="btns"><button class="btn go" id="ok">Continue</button></div>`);
+ document.getElementById('ok').onclick=()=>{document.getElementById('modal').hidden=true;nextDay();checkEnd();render()}};
+function release(i){const r=R(),v=r.vault[i];if(!v)return;r.vault.splice(i,1);const res=rapDrop(v.title,v.q,v.diss,v.c,{paid:1});
+ modal(`<h2>"${E(v.title)}" is out</h2><p>Quality <b>${v.q}/100</b>. ${res.viral?'<b style="color:var(--money)">IT BLEW UP.</b>':''}</p><p>+${res.gain2.toLocaleString()} fans${res.boost?` (promo added ${Math.round(res.boost*100)}%, and streams are up for a week)`:''}.</p><div class="btns"><button class="btn go" id="ok">Bet</button></div>`);document.getElementById('ok').onclick=()=>{close();render()}}
+const CAMP=[
+ {k:'street',n:'Street team',c:300,en:0,why:()=>`Flyers and posters on every block. Promo +${Math.round(15+Math.min(100,S.rep||0)/10)} (more with street rep).`,go:()=>Math.round(15+Math.min(100,S.rep||0)/10)},
+ {k:'social',n:'Social push',c:0,en:10,why:()=>{let f=0;try{f=socW().fol||0}catch(e){}return `Post clips all day. Promo +${Math.round(8+Math.min(20,f/500))} (more with followers). 10 energy.`},go:()=>{let f=0;try{f=socW().fol||0}catch(e){}return Math.round(8+Math.min(20,f/500))}},
+ {k:'radio',n:'Radio and playlist pitch',c:1500,en:0,need:1000,why:()=>'Pay a plugged-in DJ to pitch you. Promo +30 if they bite (7 in 10 do).',go:()=>Math.random()<.7?30:0}];
+function camp(k){const c=CAMP.find(x=>x.k===k),p=P();if(!c)return;if((p.used||{})[k]===S.day)return say('You already did that today.');if(c.need&&R().fans<c.need)return;if(S.cash<c.c)return;
+ if(c.en){if(!spendEn(c.en))return}if(c.c){const c0=cleanCash(),d=Math.max(0,S.cash-c0),fd=Math.min(c.c,d),fc=c.c-fd;S.cash-=c.c;if(fc>0)S.clean=Math.max(0,c0-fc);LP(-fd,c.n,false);LP(-fc,c.n,true)}
+ const g=c.go();p.v=Math.min(100,(p.v||0)+g);p.used=Object.assign(p.used||{},{[k]:S.day});say(g?`${c.n}: promo +${g}. Promo is ${Math.round(p.v)}/100.`:`${c.n}: the DJ passed on you this time.`);render()}
+function book(k){const v=VEN.find(x=>x.k===k),r=R();if(!v||r.bk99||r.fans<v.fans||S.cash<v.dep)return;if(v.dep>=5000&&needClean(v.dep,'The '+v.n.toLowerCase()+' deposit'))return;
+ const c0=cleanCash(),d=Math.max(0,S.cash-c0),fd=v.dep>=5000?0:Math.min(v.dep,d),fc=v.dep-fd;S.cash-=v.dep;if(fc>0)S.clean=Math.max(0,c0-fc);
+ LP(-fd,`${v.n} deposit`,false);LP(-fc,`${v.n} deposit`,true);r.bk99={k,day:S.day+v.lead,dep:v.dep,cl:fc>0?1:0};say(`Booked the ${v.n.toLowerCase()} for ${dayTxt(r.bk99.day)}. Deposit ${money(v.dep)} (you get it back if you show up).`);render()}
+/* show day: called from the day engine tick */
+window.l99day=function(){try{if(!S||!S.rapOn||!S.rap)return null;const r=R(),p=P();p.v=Math.max(0,Math.round((p.v||0)*.85));const b=r.bk99;if(!b||S.day<b.day)return null;r.bk99=null;const v=VEN.find(x=>x.k===b.k);if(!v)return null;
+ if(S.pr||S.inJail)return {ic:'🎤',t:`You missed the ${v.n.toLowerCase()} show. Lost the ${money(b.dep)} deposit.`};
+ const turn=Math.min(v.cap,Math.round(r.fans*Math.min(.25,.04+(r.hype||0)/1000+(p.v||0)/800)));const gross=turn*v.price,cut=Math.round(gross*.15),take=Math.round((gross-cut)*(r.take||0));
+ let net=gross-cut-take,trouble=false;try{if((S.crews||[]).some(c=>c.alive&&c.beef>=70)&&Math.random()<.15){trouble=true;net=Math.round(net*.7);S.hp=Math.max(1,S.hp-10)}}catch(e){}
+ const back=b.dep;S.cash+=net+back;if(b.cl)legit(back+net);r.fat=(r.fat||0)+1;r.hype=Math.min(100,(r.hype||0)+(turn>=v.cap*.9?8:3));const gainF=Math.round(turn*.15);r.fans+=gainF;
+ LP(net,`${v.n} show`,!!b.cl);LP(back,`${v.n} deposit back`,!!b.cl);
+ return {ic:'🎤',lucky:!trouble,t:`${v.n} show: ${turn.toLocaleString()} of ${v.cap.toLocaleString()} came out. You kept ${money(net)} after the venue${take?' and the label':''} took their cut, plus your ${money(back)} deposit back. +${gainF} fans.${trouble?' Ops showed up and it got messy. −10 health.':''}`}}catch(e){console.error('mc99 day',e);return null}};
+window.l99html=function(){if(!S||!S.rap)return '';const r=R(),p=P();let h=`<div class="sec">Vault and promo</div><div class="row" style="flex-wrap:wrap"><div class="info"><div class="t">Promo ${Math.round(p.v)}/100</div><div class="s">Promo makes your next release land bigger (up to +80% fans and a week of extra streams). It fades about 15% a day and mostly resets when you release. It only helps music, nothing else.</div><div class="bar"><i style="width:${Math.round(p.v)}%;background:var(--accent)"></i></div></div></div>`;
+ CAMP.forEach(c=>{const dis=(c.need&&r.fans<c.need)||S.cash<c.c||((p.used||{})[c.k]===S.day);h+=`<div class="row"><div class="info"><div class="t">${c.n}</div><div class="s">${c.need&&r.fans<c.need?`Need ${c.need.toLocaleString()} fans. `:''}${c.why()}</div></div><button class="btn" data-m99="c" data-k="${c.k}" ${dis?'disabled':''}>${c.c?money(c.c):'Go'}</button></div>`});
+ if(r.vault.length)r.vault.forEach((v,i)=>{h+=`<div class="row"><div class="info"><div class="t">"${E(v.title)}" ${v.diss?'<span class="chip war">Diss</span>':''}</div><div class="s">In the vault · quality ${v.q}/100 · release now for about +${Math.round(l99boost()*100)}% from promo</div></div><button class="btn go" data-m99="r" data-i="${i}">Release</button></div>`});
+ else h+=`<div class="row"><div class="info"><div class="s">Vault is empty. After a studio session, tap Save for later.</div></div></div>`;
+ h+=`<div class="sec">Book a show</div>`;if(r.bk99){const v=VEN.find(x=>x.k===r.bk99.k);h+=`<div class="row"><div class="info"><div class="t">${v?v.n:'Show'} on ${dayTxt(r.bk99.day)}</div><div class="s">Booked. Keep promo and hype up so it sells out. Be free that day or lose the ${money(r.bk99.dep)} deposit.</div></div></div>`}
+ else VEN.forEach(v=>{const est=Math.min(v.cap,Math.round(r.fans*Math.min(.25,.04+(r.hype||0)/1000+(p.v||0)/800)));h+=`<div class="row"><div class="info"><div class="t">${v.n} · ${v.cap.toLocaleString()} cap</div><div class="s">${r.fans<v.fans?`Need ${v.fans.toLocaleString()} fans. `:''}${v.lead} days out, ${money(v.dep)} deposit${v.dep>=5000?' (clean)':''}. Right now about ${est.toLocaleString()} would come: ~${money(Math.round(est*v.price*.85*(1-(r.take||0))))} for you.</div></div><button class="btn" data-m99="b" data-k="${v.k}" ${r.fans>=v.fans&&S.cash>=v.dep?'':'disabled'}>Book</button></div>`});
+ return h};
+try{const _pr=paneRap;paneRap=function(){const h=_pr.apply(this,arguments);try{const x=window.l99html(),i=h.indexOf('<div class="sec">Your songs</div>');return i<0?h+x:h.slice(0,i)+x+h.slice(i)}catch(e){console.error('mc99',e);return h}}}catch(e){}
+document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('[data-m99]');if(!t||t.disabled)return;e.preventDefault();e.stopPropagation();const k=t.dataset.m99;if(k==='c')camp(t.dataset.k);else if(k==='r')release(+t.dataset.i);else if(k==='b')book(t.dataset.k)},true);
+try{TUT.push(['Music career','Record in the studio, then Drop it now or Save for later (it goes in your vault). Build promo first: street team (better with street rep), social push (better with followers) or a radio pitch. Promo makes your next release land bigger and gives it a week of extra streams, then mostly resets. Fans grow from releases and shows. Book a club, theater or arena a few days out with a deposit; on show day you perform automatically and get paid by how many come out, minus the venue and label cut. Miss it and you lose the deposit. Fans only pay off in music: merch, shows, streams.'])}catch(e){}
+try{const _dp=devPanel;devPanel=function(){const r=_dp.apply(this,arguments);try{const mc=document.getElementById('mcard');if(mc&&!mc.querySelector('[data-d99]')){const d=document.createElement('div');d.innerHTML='<div class="sec">Music loop (new)</div><div class="btns"><button class="btn" data-d99="v">Rapper with 2 vault songs</button><button class="btn" data-d99="p">Promo to 80</button><button class="btn" data-d99="s">Show is today</button></div>';mc.insertBefore(d,mc.querySelector('.btns:last-child'));d.addEventListener('click',e=>{const k=(e.target.closest('[data-d99]')||{}).dataset;if(!k||!k.d99)return;S.rapOn=1;S.rap=S.rap||{fans:0,hype:30,songs:[],fat:0};P();
+ if(k.d99==='v'){S.rap.fans=Math.max(S.rap.fans,2500);S.rap.vault.push({title:'Dev Vault 1',q:75,d:S.day},{title:'Dev Vault 2',q:55,d:S.day})}else if(k.d99==='p')P().v=80;else{S.rap.fans=Math.max(S.rap.fans,2500);S.rap.bk99={k:'club',day:S.day,dep:1000}}close();tab='rap';render()})}}catch(e){}return r}}catch(e){}
 })();
 
 </script>
