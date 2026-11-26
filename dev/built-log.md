@@ -471,3 +471,4 @@ Build order if Chris says build: 1) Crew Ops screen + ring basics (assign, equip
 - Nov 25: Custom group chats (Messages > pencil > New group chat, 2-6 people, link-up / stay low / $100 / what's good, delete), friends pinned in Messages, dev menu 'Make a test group chat', how-to-play entry. Fix: friend texting swallowed by plug handler.
 - Nov 25: Group chat fixes: blocked when phone dead/cut off/guardian has it/jail; cut friends leave groups; members banter with each other; planned link-up gives +3 close when you actually kick it with them; plugs in groups cost -2 trust (once a day per group).
 - Nov 25: The Gang (crew chat) folded into group chat system: pinned in Messages once you have workers, locked when phone is dead/cut off/jail, history survives inbox trimming, worker names styled like other groups.
+- Nov 26: Rides app header showed 'Energy undefined' before first energy spend; now shows real energy. Phone app sweep (14 apps) found no JS errors.
