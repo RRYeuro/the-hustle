@@ -4424,7 +4424,7 @@ function lifeDay(){
   else if(S.age&&S.age<18&&S.school==='in'&&!window.DEVFF&&S.classDay!==S.day-1){S.grades=Math.max(0,(S.grades||0)-1);if(S.grades<15){S.school='out';phoneMsg('School','You missed too much school. You are out.')}}
   if(S.job&&weekTick()&&!S.pr&&!S.inJail){const pay=Math.round(JOBS[S.job].pay*(S.cal&&S.school==='in'&&!schoolBreak()?.5:1));S.cash+=pay;legit(pay);say(`Got paid ${money(pay)} from the ${JOBS[S.job].name.toLowerCase()} job.`);if(!S.firstPay){S.firstPay=1;setTimeout(()=>{if(!$('modal').hidden||S.over||window.FF)return;modal(`${a2('payday',340)}<h2>First paycheck</h2><p>You got paid ${money(pay)} from the ${JOBS[S.job]?JOBS[S.job].name.toLowerCase():'job'}. Real money, clean money.</p><div class="btns"><button class="btn go" id="ok">Nice</button></div>`);$('ok').onclick=close},300)}}
   if(S.job)addStress(1);
-  const b=bizOpen();if(b.length){let t=0;b.forEach(k=>t+=bizPay(k));t=Math.round(t);S.cash+=t;legit(t);S.heat=Math.max(0,S.heat-b.length);say(`Your business${b.length>1?'es':''} brought in ${money(t)} today.`)}
+  const b=bizOpen();if(b.length){let t=0,c=0;b.forEach(k=>{const r=window.l96day?l96day(k):{rev:bizPay(k),cost:0};t+=r.rev;c+=r.cost});t=Math.round(t);c=Math.round(c);const nt=t-c;if(nt>=0){S.cash+=nt;legit(nt)}else{const c0=cleanCash(),x=Math.min(S.cash,-nt);S.cash-=x;S.clean=Math.max(0,c0-x)}try{if(window.L95){L95.post('business',t,'Business sales',true);if(c)L95.post('business',-c,'Business costs',true)}}catch(e){}S.heat=Math.max(0,S.heat-b.length);say(`Your business${b.length>1?'es':''} sold ${money(t)} today${c?`, costs ${money(c)}, ${nt>=0?'profit':'loss'} ${money(Math.abs(nt))}`:''}.`)}
 }
 /* fate: things that happen to each character, the player doesn't know ahead of time */
 function fate(){if(!(S.mode==='life'||S.cal)||!S.fate)return false;const F=S.fate,a=S.age;
@@ -4491,7 +4491,7 @@ function paneCareer(){if(!S.age&&S.mode!=='life'&&!S.job&&!Object.keys(S.biz||{}
     return `<div class="row" style="padding:8px 12px"><div class="info"><div class="t">${J.name} ${on?'<span class="chip mine">Your job</span>':''}</div><div class="s">${money(J.pay)} a week. Legit cover keeps twelve off you a little, but it's stressful.${lock?' Needs a degree.':''}</div></div>
       ${on?`<button class="btn" data-a="quitjob">Quit</button>`:`<button class="btn" data-a="job" data-k="${k}" ${lock?'disabled':''}>Apply</button>`}</div>`}).join('');
   h+=`<div class="sec">Own a business</div><div class="row"><div class="info"><div class="s">Legit money every day, and it washes your heat down. Run it as a front and stay in the streets.</div></div></div>`;
-  h+=Object.entries(BIZ).filter(([k,B])=>!B.hide||(S.biz||{})[k]).map(([k,B])=>{const own=(S.biz||{})[k];return `<div class="row" style="padding:8px 12px"><div class="info"><div class="t">${B.name} ${own?'<span class="chip mine">Yours</span>':''}</div><div class="s">${money(bizPay(k))} a day${own&&(S.bizUp||{})[k]?` · Level ${S.bizUp[k]+1}`:''}${own&&(S.bizShut||{})[k]>S.day?` · <b style="color:var(--blood)">Shut down until ${dayTxt(S.bizShut[k])}</b>`:''}${own?((S.bizSec||{})[k]?' · Security on':' · No security'):''}</div></div>${own?((S.bizSec||{})[k]?'':`<button class="btn" data-a="bizsec" data-k="${k}" ${S.cash>=2000?'':'disabled'}>Security $2,000</button>`)+(bizUpC(k)?`<button class="btn green" data-a="bizup" data-k="${k}" ${S.cash>=bizUpC(k)?'':'disabled'}>Upgrade ${money(bizUpC(k))}</button>`:'<span class="chip mine">Maxed</span>'):`<button class="btn green" data-a="buybiz" data-k="${k}" ${S.cash>=B.cost&&adult()?'':'disabled'}>${money(B.cost)}</button>`}</div>`}).join('');
+  h+=Object.entries(BIZ).filter(([k,B])=>!B.hide||(S.biz||{})[k]).map(([k,B])=>{const own=(S.biz||{})[k];return `<div class="row" style="padding:8px 12px"><div class="info"><div class="t">${B.name} ${own?'<span class="chip mine">Yours</span>':''}</div><div class="s">${money(bizPay(k))} a day${own&&(S.bizUp||{})[k]?` · Level ${S.bizUp[k]+1}`:''}${own&&(S.bizShut||{})[k]>S.day?` · <b style="color:var(--blood)">Shut down until ${dayTxt(S.bizShut[k])}</b>`:''}${own?((S.bizSec||{})[k]?' · Security on':' · No security'):''}</div>${own&&window.l96line?l96line(k):''}</div>${own?((S.bizSec||{})[k]?'':`<button class="btn" data-a="bizsec" data-k="${k}" ${S.cash>=2000?'':'disabled'}>Security $2,000</button>`)+`<button class="btn green" data-a="bp96" data-k="${k}">Reinvest</button>`:`<button class="btn green" data-a="buybiz" data-k="${k}" ${S.cash>=B.cost&&adult()?'':'disabled'}>${money(B.cost)}</button>`}</div>`}).join('');
   return h}
 function paneFamily(){const k=S.kids||[];if(!k.length)return '';
   return `<div class="sec">Family</div>`+k.map((c,i)=>{if(c.bond==null)c.bond=60;const a=kidAge(c),gr=a>=18;return `<div class="row" style="padding:8px 12px;flex-wrap:wrap"><div class="info" style="flex:1 1 200px;min-width:0"><div class="t">${c.name} <span class="chip">${kidStage(c)} · ${a}</span></div><div class="s">${c.other?`With ${c.other} · `:''}${gr?({college:'In college. Proud of them.',street:'Rolls with you now.',gone:'Went their own way.',grown:'Moved out. Calls on Sundays.'})[c.out]||'Grown now.':`${money(kidCost(c))} a week`}</div><div class="s">Bond ${c.bond}/100</div><div class="bar"><i style="width:${c.bond}%;background:var(--money)"></i></div></div>${gr?'':`<div class="btns"><button class="btn go" data-a="kidtime" data-i="${i}" ${c.t===S.day?'disabled':''}>${c.t===S.day?'Spent time today':'Spend time'}</button><button class="btn" data-a="kidgift" data-i="${i}" ${cashAvail()>=500?'':'disabled'}>Gift $500</button></div>`}</div>`}).join('')+`<div class="row"><div class="info"><div class="s">Kids notice everything. High heat, getting hurt, and not coming around hurt your bond. A nice home and a legit business help.</div></div></div>`}
@@ -6983,7 +6983,7 @@ function allyHelp(c){const d=cdef(c.id),opps=oppOf(c.id);if(!opps.length)return 
     const dmg=vcut(rnd(12,25));S.hp-=dmg;c.respect=Math.min(100,c.respect+3);lickDone('It went bad',`The ${od.name} held. You took ${dmg} damage, but the ${d.name} saw you ride.`,false,true)})}
 /* ---------- business events ---------- */
 const bizUpC=k=>{const L=(S.bizUp||{})[k]||0;return L>=3?0:Math.round((BIZ[k].cost||8000)*.5*(L+1)*Math.max(.6,1-Math.max(0,sk3('biz')-3)*.04))};
-const bizPay=k=>Math.round(BIZ[k].pay*(S.college==='grad'?1.2:1)*(1+.4*((S.bizUp||{})[k]||0))*bizMul());
+const bizPay=k=>window.l96pay?l96pay(k):Math.round(BIZ[k].pay*(S.college==='grad'?1.2:1)*(1+.4*((S.bizUp||{})[k]||0))*bizMul());
 function bizOpen(){return Object.keys(S.biz||{}).filter(k=>!((S.bizShut||{})[k]>S.day))}
 function bizDay(){if(S.audit&&S.day>=S.audit){S.audit=0;const t=Math.round(dirtyCash()*.25+(S.cash-dirtyCash())*.05);{const c0=cleanCash();S.cash-=t;S.clean=Math.max(0,c0-Math.round(c0*.05))}addStress(15);say(`The IRS audited your books. Lost ${money(t)}.`);modal(`${a2('irs',340)}<h2 style="color:var(--blood)">IRS audit</h2><p>Two agents showed up with folders. They went through your books and took ${money(t)}.</p><div class="btns"><button class="btn go" id="ok">Ugh</button></div>`);$('ok').onclick=close}}
 function bizEvent(){const own=bizOpen();if(!own.length||Math.random()>.07)return false;ck('f:bizEvent');const k=pick(own),B=BIZ[k],nm=B.name.toLowerCase(),r=Math.random();
@@ -12046,7 +12046,7 @@ const RX=[['trading',/crypto/i],['loan',/loan|borrow|md_ml/i],['sales',/serve|ps
 const N=v=>Math.round(+v||0);
 function vec(){if(!S)return null;let wc=0;try{wc=cleanCash()}catch(e){wc=Math.min(S.clean||0,S.cash||0)}
  const v={wc,wd:Math.max(0,(S.cash||0)-wc),sc:Math.min(S.safeClean||0,S.safe||0),sd:0,hc:0,hd:0,cr:(S.cr&&S.cr.amt)||0};v.sd=Math.max(0,(S.safe||0)-v.sc);
- try{const H=S.stashH;if(H&&H.cash){v.hc=Math.min(H.cl||0,H.cash);v.hd=H.cash-v.hc}}catch(e){}return v}
+ try{const H=S.stashH;if(H&&H.cash){v.hc=Math.min(H.cl||0,H.cash);v.hd=H.cash-v.hc}}catch(e){}v.fc=window.l96fund?l96fund():0;return v}
 function L(){if(!S)return null;if(!S.lg95||!Array.isArray(S.lg95.e))S.lg95={e:[],days:{},v:1};return S.lg95}
 let base=null,ctx='',ctxT=0,posted={c:0,x:0,cr:0};
 function cat(lab){lab=String(lab||'');for(const [k,r] of RX)if(r.test(lab))return k;return 'other'}
@@ -12056,8 +12056,8 @@ function book(tag,n,c,x,tr,lab){const G=L();if(!G)return;n=N(n);tr=N(tr);if(!n&&
  if(tr){const D=G.days[d]||(G.days[d]={i:0,o:0,t:0,tr:0,k:{}});D.tr+=tr;const last=G.e[0];if(last&&last.d===d&&last.tr&&last.l===lab)last.tr+=tr;else G.e.unshift({d,k:'transfer',l:String(lab||'').slice(0,40),n:0,tr})}
  if(G.e.length>250)G.e.length=250;const ks=Object.keys(G.days);if(ks.length>60)ks.map(Number).sort((a,b)=>a-b).slice(0,ks.length-60).forEach(k=>delete G.days[k])}
 function flush(lab){if(!S||S.over&&!base)return;const v=vec();if(!v)return;if(!base){base=v;return}
- const dc=v.wc+v.sc+v.hc-(base.wc+base.sc+base.hc),dx=v.wd+v.sd+v.hd-(base.wd+base.sd+base.hd),dcr=v.cr-base.cr;
- const moved=['wc','wd','sc','sd','hc','hd'].reduce((a,k)=>a+Math.max(0,v[k]-base[k]),0);base=v;
+ const dc=v.wc+v.sc+v.hc+(v.fc||0)-(base.wc+base.sc+base.hc+(base.fc||0)),dx=v.wd+v.sd+v.hd-(base.wd+base.sd+base.hd),dcr=v.cr-base.cr;
+ const moved=['wc','wd','sc','sd','hc','hd','fc'].reduce((a,k)=>a+Math.max(0,(v[k]||0)-(base[k]||0)),0);base=v;
  let rc=dc-posted.c,rx=dx-posted.x,rcr=dcr-posted.cr;posted={c:0,x:0,cr:0};
  const label=lab||(Date.now()-ctxT<8000?ctx:'')||'Other';let tag=lab==='Overnight'?'day':cat(label);
  // crypto: money into crypto is a transfer, money out above what went in is trading
@@ -12091,6 +12091,72 @@ window.l95line=function(a,b){const w=L95.range(a,b);if(!w.i&&!w.o&&!w.tr)return 
 try{const _pe=paneExp;paneExp=function(){const h=_pe.apply(this,arguments);try{return window.l95html()+h}catch(e){console.error('lg95',e);return h}}}catch(e){}
 try{TUT.push(['Money history','The Expenses tab starts with Money history: what came in and went out over the last 7 days, sorted by where it came from (sales, product, crew, housing and more). Moving cash into your safe or stash house, laundering, and putting money into crypto are transfers, not income. Crypto gains count as trading, never as income. Tap Recent to see each entry, clean or dirty. The day recap and weekly review show the same numbers.'])}catch(e){}
 try{const _dp=devPanel;devPanel=function(){const r=_dp.apply(this,arguments);try{const mc=document.getElementById('mcard');if(mc&&!mc.querySelector('[data-d95]')){const d=document.createElement('div');d.innerHTML='<div class="sec">Ledger (new)</div><div class="btns"><button class="btn" data-d95="l">Show money history</button><button class="btn" data-d95="x">Clear ledger</button></div>';mc.insertBefore(d,mc.querySelector('.btns:last-child'));d.addEventListener('click',e=>{const k=(e.target.closest('[data-d95]')||{}).dataset;if(!k||!k.d95)return;if(k.d95==='l'){close();tab='exp';render()}else{S.lg95=null;base=null;close();say('Ledger cleared.');render()}})}}catch(e){}return r}}catch(e){}
+})();
+
+</script>
+<script id="bp96js">
+/* bp96: business performance. Each business has demand, reputation, capacity (the old upgrade level),
+   quality, marketing and a manager. Sales = what customers want, capped by what the place can handle.
+   Daily costs come out first. Reinvest choices show the expected result before you confirm. */
+(function(){
+const E=x=>String(x==null?'':x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]);
+const cl=(v,a,b)=>Math.max(a,Math.min(b,v));
+function st(k){S.bp96=S.bp96||{};const o=S.bp96[k]||(S.bp96[k]={dem:55,rep:50,q:0,mk:0,mgr:0,fund:0,hist:[]});
+ o.dem=cl(+o.dem||55,10,100);o.rep=cl(+o.rep||0,0,100);o.q=cl(o.q|0,0,3);o.mk=Math.max(0,o.mk|0);o.fund=Math.max(0,+o.fund||0);if(!Array.isArray(o.hist))o.hist=[];return o}
+const bmul=()=>{try{return bizMul()}catch(e){return 1}};
+const block=k=>{try{return window.l97biz?l97biz(k):1}catch(e){return 1}};
+function calc(k,o,capLvl){const B=BIZ[k];if(!B)return {pot:0,cap:0,rev:0,cost:0,net:0};o=o||st(k);const L=capLvl==null?((S.bizUp||{})[k]||0):capLvl;
+ const g=S.college==='grad'?1.2:1,base=B.pay*g*bmul();
+ const pot=base*(.55+o.dem/100*.9)*(.85+o.rep/100*.3)*(1+.12*o.q)*(o.mk>0?1.15:1)*block(k);
+ const cap=base*(1+.4*L)*1.1*(1+.05*o.q);
+ const rev=Math.round(Math.min(pot,cap));
+ const cost=Math.round(B.pay*.18+(o.mgr?B.pay*.15:0)+(o.mk>0?B.pay*.1:0)+o.q*B.pay*.03);
+ return {pot:Math.round(pot),cap:Math.round(cap),rev,cost,net:rev-cost,full:pot>cap*1.05}}
+window.l96pay=k=>calc(k).rev;
+window.l96fund=()=>{let t=0;try{Object.values(S.bp96||{}).forEach(o=>t+=Math.max(0,+o.fund||0))}catch(e){}return t};
+/* one business-day: returns sales and costs, moves stats a little (with caps) */
+window.l96day=function(k){const o=st(k),r=calc(k,o);
+ const T=cl(45+o.rep/5+(o.mk>0?15:0)+((block(k)-1)*60),10,100);o.dem=cl(o.dem+(T-o.dem)*.15,10,100);
+ if(r.full)o.rep=cl(o.rep-1,0,100);else o.rep=cl(o.rep+.3+.25*o.q+(o.mgr?.5:0)-(o.rep>80?.4:0),0,100);
+ if(o.mk>0)o.mk--;
+ let net=r.rev-r.cost,use=0;if(net<0&&o.fund>0){use=Math.min(o.fund,-net);o.fund-=use}
+ o.hist.unshift(r.rev-r.cost);o.hist=o.hist.slice(0,7);
+ return {rev:r.rev,cost:r.cost-use}};
+window.l96line=function(k){const o=st(k),r=calc(k,o);
+ return `<div class="s">Demand ${Math.round(o.dem)} · Rep ${Math.round(o.rep)} · Quality ${o.q}/3${o.mgr?' · Manager':''}${o.mk>0?` · Ads ${o.mk}d`:''}${o.fund>0?` · Reserve ${money(o.fund)}`:''}</div><div class="s">Sells ${money(r.rev)} · costs ${money(r.cost)} · <b style="color:${r.net>=0?'var(--money)':'var(--blood)'}">${r.net>=0?'+':'−'}${money(Math.abs(r.net))}/day</b>${r.full?' · <span style="color:var(--accent)">turning people away</span>':''}</div>`};
+/* choices */
+function opts(k){const B=BIZ[k],o=st(k),r=calc(k,o),L=(S.bizUp||{})[k]||0,out=[];
+ const sim=(f,lv)=>{const c=JSON.parse(JSON.stringify(o));f&&f(c);return calc(k,c,lv)};
+ const say2=(a,b)=>`Profit about ${money(a.net)} → ${money(b.net)} a day${b.net<a.net?' (loses money right now)':b.net===a.net?' (no change right now)':''}`;
+ const up=bizUpC(k);if(up){const n=sim(null,L+1);out.push({id:'cap',t:'Expand capacity',c:up,why:r.full?`${say2(r,n)}. You are turning people away, so this pays off.`:`${say2(r,n)}. Customers are the limit right now, not space. Pair it with ads.`})}
+ if(o.q<3){const c=Math.round((B.cost||8000)*.25*(o.q+1)),n=sim(x=>x.q++);out.push({id:'q',t:'Better quality',c,why:`${say2(r,n)}. Rep grows faster after. Costs ${money(Math.round(B.pay*.03))} more a day.`})}
+ {const c=Math.round(B.pay*4),n=sim(x=>{x.mk=7;x.dem=Math.min(100,x.dem+10)});out.push({id:'mk',t:o.mk>0?'More ads (add 7 days)':'Marketing for 7 days',c,why:`${say2(r,n)} while it runs, and demand climbs. ${n.full?'You would be full, so expand first.':''}`})}
+ if(!o.mgr){const n=sim(x=>x.mgr=1);out.push({id:'mgr',t:'Hire a manager',c:0,why:`Costs ${money(Math.round(B.pay*.15))} a day (${say2(r,n)}). Rep climbs every day without you.`})}else out.push({id:'fire',t:'Let the manager go',c:0,why:`Saves ${money(Math.round(B.pay*.15))} a day. Rep stops getting the daily boost.`});
+ const sv=Math.min(1000,Math.floor(cleanCash()));out.push({id:'save',t:'Save up (reserve)',c:sv,why:sv>0?`Puts ${money(sv)} of clean money aside inside the business. It covers bad days. Still your money, not spending.`:'You need clean cash to put aside.'});
+ if(o.fund>0)out.push({id:'take',t:'Take reserve out',c:0,why:`Brings ${money(o.fund)} back to your pocket as clean cash.`});
+ return out}
+function menu(k){const B=BIZ[k],o=st(k),r=calc(k,o);const why=r.full?'People are being turned away. More space or a manager will help most.':o.dem<45?'Not enough customers. Marketing or better quality helps most.':'Running fine. Quality and a manager keep it growing.';
+ modal(`<h2>${E(B.name)}</h2>${l96line(k)}<p class="s" style="margin:8px 0">${why}</p><div class="r96">${opts(k).map(x=>`<button class="btn" data-o96="${x.id}" data-k="${k}" ${x.c>S.cash||(x.id==='save'&&x.c<=0)?'disabled':''}><b>${x.t}${x.c&&x.id!=='save'?' · '+money(x.c):''}</b><small>${x.why}</small></button>`).join('')}</div><div class="btns"><button class="btn" id="x96">Close</button></div>`);
+ document.getElementById('x96').onclick=close}
+function confirmIt(k,id){const x=opts(k).find(y=>y.id===id);if(!x)return;
+ modal(`<h2>${E(x.t)}?</h2><p>${x.why}</p>${x.c&&id!=='save'?`<p class="s">Costs ${money(x.c)}${x.c>=5000?' (clean money)':''}.</p>`:''}<div class="btns"><button class="btn go" id="y96">Do it</button><button class="btn" id="n96">Back</button></div>`);
+ document.getElementById('n96').onclick=()=>menu(k);document.getElementById('y96').onclick=()=>doIt(k,id,x.c)}
+function pay(c,what){if(S.cash<c)return false;if(c>=5000&&needClean(c,what))return false;const c0=cleanCash();S.cash-=c;S.clean=Math.max(0,Math.min(S.cash,c>=5000?c0-c:Math.min(c0,S.cash)));return true}
+function doIt(k,id,c){const o=st(k),B=BIZ[k],nm=B.name.toLowerCase();
+ if(id==='cap'){close();act('bizup',{dataset:{k}});return}
+ if(id==='q'){if(!pay(c,'The '+nm+' remodel'))return;o.q++;say(`Fixed up the ${nm}. Quality is ${o.q}/3 now.`)}
+ if(id==='mk'){if(!pay(c,'The ads'))return;o.mk+=7;o.dem=Math.min(100,o.dem+10);say(`Ads are running for the ${nm}. Demand is climbing.`)}
+ if(id==='mgr'){o.mgr=1;say(`Hired a manager for the ${nm}.`)}
+ if(id==='fire'){o.mgr=0;say(`Let the ${nm} manager go.`)}
+ if(id==='save'){const x=Math.min(c,Math.floor(cleanCash()));if(x<=0)return;const c0=cleanCash();S.cash-=x;S.clean=Math.max(0,c0-x);o.fund+=x;say(`Put ${money(x)} aside in the ${nm}.`)}
+ if(id==='take'){const x=o.fund;o.fund=0;S.cash+=x;legit(x);say(`Took ${money(x)} out of the ${nm} reserve.`)}
+ render();menu(k)}
+document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('[data-a="bp96"],[data-o96]');if(!t)return;e.preventDefault();e.stopPropagation();
+ if(t.dataset.o96)confirmIt(t.dataset.k,t.dataset.o96);else menu(t.dataset.k)},true);
+const css=document.createElement('style');css.textContent=`.r96{display:flex;flex-direction:column;gap:8px;margin:8px 0}.r96 .btn{text-align:left;text-transform:none;line-height:1.3;padding:10px 12px;min-height:52px}.r96 .btn{white-space:normal}.r96 .btn small{display:block;color:var(--dim);font-size:12px;margin-top:2px;font-weight:400;white-space:normal;letter-spacing:0}`;document.head.appendChild(css);
+try{TUT.push(['Running a business','Every business has demand (how many people want in), rep (what people say about it), capacity (how many it can handle), quality, and costs that come out every day. Sales are what customers want, capped by your capacity. If it says "turning people away", expand. If demand is low, run ads or improve quality. A manager costs money every day but grows rep without you. Save up puts clean money aside inside the business to cover bad days; it is still yours, not spending. Tap Reinvest on a business: every choice shows what it will do before you confirm.'])}catch(e){}
+try{const _dp=devPanel;devPanel=function(){const r=_dp.apply(this,arguments);try{const mc=document.getElementById('mcard');if(mc&&!mc.querySelector('[data-d96]')){const d=document.createElement('div');d.innerHTML='<div class="sec">Business performance (new)</div><div class="btns"><button class="btn" data-d96="own">Own barbershop + car wash</button><button class="btn" data-d96="full">Make them busy</button><button class="btn" data-d96="day">Run 7 business days</button></div>';mc.insertBefore(d,mc.querySelector('.btns:last-child'));d.addEventListener('click',e=>{const k=(e.target.closest('[data-d96]')||{}).dataset;if(!k||!k.d96)return;S.biz=S.biz||{};
+ if(k.d96==='own'){S.biz.barber=1;S.biz.wash=1}else if(k.d96==='full'){Object.keys(S.biz).forEach(b=>{const o=st(b);o.dem=100;o.rep=90})}else{for(let i=0;i<7;i++)Object.keys(S.biz).filter(b=>S.biz[b]&&BIZ[b]).forEach(b=>l96day(b))}close();tab='biz';render()})}}catch(e){}return r}}catch(e){}
 })();
 
 </script>
