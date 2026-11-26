@@ -1,0 +1,28 @@
+# family needs: decay, safety from heat, actions (time at home, money), breakup on neglect, payback, kids, save/load
+from playwright.sync_api import sync_playwright
+SETUP="()=>{localStorage.setItem('tl-clean','0');startLife('lucky');document.getElementById('modal').hidden=true;window.noL31=1;window.noL27=1;S.age=22;S.cal=0;S.school='out';S.cash=5000;S._evDay=S.day;S.picQ=[];S.dr92off=1;S.recapOff=1;S.gf={name:'Kayla',rel:60};S.home='family';render()}"
+with sync_playwright() as p:
+  b=p.chromium.launch();pg=b.new_page();errs=[];pg.on('pageerror',lambda e:errs.append(str(e)[:200]))
+  pg.goto('http://127.0.0.1:8765/index.html',wait_until='load');pg.wait_for_timeout(1500);J=pg.evaluate;J(SETUP)
+  ok=lambda n,c,x='':print(('PASS ' if c else 'FAIL ')+n,'' if c else x)
+  ok('partner + parent tracked',J("()=>FM108.people().map(p=>p.k).join(',')")=='partner,parent')
+  a=J("()=>{for(let i=0;i<5;i++)l108day();return FM108.need(FM108.people()[0]).time}");ok('time runs down',a<70,a)
+  ok('safety drops with heat',J("()=>{S.heat=10;const a=FM108.safe();S.heat=95;const b=FM108.safe();S.heat=10;return b<a}"))
+  J("()=>{const m=FM108.need(FM108.people()[0]);m.time=5;m.money=5;tab='block';render()}");ok('people row on Block tab when someone needs you',J("()=>!!document.querySelector('[data-fm108o]')"))
+  J("()=>document.querySelector('[data-fm108o]').click()");pg.screenshot(path='/tmp/fm.png')
+  t0=J("()=>FM108.need(FM108.people()[1]).time")
+  J("()=>{S.at=(homeBlock()+1)%6;S.en=60;document.querySelector('[data-fm108=time][data-n=\"'+S.par.name+'\"]').click()}")
+  ok('parent time only at home',J("()=>FM108.need(FM108.people()[1]).time")==t0)
+  J("()=>{S.at=homeBlock();S.en=60;FM108.open?0:0;document.getElementById('modal').hidden=true;FM108.need(FM108.people()[1]).td=null;}")
+  J("()=>{tab='block';render();document.querySelector('[data-fm108o]').click();document.querySelector('[data-fm108=time][data-n=\"'+S.par.name+'\"]').click()}")
+  ok('spend time at home fills time',J("()=>FM108.need(FM108.people()[1]).time")>t0)
+  m0=J("()=>FM108.need(FM108.people()[0]).money");J("()=>document.querySelector('[data-fm108=money][data-n=Kayla]').click()")
+  ok('help out fills money + costs cash',J("()=>FM108.need(FM108.people()[0]).money")>m0)
+  J("()=>{document.getElementById('modal').hidden=true;window.FF=true;S.gf.rel=10;const m=FM108.need(FM108.people()[0]);m.time=0;m.money=0;for(let i=0;i<8;i++)l108day();window.FF=false}")
+  ok('no breakup while skipping',J("()=>!!S.gf"))
+  J("()=>{S.gf.rel=10;S.heat=95;const m=FM108.need(FM108.people()[0]);m.time=0;m.money=0;m.low=5;window.__m=null;for(let i=0;i<3&&S.gf;i++){const r=l108day();if(r)window.__m=r.t}}")
+  ok('neglected partner leaves',J("()=>!S.gf&&/left you/.test(window.__m||'')"),J("()=>window.__m"))
+  J("()=>{S.kids=[{name:'Lil J',born:S.day,bond:60}];}");ok('kids tracked',J("()=>FM108.people().some(p=>p.k==='kid')"))
+  J("()=>{save();const sl=S.slot;S=load(sl);render()}");ok('save/load',J("()=>!!S.fm108"))
+  J("()=>{delete S.fm108;for(let i=0;i<10;i++){try{nextDay()}catch(e){window.__e=String(e)}document.getElementById('modal').hidden=true}}");ok('old save + 10 days',not J("()=>window.__e||''"))
+  ok('no errors',not errs,errs);b.close()
