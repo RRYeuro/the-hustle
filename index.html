@@ -12227,7 +12227,7 @@ window.l98=function(){if(!S||S.over)return '';const D=S.dy98;if(!D||D.d!==S.day|
 document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('[data-b98]');if(!t)return;e.preventDefault();e.stopPropagation();choose(+t.dataset.b98,t.dataset.k)},true);
 try{const _pb=paneBlock;paneBlock=function(){const h=_pb.apply(this,arguments);try{const t=window.l98();if(!t)return h;const i=h.indexOf('<div class="sec"');return i<0?t+h:h.slice(0,i)+t+h.slice(i)}catch(e){return h}}}catch(e){}
 /* the one nextDay wrapper */
-try{const _nd=nextDay;nextDay=function(){const r=_nd.apply(this,arguments);let notes=[];try{if(S&&!S.over&&window.N97)notes=N97.tick()||[]}catch(e){console.error('nb97 tick',e)}try{if(S&&!S.over&&window.l99day){const m=l99day();if(m)notes.unshift(m)}}catch(e){console.error('mc99 tick',e)}try{if(S&&!S.over&&window.l100day){const m=l100day();if(m)notes.unshift(m)}}catch(e){console.error('cf100 tick',e)}try{if(S&&!S.over&&window.l101day){const m=l101day();if(m)notes.unshift(m)}}catch(e){console.error('bk101 tick',e)}try{if(S&&!S.over&&!window.FF&&!S.pr&&!S.inJail&&!window._sk92){roll();const D=T();notes.forEach(n=>{if(D.b.length<6){D.b.push(Object.assign({id:'nb',cat:'block'},n));try{say(`${n.ic} ${n.t}`)}catch(_){}}})}}catch(e){console.error('dy98',e)}return r}}catch(e){}
+try{const _nd=nextDay;nextDay=function(){const r=_nd.apply(this,arguments);let notes=[];try{if(S&&!S.over&&window.N97)notes=N97.tick()||[]}catch(e){console.error('nb97 tick',e)}try{if(S&&!S.over&&window.l99day){const m=l99day();if(m)notes.unshift(m)}}catch(e){console.error('mc99 tick',e)}try{if(S&&!S.over&&window.l100day){const m=l100day();if(m)notes.unshift(m)}}catch(e){console.error('cf100 tick',e)}try{if(S&&!S.over&&window.l101day){const m=l101day();if(m)notes.unshift(m)}}catch(e){console.error('bk101 tick',e)}try{if(S&&!S.over&&window.l102day){const m=l102day();if(m)notes.unshift(m)}}catch(e){console.error('rv102 tick',e)}try{if(S&&!S.over&&!window.FF&&!S.pr&&!S.inJail&&!window._sk92){roll();const D=T();notes.forEach(n=>{if(D.b.length<6){D.b.push(Object.assign({id:'nb',cat:'block'},n));try{say(`${n.ic} ${n.t}`)}catch(_){}}})}}catch(e){console.error('dy98',e)}return r}}catch(e){}
 const css=document.createElement('style');css.textContent=`.t98{border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:8px 10px;margin:6px 0;background:rgba(255,255,255,.03)}.t98h{font:700 11px var(--label,inherit);letter-spacing:.16em;color:var(--accent);text-transform:uppercase;margin-bottom:4px}.t98r{display:flex;gap:8px;align-items:flex-start;padding:5px 0;font-size:13px;line-height:1.35}.t98r>span{flex:none;width:20px;text-align:center}.t98r.luck{color:var(--money)}.t98c{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}.t98c .btn{min-height:40px;font-size:12px;padding:6px 10px}`;document.head.appendChild(css);
 /* beats call N97.bump when nb97 is loaded */
 try{TUT.push(['Every day is different','Each new day brings a few things: something personal, something on the blocks, a money chance, a problem, and someone from your life. Some are lucky. They show in the Today box on the Block tab and they change real numbers: cash, energy, stress, heat, your business demand, plug stock and how busy each block is. Some need a choice, like lending a friend money. People remember: pay them back or turn them down and it comes back later.'])}catch(e){}
@@ -12385,6 +12385,54 @@ try{const _lh=launHTML;launHTML=function(){let h=_lh.apply(this,arguments);try{c
  if(b.v>=10)h=h.replace('<div class="sec">Laundering</div>',`<div class="sec">Laundering</div><div class="row"><div class="info"><div class="t">Books suspicion ${Math.round(b.v)}/100</div><div class="s">Washing more than a business could really make looks off. It fades a little every day. At 70 the IRS pulls your books.</div><div class="bar"><i style="width:${b.v}%;background:${b.v>=50?'var(--blood)':'var(--accent)'}"></i></div></div></div>`)}catch(e){console.error('bk101 html',e)}return h}}catch(e){}
 try{TUT.push(['Books must add up','Each business can only believably make so much in a day, based on its real sales and rep. Washing up to that is safe (it shows "Looks normal up to $X today" on each wash row). Wash past it and books suspicion goes up; it fades every day, but at 70 the IRS pulls your books and an audit hits a few days later. A busy business with good rep can wash more. Over-washing also adds a little to your case file.'])}catch(e){}
 try{const _dp=devPanel;devPanel=function(){const r=_dp.apply(this,arguments);try{const mc=document.getElementById('mcard');if(mc&&!mc.querySelector('[data-d101]')){const d=document.createElement('div');d.innerHTML='<div class="sec">Books (new)</div><div class="btns"><button class="btn" data-d101="65">Books suspicion 65</button><button class="btn" data-d101="0">Clear books</button></div>';mc.insertBefore(d,mc.querySelector('.btns:last-child'));d.addEventListener('click',e=>{const k=(e.target.closest('[data-d101]')||{}).dataset;if(!k||!k.d101)return;B().v=+k.d101;close();render()})}}catch(e){}return r}}catch(e){}
+})();
+
+</script>
+<script id="rv102js">
+/* rv102: rivals that react. Every day each live crew pushes into blocks it does not own, leaning toward
+   blocks where you are weak. That raises the block's Rivals number (nb97). High rivals on your home
+   block poach your Js. Hold a block with three answers, each showing its expected result first:
+   undercut prices for 3 days, send soldiers, or pay them to back off. Blocks you own can flip if you
+   ignore rivals at 85+ for 3 live days. Ticks from the day-engine wrapper. */
+(function(){
+const E=x=>String(x==null?'':x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]);
+const cl=(v,a,b)=>Math.max(a,Math.min(b,v)),R=(a,b)=>Math.floor(a+Math.random()*(b-a+1));
+const V=()=>{if(!S.rv102||typeof S.rv102!=='object')S.rv102={hot:{},cut:null,pk:{}};return S.rv102};
+const alive=()=>(S.crews||[]).filter(c=>c&&c.alive);
+const cn=c=>{try{return cdef(c.id).name}catch(e){return 'the rivals'}};
+const comp=bi=>{try{return N97.get(bi).comp}catch(e){return 50}};
+function topRival(bi){const L=alive();if(!L.length)return null;const v=V();const id=(v.pk||{})[bi];return L.find(c=>c.id===id)||L.slice().sort((a,b)=>(b.str||0)-(a.str||0))[0]}
+window.l102day=function(){if(!S||S.over||!window.N97)return null;const v=V(),notes=[];const L=alive();if(!L.length)return null;
+ const myHold=bi=>{let h=0;try{if((S.owner||[])[bi]==='me')h+=20;if(bi===homeBlock())h+=10;if(S.traps&&S.traps[bi]&&S.traps[bi].w!=null)h+=10;h+=Math.min(20,(S.soldiers||0)*2)}catch(e){}return h};
+ L.forEach(c=>{if(Math.random()>.4)return;const opts=BLOCKS.map((_,bi)=>bi).filter(bi=>(S.owner||[])[bi]!==c.id);if(!opts.length)return;
+  const sc=bi=>comp(bi)*.2+(bi===homeBlock()||bi===S.at?8:0)-myHold(bi)+Math.random()*40;const bi=opts.sort((a,b)=>sc(b)-sc(a))[0];
+  const push=cl(Math.round(1+(c.str||10)/15+(c.beef||0)/40),1,3);const before=comp(bi);N97.bump(bi,{comp:push});v.pk[bi]=c.id;
+  if((bi===homeBlock()||bi===S.at||(S.owner||[])[bi]==='me')&&before<65&&comp(bi)>=65)notes.push({ic:'⚔️',t:`The ${cn(c)} are pushing into ${BLOCKS[bi]}. Rivals ${Math.round(comp(bi))}. Hold it from the Block tab.`})});
+ /* undercut keeps rivals back while it runs */
+ if(v.cut&&S.day<=v.cut.until)N97.bump(v.cut.bi,{comp:-6});else v.cut=null;
+ /* poach Js when your home block is crowded */
+ try{const hc=comp(homeBlock());if(hc>=60){let hit=null;(S.custos||[]).forEach(c=>{if((c.loy||0)<60&&Math.random()<.25){c.loy=Math.max(0,(c.loy||0)-R(3,7));hit=hit||c}});if(hit){const r=topRival(homeBlock());notes.push({ic:'🤏',t:`${hit.name} got offered a cheaper pack${r?` by the ${cn(r)}`:''}. Your Js are getting poached.`})}}}catch(e){}
+ /* owned blocks can flip if ignored */
+ if(!window.FF){(S.owner||[]).forEach((o,bi)=>{if(o!=='me')return;const cpv=comp(bi);v.hot[bi]=cpv>=85?(v.hot[bi]||0)+1:0;if(v.hot[bi]===2)notes.push({ic:'🚨',t:`${BLOCKS[bi]} is about to fall. Rivals ${Math.round(cpv)}. Push back today or lose it.`});if(v.hot[bi]>=3){const r=topRival(bi);if(r){S.owner[bi]=r.id;v.hot[bi]=0;N97.bump(bi,{comp:-25});notes.push({ic:'🏳️',t:`The ${cn(r)} took ${BLOCKS[bi]} from you.`})}}})}
+ return notes[0]||null};
+try{const _cp=custoPrice;custoPrice=function(){const p=_cp.apply(this,arguments);try{const v=V();if(v.cut&&S.day<=v.cut.until&&v.cut.bi===S.at)return Math.round(p*.9)}catch(e){}return p}}catch(e){}
+function opts(bi){const r=topRival(bi),c=comp(bi),out=[];const pay=r?1000+(r.str||10)*100:1500;
+ out.push({k:'cut',t:'Undercut for 3 days',dis:!!(V().cut&&S.day<=V().cut.until),why:`Your Js pay about 10% less on ${BLOCKS[bi]} for 3 days. Rivals drop about 18 and your Js stay loyal.`});
+ out.push({k:'send',t:'Send soldiers',dis:(S.soldiers||0)<2,why:(S.soldiers||0)<2?'You need at least 2 soldiers.':`Rivals −20 right away. The ${r?cn(r):'crew'} beef goes up 15. 1 in 4 chance a soldier gets hurt and sits out.`});
+ out.push({k:'pay',t:`Pay them to back off · ${money(pay)}`,c:pay,dis:S.cash<pay||!r,why:`Rivals −12 and beef −20 with the ${r?cn(r):'crew'}. Money gone, but no blood.`});return out}
+function menu(bi){const r=topRival(bi),c=Math.round(comp(bi));
+ modal(`<h2>Hold ${E(BLOCKS[bi])}</h2><p>Rivals ${c}/100${r?` · mostly the ${E(cn(r))}`:''}. High rivals cut what Js pay you and poach your regulars.</p><div class="r96">${opts(bi).map(o=>`<button class="btn" data-r102="${o.k}" data-b="${bi}" ${o.dis?'disabled':''}><b>${E(o.t)}</b><small>${E(o.why)}</small></button>`).join('')}</div><div class="btns"><button class="btn" id="x102">Leave it</button></div>`);document.getElementById('x102').onclick=close}
+function act2(k,bi){const r=topRival(bi),v=V();
+ if(k==='cut'){v.cut={bi,until:S.day+2};N97.bump(bi,{comp:-6});say(`Dropped prices on ${BLOCKS[bi]} for 3 days. Js are talking.`)}
+ if(k==='send'){if((S.soldiers||0)<2)return;N97.bump(bi,{comp:-20});if(r)r.beef=Math.min(100,(r.beef||0)+15);let hurt='';if(Math.random()<.25){S.soldiers=Math.max(0,S.soldiers-1);hurt=' One of yours got hurt and is sitting out.'}say(`Your soldiers ran the ${r?cn(r):'rivals'} off ${BLOCKS[bi]}.${hurt}`)}
+ if(k==='pay'){const p=r?1000+(r.str||10)*100:1500;if(S.cash<p||!r)return;const c0=cleanCash(),d=Math.max(0,S.cash-c0),fd=Math.min(p,d),fc=p-fd;S.cash-=p;if(fc>0)S.clean=Math.max(0,c0-fc);try{if(window.L95){L95.post('crew',-fd,'Paid rivals to back off',false);L95.post('crew',-fc,'Paid rivals to back off',true)}}catch(e){}N97.bump(bi,{comp:-12});r.beef=Math.max(0,(r.beef||0)-20);say(`Paid the ${cn(r)} ${money(p)} to stay off ${BLOCKS[bi]}.`)}
+ close();render()}
+window.l102row=function(){if(!S||S.over||!window.N97)return '';const c=comp(S.at);if(c<60)return '';const r=topRival(S.at);
+ return `<button class="cf100 s2" data-r102m="${S.at}">⚔️ ${r?E(cn(r))+' pushing on':'Rivals crowding'} ${E(BLOCKS[S.at])} · Rivals ${Math.round(c)} <span>hold it</span></button>`};
+document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('[data-r102],[data-r102m]');if(!t||t.disabled)return;e.preventDefault();e.stopPropagation();if(t.dataset.r102m!=null)menu(+t.dataset.r102m);else act2(t.dataset.r102,+t.dataset.b)},true);
+try{const _pb=paneBlock;paneBlock=function(){const h=_pb.apply(this,arguments);try{const r=window.l102row();if(!r)return h;const i=h.indexOf('<div class="sec"');return i<0?r+h:h.slice(0,i)+r+h.slice(i)}catch(e){return h}}}catch(e){}
+try{TUT.push(['Rivals push back','Rival crews move every day. They push into blocks where you are weak, which raises that block\'s Rivals number. High rivals mean Js pay you less there, and on your home block they start poaching your regulars. When rivals pass 60 on your block, a red row shows on the Block tab: undercut prices for 3 days, send soldiers, or pay them to back off. Each choice says what it does first. Blocks you own can fall if rivals sit at 85+ for 3 days and you do nothing (you get a warning first, and it never happens while skipping time).'])}catch(e){}
+try{const _dp=devPanel;devPanel=function(){const r=_dp.apply(this,arguments);try{const mc=document.getElementById('mcard');if(mc&&!mc.querySelector('[data-d102]')){const d=document.createElement('div');d.innerHTML='<div class="sec">Rivals (new)</div><div class="btns"><button class="btn" data-d102="p">Rivals 75 on this block</button><button class="btn" data-d102="o">Own this block</button></div>';mc.insertBefore(d,mc.querySelector('.btns:last-child'));d.addEventListener('click',e=>{const k=(e.target.closest('[data-d102]')||{}).dataset;if(!k||!k.d102)return;if(k.d102==='p'){const v=N97.get(S.at);v.comp=75}else{S.owner=S.owner||[];S.owner[S.at]='me'}close();render()})}}catch(e){}return r}}catch(e){}
 })();
 
 </script>
