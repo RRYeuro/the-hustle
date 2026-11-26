@@ -12227,7 +12227,7 @@ window.l98=function(){if(!S||S.over)return '';const D=S.dy98;if(!D||D.d!==S.day|
 document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('[data-b98]');if(!t)return;e.preventDefault();e.stopPropagation();choose(+t.dataset.b98,t.dataset.k)},true);
 try{const _pb=paneBlock;paneBlock=function(){const h=_pb.apply(this,arguments);try{const t=window.l98();if(!t)return h;const i=h.indexOf('<div class="sec"');return i<0?t+h:h.slice(0,i)+t+h.slice(i)}catch(e){return h}}}catch(e){}
 /* the one nextDay wrapper */
-try{const _nd=nextDay;nextDay=function(){const r=_nd.apply(this,arguments);let notes=[];try{if(S&&!S.over&&window.N97)notes=N97.tick()||[]}catch(e){console.error('nb97 tick',e)}try{if(S&&!S.over&&window.l99day){const m=l99day();if(m)notes.unshift(m)}}catch(e){console.error('mc99 tick',e)}try{if(S&&!S.over&&window.l100day){const m=l100day();if(m)notes.unshift(m)}}catch(e){console.error('cf100 tick',e)}try{if(S&&!S.over&&window.l101day){const m=l101day();if(m)notes.unshift(m)}}catch(e){console.error('bk101 tick',e)}try{if(S&&!S.over&&window.l102day){const m=l102day();if(m)notes.unshift(m)}}catch(e){console.error('rv102 tick',e)}try{if(S&&!S.over&&!window.FF&&!S.pr&&!S.inJail&&!window._sk92){roll();const D=T();notes.forEach(n=>{if(D.b.length<6){D.b.push(Object.assign({id:'nb',cat:'block'},n));try{say(`${n.ic} ${n.t}`)}catch(_){}}})}}catch(e){console.error('dy98',e)}return r}}catch(e){}
+try{const _nd=nextDay;nextDay=function(){const r=_nd.apply(this,arguments);let notes=[];try{if(S&&!S.over&&window.N97)notes=N97.tick()||[]}catch(e){console.error('nb97 tick',e)}try{if(S&&!S.over&&window.l99day){const m=l99day();if(m)notes.unshift(m)}}catch(e){console.error('mc99 tick',e)}try{if(S&&!S.over&&window.l100day){const m=l100day();if(m)notes.unshift(m)}}catch(e){console.error('cf100 tick',e)}try{if(S&&!S.over&&window.l101day){const m=l101day();if(m)notes.unshift(m)}}catch(e){console.error('bk101 tick',e)}try{if(S&&!S.over&&window.l102day){const m=l102day();if(m)notes.unshift(m)}}catch(e){console.error('rv102 tick',e)}try{if(S&&!S.over&&window.l103day){const m=l103day();if(m)notes.unshift(m)}}catch(e){console.error('mg103 tick',e)}try{if(S&&!S.over&&!window.FF&&!S.pr&&!S.inJail&&!window._sk92){roll();const D=T();notes.forEach(n=>{if(D.b.length<6){D.b.push(Object.assign({id:'nb',cat:'block'},n));try{say(`${n.ic} ${n.t}`)}catch(_){}}})}}catch(e){console.error('dy98',e)}return r}}catch(e){}
 const css=document.createElement('style');css.textContent=`.t98{border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:8px 10px;margin:6px 0;background:rgba(255,255,255,.03)}.t98h{font:700 11px var(--label,inherit);letter-spacing:.16em;color:var(--accent);text-transform:uppercase;margin-bottom:4px}.t98r{display:flex;gap:8px;align-items:flex-start;padding:5px 0;font-size:13px;line-height:1.35}.t98r>span{flex:none;width:20px;text-align:center}.t98r.luck{color:var(--money)}.t98c{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}.t98c .btn{min-height:40px;font-size:12px;padding:6px 10px}`;document.head.appendChild(css);
 /* beats call N97.bump when nb97 is loaded */
 try{TUT.push(['Every day is different','Each new day brings a few things: something personal, something on the blocks, a money chance, a problem, and someone from your life. Some are lucky. They show in the Today box on the Block tab and they change real numbers: cash, energy, stress, heat, your business demand, plug stock and how busy each block is. Some need a choice, like lending a friend money. People remember: pay them back or turn them down and it comes back later.'])}catch(e){}
@@ -12433,6 +12433,79 @@ document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest
 try{const _pb=paneBlock;paneBlock=function(){const h=_pb.apply(this,arguments);try{const r=window.l102row();if(!r)return h;const i=h.indexOf('<div class="sec"');return i<0?r+h:h.slice(0,i)+r+h.slice(i)}catch(e){return h}}}catch(e){}
 try{TUT.push(['Rivals push back','Rival crews move every day. They push into blocks where you are weak, which raises that block\'s Rivals number. High rivals mean Js pay you less there, and on your home block they start poaching your regulars. When rivals pass 60 on your block, a red row shows on the Block tab: undercut prices for 3 days, send soldiers, or pay them to back off. Each choice says what it does first. Blocks you own can fall if rivals sit at 85+ for 3 days and you do nothing (you get a warning first, and it never happens while skipping time).'])}catch(e){}
 try{const _dp=devPanel;devPanel=function(){const r=_dp.apply(this,arguments);try{const mc=document.getElementById('mcard');if(mc&&!mc.querySelector('[data-d102]')){const d=document.createElement('div');d.innerHTML='<div class="sec">Rivals (new)</div><div class="btns"><button class="btn" data-d102="p">Rivals 75 on this block</button><button class="btn" data-d102="o">Own this block</button></div>';mc.insertBefore(d,mc.querySelector('.btns:last-child'));d.addEventListener('click',e=>{const k=(e.target.closest('[data-d102]')||{}).dataset;if(!k||!k.d102)return;if(k.d102==='p'){const v=N97.get(S.at);v.comp=75}else{S.owner=S.owner||[];S.owner[S.at]='me'}close();render()})}}catch(e){}return r}}catch(e){}
+})();
+
+</script>
+<script id="mg103js">
+/* mg103: managers run it. Put a worker on a job and they handle it every day:
+   street lieutenant (collects from workers, re-ups one product from your best plug when it runs low),
+   business manager (ads when demand is low, expands when full, keeps a reserve),
+   accountant (washes dirty money through your businesses up to their safe limit).
+   Who you pick matters: personality (Loyal / Ambitious / Wild card from wk94) + one job trait
+   (Careful, Hustler, Smooth talker, Book smart, Flashy), and they level up over time.
+   Each takes a cut. Disloyal ambitious ones skim. Report lands in the Today box. Ticks from the day engine. */
+(function(){
+const E=x=>String(x==null?'':x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]);
+const cl=(v,a,b)=>Math.max(a,Math.min(b,v));
+const ROLES={lt:{n:'Street lieutenant',ic:'🧢',d:'Collects from your workers and re-ups your product from your best plug when it runs low.'},bm:{n:'Business manager',ic:'🏪',d:'Runs ads when demand drops, expands when a business is full, keeps a reserve. Grows rep every day.'},ac:{n:'Accountant',ic:'🧮',d:'Washes your dirty money through your businesses every day, staying under each one\'s safe limit.'}};
+const JT={careful:['🧐','Careful','Leaves less evidence, moves a bit less.'],hustler:['🔥','Hustler','Moves more, draws a little heat.'],smooth:['🗣️','Smooth talker','Gets better plug prices.'],book:['📚','Book smart','Can wash a bit more safely.'],flashy:['💎','Flashy','Builds your name, catches cop attention.']};
+const PL={loyal:['🤝','Loyal','Never skims, smaller cut, plays it safe.'],ambitious:['📈','Ambitious','Makes the most, bigger cut. Skims if you neglect them.'],wild:['🎲','Wild card','Big days and bad days.']};
+function hash(s){let h=0;for(const c of String(s))h=(h*31+c.charCodeAt(0))>>>0;return h}
+const pers=w=>w.pers||(()=>{const h=hash(w.id||w.name)%10;return h<4?'loyal':h<7?'ambitious':'wild'})();
+const jt=w=>w.jt103||(w.jt103=Object.keys(JT)[hash((w.id||w.name)+'jt')%5]);
+const lvl=w=>cl(1+Math.floor((w.mx103||0)/10),1,5);
+const M=()=>{if(!S.mg103||typeof S.mg103!=='object')S.mg103={lt:null,bm:null,ac:null,g:null,min:56};return S.mg103};
+const W=id=>(S.workers||[]).find(w=>w&&w.id===id);
+const busy=w=>{try{return Object.values(S.traps||{}).some(t=>t&&t.w===w.id)}catch(e){return false}};
+const LP=(tag,amt,lab,c)=>{try{if(window.L95&&amt)L95.post(tag,amt,lab,c)}catch(e){}};
+function payCut(w,amt,lab){amt=Math.round(amt);if(amt<=0)return 0;const c0=cleanCash(),d=Math.max(0,S.cash-c0),fd=Math.min(amt,d),fc=Math.min(amt-fd,c0);S.cash-=fd+fc;if(fc>0)S.clean=Math.max(0,c0-fc);w.held103=(w.held103||0)+fd+fc;LP('crew',-fd,lab,false);LP('crew',-fc,lab,true);return fd+fc}
+const mul=w=>{const p=pers(w),j=jt(w),L=lvl(w);let vol=1+(L-1)*.04,cut=1;if(p==='loyal'){vol*=.95;cut=.7}if(p==='ambitious'){vol*=1.1;cut=1.2}if(p==='wild')vol*=.75+Math.random()*.5;if(j==='careful')vol*=.85;if(j==='hustler')vol*=1.2;return {vol,cut,p,j,L}};
+function skim(w,amt){const p=pers(w);if(p!=='ambitious'||(w.loyal||0)>=5||Math.random()>.15)return 0;return Math.round(amt*.1)}
+/* jobs */
+function doLT(w,out){const m=mul(w);let col=0;(S.workers||[]).forEach(x=>{if(x.held>0){col+=x.held;x.held=0}});
+ if(col>0){const sk=skim(w,col);S.cash+=col-sk;LP('sales',col-sk,'Lieutenant collected',false);const cut=payCut(w,col*.05*m.cut,'Lieutenant cut');out.push(`${w.name} collected ${money(col-sk)} from the workers (cut ${money(cut)})`+(sk&&Math.random()<.5?'. The count looked short.':''))}
+ const R=M(),g=R.g&&G(R.g);if(g&&(S.inv[g.id]||0)<R.min){let best=null;(S.known||[]).forEach(bi=>{const o=S.offer&&S.offer[bi]&&S.offer[bi][g.id];if(!o||!o.stock||((S.trust||{})[bi]||0)<30)return;const a0=S.at;S.at=bi;let pr=0;try{pr=plugPrice('buy',g)}catch(e){}S.at=a0;if(pr&&(!best||pr<best.pr))best={bi,pr,o}});
+  if(best){let want=Math.round((R.min*2-(S.inv[g.id]||0))*m.vol);want=Math.max(g.step||1,Math.min(want,best.o.stock));try{const room=S.cap-used();if(g.unit==='g')want=Math.min(want,Math.floor(room/(g.sp||1)))}catch(e){}
+   let pr=best.pr*(m.j==='smooth'?.95:1)*1.08;const cost=Math.round(want*pr);if(want>0&&S.cash>=cost){const c0=cleanCash(),d=Math.max(0,S.cash-c0),fd=Math.min(cost,d),fc=cost-fd;S.cash-=cost;if(fc>0)S.clean=Math.max(0,c0-fc);LP('supply',-fd,'Lieutenant re-up',false);LP('supply',-fc,'Lieutenant re-up',true);
+    const have=S.inv[g.id]||0;S.paid[g.id]=Math.round(((S.paid[g.id]||0)*have+pr*want)/(have+want));S.inv[g.id]=have+want;best.o.stock-=want;if(m.j==='hustler')S.heat=Math.min(100,S.heat+1);if(m.p==='wild'&&Math.random()<.1){S.heat=Math.min(100,S.heat+3);out.push(`${w.name} re-upped ${amt(want,g)} of ${g.name} from ${plugName(best.bi)} but got sloppy on the way back (heat +3)`)}else out.push(`${w.name} re-upped ${amt(want,g)} of ${g.name} from ${plugName(best.bi)} for ${money(cost)}`)}}}
+}
+function doBM(w,out){const m=mul(w);const own=Object.keys(S.biz||{}).filter(k=>S.biz[k]&&BIZ[k]);if(!own.length)return;let did=[];
+ own.forEach(k=>{try{if(window.l96line)l96line(k)}catch(e){}const o=(S.bp96=S.bp96||{})[k];if(!o)return;o.mgr=1;o.rep=Math.min(100,o.rep+.2*m.vol);const B=BIZ[k];
+  if(o.dem<45&&!(o.mk>0)){const c=Math.round(B.pay*4);if(cleanCash()>=c+500){const c0=cleanCash();S.cash-=c;S.clean=c0-c;LP('business',-c,'Manager ran ads',true);o.mk=7;o.dem=Math.min(100,o.dem+10);did.push(`ads for the ${B.name.toLowerCase()}`)}}
+  try{const pot=l96pay(k);const full=o.dem>70&&((S.bizUp||{})[k]||0)<3;const up=bizUpC(k);if(full&&up&&cleanCash()>=up+2000&&m.p!=='wild'){act('bizup',{dataset:{k}});did.push(`expanded the ${B.name.toLowerCase()}`)}}catch(e){}
+  const keep=Math.round(B.pay*.6);if((o.fund||0)<keep&&cleanCash()>keep+1000){const x=keep-(o.fund||0),c0=cleanCash();S.cash-=x;S.clean=c0-x;o.fund=(o.fund||0)+x}});
+ const net=own.reduce((a,k)=>{try{return a+Math.max(0,(o=>o?o.hist[0]||0:0)((S.bp96||{})[k]))}catch(e){return a}},0);const cut=payCut(w,net*.05*m.cut,'Manager cut');
+ out.push(`${w.name} ran the businesses${did.length?': '+did.join(', '):''} (cut ${money(cut)})`)}
+function doAC(w,out){const m=mul(w);const own=Object.keys(S.biz||{}).filter(k=>S.biz[k]&&BIZ[k]&&!((S.bizShut||{})[k]>S.day));if(!own.length)return;let tot=0,fees=0;
+ const Wd=(S.washD&&S.washD.d===S.day)?S.washD:(S.washD={d:S.day,u:{}});const BK=window.B101?B101.get():{w:{}};
+ own.forEach(k=>{const L=(typeof LAUNDER_BIZ!=='undefined'&&LAUNDER_BIZ[k])||{cap:1500,fee:.15};const safe=Math.round((window.B101?B101.believe(k):L.cap)*(m.j==='book'?1.15:1)*(m.p==='wild'?1.1:.95));
+  const room=Math.min(L.cap-(Wd.u[k]||0),safe-((BK.w||{})[k]||0)),d=Math.floor(dirtyCash());let x=Math.floor(Math.min(room,d)*Math.min(1,m.vol));if(x<100)return;
+  const f=Math.round(x*L.fee);S.cash-=f;S.clean=Math.min(S.cash,cleanCash()+x);Wd.u[k]=(Wd.u[k]||0)+x;if(BK.w)BK.w[k]=(BK.w[k]||0)+x;tot+=x;fees+=f;LP('business',-f,'Wash fee',false)});
+ if(!tot)return;if(m.j==='careful'){try{if(window.C100){const c=C100.get();c.ev=Math.max(0,c.ev-.5)}}catch(e){}}const cut=payCut(w,tot*.02*m.cut,'Accountant cut');
+ out.push(`${w.name} washed ${money(tot)} (fees ${money(fees)}, cut ${money(cut)})`)}
+window.l103day=function(){if(!S||S.over||S.pr||S.inJail)return null;const R=M(),out=[];
+ ['lt','bm','ac'].forEach(r=>{const w=W(R[r]);if(!R[r])return;if(!w){R[r]=null;out.push(`Your ${ROLES[r].n.toLowerCase()} is gone. Pick someone new.`);return}
+  try{({lt:doLT,bm:doBM,ac:doAC})[r](w,out)}catch(e){console.error('mg103 '+r,e)}w.mx103=(w.mx103||0)+1;
+  const j=jt(w);if(j==='flashy'){S.rep+=.5;try{if(window.C100)C100.add('heat',.5)}catch(e){}}if(j==='careful'){try{if(window.C100){const c=C100.get();c.ev=Math.max(0,c.ev-.3)}}catch(e){}}
+  if(lvl(w)>(w.lv103||1)){w.lv103=lvl(w);out.push(`${w.name} is getting better at the job (level ${w.lv103})`)}});
+ if(!out.length)return null;return {ic:'👔',t:'Managers: '+out.join('. ')+'.'}};
+/* UI */
+function tags(w){const p=PL[pers(w)],j=JT[jt(w)];return `${p[0]} ${p[1]} · ${j[0]} ${j[1]} · Lv ${lvl(w)}`}
+function pick(r){const R=M(),ws=(S.workers||[]).filter(w=>w&&w.name);
+ modal(`<h2>${ROLES[r].ic} ${ROLES[r].n}</h2><p class="s">${ROLES[r].d}</p><div class="r96">${ws.length?ws.map(w=>{const other=Object.keys(ROLES).find(k=>k!==r&&R[k]===w.id);const p=PL[pers(w)],j=JT[jt(w)];return `<button class="btn" data-mg103p="${r}" data-w="${E(w.id)}" ${other||busy(w)?'disabled':''}><b>${E(w.name)} · ${tags(w)}</b><small>${p[2]} ${j[2]}${other?` Already your ${ROLES[other].n.toLowerCase()}.`:busy(w)?' Busy on a trap.':''}</small></button>`}).join(''):'<p>You need workers first. Hire on the Crew tab.</p>'}</div>
+ ${r==='lt'?`<p class="s">Re-up: ${(()=>{const g=R.g&&G(R.g);return g?`keeps at least ${amt(R.min,g)} of ${E(g.name)}`:'pick a product below'})()}</p><div class="t98c">${GOODS.filter(g=>!g.legal).slice(0,6).map(g=>`<button class="btn ${R.g===g.id?'go':''}" data-mg103g="${g.id}">${E(g.name)}</button>`).join('')}<button class="btn" data-mg103g="">No re-up</button></div>`:''}
+ <div class="btns">${R[r]?`<button class="btn red" data-mg103x="${r}">Take them off the job</button>`:''}<button class="btn" id="mg103c">Close</button></div>`);document.getElementById('mg103c').onclick=close}
+window.l103html=function(){if(!S)return '';const R=M();let h=`<div class="sec">Managers</div>`;
+ Object.keys(ROLES).forEach(r=>{const w=W(R[r]);h+=`<div class="row"><div class="info"><div class="t">${ROLES[r].ic} ${ROLES[r].n}${w?`: ${E(w.name)}`:''}</div><div class="s">${w?tags(w):ROLES[r].d}</div></div><button class="btn ${w?'':'go'}" data-mg103="${r}">${w?'Change':'Assign'}</button></div>`});
+ return h};
+document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('[data-mg103],[data-mg103p],[data-mg103x],[data-mg103g]');if(!t||t.disabled)return;e.preventDefault();e.stopPropagation();const R=M();
+ if(t.dataset.mg103)pick(t.dataset.mg103);
+ else if(t.dataset.mg103p){R[t.dataset.mg103p]=t.dataset.w;const w=W(t.dataset.w);say(`${w.name} is your ${ROLES[t.dataset.mg103p].n.toLowerCase()} now.`);pick(t.dataset.mg103p);render()}
+ else if(t.dataset.mg103x){const w=W(R[t.dataset.mg103x]);R[t.dataset.mg103x]=null;if(t.dataset.mg103x==='bm')try{Object.values(S.bp96||{}).forEach(o=>o.mgr=0)}catch(_){}say(`${w?w.name:'They'} is off the job.`);close();render()}
+ else if(t.dataset.mg103g!=null){R.g=t.dataset.mg103g||null;pick('lt')}},true);
+try{const _pt=paneTraps;paneTraps=function(){const h=_pt.apply(this,arguments);try{return window.l103html()+h}catch(e){console.error('mg103',e);return h}}}catch(e){}
+try{TUT.push(['Managers','Put a worker on a job and they handle it every day. Street lieutenant: collects from your workers and re-ups one product from your cheapest plug (trust 30+) when it runs low. Business manager: ads when demand drops, expands when full, keeps a reserve, grows rep. Accountant: washes dirty money through your businesses, staying under each one\'s safe limit. Each takes a cut. Who you pick matters: Loyal never skims, Ambitious makes the most but skims if ignored, Wild card is up and down. Job traits: Careful, Hustler, Smooth talker, Book smart, Flashy. They level up the longer they work. Their report shows in the Today box.'])}catch(e){}
+try{const _dp=devPanel;devPanel=function(){const r=_dp.apply(this,arguments);try{const mc=document.getElementById('mcard');if(mc&&!mc.querySelector('[data-d103]')){const d=document.createElement('div');d.innerHTML='<div class="sec">Managers (new)</div><div class="btns"><button class="btn" data-d103="h">Hire 3 workers</button><button class="btn" data-d103="r">Run managers now</button></div>';mc.insertBefore(d,mc.querySelector('.btns:last-child'));d.addEventListener('click',e=>{const k=(e.target.closest('[data-d103]')||{}).dataset;if(!k||!k.d103)return;if(k.d103==='h'){['Dre','Kim','Bo'].forEach((n,i)=>S.workers.push({id:n+S.day+i,name:n,hustle:6,loyal:7,wage:200,sales:5,from:S.at}))}else{const m=l103day();if(m)say(m.t)}close();render()})}}catch(e){}return r}}catch(e){}
 })();
 
 </script>
