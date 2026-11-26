@@ -7,6 +7,7 @@ Last cleaned: Nov 20 (every line checked against the game code).
 - Simple analytics to see where players quit.
 
 ## Depth (Nov 26)
+- Managers run it (automation): pick a person for each job and set simple rules. Street lieutenant: re-ups from your plug when stock is low, answers J texts, collects from workers, pays the crew. Business manager: auto ads when demand is low, expands when full, keeps a reserve. Accountant: washes up to each business's safe limit every day. Each takes a cut; low-loyalty ones skim. One daily report in the Today box.
 - One reputation record per person (respect / fear / trust / loyal) that every system reads, so past choices change prices, jobs, texts and story events.
 - Lifestyle goals (apartment, car, clothes).
 - Supply ripples: a plug raid or drought raises prices city-wide for days, Js switch products, workers sell slower. Stocking up early pays.
