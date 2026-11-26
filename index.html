@@ -3416,7 +3416,7 @@ function paneTraps(){
   if(!spots.length)h+=`<div class="row"><div class="info"><div class="s">You need a block to open a trap. Take one from a crew.</div></div></div>`;
   const busy=id=>Object.values(S.traps).some(t=>t.w===id);
   {const tot=S.workers.reduce((a,w)=>a+(w.held||0),0);h+=`<div class="sec">Your workers (${S.workers.length})</div>`+(tot?`<div class="row" style="padding:8px 12px"><div class="info"><div class="t">${money(tot)} waiting</div><div class="s">Workers hold the money until you collect it. Low loyalty workers can skim or run.</div></div><div class="btns"><button class="btn green" data-a="wcollectall">Collect all</button><button class="btn" data-a="wcount">Count it (+3%)</button></div></div>`:'');}
-  h+=S.workers.length?S.workers.map((w,i)=>`<div class="row" style="padding:8px 12px">${faceImg(w.name,'c',40)}<div class="info"><div class="t">${w.name} ${busy(w.id)?'<span class="chip mine">Working</span>':'<span class="chip">Free</span>'}</div><div class="s">Level ${wLv(w)} · Hustle ${w.hustle} · Loyalty ${w.loyal} · ${money(wPay(w))}/day · ${bossTag(w.pct||100)}<br>Holding ${money(w.held||0)} · stash: ${wStashTxt(w)}${(w.held||0)>1500&&w.loyal<=3?' <span style="color:var(--blood)">(might run with it)</span>':''}</div></div><div class="btns"><button class="btn green" data-a="wcollect" data-i="${i}" ${w.held?'':'disabled'}>Collect</button><button class="btn" data-a="wstash" data-i="${i}">Stash</button><button class="btn" data-a="wpay" data-i="${i}">Pay</button><button class="btn" data-a="firew" data-i="${i}">Fire</button></div></div>`).join('')
+  h+=S.workers.length?S.workers.map((w,i)=>`<div class="row" style="padding:8px 12px">${faceImg(w.name,'c',40)}<div class="info"><div class="t">${w.name} ${busy(w.id)?'<span class="chip mine">Working</span>':'<span class="chip">Free</span>'}</div><div class="s">Level ${wLv(w)} · Hustle ${w.hustle} · Loyalty ${w.loyal}${window.PERS93?PERS93(w):''} · ${money(wPay(w))}/day · ${bossTag(w.pct||100)}<br>Holding ${money(w.held||0)} · stash: ${wStashTxt(w)}${(w.held||0)>1500&&w.loyal<=3?' <span style="color:var(--blood)">(might run with it)</span>':''}</div></div><div class="btns"><button class="btn green" data-a="wcollect" data-i="${i}" ${w.held?'':'disabled'}>Collect</button><button class="btn" data-a="wstash" data-i="${i}">Stash</button><button class="btn" data-a="wpay" data-i="${i}">Pay</button><button class="btn" data-a="firew" data-i="${i}">Fire</button></div></div>`).join('')
     :`<div class="row"><div class="info"><div class="s">No workers yet. Hire one below.</div></div></div>`;
   h+=`<div class="sec">Looking for work (max ${wMax()} workers, +1 per trap house, you have ${S.workers.length})</div>`;
   h+=S.cands.map((c,i)=>`<div class="row" style="padding:8px 12px">${faceImg(c.name,'c',40)}<div class="info"><div class="t">${c.name}</div><div class="s">Hustle ${c.hustle} (sells more) · Loyalty ${c.loyal} (steals less) · ${money(c.wage)}/day</div></div><button class="btn green" data-a="hirew" data-i="${i}" ${S.cash>=500&&S.workers.length<wMax()?'':'disabled'}>${S.workers.length>=wMax()?`Max ${wMax()} workers (+1 per trap house)`:'Hire $500'}</button></div>`).join('');
@@ -11890,7 +11890,7 @@ const R={
 const typ=q=>q.k==='fr'?q.t:q.k==='fam'?'fam':q.k==='plug'?'plug':'any';
 const ACTS=[['link','Who tryna link up?','Who tryna link up later?'],['low','Heads up, stay low today','Heads up. Stay low today.'],['cash','Anybody got $100?','Anybody got $100? I\'ll pay you back.'],['hi','What\'s good?','What\'s good everybody?']];
 function kb(g){const why=off();if(why)return `<div class="mth-kb" data-gcw="1"><div class="mth-kt">📵 ${E(why)}</div><button class="mth-opt" data-gcdel="${g.id}">Delete this group</button></div>`;const o=ACTS.map(([a,l],i)=>{const used=a==='cash'?S.gcCash===S.day:(g.act||{})[a]===S.day;return `<button class="mth-opt${i===0?' hot':''}" data-gca="${a}" data-gci="${g.id}" ${used&&a!=='hi'?'disabled':''}>${E(l)}${used&&a!=='hi'?' (done today)':''}</button>`}).join('');
- return `<div class="mth-kb" data-gcw="1"><div class="mth-kt">Text ${E(g.name)} (${g.mem.length})</div>${o}<button class="mth-opt" data-gcdel="${g.id}">Delete this group</button></div>`}
+ return `<div class="mth-kb" data-gcw="1"><div class="mth-kt">Text ${E(g.name)} (${g.mem.length})</div>${o}${Object.keys(S.owe93||{}).filter(n=>g.mem.includes(n)).map(n=>`<button class="mth-opt" data-gcpay="${E(encodeURIComponent(n))}">Pay back ${E(n)} $${S.owe93[n].amt}</button>`).join('')}<button class="mth-opt" data-gcdel="${g.id}">Delete this group</button></div>`}
 try{const _k=window.l91kb;window.l91kb=function(t){const g=gOf(t&&t.n);if(g)return kb(g);if(t&&window.l68GC&&t.n===window.l68GC){const why=off();if(why)return `<div class="mth-kb" data-gcw="1"><div class="mth-kt">📵 ${E(why)}</div></div>`}return _k?_k(t):null}}catch(e){}
 function act(g,a){const why=off();if(why){say('📵 '+why);render();return}if(!g.act)g.act={};const txt=ACTS.find(x=>x[0]===a)[2];post(g,'',txt,true);render();
  try{if((g.pl||0)!==S.day&&(a==='link'||a==='cash')){const bi=window.l51bOf?g.mem.map(n=>l51bOf(n)).find(x=>x!=null):null;if(bi!=null){g.pl=S.day;S.trust=S.trust||{};S.trust[bi]=Math.max(0,(S.trust[bi]||0)-2);say('🔌 Plugs hate group texts. Trust −2 with '+plugName(bi)+'.')}}}catch(er){}
@@ -11899,14 +11899,14 @@ function act(g,a){const why=off();if(why){say('📵 '+why);render();return}if(!g
  mem.forEach(n=>{const q=kind(n),T=typ(q);let line,fx=null;
   if(a==='link'){if(q.k==='fr'&&(q.t==='wild'||q.close>=30||q.t==='snake')){line=pk(R.link[T]);fx='close2'}else line=q.k==='fr'?'Maybe, let me see.':pk(R.link[T])}
   else if(a==='low'){line=pk(R.low[T]);if(q.k==='fr')fx='close1'}
-  else if(a==='cash'){if(q.k==='fr'&&q.close>=50&&q.t!=='snake'&&gave<2){gave++;line='Sent $100. Pay me back when you can.';fx='give'}else line=pk(R.no[T])}
+  else if(a==='cash'){const M=window.MEM93,ow=(S.owe93||{})[n];if(q.k==='fr'&&ow)line='You still owe me $'+ow.amt+'. Pay me back first.';else if(q.k==='fr'&&M&&M.has(n,'promise_broken',14))line='Nah. You left me hanging last time.';else if(q.k==='fr'&&q.close>=50&&q.t!=='snake'&&gave<2){gave++;line='Sent $100. Pay me back when you can.';fx='give'}else line=pk(R.no[T])}
   else line=pk(R.hi[T]);
   seq.push([n,line,fx,q])});
  try{const fr=g.mem.filter(n=>kind(n).k==='fr');if(fr.length>=2&&Math.random()<.7){const x=pk(fr),y=pk(fr.filter(n=>n!==x));const BT=a==='link'?[y+', you better not be late.',y+' always late lol','I\'m pulling up, '+y+' you coming?']:a==='cash'?['Don\'t ask me, I\'m broke too 😂',y+' owe me money already']:['Facts.','Y\'all chill 😂','Same, '+y];seq.push([x,pk(BT),null,{k:'any'}])}}catch(e){}
  if(a==='hi')seq=seq.sort(()=>Math.random()-.5).slice(0,3);
  if(a==='cash')S.gcCash=S.day;else if(a!=='hi')g.act[a]=S.day;
  seq.forEach(([n,line,fx,q],k)=>setTimeout(()=>{try{post(g,n,line,false);
-  if(q.f){if(fx==='close2'){q.f.close=Math.min(100,(q.f.close||0)+2);q.f.plan=S.day}if(fx==='close1')q.f.close=Math.min(100,(q.f.close||0)+1);if(fx==='give'){q.f.close=Math.max(0,(q.f.close||0)-3);S.cash+=100;S.clean=(S.clean||0)+100;try{say('💵 '+n+' sent you $100.')}catch(e){}}}
+  if(q.f){if(fx==='close2'){q.f.close=Math.min(100,(q.f.close||0)+2);q.f.plan=S.day}if(fx==='close1')q.f.close=Math.min(100,(q.f.close||0)+1);if(fx==='give'){q.f.close=Math.max(0,(q.f.close||0)-3);S.cash+=100;S.clean=(S.clean||0)+100;S.owe93=S.owe93||{};S.owe93[n]={amt:100,day:S.day};try{MEM93.set(n,'lent_money')}catch(e){}try{say('💵 '+n+' sent you $100.')}catch(e){}}}
   if(k===seq.length-1&&a==='link'&&seq.some(s=>s[2]==='close2')){try{addStress(-2)}catch(e){}}
   render()}catch(e){console.error('gc93 reply',e)}},700+k*650)) }
 function mk(name,sel){const gs=G();let nm=(name||'').trim().slice(0,18)||sel.slice(0,2).join(' & ');while(gs.some(g=>g.name===nm)||MC().some(c=>c.n===nm))nm+=' 2';
@@ -11928,13 +11928,14 @@ function after(){try{const ph=document.querySelector('.phx[data-app="messages"]'
  if(g)th.querySelectorAll('.ph-chat .bub:not(.me)').forEach(b=>{if(b.dataset.g93)return;b.dataset.g93=1;const m=b.textContent.match(/^([^:]{1,20}): ([\s\S]*)$/);if(m&&g.mem.includes(m[1]))b.innerHTML=`<small style="display:block;opacity:.6;font-size:11px;margin-bottom:2px">${E(m[1])}</small>${E(m[2])}`})
 }catch(e){console.error('gc93 after',e)}}
 try{const _r=render;render=function(){const r=_r.apply(this,arguments);try{after()}catch(e){}return r}}catch(e){}
-document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('[data-gcnew],[data-gcpick],[data-gccreate],[data-gccancel],[data-gca],[data-gcdel]');if(!t||t.disabled)return;e.preventDefault();e.stopImmediatePropagation();
+document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('[data-gcnew],[data-gcpick],[data-gccreate],[data-gccancel],[data-gca],[data-gcdel],[data-gcpay]');if(!t||t.disabled)return;e.preventDefault();e.stopImmediatePropagation();
  const d=t.dataset;
  if(d.gcnew!==undefined){if(G().length>=5){toast&&toast('Max 5 group chats. Delete one first.');return}window._gcpick={sel:[],name:''};render();return}
  if(d.gcpick!==undefined){const P=window._gcpick;if(!P)return;const inp=document.getElementById('gcName');if(inp)P.name=inp.value;const n=decodeURIComponent(d.gcpick),i=P.sel.indexOf(n);if(i>=0)P.sel.splice(i,1);else if(P.sel.length<6)P.sel.push(n);render();return}
  if(d.gccancel!==undefined){window._gcpick=null;render();return}
  if(d.gccreate!==undefined){const P=window._gcpick;if(!P||P.sel.length<2)return;const inp=document.getElementById('gcName');if(inp)P.name=inp.value;const g=mk(P.name,P.sel);window._gcpick=null;window._mcomp=false;window._mth=g.name;render();return}
  if(d.gca){const g=G().find(x=>x.id==d.gci);if(g)act(g,d.gca);return}
+ if(d.gcpay!==undefined){const n=decodeURIComponent(d.gcpay),o=(S.owe93||{})[n];if(!o)return;if(S.cash<o.amt){say('You do not have $'+o.amt+' to pay '+n+' back.');render();return}S.cash-=o.amt;const f=(S.friends||[]).find(x=>x.name===n);const bad=o.warn;if(f)f.close=Math.min(100,(f.close||0)+(bad?2:4));delete S.owe93[n];try{MEM93.clear(n,'promise_broken');MEM93.set(n,'promise_kept')}catch(e){}say('💵 Paid '+n+' back $'+o.amt+(bad?'. Late, but you came through.':'. Respect.'));const g=G().find(x=>x.mem.includes(n));if(g)post(g,n,bad?'Late, but we good.':'Respect. We good.',false);render();return}
  if(d.gcdel!==undefined){const g=G().find(x=>x.id==d.gcdel);if(!g)return;S.gcs=G().filter(x=>x!==g);S.inbox=(S.inbox||[]).filter(m=>!(m&&(m.f===g.name||m.to===g.name)));window._mth=null;render();return}
 },true);
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-a="fhang"],[data-fr50="hang"]');if(!b||b.disabled)return;setTimeout(()=>{try{const f=(b.dataset.a==='fhang'&&b.dataset.i!=null&&!b.dataset.fr50)?(S.friends||[])[+b.dataset.i]:(S.friends||[]).find(x=>x.name===window._mth);if(f&&f.plan===S.day&&f.hang===S.day&&f.planPaid!==S.day){f.planPaid=S.day;f.close=Math.min(100,(f.close||0)+3);say('🤝 Y\'all planned it in the group chat. '+f.name+' is a little closer.')}}catch(er){}},200)});
@@ -11942,6 +11943,96 @@ document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest
 try{TUT.push(['Group chats','Phone > Messages > the pencil > New group chat. Pick 2 to 6 contacts and name it. Ask who wants to link up (friends get a little closer), tell them to stay low, or ask for $100 (close friends may send it, once a day). Plugs do not like group texts. Friends are pinned at the top of Messages now. Your crew\'s chat, The Gang, is pinned there too once you have workers.'])}catch(e){}
 try{const _dp=devPanel;devPanel=function(){const r=_dp.apply(this,arguments);try{const mc=document.getElementById('mcard');if(mc&&!document.getElementById('modal').hidden&&!mc.querySelector('[data-d93]')){const d=document.createElement('div');d.innerHTML=`<div class="sec">Group chat (new)</div><div class="btns"><button class="btn" data-d93="1">Make a test group chat</button></div>`;const h2=mc.querySelector('h2');if(h2&&h2.parentNode)h2.parentNode.insertBefore(d,h2.nextSibling);else mc.appendChild(d);
  d.querySelector('[data-d93]').onclick=ev=>{ev.stopPropagation();document.getElementById('modal').hidden=true;S.friends=S.friends||[];[['Kash','loyal',60],['Bean','wild',30],['Lil Mo','snake',70]].forEach(([n,t,c])=>{if(!S.friends.some(f=>f.name===n))S.friends.push({name:n,trait:t,role:'none',close:c})});const g=mk('Test gang',['Kash','Bean','Lil Mo']);tab='phone';window._phLock=S.day;window._rph='messages';window._mth=g.name;render()}}}catch(e){console.error('gc93 dev',e)}return r}}catch(e){}
+})();
+</script>
+<script id="wk94js">
+/* wk94: shared event helper (EV93), worker personalities + experience, five worker events, relationship memory flags (MEM93), friend debts */
+(function(){if(window._wk94)return;window._wk94=1;
+const E=x=>String(x==null?'':x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])),pk=a=>a[Math.floor(Math.random()*a.length)];
+const LBL={loyal:['🤝','Loyal'],ambitious:['📈','Ambitious'],wild:['🎲','Wild card']};
+function evs(){S.ev=S.ev||{};const e=S.ev;e.q=e.q||[];e.cd=e.cd||{};e.hist=e.hist||[];e.done=e.done||{};if(e.last==null)e.last=-9;return e}
+const EV={
+ once(id){const e=evs();if(e.done[id])return false;e.done[id]=S.day;const k=Object.keys(e.done);if(k.length>200)k.sort((a,b)=>e.done[a]-e.done[b]).slice(0,60).forEach(x=>delete e.done[x]);return true},
+ cool(key,days){return ((evs().cd[key]!=null?evs().cd[key]:-99)+days)<=S.day},
+ setCool(key){evs().cd[key]=S.day},
+ hist(t,tag){const e=evs();e.hist.unshift({d:S.day,t,tag});e.hist=e.hist.slice(0,60)},
+ queue(ev){const e=evs();const id=ev.k+':'+ev.wid+':'+ev.day;if(e.q.some(x=>x.id===id)||e.done[id]||e.q.length>=2)return false;ev.id=id;ev.exp=S.day+3;e.q.push(ev);return true}
+};
+const MEM={
+ get(n){S.mem93=S.mem93||{};return S.mem93[n]||(S.mem93[n]={})},
+ set(n,f){const m=MEM.get(n);m[f]=S.day;const k=Object.keys(m);if(k.length>8)k.sort((a,b)=>m[a]-m[b]).slice(0,k.length-8).forEach(x=>delete m[x])},
+ has(n,f,within){const d=MEM.get(n)[f];return d!=null&&(within==null||S.day-d<=within)},
+ clear(n,f){delete MEM.get(n)[f]}
+};
+window.EV93=EV;window.MEM93=MEM;
+const W=()=>(S.workers||[]).filter(w=>w&&w.name);
+function hash(s){let h=0;for(const c of String(s))h=(h*31+c.charCodeAt(0))>>>0;return h}
+function persOf(w){if(w.pers)return w.pers;const h=hash(w.id||w.name)%10;return h<4?'loyal':h<7?'ambitious':'wild'}
+function ens(w){if(w.pers)return w;const h=hash(w.id||w.name)%10;w.pers=persOf(w);w.rel=w.pers==='loyal'?7+h%3:w.pers==='ambitious'?5+h%3:3+h%6;w.xp=w.xp||0;return w}
+window.PERS93=w=>{const p=LBL[persOf(w)];return ' · '+p[0]+' '+p[1]};
+const wOf=ev=>W().find(w=>w.id===ev.wid);
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const lo=(w,d)=>{w.loyal=clamp((w.loyal||0)+d,0,10)};
+function info(ev,w){const n=w.name,cash=S.cash||0;
+ if(ev.k==='raise')return{t:n+' wants a raise',b:MEM.has(n,'denied_raise',14)?'Last time you said not now. '+n+' is bringing it up again.':n+' has put in work and wants more than '+money(w.wage||0)+'/day.',c:[['Give a raise (+10% a day)'],['Bonus $100 instead',cash>=100],['Not now']]};
+ if(ev.k==='overlook')return{t:n+' feels overlooked',b:n+' says you never notice the work they put in.',c:[['Talk it out (free)'],['Give a $50 cut',cash>=50],['Ignore it']]};
+ if(ev.k==='buyer')return{t:n+' knows a buyer',b:n+' knows someone who wants to buy in bulk. It pays $150, but a big sale draws a little heat.',c:[['Set it up'],['Pass']]};
+ if(ev.k==='role')return{t:n+' wants more responsibility',b:n+' wants to run things on the block. More pay, more weight on them.',c:[['Give them the lead (+15% pay, Hustle +1)'],['Keep them where they are']]};
+ if(ev.roll==='big')return{t:n+' had a monster day',b:n+' moved way more than expected on their own (+$200 in their hands).',c:[['Reward them ($50)',cash>=50],['Let it slide']]};
+ return{t:n+' messed up',b:n+' lost some of what they were holding ('+money(Math.min(w.held||0,100))+').',c:[['Dock their pay (they tighten up)'],['Let it slide (they appreciate it)']]}}
+function resolve(ev,idx){const e=evs();e.q=e.q.filter(x=>x.id!==ev.id);if(!EV.once(ev.id))return;const w=wOf(ev);if(!w)return;ens(w);const n=w.name;let m='';
+ if(ev.k==='raise'){
+  if(idx===0){w.wage=Math.round((w.wage||100)*1.1);lo(w,1);MEM.set(n,'gave_raise');MEM.clear(n,'denied_raise');m=n+' got a raise to '+money(w.wage)+'/day. Loyalty +1.'}
+  else if(idx===1&&S.cash>=100){S.cash-=100;lo(w,w.pers==='ambitious'?0:1);MEM.set(n,'bonus');m='Gave '+n+' a $100 bonus.'}
+  else{const rep=MEM.has(n,'denied_raise',14);lo(w,rep?-2:-1);MEM.set(n,'denied_raise');m='Told '+n+' not now. Loyalty −'+(rep?2:1)+'.'}}
+ else if(ev.k==='overlook'){
+  if(idx===0){lo(w,1);w.xp+=2;MEM.set(n,'talked');m='Talked it out with '+n+'. Loyalty +1.'}
+  else if(idx===1&&S.cash>=50){S.cash-=50;lo(w,2);MEM.set(n,'rewarded');m='Gave '+n+' a $50 cut. Loyalty +2.'}
+  else{lo(w,-1);MEM.set(n,'ignored');m='You ignored '+n+'. Loyalty −1.'}}
+ else if(ev.k==='buyer'){
+  if(idx===0){S.cash+=150;S.heat=Math.min(100,(S.heat||0)+2);w.xp+=2;MEM.set(n,'helped');m=n+' brought a buyer: +$150, heat +2.'}else m=idx===1?'You passed on '+n+'\'s buyer.':n+'\'s buyer got tired of waiting.'}
+ else if(ev.k==='role'){
+  if(idx===0){w.wage=Math.round((w.wage||100)*1.15);w.hustle=Math.min(10,(w.hustle||0)+1);lo(w,1);MEM.set(n,'promoted');m=n+' took the lead. Hustle '+w.hustle+', '+money(w.wage)+'/day.'}
+  else{lo(w,-1);MEM.set(n,'passed_over');m='You kept '+n+' where they were. Loyalty −1.'}}
+ else if(ev.roll==='big'){w.held=(w.held||0)+200;if(idx===0&&S.cash>=50){S.cash-=50;lo(w,1);MEM.set(n,'rewarded');m=n+' made a big day. Rewarded them, Loyalty +1.'}else m=n+' made a big day: +$200 in their hands.'}
+ else{const loss=Math.min(w.held||0,100);w.held=(w.held||0)-loss;if(idx===0){w.rel=Math.min(10,(w.rel||5)+1);lo(w,-1);m=n+' lost '+money(loss)+'. Docked their pay. They tighten up.'}else if(idx===1){lo(w,1);MEM.set(n,'forgave');m=n+' lost '+money(loss)+'. You let it slide. Loyalty +1.'}else m=n+' lost '+money(loss)+'.'}
+ if(m){say('👥 '+m);EV.hist(m,ev.k)}}
+EV.resolve=resolve;EV.info=info;
+function show(ev){const w=wOf(ev);if(!w){evs().q=evs().q.filter(x=>x.id!==ev.id);return}ens(w);const d=info(ev,w),p=LBL[w.pers];
+ modal(`<h2>${E(d.t)}</h2><p class="s" style="margin:0 0 6px;color:var(--dim)">${p[0]} ${p[1]} · Loyalty ${w.loyal||0} · Hustle ${w.hustle||0} · Reliability ${w.rel||5}</p><p>${E(d.b)}</p><div class="btns">${d.c.map((c,i)=>`<button class="btn${i===0?' green':''}" id="ev94_${i}" ${c[1]===false?'disabled':''}>${E(c[0])}</button>`).join('')}</div><p class="s" style="color:var(--dim);margin:6px 0 0">Close this to decide later (it expires in 3 days).</p>`);
+ d.c.forEach((c,i)=>{const b=document.getElementById('ev94_'+i);if(b)b.onclick=()=>{resolve(ev,i);close()}})}
+EV.show=show;
+function onJob(w){return Object.values(S.traps||{}).some(t=>t&&t.w===w.id)}
+function candidates(){const out=[];W().forEach(w=>{ens(w);if(!EV.cool('w:'+w.id,7))return;const b={wid:w.id,day:S.day};
+ if(w.pers!=='wild'&&w.xp>=10&&(w.wage||0)<400)out.push({...b,k:'raise'});
+ if(w.pers==='ambitious'&&(w.loyal||0)<=6&&w.xp>=6)out.push({...b,k:'overlook'});
+ if(w.pers==='loyal'&&(w.loyal||0)>=7&&w.xp>=8)out.push({...b,k:'buyer'});
+ if(w.pers==='ambitious'&&w.xp>=20&&(w.hustle||0)>=6&&(w.hustle||0)<10)out.push({...b,k:'role'});
+ if(w.pers==='wild'&&w.xp>=4)out.push({...b,k:'wild',roll:Math.random()<(w.rel||5)/10?'big':'mess'})});return out}
+function owedTick(){const o=S.owe93||{};Object.keys(o).forEach(n=>{const d=o[n];if(!d||d.warn)return;if(S.day-d.day>=7){d.warn=1;const f=(S.friends||[]).find(x=>x.name===n);if(f)f.close=Math.max(0,(f.close||0)-3);MEM.set(n,'promise_broken');try{phoneMsg(n,pk(['You forgot about my $'+d.amt+'.','Still waiting on my $'+d.amt+'. Not cool.']))}catch(e){}EV.hist(n+' is mad about the unpaid $'+d.amt,'debt')}})}
+function tick(){if(!S||S.over)return;const e=evs();
+ W().forEach(w=>{ens(w);if(!onJob(w))return;w.xp++;const lv=w.gr||0,need=lv?35:14;if(lv<2&&w.xp>=need){w.gr=lv+1;if((w.hustle||0)<10){w.hustle++;say('📈 '+w.name+' picked up experience. Hustle '+w.hustle+'.');EV.hist(w.name+' grew: Hustle '+w.hustle,'grow')}}});
+ e.q.slice().forEach(ev=>{if(S.day>ev.exp)resolve(ev,-1)});
+ owedTick();
+ if(S.pr||S.inJail||e.q.length||S.day-e.last<2||Math.random()>.4)return;
+ const c=candidates();if(!c.length)return;const ev=pk(c);if(EV.queue(ev)){e.last=S.day;EV.setCool('w:'+ev.wid)}}
+EV.tick=tick;
+try{const _nd=nextDay;nextDay=function(){const r=_nd.apply(this,arguments);try{tick()}catch(er){console.error('wk94 tick',er)}return r}}catch(er){console.error('wk94 nd',er)}
+setInterval(()=>{try{if(typeof S==='undefined'||!S||S.over||!S.ev||!S.ev.q||!S.ev.q.length)return;const m=document.getElementById('modal');if(!m||!m.hidden)return;if(S.meet||S.pr||S.inJail)return;if(typeof mgOn!=='undefined'&&mgOn)return;const ev=S.ev.q.find(x=>!x.shown);if(!ev)return;ev.shown=1;show(ev)}catch(er){console.error('wk94 show',er)}},3500);
+/* weekly recap: add a people line */
+try{const _wk=wkRecap;wkRecap=function(f){const d0=S.wk0&&S.wk0.day;const r=_wk.apply(this,arguments);try{const ok=document.getElementById('wkok');if(ok&&ok.parentNode&&!document.getElementById('wk94p')){const h=(evs().hist||[]).filter(x=>d0==null||x.d>d0),c=t=>h.filter(x=>x.tag===t).length,parts=[];
+ const wm=h.filter(x=>['raise','overlook','buyer','role','wild'].includes(x.tag)).length;if(wm)parts.push(wm+' worker moment'+(wm>1?'s':''));if(c('grow'))parts.push(c('grow')+' worker'+(c('grow')>1?'s':'')+' leveled up');
+ const ow=Object.keys(S.owe93||{});if(ow.length)parts.push(ow.join(', ')+' waiting on money');if(c('debt'))parts.push('a friend got mad about money');
+ if(parts.length)ok.parentNode.insertAdjacentHTML('beforebegin','<p class="s" id="wk94p" style="margin:6px 0 0">👥 People: '+E(parts.join(' · '))+'.</p>')}}catch(er){console.error('wk94 recap',er)}return r}}catch(er){}
+/* tutorial + dev menu */
+try{TUT.push(['Your people','Workers have personalities: Loyal, Ambitious or Wild card. They earn experience on the job and grow. Every few days one may come to you (raise, feeling overlooked, a buyer, more responsibility, or a wild day). Close the card to decide later, it expires in 3 days. If a friend lends you money in a group chat, pay them back within a week or they get mad.'])}catch(er){}
+function devWorker(){let w=W()[0];if(!w){S.workers=S.workers||[];S.workers.push({id:'devw'+S.day,name:'Dev Worker',hustle:5,loyal:6,wage:150,sales:10,held:300,pct:100});w=S.workers[S.workers.length-1]}return ens(w)}
+function force(k){const w=devWorker();if(k==='raise'||k==='buyer'||k==='overlook'||k==='role'){w.xp=Math.max(w.xp||0,25);}const ev={k,wid:w.id,day:S.day+1000+(Date.now()%100000),roll:k==='wild'?(Math.random()<.5?'big':'mess'):undefined};ev.id=ev.k+':'+ev.wid+':'+ev.day;ev.exp=S.day+3;ev.shown=1;evs().q.push(ev);document.getElementById('modal').hidden=true;show(ev)}
+try{const _dp=devPanel;devPanel=function(){const r=_dp.apply(this,arguments);try{const mc=document.getElementById('mcard');if(mc&&!document.getElementById('modal').hidden&&!mc.querySelector('[data-d94]')){const d=document.createElement('div');d.innerHTML='<div class="sec">People and events (new)</div><div class="btns"><button class="btn" data-d94="raise">Raise request</button><button class="btn" data-d94="overlook">Feels overlooked</button><button class="btn" data-d94="buyer">Brings a buyer</button><button class="btn" data-d94="role">Wants responsibility</button><button class="btn" data-d94="wild">Wild card day</button><button class="btn" data-d94="show">Show worker personalities</button><button class="btn" data-d94="owe">Kash owes me $100 (8 days)</button></div>';const h2=mc.querySelector('h2');if(h2&&h2.parentNode)h2.parentNode.insertBefore(d,h2.nextSibling);else mc.appendChild(d);
+ d.querySelectorAll('[data-d94]').forEach(b=>b.onclick=ev=>{ev.stopPropagation();const k=b.dataset.d94;
+  if(k==='show'){const L=W();modal('<h2>Worker personalities</h2>'+(L.length?L.map(w=>{ens(w);const p=LBL[w.pers];return '<p style="margin:4px 0">'+p[0]+' <b>'+E(w.name)+'</b> · '+p[1]+' · Loyalty '+(w.loyal||0)+' · Hustle '+(w.hustle||0)+' · Reliability '+w.rel+' · XP '+w.xp+'</p>'}).join(''):'<p>No workers yet.</p>')+'<div class="btns"><button class="btn" id="d94x">Close</button></div>');document.getElementById('d94x').onclick=close;return}
+  if(k==='owe'){S.friends=S.friends||[];if(!S.friends.some(f=>f.name==='Kash'))S.friends.push({name:'Kash',trait:'loyal',role:'none',close:60});S.owe93=S.owe93||{};S.owe93.Kash={amt:100,day:S.day-8};MEM.set('Kash','lent_money');document.getElementById('modal').hidden=true;say('Dev: Kash lent you $100 eight days ago. Advance one day.');return}
+  force(k)})}}catch(er){console.error('wk94 dev',er)}return r}}catch(er){}
 })();
 </script>
 <script>if('serviceWorker' in navigator){addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}</script></body></html>
