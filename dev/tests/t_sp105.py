@@ -1,0 +1,25 @@
+# supply ripples: rumor then shortage, plug + J prices up, Js switch, ends, drought trigger, save/load
+from playwright.sync_api import sync_playwright
+SETUP="()=>{localStorage.setItem('tl-clean','0');startLife('lucky');document.getElementById('modal').hidden=true;window.noL31=1;window.noL27=1;S.age=22;S.cal=0;S.school='out';S.cash=20000;S._evDay=S.day;S.picQ=[];S.dr92off=1;S.recapOff=1;render()}"
+with sync_playwright() as p:
+  b=p.chromium.launch();pg=b.new_page();errs=[];pg.on('pageerror',lambda e:errs.append(str(e)[:200]))
+  pg.goto('http://127.0.0.1:8765/index.html',wait_until='load');pg.wait_for_timeout(1500);J=pg.evaluate;J(SETUP)
+  ok=lambda n,c,x='':print(('PASS ' if c else 'FAIL ')+n,'' if c else x)
+  a=J("()=>{S.at=S.known[0];return plugPrice('buy',G('loud'))}")
+  J("()=>{const x=SP105.get();x.rum={g:'loud',at:S.day+2};x.last=S.day}")
+  ok('rumor does not raise prices yet',J("()=>plugPrice('buy',G('loud'))")==a)
+  J("()=>{S.day+=2;window.__n=l105day()}")
+  ok('shortage starts after the rumor',J("()=>SP105.on('loud')&&/dried up/.test(window.__n.t)"))
+  bq=J("()=>plugPrice('buy',G('loud'))");ok('plug price up',bq>a,[a,bq])
+  J("()=>{addCusto('Tay','loud','block')}");c1=J("()=>{const x=SP105.get().cur;const c=S.custos[0];const p=custoPrice(c);x.until=S.day-1;const q=custoPrice(c);x.until=S.day+5;return [p,q]}")
+  ok('Js pay more during shortage',c1[0]>c1[1],c1)
+  J("()=>{S.inv.bars=500;for(let i=0;i<20;i++)l105day()}")
+  ok('some Js switch products',J("()=>S.custos.length===0||S.custos[0].gid!=='loud'||!SP105.get().cur"))
+  J("()=>{const x=SP105.get();if(x.cur)x.cur.until=S.day-1;window.__n=l105day()}")
+  ok('shortage ends and prices settle',J("()=>!SP105.on('loud')")and J("()=>plugPrice('buy',G('loud'))")==a)
+  J("()=>{const x=SP105.get();x.last=-99;x.cur=null;x.rum=null;S.dr={until:S.day+5,bi:0};window.__n=l105day()}")
+  ok('a new drought starts a rumor',J("()=>!!SP105.get().rum"))
+  ok('one shortage at a time',J("()=>{const x=SP105.get();x.cur={g:'loud',from:S.day,until:S.day+5,m:1.3};x.rum=null;x.last=S.day-20;for(let i=0;i<50;i++)l105day();return !x.rum||x.cur}"))
+  J("()=>{save();const sl=S.slot;S=load(sl);render()}");ok('save/load',J("()=>!!S.sp105"))
+  J("()=>{delete S.sp105;for(let i=0;i<15;i++){try{nextDay()}catch(e){window.__e=String(e)}document.getElementById('modal').hidden=true}}");ok('old save + 15 days',not J("()=>window.__e||''"))
+  ok('no errors',not errs,errs);b.close()
