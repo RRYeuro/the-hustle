@@ -12050,7 +12050,7 @@ function vec(){if(!S)return null;let wc=0;try{wc=cleanCash()}catch(e){wc=Math.mi
 function L(){if(!S)return null;if(!S.lg95||!Array.isArray(S.lg95.e))S.lg95={e:[],days:{},v:1};return S.lg95}
 let base=null,ctx='',ctxT=0,posted={c:0,x:0,cr:0};
 function cat(lab){lab=String(lab||'');for(const [k,r] of RX)if(r.test(lab))return k;return 'other'}
-function book(tag,n,c,x,tr,lab){const G=L();if(!G)return;n=N(n);tr=N(tr);if(!n&&!tr)return;const d=S.day||0;
+function book(tag,n,c,x,tr,lab){const G=L();if(!G)return;n=N(n);tr=N(tr);if(tag==='loan'){tr+=Math.abs(n);n=0}if(!n&&!tr)return;const d=S.day||0;
  if(n){const last=G.e[0];if(last&&last.d===d&&last.k===tag&&last.l===lab&&Math.sign(last.n)===Math.sign(n)&&!last.tr){last.n+=n;last.c+=N(c);last.x+=N(x)}else G.e.unshift({d,k:tag,l:String(lab||'').slice(0,40),n,c:N(c),x:N(x)});
   const D=G.days[d]||(G.days[d]={i:0,o:0,t:0,tr:0,k:{}});if(tag==='trading'){D.t+=n}else if(n>0){D.i+=n}else D.o+=-n;if(tag!=='trading')D.k[tag]=(D.k[tag]||0)+n}
  if(tr){const D=G.days[d]||(G.days[d]={i:0,o:0,t:0,tr:0,k:{}});D.tr+=tr;const last=G.e[0];if(last&&last.d===d&&last.tr&&last.l===lab)last.tr+=tr;else G.e.unshift({d,k:'transfer',l:String(lab||'').slice(0,40),n:0,tr})}
@@ -12157,6 +12157,78 @@ const css=document.createElement('style');css.textContent=`.r96{display:flex;fle
 try{TUT.push(['Running a business','Every business has demand (how many people want in), rep (what people say about it), capacity (how many it can handle), quality, and costs that come out every day. Sales are what customers want, capped by your capacity. If it says "turning people away", expand. If demand is low, run ads or improve quality. A manager costs money every day but grows rep without you. Save up puts clean money aside inside the business to cover bad days; it is still yours, not spending. Tap Reinvest on a business: every choice shows what it will do before you confirm.'])}catch(e){}
 try{const _dp=devPanel;devPanel=function(){const r=_dp.apply(this,arguments);try{const mc=document.getElementById('mcard');if(mc&&!mc.querySelector('[data-d96]')){const d=document.createElement('div');d.innerHTML='<div class="sec">Business performance (new)</div><div class="btns"><button class="btn" data-d96="own">Own barbershop + car wash</button><button class="btn" data-d96="full">Make them busy</button><button class="btn" data-d96="day">Run 7 business days</button></div>';mc.insertBefore(d,mc.querySelector('.btns:last-child'));d.addEventListener('click',e=>{const k=(e.target.closest('[data-d96]')||{}).dataset;if(!k||!k.d96)return;S.biz=S.biz||{};
  if(k.d96==='own'){S.biz.barber=1;S.biz.wash=1}else if(k.d96==='full'){Object.keys(S.biz).forEach(b=>{const o=st(b);o.dem=100;o.rep=90})}else{for(let i=0;i<7;i++)Object.keys(S.biz).filter(b=>S.biz[b]&&BIZ[b]).forEach(b=>l96day(b))}close();tab='biz';render()})}}catch(e){}return r}}catch(e){}
+})();
+
+</script>
+<script id="dy98js">
+/* dy98: day engine. After each new day, roll up to 5 beats: personal, block, money chance, problem,
+   relationship. Beats change real numbers (cash, heat, energy, stress, business demand, plug stock,
+   block values) and show in a Today card on the Block tab. Problems can reuse the street events
+   (streetEvent) when no other popup fired. Relationship beats use MEM93. One nextDay wrapper only. */
+(function(){
+const E=x=>String(x==null?'':x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]);
+const R=(a,b)=>Math.floor(a+Math.random()*(b-a+1)),pk=a=>a[Math.floor(Math.random()*a.length)];
+const cool=(id,d)=>{try{return EV93.cool('b98:'+id,d)}catch(e){return true}},setC=id=>{try{EV93.setCool('b98:'+id)}catch(e){}};
+const mem=window.MEM93;
+const T=()=>{if(!S.dy98||S.dy98.d!==S.day)S.dy98={d:S.day,b:[]};return S.dy98};
+const LP=(tag,amt,lab,cl)=>{try{if(window.L95&&amt)L95.post(tag,amt,lab,cl)}catch(e){}};
+const takeCash=(n,tag,lab)=>{n=Math.min(n,Math.max(0,Math.floor(S.cash)));if(!n)return 0;const c0=cleanCash(),d=Math.max(0,S.cash-c0),fd=Math.min(n,d),fc=n-fd;S.cash-=n;if(fc>0)S.clean=Math.max(0,c0-fc);LP(tag||'other',-fd,lab,false);LP(tag||'other',-fc,lab,true);return n};
+const giveDirty=(n,tag,lab)=>{S.cash+=n;LP(tag||'other',n,lab,false)};
+const N=(bi,ch)=>{try{if(window.N97)N97.bump(bi,ch)}catch(e){}};
+const bName=bi=>BLOCKS[bi]||'the block';
+const people=()=>{const o=[];try{(S.friends||[]).forEach(f=>f&&f.name&&o.push({n:f.name,k:'friend',o:f}))}catch(e){}try{if(S.gf&&S.gf.name)o.push({n:S.gf.name,k:'partner',o:S.gf})}catch(e){}try{if(S.par&&S.par.name&&S.home==='family')o.push({n:S.par.name,k:'parent',o:S.par})}catch(e){}return o};
+/* beat pools: each returns a beat or null. a beat: {id,ic,t,f} f runs once when rolled; ch = choice */
+const P={
+personal:[
+ ()=>S.cash>=10000&&!(S.ev&&S.ev.done&&S.ev.done['b98:10k'])?{id:'10k',ic:'💰',t:'Ten racks in your pocket for the first time. Feels different. −10 stress.',lucky:1,once:1,f:()=>{try{EV93.once('b98:10k')}catch(e){}try{addStress(-10)}catch(e){}}}:null,
+ ()=>S.stress>=60&&cool('sleep',4)?{id:'sleep',ic:'😵',t:'Bad sleep. Your head was racing all night. −15 energy.',f:()=>{S.en=Math.max(0,S.en-15)}}:null,
+ ()=>S.home==='family'&&S.par&&cool('cook',5)?{id:'cook',ic:'🍲',t:`${S.par.name} cooked. You ate good. +10 health, −8 stress.`,f:()=>{S.hp=Math.min(100,S.hp+10);try{addStress(-8)}catch(e){}}}:null,
+ ()=>cool('motiv',6)&&Math.random()<.5?{id:'motiv',ic:'⚡',t:'Woke up locked in. +12 energy.',lucky:1,f:()=>{try{S.en=Math.min(enMax(),S.en+12)}catch(e){S.en+=12}}}:null,
+ ()=>S.hp<45&&cool('sick',4)?{id:'sick',ic:'🤒',t:'Feeling sick. −10 energy until you rest.',f:()=>{S.en=Math.max(0,S.en-10)}}:null],
+block:[
+ ()=>cool('sweep',3)?(()=>{const bi=R(0,BLOCKS.length-1);return {id:'sweep',ic:'🚓',t:`Cops swept ${bName(bi)} this morning.${bi===S.at?' Heat +5 on you.':''} Safety up, sales down there for a bit.`,f:()=>{if(bi===S.at)S.heat=Math.min(100,S.heat+5);N(bi,{safe:+6,pop:-3})}}})():null,
+ ()=>cool('party',6)?{id:'party',ic:'🎉',t:`Block party on ${bName(S.at)}. People are out and in a good mood. Rep +2.`,lucky:1,f:()=>{S.rep+=2;S.comm=Math.min(100,(S.comm??30)+3);N(S.at,{pop:+5})}}:null,
+ ()=>cool('newshop',5)?(()=>{const bi=R(0,BLOCKS.length-1);return {id:'newshop',ic:'🏪',t:`A new shop opened on ${bName(bi)}. More people coming through.`,f:()=>N(bi,{pros:+4,pop:+3})}})():null,
+ ()=>cool('rival',4)&&(S.crews||[]).some(c=>c.alive)?(()=>{const c=pk((S.crews||[]).filter(c=>c.alive));return {id:'rival',ic:'😤',t:`The ${c.name||'rivals'} are pushing product on ${bName(S.at)}. More competition. Rep −1.`,f:()=>{S.rep=Math.max(0,S.rep-1);N(S.at,{comp:+6})}}})():null],
+money:[
+ ()=>cool('found',5)?(()=>{const v=R(20,90);return {id:'found',ic:'💵',t:`Found ${money(v)} in an old jacket.`,lucky:1,f:()=>giveDirty(v)}})():null,
+ ()=>(S.custos||[]).length&&cool('tip',4)?(()=>{const c=pk(S.custos),v=R(25,120);return {id:'tip',ic:'🤝',t:`${c.name} tipped you ${money(v)} for always coming through.`,lucky:1,f:()=>{giveDirty(v,'sales','Tip from a J');c.loy=Math.min(100,(c.loy||50)+3)}}})():null,
+ ()=>{const own=Object.keys(S.biz||{}).filter(k=>S.biz[k]&&BIZ[k]);if(!own.length||!cool('rush',4))return null;const k=pk(own);return {id:'rush',ic:'📈',t:`Word is spreading about your ${BIZ[k].name.toLowerCase()}. Demand +10.`,f:()=>{try{const o=S.bp96&&S.bp96[k];if(o)o.dem=Math.min(100,o.dem+10)}catch(e){}}}},
+ ()=>{const ks=(S.known||[]).filter(bi=>S.offer&&S.offer[bi]);if(!ks.length||!cool('stock',4))return null;const bi=pk(ks),gs=Object.keys(S.offer[bi]),g=pk(gs),o=S.offer[bi][g];if(!o||!o.stock)return null;return {id:'stock',ic:'📦',t:`${plugName(bi)} got a big drop of ${G(g).name}. Way more stock today.`,f:()=>{o.stock=Math.round(o.stock*1.6)}}}],
+problem:[
+ ()=>S.car&&cool('flat',6)?{id:'flat',ic:'🛞',t:'Flat tire. Patch costs $80.',ch:[['Fix it ($80)','fix'],['Leave it (walk today, −15 energy)','walk']]}:null,
+ ()=>cool('phone',8)&&!S.pr?{id:'phone',ic:'📱',t:'Dropped your phone. Screen cracked. $60 to fix.',ch:[['Fix it ($60)','fix'],['Live with it','skip']]}:null,
+ ()=>{if(!cool('bill',6)||!S.home)return null;const v=R(40,120);return {id:'bill',ic:'🧾',t:`Surprise light bill: ${money(v)}. Paid it.`,f:()=>takeCash(v,'property','Light bill')}},
+ ()=>cool('street',3)&&window.streetEvent?{id:'street',ic:'⚠️',t:'Something is going on outside. Check it out.',pop:1}:null],
+rel:[
+ ()=>{const ps=people().filter(p=>p.k!=='parent'&&cool('ask:'+p.n,10)&&!(S.owe98||{})[p.n]);if(!ps.length)return null;const p=pk(ps),v=R(5,15)*10;return {id:'ask',who:p.n,amt:v,ic:'🙏',t:`${p.n} asked to borrow ${money(v)}. Says they will pay you back.`,ch:[[`Lend ${money(v)}`,'lend'],['Not right now','no']]}},
+ ()=>{const ow=Object.keys(S.owe98||{}).filter(n=>S.day-S.owe98[n].d>=3);if(!ow.length)return null;const n=pk(ow),o=S.owe98[n];const stiff=Math.random()<.2;return {id:'payback',ic:stiff?'😒':'💸',t:stiff?`${n} keeps dodging you about the ${money(o.v)}. That money is gone.`:`${n} paid you back ${money(Math.round(o.v*1.1))}, a little extra for waiting.`,lucky:!stiff,f:()=>{delete S.owe98[n];if(stiff){mem&&mem.set(n,'stiffed')}else{giveDirty(Math.round(o.v*1.1),'loan','Friend paid you back');mem&&mem.set(n,'paidback')}}}},
+ ()=>{const ps=people();if(!ps.length)return null;const p=pk(ps);if(!cool('chk:'+p.n,4))return null;const salty=mem&&mem.has(p.n,'refused',7);return {id:'check',who:p.n,ic:salty?'🥶':'💬',t:salty?`${p.n} is still salty you didn't help out. Cold texts.`:`${p.n} checked on you. Felt good. −6 stress.`,f:()=>{if(!salty){try{addStress(-6)}catch(e){}}if(p.o&&p.o.close!=null&&!salty)p.o.close=Math.min(100,p.o.close+2);if(p.o&&p.o.rel!=null&&!salty)p.o.rel=Math.min(100,p.o.rel+2)}}}]};
+const CH={personal:.35,block:.4,money:.35,problem:.3,rel:.35};
+function roll(){const D=T();if(D.b.length)return;let popUsed=false;
+ for(const cat of ['personal','block','money','problem','rel']){if(D.b.length>=5)break;if(Math.random()>CH[cat])continue;
+  const opts=P[cat].map(f=>{try{return f()}catch(e){return null}}).filter(Boolean);if(!opts.length)continue;
+  let b=opts.find(x=>x.once)||pk(opts);if(b.pop){if(popUsed||!document.getElementById('modal').hidden){continue}popUsed=true}
+  setC(b.id+(b.who?':'+b.who:''));if(b.id==='ask')setC('ask:'+b.who);if(b.id==='check')setC('chk:'+b.who);
+  b.cat=cat;D.b.push(b);try{if(b.f){b.f();delete b.f}}catch(e){console.error('dy98 beat',e)}
+  if(b.pop){setTimeout(()=>{try{if(document.getElementById('modal').hidden&&!S.over)streetEvent()}catch(e){}},400)}
+  else if(!b.ch)try{say(`${b.ic} ${b.t}`)}catch(e){}}
+ }
+function choose(i,k){const D=T(),b=D.b[i];if(!b||!b.ch||b.done)return;b.done=k;
+ if(b.id==='flat'){if(k==='fix'){const p=takeCash(80,'life','Flat tire');b.res=`Fixed the tire (${money(p)}).`}else{S.en=Math.max(0,S.en-15);b.res='Walked everywhere. −15 energy.'}}
+ if(b.id==='phone'){if(k==='fix'){const p=takeCash(60,'life','Phone screen');b.res=`Got the screen fixed (${money(p)}).`}else b.res='Cracked screen it is.'}
+ if(b.id==='ask'){if(k==='lend'){const p=takeCash(b.amt,'loan','Lent to '+b.who);if(p){S.owe98=S.owe98||{};S.owe98[b.who]={v:p,d:S.day};mem&&mem.set(b.who,'lent');b.res=`Lent ${b.who} ${money(p)}.`}else b.res='You did not have it.'}else{mem&&mem.set(b.who,'refused');b.res=`Told ${b.who} not right now.`}}
+ try{say(`${b.ic} ${b.res}`)}catch(e){}render()}
+window.l98=function(){if(!S||S.over)return '';const D=S.dy98;if(!D||D.d!==S.day||!D.b.length)return '';
+ return `<div class="t98"><div class="t98h">Today</div>${D.b.map((b,i)=>`<div class="t98r${b.lucky?' luck':''}"><span>${b.ic}</span><div>${E(b.t)}${b.ch?(b.done?`<div class="s">${E(b.res||'')}</div>`:`<div class="t98c">${b.ch.map(c=>`<button class="btn" data-b98="${i}" data-k="${c[1]}">${E(c[0])}</button>`).join('')}</div>`):''}</div></div>`).join('')}</div>`};
+document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('[data-b98]');if(!t)return;e.preventDefault();e.stopPropagation();choose(+t.dataset.b98,t.dataset.k)},true);
+try{const _pb=paneBlock;paneBlock=function(){const h=_pb.apply(this,arguments);try{const t=window.l98();if(!t)return h;const i=h.indexOf('<div class="sec"');return i<0?t+h:h.slice(0,i)+t+h.slice(i)}catch(e){return h}}}catch(e){}
+/* the one nextDay wrapper */
+try{const _nd=nextDay;nextDay=function(){const r=_nd.apply(this,arguments);try{if(S&&!S.over&&!window.FF&&!S.pr&&!S.inJail&&!window._sk92)roll()}catch(e){console.error('dy98',e)}return r}}catch(e){}
+const css=document.createElement('style');css.textContent=`.t98{border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:8px 10px;margin:6px 0;background:rgba(255,255,255,.03)}.t98h{font:700 11px var(--label,inherit);letter-spacing:.16em;color:var(--accent);text-transform:uppercase;margin-bottom:4px}.t98r{display:flex;gap:8px;align-items:flex-start;padding:5px 0;font-size:13px;line-height:1.35}.t98r>span{flex:none;width:20px;text-align:center}.t98r.luck{color:var(--money)}.t98c{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}.t98c .btn{min-height:40px;font-size:12px;padding:6px 10px}`;document.head.appendChild(css);
+try{TUT.push(['Every day is different','Each new day brings a few things: something personal, something on the blocks, a money chance, a problem, and someone from your life. Some are lucky. They show in the Today box on the Block tab and they change real numbers: cash, energy, stress, heat, your business demand, plug stock and how busy each block is. Some need a choice, like lending a friend money. People remember: pay them back or turn them down and it comes back later.'])}catch(e){}
+try{const _dp=devPanel;devPanel=function(){const r=_dp.apply(this,arguments);try{const mc=document.getElementById('mcard');if(mc&&!mc.querySelector('[data-d98]')){const d=document.createElement('div');d.innerHTML='<div class="sec">Day engine (new)</div><div class="btns"><button class="btn" data-d98="r">Re-roll today</button></div>';mc.insertBefore(d,mc.querySelector('.btns:last-child'));d.addEventListener('click',e=>{if(!e.target.closest('[data-d98]'))return;S.dy98=null;try{S.ev&&S.ev.cd&&Object.keys(S.ev.cd).filter(k=>k.startsWith('b98:')).forEach(k=>delete S.ev.cd[k])}catch(_){}roll();close();tab='block';render()})}}catch(e){}return r}}catch(e){}
+window.l98roll=roll;
 })();
 
 </script>
