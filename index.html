@@ -12227,7 +12227,7 @@ window.l98=function(){if(!S||S.over)return '';const D=S.dy98;if(!D||D.d!==S.day|
 document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('[data-b98]');if(!t)return;e.preventDefault();e.stopPropagation();choose(+t.dataset.b98,t.dataset.k)},true);
 try{const _pb=paneBlock;paneBlock=function(){const h=_pb.apply(this,arguments);try{const t=window.l98();if(!t)return h;const i=h.indexOf('<div class="sec"');return i<0?t+h:h.slice(0,i)+t+h.slice(i)}catch(e){return h}}}catch(e){}
 /* the one nextDay wrapper */
-try{const _nd=nextDay;nextDay=function(){const r=_nd.apply(this,arguments);let notes=[];try{if(S&&!S.over&&window.N97)notes=N97.tick()||[]}catch(e){console.error('nb97 tick',e)}try{if(S&&!S.over&&window.l99day){const m=l99day();if(m)notes.unshift(m)}}catch(e){console.error('mc99 tick',e)}try{if(S&&!S.over&&window.l100day){const m=l100day();if(m)notes.unshift(m)}}catch(e){console.error('cf100 tick',e)}try{if(S&&!S.over&&window.l101day){const m=l101day();if(m)notes.unshift(m)}}catch(e){console.error('bk101 tick',e)}try{if(S&&!S.over&&window.l102day){const m=l102day();if(m)notes.unshift(m)}}catch(e){console.error('rv102 tick',e)}try{if(S&&!S.over&&window.l103day){const m=l103day();if(m)notes.unshift(m)}}catch(e){console.error('mg103 tick',e)}try{if(S&&!S.over&&!window.FF&&!S.pr&&!S.inJail&&!window._sk92){roll();const D=T();notes.forEach(n=>{if(D.b.length<6){D.b.push(Object.assign({id:'nb',cat:'block'},n));try{say(`${n.ic} ${n.t}`)}catch(_){}}})}}catch(e){console.error('dy98',e)}return r}}catch(e){}
+try{const _nd=nextDay;nextDay=function(){const r=_nd.apply(this,arguments);let notes=[];try{if(S&&!S.over&&window.N97)notes=N97.tick()||[]}catch(e){console.error('nb97 tick',e)}try{if(S&&!S.over&&window.l99day){const m=l99day();if(m)notes.unshift(m)}}catch(e){console.error('mc99 tick',e)}try{if(S&&!S.over&&window.l100day){const m=l100day();if(m)notes.unshift(m)}}catch(e){console.error('cf100 tick',e)}try{if(S&&!S.over&&window.l101day){const m=l101day();if(m)notes.unshift(m)}}catch(e){console.error('bk101 tick',e)}try{if(S&&!S.over&&window.l102day){const m=l102day();if(m)notes.unshift(m)}}catch(e){console.error('rv102 tick',e)}try{if(S&&!S.over&&window.l103day){const m=l103day();if(m)notes.unshift(m)}}catch(e){console.error('mg103 tick',e)}try{if(S&&!S.over&&window.l104day){const m=l104day();if(m)notes.unshift(m)}}catch(e){console.error('am104 tick',e)}try{if(S&&!S.over&&!window.FF&&!S.pr&&!S.inJail&&!window._sk92){roll();const D=T();notes.forEach(n=>{if(D.b.length<6){D.b.push(Object.assign({id:'nb',cat:'block'},n));try{say(`${n.ic} ${n.t}`)}catch(_){}}})}}catch(e){console.error('dy98',e)}return r}}catch(e){}
 const css=document.createElement('style');css.textContent=`.t98{border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:8px 10px;margin:6px 0;background:rgba(255,255,255,.03)}.t98h{font:700 11px var(--label,inherit);letter-spacing:.16em;color:var(--accent);text-transform:uppercase;margin-bottom:4px}.t98r{display:flex;gap:8px;align-items:flex-start;padding:5px 0;font-size:13px;line-height:1.35}.t98r>span{flex:none;width:20px;text-align:center}.t98r.luck{color:var(--money)}.t98c{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}.t98c .btn{min-height:40px;font-size:12px;padding:6px 10px}`;document.head.appendChild(css);
 /* beats call N97.bump when nb97 is loaded */
 try{TUT.push(['Every day is different','Each new day brings a few things: something personal, something on the blocks, a money chance, a problem, and someone from your life. Some are lucky. They show in the Today box on the Block tab and they change real numbers: cash, energy, stress, heat, your business demand, plug stock and how busy each block is. Some need a choice, like lending a friend money. People remember: pay them back or turn them down and it comes back later.'])}catch(e){}
@@ -12506,6 +12506,47 @@ document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest
 try{const _pt=paneTraps;paneTraps=function(){const h=_pt.apply(this,arguments);try{return window.l103html()+h}catch(e){console.error('mg103',e);return h}}}catch(e){}
 try{TUT.push(['Managers','Put a worker on a job and they handle it every day. Street lieutenant: collects from your workers and re-ups one product from your cheapest plug (trust 30+) when it runs low. Business manager: ads when demand drops, expands when full, keeps a reserve, grows rep. Accountant: washes dirty money through your businesses, staying under each one\'s safe limit. Each takes a cut. Who you pick matters: Loyal never skims, Ambitious makes the most but skims if ignored, Wild card is up and down. Job traits: Careful, Hustler, Smooth talker, Book smart, Flashy. They level up the longer they work. Their report shows in the Today box.'])}catch(e){}
 try{const _dp=devPanel;devPanel=function(){const r=_dp.apply(this,arguments);try{const mc=document.getElementById('mcard');if(mc&&!mc.querySelector('[data-d103]')){const d=document.createElement('div');d.innerHTML='<div class="sec">Managers (new)</div><div class="btns"><button class="btn" data-d103="h">Hire 3 workers</button><button class="btn" data-d103="r">Run managers now</button></div>';mc.insertBefore(d,mc.querySelector('.btns:last-child'));d.addEventListener('click',e=>{const k=(e.target.closest('[data-d103]')||{}).dataset;if(!k||!k.d103)return;if(k.d103==='h'){['Dre','Kim','Bo'].forEach((n,i)=>S.workers.push({id:n+S.day+i,name:n,hustle:6,loyal:7,wage:200,sales:5,from:S.at}))}else{const m=l103day();if(m)say(m.t)}close();render()})}}catch(e){}return r}}catch(e){}
+})();
+
+</script>
+<script id="am104js">
+/* am104: workers with ambition. Pay and attention move loyalty every day. Underpaid or ignored
+   workers skim, quit, and the ambitious ones can walk off and start their own crew (a real rival).
+   Loyal veterans on a trap run that block: rivals back off there. Uses wk94 personalities.
+   Ticks from the day-engine wrapper. */
+(function(){
+const E=x=>String(x==null?'':x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]);
+const cl=(v,a,b)=>Math.max(a,Math.min(b,v));
+function hash(s){let h=0;for(const c of String(s))h=(h*31+c.charCodeAt(0))>>>0;return h}
+const pers=w=>w.pers||(()=>{const h=hash(w.id||w.name)%10;return h<4?'loyal':h<7?'ambitious':'wild'})();
+const fair=w=>40+(w.hustle||5)*25+50+(typeof wLv==='function'?wLv(w):1)*20;
+const paid=w=>{try{return wPay(w)}catch(e){return w.wage||0}};
+const trapOf=w=>{try{const k=Object.keys(S.traps||{}).find(b=>S.traps[b]&&S.traps[b].w===w.id);return k==null?null:+k}catch(e){return null}};
+/* make sure walk-off crews exist in CREWS after a reload */
+function restore(){try{(S.rc104||[]).forEach(d=>{if(!CREWS.find(c=>c.id===d.id))CREWS.push(d)})}catch(e){}}
+let lastS=null;try{const _r=render;render=function(){if(S&&S!==lastS){lastS=S;restore()}return _r.apply(this,arguments)}}catch(e){}
+function walkOff(w){const id='w104'+hash(w.id+S.day)%100000,name=`${w.name}'s crew`;const def={id,name,color:'#c08bff',desc:`${w.name} used to work for you. Now they want your blocks.`};S.rc104=S.rc104||[];S.rc104.push(def);CREWS.push(def);
+ S.crews.push({id,str:8+Math.min(10,Math.round((w.sales||0)/5)),beef:40,alive:true,respect:0,envy:20});try{const t=trapOf(w);if(t!=null&&S.traps[t])S.traps[t].w=null;if(window.N97){const bi=t!=null?t:w.from;if(bi!=null)N97.bump(bi,{comp:15})}}catch(e){}
+ S.workers=S.workers.filter(x=>x!==w);return name}
+window.l104day=function(){if(!S||S.over||!S.workers||!S.workers.length)return null;const notes=[];S.am104=S.am104||{};
+ S.workers.slice().forEach(w=>{if(!w||!w.name)return;const p=pers(w),under=paid(w)<fair(w)*.85,over=paid(w)>=fair(w)*1.1;
+  if(w.held>0)w.hd104=(w.hd104||0)+1;else w.hd104=0;
+  let d=0;if(under)d-=p==='ambitious'?.35:.2;if(over)d+=.15;if((w.hd104||0)>7)d-=.15;if(p==='loyal')d+=.05;w.loyal=cl((w.loyal||0)+d,0,10);
+  if(window.FF)return;
+  /* skim */
+  if(w.loyal<4&&w.held>200&&Math.random()<(p==='ambitious'?.25:.12)){const k=Math.round(w.held*(.1+Math.random()*.05));w.held-=k;w.sk104=(w.sk104||0)+k;if(Math.random()<.5)notes.push({ic:'🤨',t:`${w.name}'s money keeps coming up short. Somebody is skimming.`})}
+  /* walk off and start a crew */
+  if(p==='ambitious'&&w.loyal<=2&&((w.sales||0)>=18)&&Math.random()<.06){const n=walkOff(w);notes.push({ic:'🚪',t:`${w.name} walked off and started their own thing: ${n}. They know your spots.`});return}
+  /* quit */
+  if(w.loyal<=1&&Math.random()<.1){S.workers=S.workers.filter(x=>x!==w);const h=Math.round(w.held||0);try{if(w.stash)Object.keys(w.stash).forEach(k=>{S.inv[k]=(S.inv[k]||0)+w.stash[k]})}catch(e){}notes.push({ic:'👋',t:`${w.name} quit${h?` and kept the ${money(h)} they were holding`:''}. Pay and check on your people.`});return}
+  /* loyal veterans run their block */
+  const t=trapOf(w);if(t!=null&&w.loyal>=9&&(w.sales||0)>=18){w.run104=1;try{if(window.N97)N97.bump(t,{comp:-1.5})}catch(e){}}else w.run104=0});
+ return notes[0]||null};
+/* mood line on each worker row (traps pane) */
+window.l104mood=w=>{const l=w.loyal||0,u=paid(w)<fair(w)*.85;return `${l>=8?'😎 Solid':l>=5?'🙂 Cool':l>=3?'😒 Restless':'😠 Fed up'}${u?' · underpaid (fair is about '+money(fair(w))+'/day)':''}${w.run104?' · runs the block':''}`};
+try{const _pt=paneTraps;paneTraps=function(){let h=_pt.apply(this,arguments);try{(S.workers||[]).forEach(w=>{const k=`<div class="t">${w.name} `;const i=h.indexOf(k);if(i<0)return;const j=h.indexOf('<div class="s">',i);if(j<0)return;h=h.slice(0,j)+`<div class="s">${E(l104mood(w))}</div>`+h.slice(j)})}catch(e){}return h}}catch(e){}
+try{TUT.push(['Your workers have ambition','Every worker has a mood from pay and attention. Pay them fair (each row shows when they are underpaid and what fair is) and collect their money so it does not sit. Ignored or underpaid workers get restless: they skim, they quit, and ambitious ones with real experience can walk off and start their own crew, a new rival that knows your spots. Loyal veterans on a trap run that block and keep rivals off it.'])}catch(e){}
+try{const _dp=devPanel;devPanel=function(){const r=_dp.apply(this,arguments);try{const mc=document.getElementById('mcard');if(mc&&!mc.querySelector('[data-d104]')){const d=document.createElement('div');d.innerHTML='<div class="sec">Worker ambition (new)</div><div class="btns"><button class="btn" data-d104="mad">Make workers fed up</button><button class="btn" data-d104="vet">Make workers loyal vets</button></div>';mc.insertBefore(d,mc.querySelector('.btns:last-child'));d.addEventListener('click',e=>{const k=(e.target.closest('[data-d104]')||{}).dataset;if(!k||!k.d104)return;(S.workers||[]).forEach(w=>{if(k.d104==='mad'){w.loyal=1;w.sales=Math.max(w.sales||0,20);w.held=Math.max(w.held||0,500)}else{w.loyal=10;w.sales=Math.max(w.sales||0,20)}});close();render()})}}catch(e){}return r}}catch(e){}
 })();
 
 </script>

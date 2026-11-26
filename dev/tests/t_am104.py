@@ -1,0 +1,27 @@
+# worker ambition: loyalty from pay/attention, skim, quit, walk off into a rival crew (persists after reload), loyal vets run block
+from playwright.sync_api import sync_playwright
+SETUP="()=>{localStorage.setItem('tl-clean','0');startLife('lucky');document.getElementById('modal').hidden=true;window.noL31=1;window.noL27=1;S.age=22;S.cal=0;S.school='out';S.cash=20000;S._evDay=S.day;S.picQ=[];S.dr92off=1;S.recapOff=1;render()}"
+with sync_playwright() as p:
+  b=p.chromium.launch();pg=b.new_page();errs=[];pg.on('pageerror',lambda e:errs.append(str(e)[:200]))
+  pg.goto('http://127.0.0.1:8765/index.html',wait_until='load');pg.wait_for_timeout(1500);J=pg.evaluate;J(SETUP)
+  ok=lambda n,c,x='':print(('PASS ' if c else 'FAIL ')+n,'' if c else x)
+  J("()=>{S.workers=[{id:'a',name:'Ace',hustle:7,loyal:6,wage:50,sales:25,from:0,pers:'ambitious'},{id:'b',name:'Bee',hustle:5,loyal:6,wage:400,sales:5,from:0,pers:'loyal'}]}")
+  r=J("()=>{for(let i=0;i<5;i++)l104day();return S.workers.map(w=>[w.name,Math.round(w.loyal*10)/10])}")
+  ok('underpaid loses loyalty, well-paid gains',r[0][1]<6 and r[1][1]>6,r)
+  ok('mood line on worker row',J("()=>/underpaid/.test(paneTraps())"))
+  J("()=>{const a=S.workers[0];a.loyal=3;a.held=1000;a.sk104=0;for(let i=0;i<30;i++){a.held=1000;a.loyal=3;l104day()}}")
+  ok('restless worker skims',J("()=>(S.workers.find(w=>w.id==='a')||{sk104:1}).sk104>0"))
+  n0=J("()=>S.crews.length")
+  J("()=>{for(let i=0;i<200&&S.workers.find(w=>w.id==='a');i++){const a=S.workers.find(w=>w.id==='a');a.loyal=1;a.held=0;a.sales=25;l104day()}}")
+  r=J("()=>({gone:!S.workers.find(w=>w.id==='a'),crews:S.crews.length,rc:(S.rc104||[]).length})")
+  ok('fed-up ambitious worker leaves (quits or starts a crew)',r['gone'],r)
+  J("()=>{if(!(S.rc104||[]).length){S.workers.push({id:'c',name:'Cee',hustle:7,loyal:1,wage:50,sales:30,from:0,pers:'ambitious'});for(let i=0;i<400&&!(S.rc104||[]).length&&S.workers.find(w=>w.id==='c');i++){const c=S.workers.find(w=>w.id==='c');c.loyal=1;c.held=0;l104day();if(!S.workers.find(w=>w.id==='c')&&!(S.rc104||[]).length){S.workers.push({id:'c',name:'Cee',hustle:7,loyal:1,wage:50,sales:30,from:0,pers:'ambitious'})}}}}")
+  ok('walk-off becomes a real rival crew',J("()=>(S.rc104||[]).length>0&&S.crews.some(c=>c.id===S.rc104[0].id&&c.alive)&&!!cdef(S.rc104[0].id)"))
+  J("()=>{save();const sl=S.slot;location.reload()}");pg.wait_for_timeout(1800)
+  J("()=>{const sl=1;try{S=load(sl)}catch(e){}if(!S)S=load();render()}")
+  ok('walk-off crew survives reload',J("()=>!S.rc104||!S.rc104.length||!!cdef(S.rc104[0].id)"))
+  J("()=>{S.workers=[{id:'v',name:'Vet',hustle:7,loyal:10,wage:900,sales:30,from:0,pers:'loyal'}];S.traps=S.traps||{};S.traps[S.at]={w:'v',g:'loud'};N97.get(S.at).comp=70;for(let i=0;i<5;i++)l104day()}")
+  ok('loyal vet runs the block (rivals down)',J("()=>S.workers[0].run104===1&&N97.get(S.at).comp<70"))
+  ok('nothing happens while skipping (no quits)',J("()=>{S.workers=[{id:'z',name:'Zed',hustle:5,loyal:0,wage:10,sales:30,from:0,pers:'ambitious',held:500}];window.FF=true;for(let i=0;i<50;i++)l104day();window.FF=false;return S.workers.length===1}"))
+  J("()=>{for(let i=0;i<10;i++){try{nextDay()}catch(e){window.__e=String(e)}document.getElementById('modal').hidden=true}}");ok('10 days no crash',not J("()=>window.__e||''"))
+  ok('no errors',not errs,errs);b.close()
