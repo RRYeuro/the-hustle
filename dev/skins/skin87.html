@@ -18,7 +18,7 @@ function voices(){try{const g=S.rg74||{};(S.inbox||[]).slice(0,12).forEach(m=>{i
 /* scam phone sound */
 function ringSounds(){try{const g=S.rg74||{};if(g.scam&&g.scam.on&&g.scam.mem.length&&typeof tone==='function'&&SND.sfx){tone(880,.12,'square',.03,.9);tone(880,.12,'square',.03,1.1)}}catch(e){}}
 /* HQ raid */
-function hqRaid(){try{const L=(b5().re||[]).filter(p=>p.use79==='hq');if(!L.length||S.heat<70||Math.random()>.04)return;const p=L[0],k=p.hq79,r=S.rg74&&S.rg74[k];if(!r)return;r.on=0;S.heat=Math.min(100,S.heat+5);
+function hqRaid(){try{const L=(b5().re||[]).filter(p=>p.use79==='hq');if(!L.length||S.heat<70||(window.l100hq&&!l100hq())||Math.random()>.04)return;const p=L[0],k=p.hq79,r=S.rg74&&S.rg74[k];if(!r)return;r.on=0;S.heat=Math.min(100,S.heat+5);
  try{phoneMsg('The Gang',`Cops ran in the ${p.n.toLowerCase()}. Ring is shut down till you start it back up.`)}catch(e){}say(`Your ${p.n.toLowerCase()} got raided. The ring there is paused.`)}catch(e){}}
 /* partner */
 try{const _bm=bizMul;bizMul=function(){let m=_bm.apply(this,arguments);try{if(S.gf&&(S.gf.rel||0)>=60&&Object.keys(S.biz||{}).length)m*=1.1}catch(e){}return m}}catch(e){}

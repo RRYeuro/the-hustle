@@ -6349,7 +6349,7 @@ function event(){
   if(!quiet&&!(S.copCD>S.day)&&Math.random()<S.heat/320*D().risk*heatProf()*carryHeat()*((S.friends||[]).some(f=>f.close>=80)?.85:1)*(S.job?.8:1)*(S.school==='in'?.8:1))return cops();
   const en=Object.keys(S.enemies||{}).map(Number).find(bi=>S.burned[bi]);if(!quiet&&en!==undefined&&Math.random()<.15)return enemyHit(en);
   const jel=S.crews.find(c=>c.alive&&c.envy>=70&&!c.ally&&S.gang!==c.id);if(!quiet&&jel&&Math.random()<.3)return jealous(jel);
-  {const hh=Math.max(S.heat,S.heatY||0);if(!quiet&&hh>=40&&Math.random()<HOMES[S.home].raid*(1.4-(S.comm??30)/80)*hh/100)return raid()}
+  {const hh=Math.max(S.heat,S.heatY||0);if(!quiet&&(window.l100raid?l100raid():(hh>=40&&Math.random()<HOMES[S.home].raid*(1.4-(S.comm??30)/80)*hh/100)))return raid()}
   if(S.home==='couch'&&!S.cousinDeal&&!S.cousinNo&&(S.cash>2000||used()>15)&&Math.random()<.15)return cousinAsk();
   if(Math.random()<({sec8:.3,low:.22,couch:.18,family:.06,apt:.14,condo:.09,house:.06,gfplace:.12,granny:.1})[S.home])return neighborAsk();
   if((S.friends||[]).length<5&&Math.random()<.05)return meetFriend(false);
@@ -11586,7 +11586,7 @@ function voices(){try{const g=S.rg74||{};(S.inbox||[]).slice(0,12).forEach(m=>{i
 /* scam phone sound */
 function ringSounds(){try{const g=S.rg74||{};if(g.scam&&g.scam.on&&g.scam.mem.length&&typeof tone==='function'&&SND.sfx){tone(880,.12,'square',.03,.9);tone(880,.12,'square',.03,1.1)}}catch(e){}}
 /* HQ raid */
-function hqRaid(){try{const L=(b5().re||[]).filter(p=>p.use79==='hq');if(!L.length||S.heat<70||Math.random()>.04)return;const p=L[0],k=p.hq79,r=S.rg74&&S.rg74[k];if(!r)return;r.on=0;S.heat=Math.min(100,S.heat+5);
+function hqRaid(){try{const L=(b5().re||[]).filter(p=>p.use79==='hq');if(!L.length||S.heat<70||(window.l100hq&&!l100hq())||Math.random()>.04)return;const p=L[0],k=p.hq79,r=S.rg74&&S.rg74[k];if(!r)return;r.on=0;S.heat=Math.min(100,S.heat+5);
  try{phoneMsg('The Gang',`Cops ran in the ${p.n.toLowerCase()}. Ring is shut down till you start it back up.`)}catch(e){}say(`Your ${p.n.toLowerCase()} got raided. The ring there is paused.`)}catch(e){}}
 /* partner */
 try{const _bm=bizMul;bizMul=function(){let m=_bm.apply(this,arguments);try{if(S.gf&&(S.gf.rel||0)>=60&&Object.keys(S.biz||{}).length)m*=1.1}catch(e){}return m}}catch(e){}
@@ -12227,7 +12227,7 @@ window.l98=function(){if(!S||S.over)return '';const D=S.dy98;if(!D||D.d!==S.day|
 document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('[data-b98]');if(!t)return;e.preventDefault();e.stopPropagation();choose(+t.dataset.b98,t.dataset.k)},true);
 try{const _pb=paneBlock;paneBlock=function(){const h=_pb.apply(this,arguments);try{const t=window.l98();if(!t)return h;const i=h.indexOf('<div class="sec"');return i<0?t+h:h.slice(0,i)+t+h.slice(i)}catch(e){return h}}}catch(e){}
 /* the one nextDay wrapper */
-try{const _nd=nextDay;nextDay=function(){const r=_nd.apply(this,arguments);let notes=[];try{if(S&&!S.over&&window.N97)notes=N97.tick()||[]}catch(e){console.error('nb97 tick',e)}try{if(S&&!S.over&&window.l99day){const m=l99day();if(m)notes.unshift(m)}}catch(e){console.error('mc99 tick',e)}try{if(S&&!S.over&&!window.FF&&!S.pr&&!S.inJail&&!window._sk92){roll();const D=T();notes.forEach(n=>{if(D.b.length<6){D.b.push(Object.assign({id:'nb',cat:'block'},n));try{say(`${n.ic} ${n.t}`)}catch(_){}}})}}catch(e){console.error('dy98',e)}return r}}catch(e){}
+try{const _nd=nextDay;nextDay=function(){const r=_nd.apply(this,arguments);let notes=[];try{if(S&&!S.over&&window.N97)notes=N97.tick()||[]}catch(e){console.error('nb97 tick',e)}try{if(S&&!S.over&&window.l99day){const m=l99day();if(m)notes.unshift(m)}}catch(e){console.error('mc99 tick',e)}try{if(S&&!S.over&&window.l100day){const m=l100day();if(m)notes.unshift(m)}}catch(e){console.error('cf100 tick',e)}try{if(S&&!S.over&&!window.FF&&!S.pr&&!S.inJail&&!window._sk92){roll();const D=T();notes.forEach(n=>{if(D.b.length<6){D.b.push(Object.assign({id:'nb',cat:'block'},n));try{say(`${n.ic} ${n.t}`)}catch(_){}}})}}catch(e){console.error('dy98',e)}return r}}catch(e){}
 const css=document.createElement('style');css.textContent=`.t98{border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:8px 10px;margin:6px 0;background:rgba(255,255,255,.03)}.t98h{font:700 11px var(--label,inherit);letter-spacing:.16em;color:var(--accent);text-transform:uppercase;margin-bottom:4px}.t98r{display:flex;gap:8px;align-items:flex-start;padding:5px 0;font-size:13px;line-height:1.35}.t98r>span{flex:none;width:20px;text-align:center}.t98r.luck{color:var(--money)}.t98c{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}.t98c .btn{min-height:40px;font-size:12px;padding:6px 10px}`;document.head.appendChild(css);
 /* beats call N97.bump when nb97 is loaded */
 try{TUT.push(['Every day is different','Each new day brings a few things: something personal, something on the blocks, a money chance, a problem, and someone from your life. Some are lucky. They show in the Today box on the Block tab and they change real numbers: cash, energy, stress, heat, your business demand, plug stock and how busy each block is. Some need a choice, like lending a friend money. People remember: pay them back or turn them down and it comes back later.'])}catch(e){}
@@ -12317,6 +12317,50 @@ document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest
 try{TUT.push(['Music career','Record in the studio, then Drop it now or Save for later (it goes in your vault). Build promo first: street team (better with street rep), social push (better with followers) or a radio pitch. Promo makes your next release land bigger and gives it a week of extra streams, then mostly resets. Fans grow from releases and shows. Book a club, theater or arena a few days out with a deposit; on show day you perform automatically and get paid by how many come out, minus the venue and label cut. Miss it and you lose the deposit. Fans only pay off in music: merch, shows, streams.'])}catch(e){}
 try{const _dp=devPanel;devPanel=function(){const r=_dp.apply(this,arguments);try{const mc=document.getElementById('mcard');if(mc&&!mc.querySelector('[data-d99]')){const d=document.createElement('div');d.innerHTML='<div class="sec">Music loop (new)</div><div class="btns"><button class="btn" data-d99="v">Rapper with 2 vault songs</button><button class="btn" data-d99="p">Promo to 80</button><button class="btn" data-d99="s">Show is today</button></div>';mc.insertBefore(d,mc.querySelector('.btns:last-child'));d.addEventListener('click',e=>{const k=(e.target.closest('[data-d99]')||{}).dataset;if(!k||!k.d99)return;S.rapOn=1;S.rap=S.rap||{fans:0,hype:30,songs:[],fat:0};P();
  if(k.d99==='v'){S.rap.fans=Math.max(S.rap.fans,2500);S.rap.vault.push({title:'Dev Vault 1',q:75,d:S.day},{title:'Dev Vault 2',q:55,d:S.day})}else if(k.d99==='p')P().v=80;else{S.rap.fans=Math.max(S.rap.fans,2500);S.rap.bk99={k:'club',day:S.day,dep:1000}}close();tab='rap';render()})}}catch(e){}return r}}catch(e){}
+})();
+
+</script>
+<script id="cf100js">
+/* cf100: case file. Heat is how hot you are right now; the case is what detectives can prove.
+   Evidence builds from patterns (selling the same block day after day, sitting on big dirty cash,
+   high heat, serving shaky or undercover Js). A lawyer, laying low, moving around and cleaning money
+   shrink it. Home raids only happen when the case is strong. Ticks from the day-engine wrapper. */
+(function(){
+const E=x=>String(x==null?'':x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]);
+const cl=(v,a,b)=>Math.max(a,Math.min(b,v));
+const C=()=>{if(!S.case||typeof S.case!=='object')S.case={ev:0,src:{},lb:null,st:0,last:0};const c=S.case;c.ev=cl(+c.ev||0,0,100);c.src=c.src||{};return c};
+const SRC={corner:'Selling the same block',cash:'Big dirty cash',heat:'Heat',snitch:'Js who might talk',uc:'An undercover buy',raid:'Raid'};
+function add(k,n){const c=C();if(!n)return;c.ev=cl(c.ev+n,0,100);c.src[k]=Math.round(((c.src[k]||0)+n)*10)/10}
+const stage=ev=>ev>=85?3:ev>=60?2:ev>=30?1:0;
+const SN=['No case','Detectives asking around','Open investigation','Warrant is close'];
+window.C100={get:C,add,stage,SN};
+/* daily: called once per day from the day engine */
+window.l100day=function(){if(!S||S.over)return null;const c=C(),d0=S.day-1;let sold=0;try{sold=(L95.day(d0).k||{}).sales||0}catch(e){}
+ if(sold>0){if(c.lb===S.at)c.st++;else{c.st=1;c.lb=S.at}}else c.st=Math.max(0,c.st-1);
+ if(c.st>=3)add('corner',Math.min(4,(c.st-2)*.8));
+ try{const d=dirtyCash();if(d>20000)add('cash',Math.min(3,(d-20000)/30000+.5))}catch(e){}
+ if(S.heat>60)add('heat',1);
+ let cut=.6;if(S.lawPay)cut+=1.5;if(S.restDay)cut+=3;if(sold===0)cut+=.5;c.ev=cl(c.ev-cut,0,100);
+ Object.keys(c.src).forEach(k=>{c.src[k]=Math.max(0,Math.round(c.src[k]*.95*10)/10);if(!c.src[k])delete c.src[k]});
+ if(!window.FF&&stage(c.ev)>=2&&Math.random()<.5)S.heat=Math.min(100,S.heat+1);
+ const s=stage(c.ev);let note=null;if(s>c.last&&!window.FF)note={ic:'🗂️',t:s===1?'Word is detectives are asking about you around the way.':s===2?'There is an open investigation with your name on it. Lawyer up, lay low, switch blocks.':'Somebody saw paperwork. A warrant is close. Clean house now.'};c.last=s;return note};
+/* home raids only when the case is strong; a raid uses up most of the case */
+window.l100raid=function(){const c=C();if(c.ev<85)return false;if(Math.random()>.35)return false;c.ev=40;c.st=0;c.src={raid:40};c.last=1;return true};
+window.l100hq=()=>C().ev>=60;
+/* Js: undercover and low-loyalty Js add evidence */
+try{const _sc=serveCusto;serveCusto=function(ci){const c=(S.custos||[])[ci];const uc=c&&c.uc,low=c&&(c.loy||0)<20;const r=_sc.apply(this,arguments);try{if(uc)add('uc',6);else if(low)add('snitch',2)}catch(e){}return r}}catch(e){}
+function detail(){const c=C(),s=stage(c.ev),ks=Object.keys(c.src).filter(k=>c.src[k]>=1).sort((a,b)=>c.src[b]-c.src[a]);
+ modal(`<h2>Case file</h2><p><b>${SN[s]}</b> · evidence ${Math.round(c.ev)}/100</p><div class="bar"><i style="width:${c.ev}%;background:${s>=2?'var(--blood)':'var(--accent)'}"></i></div>
+ <p class="s" style="margin-top:8px">${ks.length?'What they have: '+ks.map(k=>`${SRC[k]||k} (${Math.round(c.src[k])})`).join(', ')+'.':'They have nothing on you.'}${c.st>=3?` You have sold on ${E(BLOCKS[c.lb])} ${c.st} days straight.`:''}</p>
+ <p class="s"><b>Shrink it:</b> lawyer on retainer (fastest), lay low, sell on different blocks, clean your money, cut off shaky Js. At 85 they can get a warrant for your place. Heat is how hot you are today. The case is what they can prove.</p>
+ <div class="btns"><button class="btn go" id="cf100ok">Got it</button></div>`);document.getElementById('cf100ok').onclick=close}
+window.l100row=function(){if(!S||S.over)return '';const c=C(),s=stage(c.ev);if(s<1)return '';
+ return `<button class="cf100 s${s}" data-cf100="1">🗂️ ${SN[s]} · case ${Math.round(c.ev)}/100 <span>tap</span></button>`};
+document.addEventListener('click',e=>{if(e.target.closest&&e.target.closest('[data-cf100]')){e.preventDefault();e.stopPropagation();detail()}},true);
+try{const _pb=paneBlock;paneBlock=function(){const h=_pb.apply(this,arguments);try{const r=window.l100row();if(!r)return h;const i=h.indexOf('<div class="sec"');return i<0?r+h:h.slice(0,i)+r+h.slice(i)}catch(e){return h}}}catch(e){}
+const css=document.createElement('style');css.textContent=`.cf100{display:flex;width:100%;justify-content:space-between;align-items:center;gap:8px;text-align:left;min-height:44px;margin:6px 0;padding:8px 12px;border-radius:12px;border:1px solid var(--accent);background:rgba(245,183,42,.08);color:var(--fg);font:600 13px inherit;cursor:pointer}.cf100 span{color:var(--dim);font-weight:400;font-size:11px}.cf100.s2,.cf100.s3{border-color:var(--blood);background:rgba(232,80,74,.1)}`;document.head.appendChild(css);
+try{TUT.push(['Case file','Heat is how hot you are today. The case file is what detectives can actually prove. It grows when you sell on the same block day after day, sit on a lot of dirty cash, stay hot, or serve shaky or undercover Js. It shrinks with a lawyer on retainer, laying low, moving to other blocks and cleaning your money. When it gets serious a case row shows on the Block tab; tap it to see what they have. Police only raid your place when the case is strong (85+).'])}catch(e){}
+try{const _dp=devPanel;devPanel=function(){const r=_dp.apply(this,arguments);try{const mc=document.getElementById('mcard');if(mc&&!mc.querySelector('[data-d100]')){const d=document.createElement('div');d.innerHTML='<div class="sec">Case file (new)</div><div class="btns"><button class="btn" data-d100="50">Case 50</button><button class="btn" data-d100="90">Case 90 (warrant)</button><button class="btn" data-d100="0">Clear case</button></div>';mc.insertBefore(d,mc.querySelector('.btns:last-child'));d.addEventListener('click',e=>{const k=(e.target.closest('[data-d100]')||{}).dataset;if(!k||!k.d100)return;const c=C();c.ev=+k.d100;c.src=+k.d100?{corner:+k.d100*.6,cash:+k.d100*.4}:{};c.last=stage(c.ev);close();render()})}}catch(e){}return r}}catch(e){}
 })();
 
 </script>
