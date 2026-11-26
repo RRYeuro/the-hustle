@@ -6321,7 +6321,7 @@ function wkRecap(force){
   big.sort((a,b)=>b[0]-a[0]);const top=imp.slice(0,3);for(const b of big){if(top.length>=3)break;if(!top.includes(b[1]))top.push(b[1])}
   let goal='';try{const X=w6();if(X.wk&&!X.wk.done){const f=W6WK.find(x=>x[0]===X.wk.k);if(f)goal=`<p class="s" style="margin:0">🎯 This week's goal: ${X.wk.t}, ${Math.min(X.wk.need,w6WkProg(X.wk))} / ${X.wk.need}.</p>`}}catch(e){}
   S.wk0=wkSnap();S.recapPend=0;
-  modal(`${ARTX('summary')?a2i('summary',64):''}<h2>${away?'While you were away':'Your week'}</h2><p style="font-size:20px;margin:4px 0;color:${cash>=0?'var(--money)':'var(--blood)'}"><b>${cash>=0?'+':'-'}${money(Math.abs(cash))}</b> <span class="s" style="color:var(--dim)">${away?'since you went in':'this week'}</span></p><p class="s" style="margin:0">Heat ${dh>0?'went up':dh<0?'cooled off':'held steady'}${dh?' by '+Math.abs(Math.round(dh)):''}. Rep ${dr>0?'up '+Math.round(dr):dr<0?'down '+Math.abs(Math.round(dr)):'held'}.</p>${top.length?'<div class="s" style="margin:6px 0">'+top.map(t=>'• '+t).join('<br>')+'</div>':'<p class="s">A quiet one.</p>'}${goal}<div class="btns"><button class="btn go" id="wkok">Keep hustling</button><button class="btn" id="wkoff">Turn recap off</button></div>`);
+  modal(`${ARTX('summary')?a2i('summary',64):''}<h2>${away?'While you were away':'Your week'}</h2><p style="font-size:20px;margin:4px 0;color:${cash>=0?'var(--money)':'var(--blood)'}"><b>${cash>=0?'+':'-'}${money(Math.abs(cash))}</b> <span class="s" style="color:var(--dim)">${away?'since you went in':'this week'}</span></p><p class="s" style="margin:0">Heat ${dh>0?'went up':dh<0?'cooled off':'held steady'}${dh?' by '+Math.abs(Math.round(dh)):''}. Rep ${dr>0?'up '+Math.round(dr):dr<0?'down '+Math.abs(Math.round(dr)):'held'}.</p>${window.l95line?l95line(Math.max(1,((S.wk0||{}).day||S.day-7)),S.day):''}${top.length?'<div class="s" style="margin:6px 0">'+top.map(t=>'• '+t).join('<br>')+'</div>':'<p class="s">A quiet one.</p>'}${goal}<div class="btns"><button class="btn go" id="wkok">Keep hustling</button><button class="btn" id="wkoff">Turn recap off</button></div>`);
   $('wkok').onclick=close;$('wkoff').onclick=()=>{S.recapOff=1;close()};
 }
 {const _ndB=nextDay;nextDay=function(){heatSync();const r=_ndB.apply(this,arguments);heatSync();try{if(S&&!S.over&&!S.recapOff&&!window.FF){if(!S.wk0){S.wk0=wkSnap()}
@@ -11835,11 +11835,11 @@ function recap(a,b,force){
  const dd=b.dc-a.dc,dc=b.cc-a.cc,top=lines(a.d);
  const mood=dd+dc>500?'Good day':dd+dc<-500?'Rough day':'Quiet day';let tip='';
  try{if(b.h>=60)tip='Heat is high. Lay low or switch blocks tomorrow.';else if(daysToCheck&&daysToCheck()<=1)tip='Checks hit tomorrow. Js will be out with money.'}catch(e){}
- modal(`<p class="s" style="letter-spacing:.1em;margin:0">DAY ${a.d} IS DONE</p><h2 style="margin-top:2px">${mood} on ${E(BLOCKS[S.at]||'the block')}</h2><div class="g92"><div><small>Dirty cash</small><b style="color:${dd>=0?'var(--money)':'var(--blood)'}">${sg(dd)}</b></div><div><small>Clean cash</small><b style="color:${dc>=0?'var(--money)':'var(--blood)'}">${sg(dc)}</b></div><div><small>Heat</small><b style="color:${b.h>a.h?'var(--blood)':'var(--money)'}">${a.h} → ${b.h}</b></div><div><small>Rep</small><b style="color:var(--accent)">${a.r} → ${b.r}</b></div></div>${top.length?'<div class="s" style="margin:6px 0">'+top.map(t=>'• '+E(t)).join('<br>')+'</div>':'<p class="s">Nothing big happened.</p>'}${tip?`<p class="s"><b>Tomorrow:</b> ${tip}</p>`:''}<div class="btns"><button class="btn go" id="dr92ok">Start day ${S.day}</button><button class="btn" id="dr92off">Turn day recap off</button></div>`);
+ modal(`<p class="s" style="letter-spacing:.1em;margin:0">DAY ${a.d} IS DONE</p><h2 style="margin-top:2px">${mood} on ${E(BLOCKS[S.at]||'the block')}</h2><div class="g92"><div><small>Dirty cash</small><b style="color:${dd>=0?'var(--money)':'var(--blood)'}">${sg(dd)}</b></div><div><small>Clean cash</small><b style="color:${dc>=0?'var(--money)':'var(--blood)'}">${sg(dc)}</b></div><div><small>Heat</small><b style="color:${b.h>a.h?'var(--blood)':'var(--money)'}">${a.h} → ${b.h}</b></div><div><small>Rep</small><b style="color:var(--accent)">${a.r} → ${b.r}</b></div></div>${window.l95line?l95line(a.d,a.d):''}${top.length?'<div class="s" style="margin:6px 0">'+top.map(t=>'• '+E(t)).join('<br>')+'</div>':'<p class="s">Nothing big happened.</p>'}${tip?`<p class="s"><b>Tomorrow:</b> ${tip}</p>`:''}<div class="btns"><button class="btn go" id="dr92ok">Start day ${S.day}</button><button class="btn" id="dr92off">Turn day recap off</button></div>`);
  el('dr92ok').onclick=close;el('dr92off').onclick=()=>{S.dr92off=1;close()}}
 try{const _st=skipTime;skipTime=function(){window._sk92=1;try{return _st.apply(this,arguments)}finally{window._sk92=0}}}catch(e){}
 window.l92recap=()=>{const b=snap(),a=S.dr92||Object.assign({},b,{d:S.day-1});recap(a,b,1)};
-try{const _nd=nextDay;nextDay=function(){const end=S&&!S.over?snap():null,start=S&&S.dr92;const r=_nd.apply(this,arguments);
+try{const _nd=nextDay;nextDay=function(){try{if(window.L95)L95.flush()}catch(e){}const end=S&&!S.over?snap():null,start=S&&S.dr92;const r=_nd.apply(this,arguments);try{if(window.L95)L95.flush('Overnight')}catch(e){}
  try{if(S&&!S.over){const ok=end&&start&&start.d===end.d&&!S.dr92off&&!window.FF&&!window._sk92&&!S.pr&&!S.inJail&&!(el('tu73b'))&&el('modal').hidden&&S.day>1;S.dr92=snap();if(ok)recap(start,end)}}catch(e){console.error('dr92',e)}return r}}catch(e){}
 
 /* ---- break down: bag up weight for the Js ---- */
@@ -12034,5 +12034,64 @@ try{const _dp=devPanel;devPanel=function(){const r=_dp.apply(this,arguments);try
   if(k==='owe'){S.friends=S.friends||[];if(!S.friends.some(f=>f.name==='Kash'))S.friends.push({name:'Kash',trait:'loyal',role:'none',close:60});S.owe93=S.owe93||{};S.owe93.Kash={amt:100,day:S.day-8};MEM.set('Kash','lent_money');document.getElementById('modal').hidden=true;say('Dev: Kash lent you $100 eight days ago. Advance one day.');return}
   force(k)})}}catch(er){console.error('wk94 dev',er)}return r}}catch(er){}
 })();
+</script>
+<script id="lg95js">
+/* lg95: ledger. Every money change is caught at the click / overnight boundary, split into
+   income or spending (real money in or out) vs transfers (wallet, safe, stash house, crypto,
+   laundering swaps). Transfers and trading never count as income. Other code can post exact
+   entries with L95.post(tag,amount,label,clean); the boundary diff only books what is left over. */
+(function(){
+const CAT={sales:'💵 Sales',supply:'📦 Product',business:'🏪 Business',property:'🏠 Housing',crew:'👥 Crew',life:'👟 Lifestyle',legal:'⚖️ Legal',gamble:'🎲 Gambling',rob:'🔫 Licks',music:'🎤 Music',job:'🧾 Jobs',loan:'🏦 Loans',trading:'📈 Trading',day:'🌙 Overnight',other:'• Other'};
+const RX=[['trading',/crypto/i],['loan',/loan|borrow|md_ml/i],['sales',/serve|pserve|sell|deliver|order|\bj\b|js\b|custo|hand off|bagged/i],['supply',/re-?up|plug|buy (product|weed|pack)|^buy$|data-a=buy|cop\b|front/i],['business',/biz|business|front|store|shop|laundromat|car wash|manager|w3b|w5b/i],['property',/house|home|rent|realty|apartment|move|condo|trap|stash/i],['crew',/crew|worker|hire|soldier|runner|wage|pay (him|her|them)/i],['legal',/lawyer|bail|court|fine|ticket|plea|judge/i],['gamble',/dice|bet|casino|race|gamble|cards|poker|slots/i],['rob',/rob|lick|snatch|heist|steal|stick|carjack|jack/i],['music',/studio|mixtape|show|record|song|beat|feature|single|album/i],['job',/shift|job|paycheck|gig|work/i],['life',/car|fit|mall|chain|cloth|food|eat|barber|club|party|gym|shoe|jewel|drip|ride|gas|uber/i]];
+const N=v=>Math.round(+v||0);
+function vec(){if(!S)return null;let wc=0;try{wc=cleanCash()}catch(e){wc=Math.min(S.clean||0,S.cash||0)}
+ const v={wc,wd:Math.max(0,(S.cash||0)-wc),sc:Math.min(S.safeClean||0,S.safe||0),sd:0,hc:0,hd:0,cr:(S.cr&&S.cr.amt)||0};v.sd=Math.max(0,(S.safe||0)-v.sc);
+ try{const H=S.stashH;if(H&&H.cash){v.hc=Math.min(H.cl||0,H.cash);v.hd=H.cash-v.hc}}catch(e){}return v}
+function L(){if(!S)return null;if(!S.lg95||!Array.isArray(S.lg95.e))S.lg95={e:[],days:{},v:1};return S.lg95}
+let base=null,ctx='',ctxT=0,posted={c:0,x:0,cr:0};
+function cat(lab){lab=String(lab||'');for(const [k,r] of RX)if(r.test(lab))return k;return 'other'}
+function book(tag,n,c,x,tr,lab){const G=L();if(!G)return;n=N(n);tr=N(tr);if(!n&&!tr)return;const d=S.day||0;
+ if(n){const last=G.e[0];if(last&&last.d===d&&last.k===tag&&last.l===lab&&Math.sign(last.n)===Math.sign(n)&&!last.tr){last.n+=n;last.c+=N(c);last.x+=N(x)}else G.e.unshift({d,k:tag,l:String(lab||'').slice(0,40),n,c:N(c),x:N(x)});
+  const D=G.days[d]||(G.days[d]={i:0,o:0,t:0,tr:0,k:{}});if(tag==='trading'){D.t+=n}else if(n>0){D.i+=n}else D.o+=-n;if(tag!=='trading')D.k[tag]=(D.k[tag]||0)+n}
+ if(tr){const D=G.days[d]||(G.days[d]={i:0,o:0,t:0,tr:0,k:{}});D.tr+=tr;const last=G.e[0];if(last&&last.d===d&&last.tr&&last.l===lab)last.tr+=tr;else G.e.unshift({d,k:'transfer',l:String(lab||'').slice(0,40),n:0,tr})}
+ if(G.e.length>250)G.e.length=250;const ks=Object.keys(G.days);if(ks.length>60)ks.map(Number).sort((a,b)=>a-b).slice(0,ks.length-60).forEach(k=>delete G.days[k])}
+function flush(lab){if(!S||S.over&&!base)return;const v=vec();if(!v)return;if(!base){base=v;return}
+ const dc=v.wc+v.sc+v.hc-(base.wc+base.sc+base.hc),dx=v.wd+v.sd+v.hd-(base.wd+base.sd+base.hd),dcr=v.cr-base.cr;
+ const moved=['wc','wd','sc','sd','hc','hd'].reduce((a,k)=>a+Math.max(0,v[k]-base[k]),0);base=v;
+ let rc=dc-posted.c,rx=dx-posted.x,rcr=dcr-posted.cr;posted={c:0,x:0,cr:0};
+ const label=lab||(Date.now()-ctxT<8000?ctx:'')||'Other';let tag=lab==='Overnight'?'day':cat(label);
+ // crypto: money into crypto is a transfer, money out above what went in is trading
+ let trd=0,tr=0;if(rcr){const cashSide=rc+rx;if(rcr>0){tr+=Math.min(rcr,-cashSide>0?-cashSide:rcr);}else{const out=-rcr,back=cashSide;tr+=Math.min(out,Math.max(0,back));trd=back-out}rc=0;rx=0;if(trd)book('trading',trd,trd,0,0,'Crypto cash-out')}
+ // clean <-> dirty swaps (laundering) are transfers; only the leftover is real money in or out
+ if(rc>0&&rx<0){const sw=Math.min(rc,-rx);tr+=sw;rc-=sw;rx+=sw}else if(rc<0&&rx>0){const sw=Math.min(-rc,rx);tr+=sw;rc+=sw;rx-=sw}
+ const net=rc+rx;tr+=Math.max(0,moved-Math.max(0,dc)-Math.max(0,dx)-Math.max(0,rcr>0?rcr:0));
+ book(tag,net,rc,rx,0,label);if(tr)book('transfer',0,0,0,tr,/launder|clean|teller|wash/i.test(label)?'Laundering':label)}
+window.L95={post(tag,amt,lab,clean){if(!S)return;amt=N(amt);if(!amt)return;if(!base)base=vec();if(clean)posted.c+=amt;else posted.x+=amt;book(tag,amt,clean?amt:0,clean?0:amt,0,lab||CAT[tag]||tag)},
+ flush,ctx(l){ctx=l;ctxT=Date.now()},reset(){base=null;posted={c:0,x:0,cr:0}},CAT,
+ day(d){const G=L();return (G&&G.days[d])||{i:0,o:0,t:0,tr:0,k:{}}},
+ range(a,b){const o={i:0,o:0,t:0,tr:0,k:{}};for(let d=a;d<=b;d++){const D=this.day(d);o.i+=D.i;o.o+=D.o;o.t+=D.t;o.tr+=D.tr;Object.keys(D.k).forEach(k=>o.k[k]=(o.k[k]||0)+D.k[k])}return o},
+ recent(n){const G=L();return G?G.e.slice(0,n||20):[]}};
+const labOf=b=>{const m=document.getElementById('mcard'),h=m&&!document.getElementById('modal').hidden?((m.querySelector('h2')||{}).textContent||''):'';return [b.dataset&&b.dataset.a,b.innerText,h].filter(Boolean).join(' ').replace(/\s+/g,' ').slice(0,60)};
+document.addEventListener('click',e=>{try{if(!S)return;flush();const b=e.target.closest&&e.target.closest('button,a,[data-a]');if(b){const l=labOf(b);L95.ctx(l)}setTimeout(()=>{try{flush()}catch(_){}} ,0)}catch(_){}},true);
+setInterval(()=>{try{if(S&&!document.hidden)flush()}catch(_){}},1500);
+/* new game / load: start fresh baseline so loading a save is not booked as income */
+try{const _r=render;let last=null;render=function(){if(S!==last){last=S;base=null;try{L()}catch(_){}}return _r.apply(this,arguments)}}catch(e){}
+/* exact entries for J sales */
+try{const _sc=serveCusto;serveCusto=function(){flush();const c0=S.cash;const r=_sc.apply(this,arguments);try{const got=S.cash-c0;if(got>0)L95.post('sales',got,'Sold to a J',false)}catch(_){}return r}}catch(e){}
+/* views */
+const fm=n=>(n<0?'−':'+')+money(Math.abs(n));
+window.l95html=function(){const G=L();if(!G)return '';const d=S.day,w=L95.range(Math.max(1,d-6),d),rows=Object.keys(w.k).filter(k=>w.k[k]).sort((a,b)=>Math.abs(w.k[b])-Math.abs(w.k[a]));
+ let h=`<div class="sec">Money history · last 7 days</div><div class="row"><div class="info"><div class="t">In ${money(w.i)} · Out ${money(w.o)} · Net <b style="color:${w.i-w.o>=0?'var(--money)':'var(--blood)'}">${fm(w.i-w.o)}</b></div><div class="s">Moved between pockets, safe, stash and laundering: ${money(w.tr)} (not income).${w.t?` Trading: ${fm(w.t)} (not counted as income).`:''}</div></div></div>`;
+ rows.forEach(k=>{h+=`<div class="row"><div class="info"><div class="t">${CAT[k]||k}</div></div><div class="price" style="color:${w.k[k]>=0?'var(--money)':'var(--blood)'}">${fm(w.k[k])}</div></div>`});
+ const R=L95.recent(12);if(R.length)h+=`<details class="f92"><summary>Recent<span>${R.length} entries</span></summary><div class="in">${R.map(e=>`<div class="row"><div class="info"><div class="t" style="font-size:13px">${E(e.l||CAT[e.k]||e.k)}</div><div class="s">Day ${e.d} · ${e.k==='transfer'?'transfer':(CAT[e.k]||e.k)}${e.k!=='transfer'&&e.n?` · ${e.x&&e.c?'mixed':e.c?'clean':'dirty'}`:''}</div></div><div class="price" style="font-size:14px;color:${e.k==='transfer'?'var(--dim)':e.n>=0?'var(--money)':'var(--blood)'}">${e.k==='transfer'?'⇄ '+money(e.tr):fm(e.n)}</div></div>`).join('')}</div></details>`;
+ return h};
+const E=x=>String(x==null?'':x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]);
+window.l95line=function(a,b){const w=L95.range(a,b);if(!w.i&&!w.o&&!w.tr)return '';const top=Object.keys(w.k).filter(k=>w.k[k]>0).sort((x,y)=>w.k[y]-w.k[x])[0],big=Object.keys(w.k).filter(k=>w.k[k]<0).sort((x,y)=>w.k[x]-w.k[y])[0];
+ return `<p class="s" style="margin:6px 0">Income ${money(w.i)}${top?` (most from ${(CAT[top]||top).replace(/^\S+ /,'').toLowerCase()})`:''} · spent ${money(w.o)}${big?` (most on ${(CAT[big]||big).replace(/^\S+ /,'').toLowerCase()})`:''}${w.tr?` · moved ${money(w.tr)}, not income`:''}</p>`};
+try{const _pe=paneExp;paneExp=function(){const h=_pe.apply(this,arguments);try{return window.l95html()+h}catch(e){console.error('lg95',e);return h}}}catch(e){}
+try{TUT.push(['Money history','The Expenses tab starts with Money history: what came in and went out over the last 7 days, sorted by where it came from (sales, product, crew, housing and more). Moving cash into your safe or stash house, laundering, and putting money into crypto are transfers, not income. Crypto gains count as trading, never as income. Tap Recent to see each entry, clean or dirty. The day recap and weekly review show the same numbers.'])}catch(e){}
+try{const _dp=devPanel;devPanel=function(){const r=_dp.apply(this,arguments);try{const mc=document.getElementById('mcard');if(mc&&!mc.querySelector('[data-d95]')){const d=document.createElement('div');d.innerHTML='<div class="sec">Ledger (new)</div><div class="btns"><button class="btn" data-d95="l">Show money history</button><button class="btn" data-d95="x">Clear ledger</button></div>';mc.insertBefore(d,mc.querySelector('.btns:last-child'));d.addEventListener('click',e=>{const k=(e.target.closest('[data-d95]')||{}).dataset;if(!k||!k.d95)return;if(k.d95==='l'){close();tab='exp';render()}else{S.lg95=null;base=null;close();say('Ledger cleared.');render()}})}}catch(e){}return r}}catch(e){}
+})();
+
 </script>
 <script>if('serviceWorker' in navigator){addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}</script></body></html>
