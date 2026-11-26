@@ -1,26 +1,26 @@
-🏙️ **THE HUSTLE v218: THE CITY MOVES WITHOUT YOU** 🏙️
-Every day plays different now. Blocks rise and fall, your businesses need real decisions, and your music has a full grind behind it.
-📲 **Get it first:** PC **Ctrl+Shift+R** (Mac Cmd+Shift+R). iPhone: Safari **aA > Reload Page**; Home Screen app: swipe it closed and reopen (twice if still old). Check it says **v218**. Saves carry over.
+👔 **THE HUSTLE v219: RUN IT LIKE A BOSS** 👔
+You can hand off the work now, but every person you hire has a mind of their own. And the city watches, remembers and pushes back.
+📲 **Get it first:** PC **Ctrl+Shift+R** (Mac Cmd+Shift+R). iPhone: Safari **aA > Reload Page**; Home Screen app: swipe it closed and reopen (twice if still old). Check it says **v219**. Saves carry over.
 
-**📅 Every day is different**
-Each new day drops a few things in a **Today** box on the Block tab: something personal, something on the blocks, a money chance, a problem, and someone from your life. Some are lucky. Some need a call, like a friend asking to borrow money. People remember if you came through.
+**👔 Managers**
+Crew tab → Managers. Put a worker on a job and they handle it daily: **Lieutenant** collects and re-ups, **Business manager** runs ads and expands, **Accountant** washes your money safely. Each has a personality (Loyal, Ambitious, Wild card) and a trait (Careful, Hustler, Smooth talker, Book smart, Flashy), and they level up. Report shows in Today.
 
-**🗺️ Blocks change**
-Under the block name: **Busy, Wealth, Rivals, Cops** and open shops. Busy rich blocks pay more per sale, rivals cut into it. Shops open where money is good and close where it dries up. Skipping days doesn't hurt you.
+**😤 Workers want more**
+Underpay or ignore them and they skim, quit, or walk off and start their own crew against you. Loyal vets run their block for you.
 
-**🏪 Businesses need a boss**
-Each business has demand, rep, capacity, quality and daily costs. Tap **Reinvest**: expand, upgrade quality, run ads, hire a manager, or stash a reserve. Every choice tells you what it'll do to your profit before you confirm.
+**🗂️ Case file**
+Detectives build a case from your habits: same block every day, piles of dirty cash, shaky Js. Lawyer, laying low and moving around shrink it. Raids only come when the case is strong.
 
-**🎤 Music grind**
-After a studio session you can **Save for later**. Build promo (street team, social push, radio pitch), then release it for a bigger first week. **Book a show** at a club, theater or arena with a deposit. Show up and get paid by how many come out. Miss it and the deposit's gone.
+**📑 Books and ⚔️ rivals**
+Wash more than a business could really make and the IRS notices. Rival crews push into weak blocks and poach your Js: undercut, send soldiers or pay them off.
 
-**💵 Money history**
-Top of the Expenses tab: what came in and went out this week, by source, clean or dirty. Moving cash to your safe, laundering and crypto are transfers, not income.
+**🌎 The city**
+Shortages hit with a rumor first, so stock up. Seasons and holidays change what sells. A clean money history builds credit for bank loans.
 
-**👥 Your workers have personalities**
-They grow, have their own moments, and remember how you treat them.
+**❤️ Your people**
+Partner, parent and kids need time, money and a safe home. Everyone remembers you (respect, fear, trust, loyal) and it changes prices. Tap your face for Home, Whip and Drip goals with lasting perks.
 
 **🛠️ Dev menu (testers)**
-New sections: **Ledger**, **Business performance** (own shops, make them busy, run 7 days), **Day engine** (re-roll today), **Neighborhoods** (make a block hot or dead), **Music loop** (vault songs, promo 80, show today).
+New sections for each: Case file, Books, Rivals, Managers, Worker ambition, Supply, Credit, Family needs, Lifestyle.
 
-Tell us: does the Today box feel like too much, too little, or right? 👇
+What feels too harsh? Tell us 👇
