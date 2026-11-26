@@ -8689,7 +8689,7 @@ function drawMeet(){const M=S.meet;if(!M)return;let o=el('mt31');if(!o){o=docume
  let chat=`<div class="when">${pull?'HE CAME TO YOU':'AT HIS SPOT'}${window.l82clock?' · '+l82clock():''}</div>`;
  if(said[0])chat+=`<div class="bub">${said[0]}</div>`;if(M.tone46&&ME[M.tone46])chat+=`<div class="bub me">${ME[M.tone46]}</div>`;if(said[1])chat+=`<div class="bub">${said[1]}</div>`;
  chat+=`<div class="bub me">What you holding?</div><div class="bub menu"><div style="margin-bottom:6px">Got this today:</div><div class="pane m92" id="mt31p">${pane}</div></div>`;
- o.className='c92';o.innerHTML=`<div class="mt31w"><div class="h92">${im?`<img src="${im}" alt="">`:''}<div><b>${esc(nm)}</b><small>Trust ${tr(M.bi)}/100 · ${pull?`came to you${tie(M.bi)?' · no delivery charge':' · +8% delivery'}`:`on ${esc(BLOCKS[M.bi])}`} · sells by ${lvlSells(M.bi)}</small></div><button class="btn go" id="mt31x">Done</button></div><div class="c92c">${chat}</div><div class="r92">${tones}<div class="btns" style="margin:8px 0 0">${tx}${rb}</div><small>${pull?`You are still on ${esc(BLOCKS[M.from])}. No day passes.`:'The meet does not use the day.'}</small></div></div>`;
+ o.className='c92';o.innerHTML=`<div class="mt31w"><div class="h92">${im?`<img src="${im}" alt="">`:''}<div><b>${esc(nm)}</b><small>Trust ${tr(M.bi)}/100${window.REP109?(r=>` · Respect ${r.respect} · Fear ${r.fear}`)(REP109.get(nm)):''} · ${pull?`came to you${tie(M.bi)?' · no delivery charge':' · +8% delivery'}`:`on ${esc(BLOCKS[M.bi])}`} · sells by ${lvlSells(M.bi)}</small></div><button class="btn go" id="mt31x">Done</button></div><div class="c92c">${chat}</div><div class="r92">${tones}<div class="btns" style="margin:8px 0 0">${tx}${rb}</div><small>${pull?`You are still on ${esc(BLOCKS[M.from])}. No day passes.`:'The meet does not use the day.'}</small></div></div>`;
  o.scrollTop=sc;el('mt31x').onclick=()=>{endMeet();render()}}
 /* ---------- Move map: plug spots ---------- */
 const LV={Low:[100,1],Mid:[300,.5],Big:[800,.38]};
@@ -12672,6 +12672,42 @@ document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest
 try{const _pb=paneBlock;paneBlock=function(){const h=_pb.apply(this,arguments);try{const r=window.l108row();if(!r)return h;const i=h.indexOf('<div class="sec"');return i<0?r+h:h.slice(0,i)+r+h.slice(i)}catch(e){return h}}}catch(e){}
 try{TUT.push(['Your people need you','Your partner, your parent (while you live with them) and your kids each want time and money, and to feel safe. Time and money run down every day; safety drops when your heat is high, you have serious beef or an open case. Tap your face and then Your people (or the row that shows on the Block tab when someone needs you) to spend time (10 energy, 2 hours, at home unless it is your partner) or help out with money. Keep them up and they come through for you and your stress drops. Let it slide and your partner leaves, your parent stops trusting you and your kids drift.'])}catch(e){}
 try{const _dp=devPanel;devPanel=function(){const r=_dp.apply(this,arguments);try{const mc=document.getElementById('mcard');if(mc&&!mc.querySelector('[data-d108]')){const d=document.createElement('div');d.innerHTML='<div class="sec">Family needs (new)</div><div class="btns"><button class="btn" data-d108="gf">Give me a partner</button><button class="btn" data-d108="low">Everyone feels ignored</button></div>';mc.insertBefore(d,mc.querySelector('.btns:last-child'));d.addEventListener('click',e=>{const k=(e.target.closest('[data-d108]')||{}).dataset;if(!k||!k.d108)return;if(k.d108==='gf')S.gf=S.gf||{name:'Kayla',rel:60};else people().forEach(p=>{const m=need(p);m.time=5;m.money=5});close();render()})}}catch(e){}return r}}catch(e){}
+})();
+
+</script>
+<script id="rp109js">
+/* rp109: one reputation record per person: how much they respect you, fear you, trust you, and how
+   loyal they are. It reads the numbers the game already keeps (plug trust, J loyalty, worker loyalty,
+   friend closeness, partner/parent bond) plus respect and fear earned from what you did to them
+   (MEM93 flags, robbing, fighting, paying back, stiffing). Other systems read it: plug prices, what Js
+   pay, new hires' loyalty, and it shows on the plug chat, worker rows and your people. */
+(function(){
+const cl=(v,a,b)=>Math.max(a,Math.min(b,v));
+const D=()=>{if(!S.rp109||typeof S.rp109!=='object')S.rp109={};return S.rp109};
+const raw=n=>{const d=D();return d[n]||(d[n]={respect:0,fear:0,trust:0})};
+function base(n){const o={respect:30+Math.min(40,(S.rep||0)/3),fear:Math.min(40,(S.bodies||0)*4+(S.st&&S.st.licks||0)),trust:40,loyal:40};
+ try{const bi=(S.known||[]).find(b=>plugName(b)===n);if(bi!=null){o.trust=(S.trust||{})[bi]||0;o.loyal=o.trust}}catch(e){}
+ try{const c=(S.custos||[]).find(c=>c.name===n);if(c){o.loyal=c.loy||0;o.trust=Math.min(100,30+(c.buys||0)*5)}}catch(e){}
+ try{const w=(S.workers||[]).find(w=>w.name===n);if(w){o.loyal=(w.loyal||0)*10;o.trust=50+(w.loyal||0)*4}}catch(e){}
+ try{const f=(S.friends||[]).find(f=>f.name===n);if(f){o.loyal=f.close||0;o.trust=f.close||0}}catch(e){}
+ try{if(S.gf&&S.gf.name===n){o.loyal=S.gf.rel||0;o.trust=S.gf.rel||0}}catch(e){}
+ try{if(S.par&&S.par.name===n){o.trust=S.par.trust||0;o.loyal=60}}catch(e){}
+ try{const M=window.MEM93;if(M){if(M.has(n,'lent'))o.trust+=10;if(M.has(n,'paidback'))o.respect+=5;if(M.has(n,'refused',14))o.trust-=10;if(M.has(n,'stiffed'))o.respect+=0,o.trust+=0}}catch(e){}
+ return o}
+function get(n){const b=base(n),r=raw(n);return {respect:Math.round(cl(b.respect+r.respect,0,100)),fear:Math.round(cl(b.fear+r.fear,0,100)),trust:Math.round(cl(b.trust+r.trust,0,100)),loyal:Math.round(cl(b.loyal,0,100))}}
+function bump(n,ch){if(!n)return;const r=raw(n);Object.keys(ch).forEach(k=>{if(k in r)r[k]=cl(r[k]+ch[k],-100,100)})}
+window.REP109={get,bump};
+window.l109line=n=>{try{const r=get(n);return `Respect ${r.respect} · Fear ${r.fear} · Trust ${r.trust} · Loyal ${r.loyal}`}catch(e){return ''}};
+/* writers: things you do to people */
+try{const _pr=plugRob;plugRob=function(bi){const n=(()=>{try{return plugName(bi)}catch(e){return null}})();const r=_pr.apply(this,arguments);try{if(n){bump(n,{fear:25,respect:-15,trust:-40});(S.known||[]).forEach(b=>{const m=plugName(b);if(m&&m!==n)bump(m,{fear:5,trust:-5})})}}catch(e){}return r}}catch(e){}
+try{const _fg=fightGame;fightGame=function(mine,theirs,who,done){return _fg.call(this,mine,theirs,who,function(win){try{if(win&&who&&typeof who==='string')bump(who,{fear:10,respect:5});else if(who&&typeof who==='string')bump(who,{respect:-5})}catch(e){}return done&&done.apply(this,arguments)})}}catch(e){}
+/* readers */
+try{const _pp=plugPrice;plugPrice=function(kind,g,raw2){const p=_pp.apply(this,arguments);try{const n=plugName(S.at);if(n){const r=get(n);let m=1;if(kind==='buy'){m-=(r.respect-50)/1000;m-=Math.max(0,r.fear-50)/800}else{m+=(r.respect-50)/1000}return Math.round(p*cl(m,.92,1.08))}}catch(e){}return p}}catch(e){}
+try{const _cp=custoPrice;custoPrice=function(c){const p=_cp.apply(this,arguments);try{if(c&&c.name){const r=get(c.name);return Math.round(p*cl(1+(r.respect-50)/1000,.96,1.04))}}catch(e){}return p}}catch(e){}
+try{const _fc=freshCands;freshCands=function(){const had=(S.cands||[]).map(c=>c.id).join();const r=_fc.apply(this,arguments);try{if((S.cands||[]).map(c=>c.id).join()!==had){const rs=Math.min(3,Math.floor(((S.rep||0)-20)/25));(S.cands||[]).forEach(c=>{c.loyal=cl((c.loyal||5)+rs,1,10)})}}catch(e){}return r}}catch(e){}
+/* show it: plug chat header, worker rows, your people */
+try{const _l104=window.l104mood;if(_l104)window.l104mood=w=>_l104(w)+' · '+l109line(w.name)}catch(e){}
+try{TUT.push(['People remember you','Everyone you deal with keeps a record of you: respect, fear, trust and loyalty. Plug trust, J loyalty, worker loyalty and friendships feed it, and so does what you did: robbing a plug makes every plug fear you and trust you less, winning fights earns fear and respect, paying people back earns respect, turning them down costs trust. Respect gets you better plug prices and Js pay a bit more; fear can scare a plug into a discount. A bigger rep brings more loyal hires. You can see it on the plug chat and your worker rows.'])}catch(e){}
 })();
 
 </script>
