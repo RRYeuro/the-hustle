@@ -10676,7 +10676,7 @@ function collectAll(){let t=0;W().forEach(w=>{t+=w.held||0;w.held=0});if(t){S.ca
 window.l68collect=collectAll;window.l68restock=restockAll;window.l68topUp=topUp;
 /* ---------- The Gang group chat ---------- */
 const GC='The Gang';
-function post(who,t){S.inbox=S.inbox||[];S.inbox.unshift({d:S.day,f:GC,t:(who?who+': ':'')+t});S.inbox=S.inbox.slice(0,150)}
+function post(who,t){S.inbox=S.inbox||[];S.gcSeq=(S.gcSeq||0)+1;const m={d:S.day,f:GC,t:(who?who+': ':'')+t,gc:'gang:'+S.gcSeq};S.inbox.unshift(m);S.inbox=S.inbox.slice(0,150);S.gl68=S.gl68||[];S.gl68.unshift(m);S.gl68=S.gl68.slice(0,40)}
 window.l68post=post;
 /* ---------- operation screen ---------- */
 const stepOf=g=>g.unit==='g'?7:g.unit==='pills'?10:1;
@@ -11879,7 +11879,7 @@ function off(){try{if(window.l43PhoneOff&&l43PhoneOff())return S.bb&&S.bb.phoneC
 function post(g,who,t,you){S.inbox=S.inbox||[];S.gcSeq=(S.gcSeq||0)+1;const m=you?{d:S.day,f:'You',to:g.name,t,gc:g.id+':'+S.gcSeq}:{d:S.day,f:g.name,t:who+': '+t,gc:g.id+':'+S.gcSeq};S.inbox.unshift(m);S.inbox=S.inbox.slice(0,150);g.log=g.log||[];g.log.unshift(m);g.log=g.log.slice(0,40)}
 function leavers(){try{G().slice().forEach(g=>{const gone=(g.mem||[]).filter(n=>(g.fr||[]).includes(n)&&!(S.friends||[]).some(f=>f.name===n));if(!gone.length)return;gone.forEach(n=>{g.mem=g.mem.filter(x=>x!==n);S.gcSeq=(S.gcSeq||0)+1;const m={d:S.day,f:g.name,t:n+' left the group.',gc:g.id+':'+S.gcSeq};S.inbox.unshift(m);g.log.unshift(m)});if(g.mem.length<1){S.gcs=G().filter(x=>x!==g);S.inbox=(S.inbox||[]).filter(m=>!(m&&(m.f===g.name||m.to===g.name)));if(window._mth===g.name)window._mth=null}})}catch(e){console.error('gc93 leave',e)}}
 /* group history survives other texts trimming the inbox */
-function fix(){leavers();try{const ids=new Set((S.inbox||[]).map(m=>m&&m.gc).filter(Boolean));G().forEach(g=>(g.log||[]).forEach(m=>{if(!ids.has(m.gc)){S.inbox.push(m);ids.add(m.gc)}}))}catch(e){}}
+function fix(){leavers();try{const ids=new Set((S.inbox||[]).map(m=>m&&m.gc).filter(Boolean));G().forEach(g=>(g.log||[]).forEach(m=>{if(!ids.has(m.gc)){S.inbox.push(m);ids.add(m.gc)}}));(S.gl68||[]).forEach(m=>{if(!ids.has(m.gc)){S.inbox.push(m);ids.add(m.gc)}})}catch(e){}}
 try{const _ms=window._MS;if(_ms){window._MS=function(){fix();return _ms.apply(this,arguments)};Object.keys(_ms).forEach(k=>window._MS[k]=_ms[k]);const _u=_ms.unread;window._MS.unread=function(){fix();return _u.apply(this,arguments)}}}catch(e){console.error('gc93 ms',e)}
 /* replies by person type */
 const R={
@@ -11891,7 +11891,7 @@ const typ=q=>q.k==='fr'?q.t:q.k==='fam'?'fam':q.k==='plug'?'plug':'any';
 const ACTS=[['link','Who tryna link up?','Who tryna link up later?'],['low','Heads up, stay low today','Heads up. Stay low today.'],['cash','Anybody got $100?','Anybody got $100? I\'ll pay you back.'],['hi','What\'s good?','What\'s good everybody?']];
 function kb(g){const why=off();if(why)return `<div class="mth-kb" data-gcw="1"><div class="mth-kt">📵 ${E(why)}</div><button class="mth-opt" data-gcdel="${g.id}">Delete this group</button></div>`;const o=ACTS.map(([a,l],i)=>{const used=a==='cash'?S.gcCash===S.day:(g.act||{})[a]===S.day;return `<button class="mth-opt${i===0?' hot':''}" data-gca="${a}" data-gci="${g.id}" ${used&&a!=='hi'?'disabled':''}>${E(l)}${used&&a!=='hi'?' (done today)':''}</button>`}).join('');
  return `<div class="mth-kb" data-gcw="1"><div class="mth-kt">Text ${E(g.name)} (${g.mem.length})</div>${o}<button class="mth-opt" data-gcdel="${g.id}">Delete this group</button></div>`}
-try{const _k=window.l91kb;window.l91kb=function(t){const g=gOf(t&&t.n);if(g)return kb(g);return _k?_k(t):null}}catch(e){}
+try{const _k=window.l91kb;window.l91kb=function(t){const g=gOf(t&&t.n);if(g)return kb(g);if(t&&window.l68GC&&t.n===window.l68GC){const why=off();if(why)return `<div class="mth-kb" data-gcw="1"><div class="mth-kt">📵 ${E(why)}</div></div>`}return _k?_k(t):null}}catch(e){}
 function act(g,a){const why=off();if(why){say('📵 '+why);render();return}if(!g.act)g.act={};const txt=ACTS.find(x=>x[0]===a)[2];post(g,'',txt,true);render();
  try{if((g.pl||0)!==S.day&&(a==='link'||a==='cash')){const bi=window.l51bOf?g.mem.map(n=>l51bOf(n)).find(x=>x!=null):null;if(bi!=null){g.pl=S.day;S.trust=S.trust||{};S.trust[bi]=Math.max(0,(S.trust[bi]||0)-2);say('🔌 Plugs hate group texts. Trust −2 with '+plugName(bi)+'.')}}}catch(er){}
  let seq=[],i=0;const mem=g.mem.filter(n=>true);
@@ -11922,9 +11922,9 @@ function after(){try{const ph=document.querySelector('.phx[data-app="messages"]'
  const list=ph.querySelector('.mth-list');
  if(list){let pins=list.querySelector('.mth-pins');if(!pins){const rows=list.querySelector('#mthRows');if(!rows)return;pins=document.createElement('div');pins.className='mth-pins';rows.parentNode.insertBefore(pins,rows)}
   const have=new Set([...pins.querySelectorAll('[data-mth]')].map(b=>decodeURIComponent(b.dataset.mth)));
-  const add=[].concat(G().map(g=>g.name),(S.friends||[]).map(f=>f.name));
+  const add=[].concat((S.workers||[]).length&&window.l68GC?[window.l68GC]:[],G().map(g=>g.name),(S.friends||[]).map(f=>f.name));
   add.forEach(n=>{if(have.has(n))return;have.add(n);pins.insertAdjacentHTML('beforeend',`<button class="mth-pin" data-mth="${E(encodeURIComponent(n))}">${avp(n)}<span>${E(n)}</span></button>`)})}
- const th=ph.querySelector('.mth-th'),g=th&&window._mth&&gOf(window._mth);
+ const th=ph.querySelector('.mth-th');let g=th&&window._mth&&gOf(window._mth);if(!g&&th&&window._mth&&window.l68GC&&window._mth===window.l68GC)g={mem:(S.workers||[]).map(w=>w.name)};
  if(g)th.querySelectorAll('.ph-chat .bub:not(.me)').forEach(b=>{if(b.dataset.g93)return;b.dataset.g93=1;const m=b.textContent.match(/^([^:]{1,20}): ([\s\S]*)$/);if(m&&g.mem.includes(m[1]))b.innerHTML=`<small style="display:block;opacity:.6;font-size:11px;margin-bottom:2px">${E(m[1])}</small>${E(m[2])}`})
 }catch(e){console.error('gc93 after',e)}}
 try{const _r=render;render=function(){const r=_r.apply(this,arguments);try{after()}catch(e){}return r}}catch(e){}
@@ -11939,7 +11939,7 @@ document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest
 },true);
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-a="fhang"],[data-fr50="hang"]');if(!b||b.disabled)return;setTimeout(()=>{try{const f=(b.dataset.a==='fhang'&&b.dataset.i!=null&&!b.dataset.fr50)?(S.friends||[])[+b.dataset.i]:(S.friends||[]).find(x=>x.name===window._mth);if(f&&f.plan===S.day&&f.hang===S.day&&f.planPaid!==S.day){f.planPaid=S.day;f.close=Math.min(100,(f.close||0)+3);say('🤝 Y\'all planned it in the group chat. '+f.name+' is a little closer.')}}catch(er){}},200)});
 /* tutorial + dev menu */
-try{TUT.push(['Group chats','Phone > Messages > the pencil > New group chat. Pick 2 to 6 contacts and name it. Ask who wants to link up (friends get a little closer), tell them to stay low, or ask for $100 (close friends may send it, once a day). Plugs do not like group texts. Friends are pinned at the top of Messages now.'])}catch(e){}
+try{TUT.push(['Group chats','Phone > Messages > the pencil > New group chat. Pick 2 to 6 contacts and name it. Ask who wants to link up (friends get a little closer), tell them to stay low, or ask for $100 (close friends may send it, once a day). Plugs do not like group texts. Friends are pinned at the top of Messages now. Your crew\'s chat, The Gang, is pinned there too once you have workers.'])}catch(e){}
 try{const _dp=devPanel;devPanel=function(){const r=_dp.apply(this,arguments);try{const mc=document.getElementById('mcard');if(mc&&!document.getElementById('modal').hidden&&!mc.querySelector('[data-d93]')){const d=document.createElement('div');d.innerHTML=`<div class="sec">Group chat (new)</div><div class="btns"><button class="btn" data-d93="1">Make a test group chat</button></div>`;const h2=mc.querySelector('h2');if(h2&&h2.parentNode)h2.parentNode.insertBefore(d,h2.nextSibling);else mc.appendChild(d);
  d.querySelector('[data-d93]').onclick=ev=>{ev.stopPropagation();document.getElementById('modal').hidden=true;S.friends=S.friends||[];[['Kash','loyal',60],['Bean','wild',30],['Lil Mo','snake',70]].forEach(([n,t,c])=>{if(!S.friends.some(f=>f.name===n))S.friends.push({name:n,trait:t,role:'none',close:c})});const g=mk('Test gang',['Kash','Bean','Lil Mo']);tab='phone';window._phLock=S.day;window._rph='messages';window._mth=g.name;render()}}}catch(e){console.error('gc93 dev',e)}return r}}catch(e){}
 })();
