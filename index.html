@@ -12035,4 +12035,87 @@ try{const _dp=devPanel;devPanel=function(){const r=_dp.apply(this,arguments);try
   force(k)})}}catch(er){console.error('wk94 dev',er)}return r}}catch(er){}
 })();
 </script>
+<script id="ev94js">
+/* ev94: shared event helper (window.EV) + worker personalities (loyal / ambitious / unpredictable) + 5 worker events.
+   Queue and history live in S.ev (saved). Each event resolves exactly once; expired ones resolve as "ignored". */
+(function(){if(window.EV)return;
+const E=x=>String(x==null?'':x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const st=()=>{S.ev=S.ev||{};const e=S.ev;e.q=e.q||[];e.h=e.h||[];e.cd=e.cd||{};e.n=e.n||0;return e};
+const DEFS={},PERS={
+ loyal:{n:'The Loyal One',d:'Steady and dependable. Rarely asks for more.'},
+ ambitious:{n:'The Ambitious One',d:'Learns fast and wants more. Gets sour if ignored.'},
+ wild:{n:'The Unpredictable One',d:'Hit or miss. Can surprise you, needs attention.'}};
+const hash=s=>{let h=7;String(s).split('').forEach(c=>{h=(h*31+c.charCodeAt(0))>>>0});return h};
+const he=w=>wHer(w)?'she':'he',him=w=>wHer(w)?'her':'him',his=w=>wHer(w)?'her':'his';
+const cl=(v,a,b)=>Math.max(a,Math.min(b,v)),W=()=>(S&&S.workers)||[];
+function ensure(w,quiet){if(!w||w.pers)return;const h=hash(w.id||w.name),m=h%20;w.pers=m<8?'loyal':m<15?'ambitious':'wild';w.rel=w.pers==='loyal'?8:w.pers==='ambitious'?6:3+(h>>3)%6;w.cared=S.day;if(!quiet)try{say(w.name+' is '+PERS[w.pers].n+'. '+PERS[w.pers].d)}catch(e){}}
+function ensureAll(){const e=st(),quiet=!e.mig;e.mig=1;W().forEach(w=>ensure(w,quiet))}
+const adj=(w,n)=>{w.loyal=cl((w.loyal||0)+n,0,10)};
+const pay=n=>{S.cash-=n;if((S.clean||0)>S.cash)S.clean=Math.max(0,S.cash)};
+const POOL=['Marcus','Tay','DJ','Quan','Mook','Boog','Pooh','Zay','Cheese','Rell'];
+const taken=()=>new Set(W().map(w=>w.name).concat((S.friends||[]).map(f=>f.name)));
+const wage=(w,m)=>Math.round((w.wage||150)*m/5)*5;
+/* ---- the five events ---- */
+reg({id:'raise',cool:14,
+ ok:w=>(w.sales||0)>=8,p:w=>w.pers==='ambitious'?.22:w.pers==='wild'?.08:.06,
+ card:w=>({title:w.name+' wants a raise',text:`${w.name} has been putting in work and asks for more money. ${he(w)[0].toUpperCase()+he(w).slice(1)} makes $${w.wage||150} a run now.`,opts:[
+  {l:'Give the raise (+20%)',f:()=>{w.wage=wage(w,1.2);adj(w,1);w.cared=S.day;say(`${w.name} got a raise to $${w.wage}. Loyalty up.`)}},
+  {l:'Meet in the middle (+10%)',c:'',f:()=>{w.wage=wage(w,1.1);if(w.pers==='ambitious')adj(w,-1);w.cared=S.day;say(`${w.name} took $${w.wage}.`+(w.pers==='ambitious'?' Wanted more though.':''))}},
+  {l:'Not right now',c:'',f:()=>{adj(w,w.pers==='ambitious'?-2:-1);say(`${w.name} did not like that answer. Loyalty down.`)}}]}),
+ ignore:w=>{adj(w,-1)}});
+reg({id:'overlooked',cool:12,
+ ok:w=>S.day-(w.cared||S.day)>=10&&(w.loyal||0)<=7,p:w=>w.pers==='ambitious'?.2:.12,
+ card:w=>({title:w.name+' feels overlooked',text:`You have not checked on ${w.name} in a while. ${he(w)[0].toUpperCase()+he(w).slice(1)} says ${he(w)} does the work and nobody notices.`,opts:[
+  {l:'Spend time with '+him(w)+' (10 energy)',dis:(S.en==null?enMax():S.en)<10,f:()=>{S.en=Math.max(0,(S.en==null?enMax():S.en)-10);adj(w,w.pers==='loyal'?2:1);w.cared=S.day;say(`You took time with ${w.name}. Loyalty up.`)}},
+  {l:'Slide '+him(w)+' $100',c:'',dis:S.cash<100,f:()=>{pay(100);adj(w,1);w.cared=S.day;say(`${w.name} got $100 and a nod. Loyalty up.`)}},
+  {l:'Ignore it',c:'',f:()=>{adj(w,-1);say(`${w.name} stopped expecting anything from you.`)}}]}),
+ ignore:w=>{adj(w,-1)}});
+reg({id:'recommend',cool:20,
+ ok:w=>(w.loyal||0)>=7&&(w.rel||0)>=5&&W().length<wMax()&&adult()&&POOL.some(n=>!taken().has(n)),p:()=>.1,
+ card:w=>{const nm=POOL.find(n=>!taken().has(n))||'Marcus';return {title:w.name+' knows somebody',text:`${w.name} vouches for ${nm}, a runner who needs work. Hiring ${nm} costs nothing up front. Wage is $200 a run.`,opts:[
+  {l:'Hire '+nm,f:()=>{if(W().length>=wMax()||taken().has(nm)){say('No room for another worker right now.');return}const nw={id:nm+S.day,name:nm,hustle:4,loyal:7,wage:200,sales:0,from:w.from,ref:w.id};S.workers.push(nw);ensure(nw,true);nw.cared=S.day;adj(w,1);w.cared=S.day;say(`${nm} works for you now. ${w.name} vouched for them.`)}},
+  {l:'Not now',c:'',f:()=>{say(`You told ${w.name} maybe later.`)}}]}},
+ ignore:()=>{}});
+reg({id:'dayoff',cool:10,
+ ok:w=>true,p:w=>w.pers==='wild'?.18:w.pers==='ambitious'?.05:.04,
+ card:w=>({title:w.name+' needs a day',text:`${w.name} asks for a day off. ${he(w)[0].toUpperCase()+he(w).slice(1)} says it is personal.`,opts:[
+  {l:'Give '+him(w)+' the day',f:()=>{w.low=S.day;adj(w,1);w.cared=S.day;say(`${w.name} is off for the day. Loyalty up.`)}},
+  {l:'Say no',c:'',f:()=>{adj(w,-1);if(w.pers==='wild'||(w.rel||0)<5&&Math.random()<.5){w.low=S.day;say(`${w.name} did not show anyway. Loyalty down.`)}else say(`${w.name} stayed on. Loyalty down.`)}}]}),
+ ignore:()=>{}});
+reg({id:'promo',cool:30,
+ ok:w=>(w.sales||0)>=18&&(w.loyal||0)>=7&&w.pers!=='wild'&&!w.promo,p:()=>.15,
+ card:w=>({title:w.name+' is ready for more',text:`${w.name} has earned it. ${he(w)[0].toUpperCase()+he(w).slice(1)} knows the block and the customers. A promotion means a bigger cut and better work, and ${he(w)} will expect it.`,opts:[
+  {l:'Promote (+30% pay, +1 hustle)',f:()=>{w.promo=1;w.hustle=cl((w.hustle||4)+1,1,10);w.wage=wage(w,1.3);adj(w,1);w.cared=S.day;say(`${w.name} got promoted. Pay $${w.wage}, hustle ${w.hustle}.`)}},
+  {l:'Keep things as they are',c:'',f:()=>{if(w.pers==='ambitious'){adj(w,-1);say(`${w.name} wanted that. Loyalty down.`)}else say(`${w.name} stays put.`)}}]}),
+ ignore:w=>{if(w.pers==='ambitious')adj(w,-1)}});
+function reg(d){DEFS[d.id]=d}
+/* ---- queue / resolve / tick ---- */
+function push(d,w,force){const e=st();if(!force&&(e.q.length>=3||e.q.some(q=>q.id===d.id&&q.wid===w.id)))return null;e.n++;const q={qid:'e'+e.n,id:d.id,wid:w.id,day:S.day,exp:S.day+3};e.q.push(q);e.cd[d.id+':'+w.id]=S.day;return q}
+function resolve(qid,i,expired){const e=st(),ix=e.q.findIndex(q=>q.qid===qid);if(ix<0)return false;const q=e.q.splice(ix,1)[0],d=DEFS[q.id],w=W().find(x=>x.id===q.wid);
+ if(d&&w){try{if(expired){d.ignore&&d.ignore(w);say(w.name+' stopped waiting on you.')}else{const o=d.card(w).opts[i];o&&o.f&&o.f()}}catch(er){console.error('ev94',er)}}
+ e.h.unshift({id:q.id,wid:q.wid,day:S.day,c:expired?'x':i});e.h=e.h.slice(0,60);return true}
+function tick(){const e=st();ensureAll();
+ e.q.slice().forEach(q=>{if(S.day>q.exp||!W().some(w=>w.id===q.wid))resolve(q.qid,null,true)});
+ if(e.last===S.day)return;e.last=S.day;
+ /* unpredictable ones have hot and cold days */
+ W().forEach(w=>{if(w.pers!=='wild'||!Object.values(S.traps||{}).some(t=>t.w===w.id))return;const r=Math.random();if(r<.08){const x=(w.hustle||4)*20;w.held=(w.held||0)+x;say(`${w.name} had a hot day and brought in $${x} extra.`)}else if(r>.95&&(w.held||0)>0){const x=Math.min(w.held,40);w.held-=x;say(`${w.name} fumbled a sale. $${x} short.`)}});
+ if(e.q.length>=3)return;
+ const c=[];W().forEach(w=>Object.values(DEFS).forEach(d=>{const k=d.id+':'+w.id;if(e.cd[k]!=null&&S.day-e.cd[k]<d.cool)return;if(!d.ok(w)||e.q.some(q=>q.id===d.id&&q.wid===w.id))return;if(Math.random()<d.p(w))c.push([d,w])}));
+ if(!c.length)return;const [d,w]=c[Math.floor(Math.random()*c.length)];push(d,w)}
+function show(q){const d=DEFS[q.id],w=W().find(x=>x.id===q.wid);if(!d||!w){resolve(q.qid,null,true);return}q.shown=S.day;const c=d.card(w);
+ wCard('',c.title,c.text,c.opts.map((o,i)=>({l:o.l,c:o.c,dis:o.dis,f:()=>resolve(q.qid,i)})).concat([{l:'Later',c:'',f:()=>{}}]),'CREW · '+PERS[w.pers||'loyal'].n.toUpperCase())}
+window.EV={defs:DEFS,pers:PERS,st,ensure,ensureAll,push,resolve,tick,show,reg,
+ force(id,wid){const d=DEFS[id],w=W().find(x=>x.id===wid)||W()[0];if(!d||!w)return null;ensureAll();const q=push(d,w,true);if(q)show(q);return q}};
+/* ---- hooks ---- */
+try{const _nd=nextDay;nextDay=function(){const r=_nd.apply(this,arguments);try{tick();window._evGo=st().q.some(q=>q.shown!==S.day)}catch(e){console.error('ev94 tick',e)}return r}}catch(e){console.error('ev94 nd',e)}
+try{const _r=render;render=function(){const r=_r.apply(this,arguments);try{if(window._evGo&&document.getElementById('modal').hidden&&!S.over&&!S.pr&&!S.inJail){const q=st().q.find(q=>q.shown!==S.day);window._evGo=false;if(q)setTimeout(()=>{if(document.getElementById('modal').hidden)show(q)},80)}}catch(e){}return r}}catch(e){}
+/* tutorial + dev menu */
+try{TUT.push(['Crew personalities','Every worker has a personality. The Loyal One is steady. The Ambitious One learns fast but wants more and gets sour if ignored. The Unpredictable One has hot and cold days. Once in a while a worker brings you something: a raise ask, feeling overlooked, a day off, a recruit, or a promotion. Pick an answer or tap Later. Loyalty goes up or down from what you pick.'])}catch(e){}
+try{const _dp=devPanel;devPanel=function(){const r=_dp.apply(this,arguments);try{const mc=document.getElementById('mcard');if(mc&&!document.getElementById('modal').hidden&&!mc.querySelector('[data-d94]')){const d=document.createElement('div');d.innerHTML=`<div class="sec">Worker events (new)</div><div class="btns" style="flex-wrap:wrap"><button class="btn" data-d94="add">Add 2 test workers</button><button class="btn" data-d94="who">Show crew traits</button>${Object.keys(DEFS).map(k=>`<button class="btn" data-d94="f:${k}">Force: ${k}</button>`).join('')}</div>`;const h2=mc.querySelector('h2');if(h2&&h2.parentNode)h2.parentNode.insertBefore(d,h2.nextSibling);else mc.appendChild(d);
+ d.querySelectorAll('[data-d94]').forEach(b=>b.onclick=ev=>{ev.stopPropagation();const k=b.dataset.d94;document.getElementById('modal').hidden=true;
+  if(k==='add'){S.workers=S.workers||[];['Dre','Tone'].forEach((n,i)=>{if(!S.workers.some(w=>w.name===n))S.workers.push({id:n+S.day,name:n,hustle:5+i,loyal:5+i,sales:20,wage:150,held:0,stash:{},sq:{}})});ensureAll();render();wNote('','Test workers added',S.workers.map(w=>w.name+': '+PERS[w.pers].n).join('<br>'))}
+  else if(k==='who'){ensureAll();wNote('','Crew traits',W().length?W().map(w=>`<b>${E(w.name)}</b> · ${PERS[w.pers].n}<br>loyalty ${w.loyal} · reliability ${w.rel} · experience ${w.sales||0} · pay $${w.wage||0}`).join('<br><br>'):'No workers yet.')}
+  else{const q=EV.force(k.slice(2));if(!q)wNote('','No workers','Hire or add a worker first.')}})}}catch(e){console.error('ev94 dev',e)}return r}}catch(e){}
+})();
+</script>
 <script>if('serviceWorker' in navigator){addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}</script></body></html>
