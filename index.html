@@ -7106,7 +7106,7 @@ function ckReport(){try{ckState()}catch(e){}const done=CKL.filter(x=>{try{return
 $('mcard').addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(!b||b.disabled||b.onclick||!$('mcard').contains(b))return;sfx('tap');try{act(b.dataset.a,b)}catch(err){console.error(err)}});
 $('pane').onclick=e=>{sfx('tap');const pp=e.target.closest('.mapp');if(pp)return openPlace(pp.dataset.p);const m=e.target.closest('.mapb');if(m){if(m.dataset.a==='go')act('go',m);return}const b=e.target.closest('button[data-a]');if(b&&!b.disabled){let ak=null;try{ak=ACTART[b.dataset.a+(b.dataset.k?':'+b.dataset.k:'')]||ACTART[b.dataset.a]||null}catch(_){};const top=S&&S.log&&S.log[0];let pk=null;try{if(b.closest('#pane'))pk=artFor(b)}catch(_){}act(b.dataset.a,b);try{if(pk&&$('modal').hidden)setTimeout(()=>{try{if($('modal').hidden)artPop(pk)}catch(_){}},80)}catch(_){}const nw=S&&S.log&&S.log[0];if(nw&&nw!==top&&$('modal').hidden){if(ak&&ARTX(ak)&&!(ak===_apk&&Date.now()-_apt<2500)){_apk=ak;_apt=Date.now();modal(`${a2(ak,340)}<p>${esc(nw.t)}</p><div class="btns"><button class="btn go" id="apk">OK</button></div>`);$('apk').onclick=close}else toast(nw.t)}}};
 $('retire').onclick=()=>{modal(`${a2('retire',320)}<h2>Retire your career?</h2><p>This ends the run and shows your final score. You cannot undo it.</p><div class="btns"><button class="btn red" id="rok">Retire</button><button class="btn" id="rno">Keep playing</button></div>`);$('rok').onclick=()=>{$('modal').hidden=true;S.over=true;checkEnd()};$('rno').onclick=close};
-const BUILD='v221';
+const BUILD='v222';
 const DISCORD_INVITE='https://discord.gg/bVsvWzbGW';const OG_UNTIL=Infinity;
 
 
@@ -7260,7 +7260,7 @@ const M=S.crewM||[];if(!M.length)return '';let h='';const RK={rh:'Right Hand',so
  const cr=(S.crews||[]).filter(c=>c.alive).map(c=>{const d=(typeof cdef==='function'?cdef(c.id):{name:c.id});return d.name+' '+c.str}).slice(0,4).join('|');
  h+=card('lad','Ladder','Gang Ladder','Gang Ladder|'+(cr||'No gangs yet'),'🪜');
  return `<div class="pwall"><div class="pwt">Your crew · tap a photo to flip it</div>${h}</div>`}catch(e){return ''}}
-const _pb=paneBeef;paneBeef=function(){return wall()+_pb.apply(this,arguments)};
+const _pb=paneBeef;paneBeef=function(){let w='';try{w=window.cb222?cb222():wall()}catch(e){w=wall()}return w+_pb.apply(this,arguments)};
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('.pol');if(!b)return;b.classList.toggle('flip')});
 })();
 </script>
@@ -12781,4 +12781,86 @@ try{TUT.push(['Your saves','The game saves on your device every time something c
 .day{white-space:normal!important;overflow:visible!important;line-height:1.6}
 @media (max-width:899px){.tabs{grid-template-columns:none!important;grid-auto-flow:column!important;grid-auto-columns:minmax(0,1fr)!important;background:#08060d!important}}
 </style>
+<style id="rk222css">
+html.rk2{--bg:#0f1218;--panel:#171c25;--line:#2a3342;--accent:#8fd0ff;--skin-glow:rgba(143,208,255,.3)}
+html.rk3{--bg:#050505;--panel:#0e0d0a;--line:#3a3016;--accent:#d4af37;--skin-glow:rgba(212,175,55,.35)}
+html.rk2 body{background:#0f1218}html.rk3 body{background:#050505}
+html.rk3 .tabs{border-top:1px solid #3a3016}
+.cbd{position:relative;margin:4px 0 12px;padding:14px 10px 12px;border-radius:10px;background:#9b6b3d radial-gradient(circle at 20% 30%,rgba(0,0,0,.12) 0 2px,transparent 3px) 0 0/14px 14px;border:9px solid #5a3a1c;box-shadow:inset 0 0 18px rgba(0,0,0,.45)}
+.cbd .cbt{font:400 15px/1.2 'Permanent Marker',var(--label),cursive;color:#1a1208;background:#f1e7c8;display:inline-block;padding:2px 9px;transform:rotate(-2deg);margin-bottom:10px;box-shadow:1px 2px 0 rgba(0,0,0,.4)}
+.cbd .cbg{position:relative;display:flex;flex-wrap:wrap;gap:16px 12px;justify-content:center;z-index:1}
+.cbd svg.cbs{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:2}
+.cbd .pol{width:96px;padding:5px 5px 26px}.cbd .pol .ph{height:82px;font-size:30px;background-size:cover!important;background-position:top center!important}
+.cbd .pol::before{display:none}.cbd .pol::after{content:"";position:absolute;left:43px;top:-5px;width:10px;height:10px;border-radius:50%;background:#d22;border:1px solid #700;z-index:3}
+.cbd .pol.riv{background:#f6e1df}.cbd .pol.riv .cp{color:#8a1010}.cbd .pol.you .cp{color:#1a4a1a}
+.cbd .cbn{position:relative;z-index:1;display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:14px}
+.cbd .cbn div{background:#ffef8a;color:#1a1208;font:400 13px/1.35 'Permanent Marker',var(--label),cursive;padding:6px 9px;max-width:150px;box-shadow:1px 3px 0 rgba(0,0,0,.35)}
+.cbd .cbn div:nth-child(2){transform:rotate(2deg);background:#bdf0c4}.cbd .cbn div:first-child{transform:rotate(-2deg)}
+.cbd.t2{background:#eef0f3;border-color:#b8bcc4}.cbd.t2 .cbt{background:transparent;box-shadow:none;color:#1f3b8a;transform:none}.cbd.t2 .pol::after{background:#1f6feb;border-color:#0b3d91}
+.cbd.t3{background:#060606;border:1px solid #c9a227;box-shadow:inset 0 0 30px rgba(212,175,55,.08)}.cbd.t3 .cbt{background:transparent;color:#d4af37;box-shadow:none;transform:none;font-family:var(--label);letter-spacing:3px;text-transform:uppercase}
+.cbd.t3 .pol{background:#141414;color:#e9e2c8;box-shadow:0 0 0 1px #3a3016}.cbd.t3 .pol .cp{color:#d4af37!important}.cbd.t3 .pol::after{background:#d4af37;border-color:#8a6d12}.cbd.t3 .pol.riv{background:#1a0d0d}
+.cbd.t3 .cbn div{background:#111;color:#e9e2c8;border:1px solid #3a3016;transform:none!important}
+.hbd{position:relative;margin:4px 0 12px;padding:12px 10px;border-radius:10px;border:9px solid #5a3a1c;background:#143a63;background-image:linear-gradient(rgba(255,255,255,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.08) 1px,transparent 1px);background-size:18px 18px;color:#cfe3ff}
+.hbd .cbt{font:400 15px 'Permanent Marker',var(--label),cursive;color:#1a1208;background:#f1e7c8;display:inline-block;padding:2px 9px;transform:rotate(-2deg);margin-bottom:10px}
+.hbd .hcard{position:relative;border:2px solid #cfe3ff;padding:10px;margin:0 0 14px;background:rgba(10,30,60,.35)}
+.hbd .hcard::after{content:"";position:absolute;right:12px;top:-6px;width:11px;height:11px;border-radius:50%;background:#d22;border:1px solid #700}
+.hbd .hn{font:400 18px var(--display);letter-spacing:.5px;color:#fff}
+.hbd .hplan{position:relative;height:64px;margin:8px 0;font:11px monospace}
+.hbd .hplan i{position:absolute;border:1.5px solid #cfe3ff}
+.hbd .hplan b{position:absolute;color:#ff4d4d;font:500 20px sans-serif}
+.hbd .hplan svg{position:absolute;inset:0;width:100%;height:100%}
+.hbd .hreq{display:flex;flex-wrap:wrap;gap:4px 10px;font:12px monospace;margin:4px 0}
+.hbd .hreq .no{color:#ff8a8a}.hbd .hreq .ok{color:#7dffb0}
+.hbd .hstk{display:inline-block;background:#ffef8a;color:#1a1208;font:400 13px/1.4 'Permanent Marker',var(--label),cursive;padding:5px 9px;transform:rotate(1.5deg);margin:2px 0 8px;box-shadow:1px 3px 0 rgba(0,0,0,.35)}
+.hbd.t2{background-color:#eef0f3;color:#23324d;border-color:#b8bcc4;background-image:none}.hbd.t2 .hcard{border-color:#23324d;background:#fff}.hbd.t2 .hn{color:#111}.hbd.t2 .hplan i{border-color:#1f6feb}.hbd.t2 .hreq .ok{color:#1a7f37}.hbd.t2 .hreq .no{color:#c22}
+.hbd.t3{background:#060606;border:1px solid #c9a227;color:#e9e2c8}.hbd.t3 .hcard{border-color:#3a3016;background:#0d0d0d}.hbd.t3 .hn{color:#d4af37}.hbd.t3 .hplan i{border-color:#d4af37}.hbd.t3 .cbt{background:transparent;color:#d4af37;transform:none;font-family:var(--label);letter-spacing:3px;text-transform:uppercase}.hbd.t3 .hcard::after{background:#d4af37;border-color:#8a6d12}
+</style>
+<script id="rk222js">
+/* rk222: rank skins (look levels up with your rank) + crew crime board + heist planning board */
+(function(){
+const TIERS=['Corner Boy','Boss','Kingpin'];
+function tier(){try{const n=(rank()||[1])[0];const t=n>=15?3:n>=6?2:1;return S&&S.rk222f?S.rk222f:t}catch(e){return 1}}
+window.RK222={tier};
+const esc=t=>String(t==null?'':t).replace(/[<>&"]/g,'');
+const hue=n=>{let h=0;for(const c of String(n))h=(h*31+c.charCodeAt(0))%360;return h};
+const GI={v:'🐍',r:'🔴',k:'👑',c:'🦅'};const FL=new Set();
+function pol(id,cls,name,cap,back,img,ic){const L=String(back||'').split('|');const h=hue(name);
+ const bg=img?`background:url('${img}') top center/cover`:`background:linear-gradient(160deg,hsl(${h},45%,32%),hsl(${(h+60)%360},40%,18%))`;
+ return `<div class="pol ${cls}${FL.has(id)?' flip':''}" data-pf="${id}" data-cb="${id}" role="button" tabindex="0" aria-label="${esc(name)}, tap to flip"><div class="fr"><div class="ph" style="${bg}">${img?'':(ic||esc(name).slice(0,1).toUpperCase())}</div><div class="cp">${esc(cap)}</div></div><div class="bk2"><b>${esc(L[0])}</b>${L.slice(1).map(esc).join('<br>')}<div class="bkb">↩ tap to flip back</div></div></div>`}
+window.cb222=function(){if(!S)return '';const t=tier();const M=S.crewM||[];const RK={rh:'Right Hand',sol:'Soldier',lt:'Lieutenant'};
+ const nm=((document.getElementById('who')||{}).textContent||'You').trim()||'You';let h=pol('you','you',nm,'You',nm+'|'+((rank()||[])[1]||'')+'|Rep '+(S.rep||0)+'|Heat '+(S.heat||0),(typeof PORTRAITS!=='undefined'&&PORTRAITS[S.char])||'');
+ M.forEach((m,i)=>{const sk=m.sk||{};const top=Object.keys(sk).sort((a,b)=>sk[b]-sk[a]).slice(0,3).map(k=>k+' '+sk[k]).join(' · ');
+  let img='';try{img=faceOf(m.name,'c')||''}catch(e){}
+  h+=pol('m'+i,'crew',m.name,m.name,m.name+' · '+(RK[m.rank]||'Crew')+'|Loyalty '+(m.loy||0)+'|Trust '+(m.trust||0)+'|'+top+'|'+(m.busy?'On a job':'Ready'),img)});
+ let turf=null;try{const o=(S.owner||[])[S.at];if(o&&o!=='me'&&o!==S.gang)turf=o}catch(e){}
+ (S.crews||[]).filter(c=>c.alive&&(c.beef>0||c.id===turf)).slice(0,3).forEach(c=>{const d=typeof cdef==='function'?cdef(c.id):{name:c.id};
+  h+=pol('g'+c.id,'riv',d.name,d.name,d.name+'|Strength '+c.str+'|Beef '+(c.beef||0)+'|Respect '+(c.respect||0)+(c.id===turf?'|Runs this block':''),'',GI[c.id]||'☠️')});
+ const mine=(S.owner||[]).filter(o=>o==='me'||o===S.gang).length;
+ const lad=(S.crews||[]).filter(c=>c.alive).sort((a,b)=>b.str-a.str).slice(0,4).map(c=>(typeof cdef==='function'?cdef(c.id).name:c.id)+' '+c.str).join('<br>');
+ const notes=`<div class="cbn"><div>Blocks you hold: ${mine}<br>Rep ${S.rep||0}</div><div>Gang ladder<br>${lad||'No gangs yet'}</div>${M.length?'':'<div>No crew yet. Hire in the Phone, Crew app</div>'}</div>`;
+ return `<div class="cbd t${t}"><div class="cbt">${t===3?'The board':t===2?'Org chart':'The board'} · tap a photo</div><svg class="cbs"></svg><div class="cbg">${h}</div>${notes}</div>`};
+function strings(){document.querySelectorAll('.cbd').forEach(b=>{const sv=b.querySelector('svg.cbs');if(!sv)return;const br=b.getBoundingClientRect();if(!br.width)return;
+ const pin=e=>{const r=e.getBoundingClientRect();return [r.left-br.left+r.width/2,r.top-br.top]};
+ const you=b.querySelector('.pol.you');if(!you)return;const y=pin(you);const t=b.classList.contains('t3')?'#d4af37':b.classList.contains('t2')?'#1f6feb':'#c81e1e';
+ let p='';b.querySelectorAll('.pol.crew,.pol.riv').forEach(e=>{const q=pin(e);const riv=e.classList.contains('riv');const c=riv?(b.classList.contains('t3')?'#ff6b6b':'#c81e1e'):(b.classList.contains('t1')?'#f1e7c8':t);
+  p+=`<line x1="${y[0]}" y1="${y[1]}" x2="${q[0]}" y2="${q[1]}" stroke="${c}" stroke-width="2" ${riv?'stroke-dasharray="6 4"':''} opacity=".9"/>`});sv.innerHTML=p})}
+function plan(k){const P={jewel:'<i style="left:4%;top:6%;width:56%;height:80%"></i><i style="left:60%;top:30%;width:22%;height:56%"></i><b style="left:40%;top:22%">X</b>',
+ truck:'<i style="left:4%;top:38%;width:30%;height:28%;border-radius:4px"></i><i style="left:46%;top:10%;width:2px;height:80%;border:0;border-left:1.5px dashed currentColor"></i><b style="left:16%;top:30%">X</b>',
+ bank:'<i style="left:4%;top:6%;width:70%;height:84%"></i><i style="left:52%;top:46%;width:22%;height:44%"></i><i style="left:4%;top:46%;width:24%;height:44%"></i><b style="left:58%;top:42%">X</b>'};
+ return `<div class="hplan">${P[k]||P.jewel}<svg><path d="M${k==='truck'?'60 30':'200 40'} Q 260 70 330 58" fill="none" stroke="#d22" stroke-width="2" stroke-dasharray="5 4"/></svg></div>`}
+function heistBoard(){const B=S.rob,t=tier();
+ const cards=Object.entries(HEISTS).map(([k,H])=>{const r=[[S.soldiers>=H.need.crew,'Crew '+Math.min(S.soldiers,H.need.crew)+'/'+H.need.crew]];if(H.need.mask)r.push([!!B.mask,'Ski mask']);if(H.need.car)r.push([!!B.car,'Getaway car']);const ok=r.every(x=>x[0]);
+  return `<div class="hcard"><div class="hn">${H.name}</div>${plan(k)}<div class="hreq">${r.map(x=>`<span class="${x[0]?'ok':'no'}">${x[0]?'✓':'✗'} ${x[1]}</span>`).join('')}</div>
+   <div class="hstk">Take: ${money(H.pay[0])} to ${money(H.pay[1])}<br>Heat +${H.heat} · base odds ${Math.round(H.odds*100)}%</div><div><button class="btn red" data-a="heist" data-k="${k}" ${ok?'':'disabled'}>Plan it</button></div></div>`}).join('');
+ return `<div class="hbd t${t}"><div class="cbt">Heists · each one takes the day</div>${cards}</div>`}
+const _pr=paneRob;paneRob=function(){let h=_pr.apply(this,arguments);try{const a=h.indexOf('<div class="sec">Heists · each one takes the day</div>');const z=h.indexOf('<div class="row"><div class="info"><div class="s">Want to stop?');if(a>=0&&z>a)h=h.slice(0,a)+heistBoard()+h.slice(z)}catch(e){}return h};
+function apply(){try{const t=S&&!S.ph?tier():1;const c=document.documentElement.classList;c.toggle('rk2',t===2);c.toggle('rk3',t===3);
+ if(S&&!S.ph&&!S.rk222f){if(!S.rk222)S.rk222=t;else if(t>S.rk222){S.rk222=t;const m='New look unlocked: '+TIERS[t-1]+'. Your screens just leveled up.';try{toast(m)}catch(e){}try{say('✨ '+m)}catch(e){}}}}catch(e){}}
+const _r=render;render=function(){const r=_r.apply(this,arguments);try{apply();requestAnimationFrame(strings)}catch(e){}return r};
+addEventListener('resize',()=>{try{strings()}catch(e){}});
+document.addEventListener('click',e=>{const p=e.target.closest&&e.target.closest('.cbd .pol');if(!p)return;setTimeout(()=>{const id=p.dataset.cb;if(p.classList.contains('flip'))FL.add(id);else FL.delete(id);const q=document.querySelector('.cbd .pol[data-cb="'+id+'"]');if(q)q.classList.toggle('flip',FL.has(id));strings()},0)});
+try{TUT.push(['Rank looks','Your screens level up with your rank. Corner Boy and Petty Dealer get the beat-up cork board look. From Middle Man the game turns clean and sharp (Boss look). From The Connect it goes black and gold (Kingpin look). Your Circle tab opens on your crime board: you, your crew and any gang you have beef with, tied together with string. Tap a photo to flip it. Heists now sit on a planning board with the blueprint, what you still need and the take.'])}catch(e){}
+try{const _dp=devPanel;devPanel=function(){const r=_dp.apply(this,arguments);try{const mc=document.getElementById('mcard');if(mc&&!mc.querySelector('[data-d222]')){const d=document.createElement('div');d.innerHTML='<div class="sec">Rank look (new)</div><div class="btns"><button class="btn" data-d222="1">Corner Boy look</button><button class="btn" data-d222="2">Boss look</button><button class="btn" data-d222="3">Kingpin look</button><button class="btn" data-d222="0">Use my rank</button></div>';mc.insertBefore(d,mc.querySelector('.btns:last-child'));d.addEventListener('click',e=>{const b=e.target.closest('[data-d222]');if(!b)return;S.rk222f=+b.dataset.d222||0;close();render()})}}catch(e){}return r}}catch(e){}
+})();
+</script>
 <script>if('serviceWorker' in navigator){addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}</script></body></html>

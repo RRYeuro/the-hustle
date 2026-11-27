@@ -13,17 +13,15 @@ Last cleaned: Nov 20 (every line checked against the game code).
   Winter: Thanksgiving turkey giveaway, Christmas (gifts feed family needs, toy drive), New Year's Eve party (huge sales, shootings risk), snow day.
   Spring: tax season (Js flush for a week), 4/20 (weed rush), spring break.
 
-## New look: RANK SKINS picked (not built)
+## New look: themed screens (round 1 built in v222, rounds 2-3 not built)
 Themed screens per area + rank skins on top (corner boy beat-up, boss clean, kingpin black/gold):
-- Crew/Circle: crime board (polaroids, red string to rivals/gangs, tape, marker)
-- Heists/robbery: planning board (blueprint, guard photos, getaway string)
 - Scams: laptop (inbox of marks, bank window, VPN maze in terminal)
 - Studio: music software (waveform tracks, promo sliders, vault folder)
 - School: notebook paper (doodles, red pen grades)
 - Expenses: bills on the fridge
 - Business: ledger book on an office desk
 - Jail: cell wall with tally marks
-Rounds: 1) rank skins + crime boards ~2h  2) laptop + studio ~2h  3) notebook/fridge/ledger/cell ~1.5h
+Rounds left: 2) laptop + studio ~2h  3) notebook/fridge/ledger/cell ~1.5h
 
 Other looks considered:
 1. Comic strip: thick black outlines, halftone, speech-bubble text, stats as stickers (matches the art)

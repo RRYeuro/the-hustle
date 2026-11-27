@@ -504,3 +504,9 @@ Build order if Chris says build: 1) Crew Ops screen + ring basics (assign, equip
 - Circle: crew photo wall only shows when you have crew; Hall/Ladder get icons instead of letters
 - Managers only show once you have workers
 - Bottom bar fills the width and is solid; top info line wraps
+
+## v222 (themed screens round 1)
+- Rank skins: Corner Boy/Petty Dealer = gritty default, Middle Man/Supplier = Boss look (slate + ice blue), The Connect/Kingpin = black and gold. Unlock note in the news when it changes. Dev menu: force any look.
+- Circle tab opens on the crime board: you, your crew (real faces), gangs you have beef with or who run your block (icons), string between them (dashed red for rivals), sticky notes for blocks held and the gang ladder. Tap a photo to flip it. Board material changes with rank (cork, whiteboard, black glass).
+- Heists on a blueprint planning board: floor plan, ✓/✗ checklist of what you still need, take/heat/odds sticky note, Plan it button.
+- How to play: "Rank looks". Test: t_rk222.
