@@ -6,7 +6,7 @@ with sync_playwright() as p:
       const o={};S.car=null;let d=S.day;act('go',{dataset:{i:'1'}});o.walk=[S.at,S.day-d];document.getElementById('modal').hidden=true;
       S.car=Object.keys(CARS)[0];d=S.day;const c=S.cash,e=S.en;act('go',{dataset:{i:'2'}});o.drive=[S.at,S.day-d,c-S.cash,e-S.en];
       S.en=1;d=S.day;act('go',{dataset:{i:'3'}});o.tired=[S.at,S.day-d];document.getElementById('modal').hidden=true;
-      S.en=50;S.at=0;d=S.day;const P=PLACES.find(p=>placeAt(p.id)!==0);openPlace(P.id);const g=document.getElementById('gt');if(g)g.click();o.place=[S.at===placeAt(P.id),S.day-d];
+      S.en=50;S.at=0;d=S.day;const P=PLACES.find(p=>placeAt(p.id)!==0);openPlace(P.id);const g=document.getElementById('gt')||[...document.querySelectorAll('#mcard button')].find(b=>/^go$/i.test(b.innerText.trim()));if(g)g.click();o.place=[S.at===placeAt(P.id),S.day-d];
       tab='move';document.getElementById('modal').hidden=true;render();o.label=[...document.querySelectorAll('.tbs26 small')].map(x=>x.textContent).join(',');return o}""")
     print(r,er)
     ok=r['walk']==[1,1] and r['drive']==[2,0,5,3] and r['tired'][1]==1 and r['place']==[True,0] and 'DRIVE' in r['label']

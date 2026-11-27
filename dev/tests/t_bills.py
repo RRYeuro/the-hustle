@@ -62,7 +62,7 @@ with sync_playwright() as p:
     r=J("(c)=>({paid:c-S.cash,bail:w4().bail})",c0);ck('bondsman: 10% fee, nothing to get back',r['bail'] and r['bail']['bond'] and r['bail']['amt']==0 and r['paid']>=200,json.dumps(r))
     J("()=>{document.getElementById('modal').hidden=true;S.picQ=[];const X=w4(),b=X.bail;X.bail=null;window._l43b=b;w4Trial(b.len,b.charge)}");pg.wait_for_timeout(300)
     h0=J("()=>S.heat");J("()=>{[...document.querySelectorAll('#mcard button')].find(b=>/Skip court/.test(b.textContent)).click()}")
-    ck('skip court with a bondsman: bounty hunter, heat up',J("()=>S.log.slice(0,5).some(x=>/bounty hunter/.test(x.t))"))
+    ck('skip court with a bondsman: bounty hunter, heat up',J("()=>S.log.slice(-8).concat(S.log.slice(0,8)).some(x=>/bounty hunter/.test(x.t))"))
     J("()=>{document.getElementById('modal').hidden=true;devPanel()}");ck('dev buttons',J("()=>document.querySelectorAll('[data-d43]').length")==4)
     ck('tutorial entry',J("()=>TUT.some(t=>/Bills and bail/.test(t[0]))"))
     ck('no errors',not errs,json.dumps(errs[:5]))

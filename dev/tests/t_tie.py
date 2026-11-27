@@ -7,7 +7,7 @@ with sync_playwright() as p:
       const go=[...document.querySelectorAll('#pane [data-a31="go"]')].map(b=>b.dataset.i+':'+b.closest('.row').querySelector('.s').textContent.slice(-12));
       const come=[...document.querySelectorAll('#pane [data-a31="pu"]')].map(b=>b.dataset.i);
       const tx=[...document.querySelectorAll('#pane [data-a31="tx"]')].map(b=>b.dataset.i);
-      const name=plugName(2);l31PullUp(2);const how=S.meet&&S.meet.how;const g=G(PINFO[2].carries[0]);const a=plugPrice('buy',g);const M=S.meet;delete S.meet;const b2=plugPrice('buy',g);S.meet=M;const hd=document.querySelector('#mt31 .mt31h').innerText;l31End();
+      const name=plugName(2);l31PullUp(2);const how=S.meet&&S.meet.how;const g=G(PINFO[2].carries[0]);const a=plugPrice('buy',g);const M=S.meet;delete S.meet;const b2=plugPrice('buy',g);S.meet=M;const hd=document.querySelector('#mt31 .h92').innerText;l31End();
       return {go,come,tx,name,how,a,b2,hd,at:S.at}}""")
     print(json.dumps(r,indent=0)[:900]);print('errs',er)
     ok=any(x.startswith('2:') for x in r['go']) and r['come']==['2'] and r['tx']==['0'] and r['name']=='Tre' and r['how']=='pull' and r['a']==r['b2'] and r['at']==0 and 'no delivery charge' in r['hd']

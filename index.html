@@ -5639,7 +5639,7 @@ function friendEvent(){const F=S.friends||[];if(!F.length||Math.random()>=.06)re
 function paneFriends(){const F=S.friends||[];
   let h=`<div class="sec">Your homies (${F.length}/5)</div>`;
   if(F.length<5)h+=`<div class="row"><div class="info"><div class="s">Friends at 60+ closeness back you up in fights. At 80+ they warn you when twelve is around.</div></div><button class="btn go" data-a="fmeet" ${S.fmeet===S.day?'disabled':''}>${S.fmeet===S.day?'Went out today':'Go meet people'}</button></div>`;
-  h+=F.map((f,i)=>`<div class="row" style="flex-wrap:wrap;padding:8px 12px">${faceImg(f.name,'c',52)}<div class="info" style="flex:1 1 160px;min-width:0"><div class="t">${f.name} <span class="chip ${f.close>=60?'mine':''}">${f.close>=80?'Day one':f.close>=60?'Solid':f.close>=30?'Cool':'Distant'}</span> <span class="chip">${FTRAITS[f.trait].name}</span></div>
+  h+=F.map((f,i)=>`<div class="row" style="flex-wrap:wrap;padding:8px 12px">${faceImg(f.name,'c',52)}<div class="info" style="flex:1 1 160px;min-width:0"><div class="t">${f.name} <span class="chip ${f.close>=60?'mine':''}">${f.close>=80?'Day one':f.close>=60?'Solid':f.close>=30?'Cool':'Distant'}</span> <span class="chip">${(FTRAITS[f.trait]||{name:'Friend'}).name}</span></div>
     <div class="s">Closeness ${Math.round(f.close)}/100 · ${FTRAITS[f.trait].sub}</div>${f.role&&f.role!=='none'?`<div class="s" style="color:var(--accent)">${FROLES[f.role].name}: ${f.close>=50?FROLES[f.role].on:`get to 50 closeness and ${FROLES[f.role].off}`}</div>`:''}<div class="bar"><i style="width:${f.close}%;background:var(--money)"></i></div></div>
     <div class="btns"><button class="btn" data-a="fhang" data-i="${i}" ${f.hang===S.day?'disabled':''}>Kick it</button><button class="btn green" data-a="fhelp" data-i="${i}" ${S.cash>=200&&f.helped!==S.day?'':'disabled'}>${f.helped===S.day?'Looked out today':'Look out $200'}</button>${roleBtn(f,i)}${canLink(f)?`<button class="btn" data-a="flink" data-i="${i}" ${f.linked===S.day?'disabled':''}>Link up</button>`:''}${(S.myGang||S.gang)&&f.close>=60?`<button class="btn go" data-a="fjoin" data-i="${i}" ${f.asked===S.day?'disabled':''}>Ask to join the gang</button>`:''}<button class="btn" data-a="fcut" data-i="${i}">Cut off</button></div></div>`).join('');
   return h}
@@ -7132,7 +7132,7 @@ function mainMenu(canContinue){
     <div style="color:#bbb;font-size:12px;letter-spacing:.08em">Build ${BUILD}</div>
     ${canContinue?'<button class="btn go" id="mc" style="padding:12px">Continue</button>':''}
     <div class="m93g"><button class="btn ${canContinue?'':'go'}" id="ms">New story</button><button class="btn" id="mb">New sandbox</button><button class="btn" id="mlife">New life</button></div>
-    <div class="m93g2"><button class="btn" id="mdaily">Daily challenge</button><button class="btn" id="ml">Load game</button>${hallGet().length?'<button class="btn" id="mhall">Hall of the block</button>':''}<button class="btn" id="mh">How to play</button>${typeof S!=='undefined'&&S&&S.char&&!S.over?'<button class="btn" id="tu73r">Replay tutorial</button>':''}</div>
+    <div class="m93g2"><button class="btn" id="mdaily">Daily challenge</button><button class="btn" id="ml">Load game</button>${hallGet().length?'<button class="btn" id="mhall">Hall of the block</button>':''}<button class="btn" id="mh">How to play</button>${canContinue&&typeof S!=='undefined'&&S&&S.char&&!S.over&&!S.ph?'<button class="btn" id="tu73r">Replay tutorial</button>':''}</div>
     ${DISCORD_INVITE&&Date.now()<OG_UNTIL?`<a class="m93d" href="${DISCORD_INVITE}" target="_blank" rel="noopener">💬 Join the Discord: ideas, bugs, launch news →</a>`:''}
     <div class="m93s"><button class="btn" id="msnd">🔊 ${SND.sfx?'On':'Off'}</button><button class="btn" id="mmus">🎵 ${SND.music?'On':'Off'}</button><button class="btn" id="mcln">🗣 ${window.l45Clean&&l45Clean()?'Clean':'Raw'}</button><button class="btn" id="mcode">Codes</button><button class="btn" id="mbak">Backup</button></div>
     ${canContinue&&typeof S!=='undefined'&&S&&!S.over?'<button class="m93r" id="mret">Retire and see your score</button>':''}</div>`);
@@ -11839,7 +11839,7 @@ function recap(a,b,force){
  const mood=dd+dc>500?'Good day':dd+dc<-500?'Rough day':'Quiet day';let tip='';
  try{if(b.h>=60)tip='Heat is high. Lay low or switch blocks tomorrow.';else if(daysToCheck&&daysToCheck()<=1)tip='Checks hit tomorrow. Js will be out with money.'}catch(e){}
  modal(`<p class="s" style="letter-spacing:.1em;margin:0">DAY ${a.d} IS DONE</p><h2 style="margin-top:2px">${mood} on ${E(BLOCKS[S.at]||'the block')}</h2><div class="g92"><div><small>Dirty cash</small><b style="color:${dd>=0?'var(--money)':'var(--blood)'}">${sg(dd)}</b></div><div><small>Clean cash</small><b style="color:${dc>=0?'var(--money)':'var(--blood)'}">${sg(dc)}</b></div><div><small>Heat</small><b style="color:${b.h>a.h?'var(--blood)':'var(--money)'}">${a.h} → ${b.h}</b></div><div><small>Rep</small><b style="color:var(--accent)">${a.r} → ${b.r}</b></div></div>${window.l95line?l95line(a.d,a.d):''}${top.length?'<div class="s" style="margin:6px 0">'+top.map(t=>'• '+E(t)).join('<br>')+'</div>':'<p class="s">Nothing big happened.</p>'}${tip?`<p class="s"><b>Tomorrow:</b> ${tip}</p>`:''}<div class="btns"><button class="btn go" id="dr92ok">Start day ${S.day}</button><button class="btn" id="dr92off">Turn day recap off</button></div>`);
- el('dr92ok').onclick=close;el('dr92off').onclick=()=>{S.dr92off=1;close()}}
+ (el('dr92ok')||{}).onclick=close;(el('dr92off')||{}).onclick=()=>{S.dr92off=1;close()}}
 try{const _st=skipTime;skipTime=function(){window._sk92=1;try{return _st.apply(this,arguments)}finally{window._sk92=0}}}catch(e){}
 window.l92recap=()=>{const b=snap(),a=S.dr92||Object.assign({},b,{d:S.day-1});recap(a,b,1)};
 try{const _nd=nextDay;nextDay=function(){try{if(window.L95)L95.flush()}catch(e){}const end=S&&!S.over?snap():null,start=S&&S.dr92;const r=_nd.apply(this,arguments);try{if(window.L95)L95.flush('Overnight')}catch(e){}
@@ -11855,7 +11855,7 @@ function bagRows(){let h='';GOODS.forEach(g=>{if(g.unit!=='g')return;const inv=S
  return h?`<div class="sec">Break it down</div>`+h:''}
 window.l92bag=()=>{try{return bagRows()}catch(e){console.error('bd92',e);return ''}};
 function pick(id){const g=G(id),b=bg(id),loose=(S.inv[id]||0)-b.n,n=Math.min(448,Math.floor(loose));
- modal(`<h2>Break down</h2><p>Bag up <b>${amt(n,g)}</b> of loose ${E(g.name)}${loose>448?' (1 lb at a time)':''}. Bagged product sells for more when Js buy it.</p><div class="bd92">${SZ.map(z=>`<button class="btn${z[0]==='e'?' go':''}" data-bz92="${z[0]}" data-g="${id}"><b>${z[1]}</b><br><small>${z[2]} · +${Math.round(z[3]*100)}%</small></button>`).join('')}</div><p class="s">Takes 1 hour and 10 energy. Smaller bags sell for more each.</p><div class="btns"><button class="btn" id="bd92x">Never mind</button></div>`);el('bd92x').onclick=()=>{close();invModal()}}
+ modal(`<h2>Break down</h2><p>Bag up <b>${amt(n,g)}</b> of loose ${E(g.name)}${loose>448?' (1 lb at a time)':''}. Bagged product sells for more when Js buy it.</p><div class="bd92">${SZ.map(z=>`<button class="btn${z[0]==='e'?' go':''}" data-bz92="${z[0]}" data-g="${id}"><b>${z[1]}</b><br><small>${z[2]} · +${Math.round(z[3]*100)}%</small></button>`).join('')}</div><p class="s">Takes 1 hour and 10 energy. Smaller bags sell for more each.</p><div class="btns"><button class="btn" id="bd92x">Never mind</button></div>`);(el('bd92x')||{}).onclick=()=>{close();invModal()}}
 function bagUp(id,k){const z=SZ.find(x=>x[0]===k),g=G(id);if(!z||!g||!home())return;const b=bg(id),loose=(S.inv[id]||0)-b.n,n=Math.min(448,Math.floor(loose));if(n<1)return close();
  close();if(!spendEn(10))return;try{if(window.l82add)l82add(60)}catch(e){}
  b.p=(b.n*b.p+n*z[3])/(b.n+n);b.n+=n;S.bg92[id]=b;say(`You bagged up ${amt(n,g)} of ${g.name} into ${z[1].toLowerCase()}. Js pay about ${Math.round(z[3]*100)}% more for it.`);render();invModal()}
@@ -12140,10 +12140,10 @@ function opts(k){const B=BIZ[k],o=st(k),r=calc(k,o),L=(S.bizUp||{})[k]||0,out=[]
  return out}
 function menu(k){const B=BIZ[k],o=st(k),r=calc(k,o);const why=r.full?'People are being turned away. More space or a manager will help most.':o.dem<45?'Not enough customers. Marketing or better quality helps most.':'Running fine. Quality and a manager keep it growing.';
  modal(`<h2>${E(B.name)}</h2>${l96line(k)}<p class="s" style="margin:8px 0">${why}</p><div class="r96">${opts(k).map(x=>`<button class="btn" data-o96="${x.id}" data-k="${k}" ${x.c>S.cash||(x.id==='save'&&x.c<=0)?'disabled':''}><b>${x.t}${x.c&&x.id!=='save'?' · '+money(x.c):''}</b><small>${x.why}</small></button>`).join('')}</div><div class="btns"><button class="btn" id="x96">Close</button></div>`);
- document.getElementById('x96').onclick=close}
+ (document.getElementById('x96')||{}).onclick=close}
 function confirmIt(k,id){const x=opts(k).find(y=>y.id===id);if(!x)return;
  modal(`<h2>${E(x.t)}?</h2><p>${x.why}</p>${x.c&&id!=='save'?`<p class="s">Costs ${money(x.c)}${x.c>=5000?' (clean money)':''}.</p>`:''}<div class="btns"><button class="btn go" id="y96">Do it</button><button class="btn" id="n96">Back</button></div>`);
- document.getElementById('n96').onclick=()=>menu(k);document.getElementById('y96').onclick=()=>doIt(k,id,x.c)}
+ (document.getElementById('n96')||{}).onclick=()=>menu(k);(document.getElementById('y96')||{}).onclick=()=>doIt(k,id,x.c)}
 function pay(c,what){if(S.cash<c)return false;if(c>=5000&&needClean(c,what))return false;const c0=cleanCash();S.cash-=c;S.clean=Math.max(0,Math.min(S.cash,c>=5000?c0-c:Math.min(c0,S.cash)));return true}
 function doIt(k,id,c){const o=st(k),B=BIZ[k],nm=B.name.toLowerCase();
  if(id==='cap'){close();act('bizup',{dataset:{k}});return}
@@ -12284,9 +12284,9 @@ window.l99used=()=>{const p=P();p.v=Math.round(p.v*.3)};
 window.l99vault=function(title,q,diss,crewId){const r=R();P();S.cash-=300;r.fat=(r.fat||0)+1;r.vault.push({title,q,diss:!!diss,c:crewId||null,d:S.day});if(r.vault.length>6)r.vault.shift();
  try{addXP(2)}catch(e){}say(`Saved "${title}" to the vault (quality ${q}). Promote it, then release it.`);
  modal(`<h2>"${E(title)}" is in the vault</h2><p>Quality <b>${q}/100</b>. It is not out yet. Build a promo push in the Studio tab, then release it for a bigger first week.</p><div class="btns"><button class="btn go" id="ok">Continue</button></div>`);
- document.getElementById('ok').onclick=()=>{document.getElementById('modal').hidden=true;nextDay();checkEnd();render()}};
+ (document.getElementById('ok')||{}).onclick=()=>{document.getElementById('modal').hidden=true;nextDay();checkEnd();render()}};
 function release(i){const r=R(),v=r.vault[i];if(!v)return;r.vault.splice(i,1);const res=rapDrop(v.title,v.q,v.diss,v.c,{paid:1});
- modal(`<h2>"${E(v.title)}" is out</h2><p>Quality <b>${v.q}/100</b>. ${res.viral?'<b style="color:var(--money)">IT BLEW UP.</b>':''}</p><p>+${res.gain2.toLocaleString()} fans${res.boost?` (promo added ${Math.round(res.boost*100)}%, and streams are up for a week)`:''}.</p><div class="btns"><button class="btn go" id="ok">Bet</button></div>`);document.getElementById('ok').onclick=()=>{close();render()}}
+ modal(`<h2>"${E(v.title)}" is out</h2><p>Quality <b>${v.q}/100</b>. ${res.viral?'<b style="color:var(--money)">IT BLEW UP.</b>':''}</p><p>+${res.gain2.toLocaleString()} fans${res.boost?` (promo added ${Math.round(res.boost*100)}%, and streams are up for a week)`:''}.</p><div class="btns"><button class="btn go" id="ok">Bet</button></div>`);(document.getElementById('ok')||{}).onclick=()=>{close();render()}}
 const CAMP=[
  {k:'street',n:'Street team',c:300,en:0,why:()=>`Flyers and posters on every block. Promo +${Math.round(15+Math.min(100,S.rep||0)/10)} (more with street rep).`,go:()=>Math.round(15+Math.min(100,S.rep||0)/10)},
  {k:'social',n:'Social push',c:0,en:10,why:()=>{let f=0;try{f=socW().fol||0}catch(e){}return `Post clips all day. Promo +${Math.round(8+Math.min(20,f/500))} (more with followers). 10 energy.`},go:()=>{let f=0;try{f=socW().fol||0}catch(e){}return Math.round(8+Math.min(20,f/500))}},
@@ -12353,7 +12353,7 @@ function detail(){const c=C(),s=stage(c.ev),ks=Object.keys(c.src).filter(k=>c.sr
  modal(`<h2>Case file</h2><p><b>${SN[s]}</b> · evidence ${Math.round(c.ev)}/100</p><div class="bar"><i style="width:${c.ev}%;background:${s>=2?'var(--blood)':'var(--accent)'}"></i></div>
  <p class="s" style="margin-top:8px">${ks.length?'What they have: '+ks.map(k=>`${SRC[k]||k} (${Math.round(c.src[k])})`).join(', ')+'.':'They have nothing on you.'}${c.st>=3?` You have sold on ${E(BLOCKS[c.lb])} ${c.st} days straight.`:''}</p>
  <p class="s"><b>Shrink it:</b> lawyer on retainer (fastest), lay low, sell on different blocks, clean your money, cut off shaky Js. At 85 they can get a warrant for your place. Heat is how hot you are today. The case is what they can prove.</p>
- <div class="btns"><button class="btn go" id="cf100ok">Got it</button></div>`);document.getElementById('cf100ok').onclick=close}
+ <div class="btns"><button class="btn go" id="cf100ok">Got it</button></div>`);(document.getElementById('cf100ok')||{}).onclick=close}
 window.l100row=function(){if(!S||S.over)return '';const c=C(),s=stage(c.ev);if(s<1)return '';
  return `<button class="cf100 s${s}" data-cf100="1">🗂️ ${SN[s]} · case ${Math.round(c.ev)}/100 <span>tap</span></button>`};
 document.addEventListener('click',e=>{if(e.target.closest&&e.target.closest('[data-cf100]')){e.preventDefault();e.stopPropagation();detail()}},true);
@@ -12421,7 +12421,7 @@ function opts(bi){const r=topRival(bi),c=comp(bi),out=[];const pay=r?1000+(r.str
  out.push({k:'send',t:'Send soldiers',dis:(S.soldiers||0)<2,why:(S.soldiers||0)<2?'You need at least 2 soldiers.':`Rivals −20 right away. The ${r?cn(r):'crew'} beef goes up 15. 1 in 4 chance a soldier gets hurt and sits out.`});
  out.push({k:'pay',t:`Pay them to back off · ${money(pay)}`,c:pay,dis:S.cash<pay||!r,why:`Rivals −12 and beef −20 with the ${r?cn(r):'crew'}. Money gone, but no blood.`});return out}
 function menu(bi){const r=topRival(bi),c=Math.round(comp(bi));
- modal(`<h2>Hold ${E(BLOCKS[bi])}</h2><p>Rivals ${c}/100${r?` · mostly the ${E(cn(r))}`:''}. High rivals cut what Js pay you and poach your regulars.</p><div class="r96">${opts(bi).map(o=>`<button class="btn" data-r102="${o.k}" data-b="${bi}" ${o.dis?'disabled':''}><b>${E(o.t)}</b><small>${E(o.why)}</small></button>`).join('')}</div><div class="btns"><button class="btn" id="x102">Leave it</button></div>`);document.getElementById('x102').onclick=close}
+ modal(`<h2>Hold ${E(BLOCKS[bi])}</h2><p>Rivals ${c}/100${r?` · mostly the ${E(cn(r))}`:''}. High rivals cut what Js pay you and poach your regulars.</p><div class="r96">${opts(bi).map(o=>`<button class="btn" data-r102="${o.k}" data-b="${bi}" ${o.dis?'disabled':''}><b>${E(o.t)}</b><small>${E(o.why)}</small></button>`).join('')}</div><div class="btns"><button class="btn" id="x102">Leave it</button></div>`);(document.getElementById('x102')||{}).onclick=close}
 function act2(k,bi){const r=topRival(bi),v=V();
  if(k==='cut'){v.cut={bi,until:S.day+2};N97.bump(bi,{comp:-6});say(`Dropped prices on ${BLOCKS[bi]} for 3 days. Js are talking.`)}
  if(k==='send'){if((S.soldiers||0)<2)return;N97.bump(bi,{comp:-20});if(r)r.beef=Math.min(100,(r.beef||0)+15);let hurt='';if(Math.random()<.25){S.soldiers=Math.max(0,S.soldiers-1);hurt=' One of yours got hurt and is sitting out.'}say(`Your soldiers ran the ${r?cn(r):'rivals'} off ${BLOCKS[bi]}.${hurt}`)}
@@ -12494,7 +12494,7 @@ function tags(w){const p=PL[pers(w)],j=JT[jt(w)];return `${p[0]} ${p[1]} · ${j[
 function pick(r){const R=M(),ws=(S.workers||[]).filter(w=>w&&w.name);
  modal(`<h2>${ROLES[r].ic} ${ROLES[r].n}</h2><p class="s">${ROLES[r].d}</p><div class="r96">${ws.length?ws.map(w=>{const other=Object.keys(ROLES).find(k=>k!==r&&R[k]===w.id);const p=PL[pers(w)],j=JT[jt(w)];return `<button class="btn" data-mg103p="${r}" data-w="${E(w.id)}" ${other||busy(w)?'disabled':''}><b>${E(w.name)} · ${tags(w)}</b><small>${p[2]} ${j[2]}${other?` Already your ${ROLES[other].n.toLowerCase()}.`:busy(w)?' Busy on a trap.':''}</small></button>`}).join(''):'<p>You need workers first. Hire on the Crew tab.</p>'}</div>
  ${r==='lt'?`<p class="s">Re-up: ${(()=>{const g=R.g&&G(R.g);return g?`keeps at least ${amt(R.min,g)} of ${E(g.name)}`:'pick a product below'})()}</p><div class="t98c">${GOODS.filter(g=>!g.legal).slice(0,6).map(g=>`<button class="btn ${R.g===g.id?'go':''}" data-mg103g="${g.id}">${E(g.name)}</button>`).join('')}<button class="btn" data-mg103g="">No re-up</button></div>`:''}
- <div class="btns">${R[r]?`<button class="btn red" data-mg103x="${r}">Take them off the job</button>`:''}<button class="btn" id="mg103c">Close</button></div>`);document.getElementById('mg103c').onclick=close}
+ <div class="btns">${R[r]?`<button class="btn red" data-mg103x="${r}">Take them off the job</button>`:''}<button class="btn" id="mg103c">Close</button></div>`);(document.getElementById('mg103c')||{}).onclick=close}
 window.l103html=function(){if(!S)return '';const R=M();let h=`<div class="sec">Managers</div>`;
  Object.keys(ROLES).forEach(r=>{const w=W(R[r]);h+=`<div class="row"><div class="info"><div class="t">${ROLES[r].ic} ${ROLES[r].n}${w?`: ${E(w.name)}`:''}</div><div class="s">${w?tags(w):ROLES[r].d}</div></div><button class="btn ${w?'':'go'}" data-mg103="${r}">${w?'Change':'Assign'}</button></div>`});
  return h};
@@ -12665,7 +12665,7 @@ function act(n,k){const p=people().find(x=>x.n===n);if(!p)return;const m=need(p)
  render();open()}
 function bar(v){return `<div class="bar"><i style="width:${Math.round(v)}%;background:${v<30?'var(--blood)':v<60?'var(--accent)':'var(--money)'}"></i></div>`}
 function open(){const ps=people(),sf=safe();
- modal(`<h2>Your people</h2><p class="s">Time and money run down every day. Safety comes from your heat, beef and case: it is ${sf}/100 right now.</p>${ps.map(p=>{const m=need(p);return `<div class="row" style="flex-wrap:wrap"><div class="info" style="flex:1 1 200px"><div class="t">${E(p.n)} <span class="chip">${p.k==='partner'?'Partner':p.k==='parent'?'Parent':'Kid'}</span></div><div class="s">Time ${Math.round(m.time)}</div>${bar(m.time)}${p.k!=='kid'?`<div class="s">Money ${Math.round(m.money)}</div>${bar(m.money)}`:''}</div><div class="btns"><button class="btn" data-fm108="time" data-n="${E(p.n)}" ${m.td===S.day?'disabled':''}>Spend time</button>${p.k!=='kid'?`<button class="btn" data-fm108="money" data-n="${E(p.n)}">Help out ${money(p.k==='parent'?150:200)}</button>`:''}</div></div>`}).join('')}<div class="btns"><button class="btn" id="fm108x">Close</button></div>`);document.getElementById('fm108x').onclick=close}
+ modal(`<h2>Your people</h2><p class="s">Time and money run down every day. Safety comes from your heat, beef and case: it is ${sf}/100 right now.</p>${ps.map(p=>{const m=need(p);return `<div class="row" style="flex-wrap:wrap"><div class="info" style="flex:1 1 200px"><div class="t">${E(p.n)} <span class="chip">${p.k==='partner'?'Partner':p.k==='parent'?'Parent':'Kid'}</span></div><div class="s">Time ${Math.round(m.time)}</div>${bar(m.time)}${p.k!=='kid'?`<div class="s">Money ${Math.round(m.money)}</div>${bar(m.money)}`:''}</div><div class="btns"><button class="btn" data-fm108="time" data-n="${E(p.n)}" ${m.td===S.day?'disabled':''}>Spend time</button>${p.k!=='kid'?`<button class="btn" data-fm108="money" data-n="${E(p.n)}">Help out ${money(p.k==='parent'?150:200)}</button>`:''}</div></div>`}).join('')}<div class="btns"><button class="btn" id="fm108x">Close</button></div>`);(document.getElementById('fm108x')||{}).onclick=close}
 window.l108row=function(){if(!S||S.over)return '';const ps=people();if(!ps.length)return '';const low=ps.map(p=>({p,a:avg(p,need(p))})).sort((x,y)=>x.a-y.a)[0];if(low.a>=45)return '';
  return `<button class="cf100 ${low.a<30?'s2':''}" data-fm108o="1">${low.a<30?'💔':'🏠'} ${low.a<30?`${E(low.p.n)} needs you`:'Your people'} <span>${ps.length} · tap</span></button>`};
 document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('[data-fm108],[data-fm108o]');if(!t||t.disabled)return;e.preventDefault();e.stopPropagation();if(t.dataset.fm108o)open();else act(t.dataset.n,t.dataset.fm108)},true);
@@ -12735,6 +12735,36 @@ try{if(window.FM108){const _s=FM108.safe;FM108.safe=function(){return Math.min(1
 window.l110html=function(){if(!S)return '';return `<div class="f93w"><small>Lifestyle goals</small>${Object.keys(T).map(k=>{const t=tier(k),x=T[k];return `<div style="margin:4px 0"><b style="font-size:14px">${x.ic} ${x.n} ${'★'.repeat(t)}${'☆'.repeat(3-t)}</b><span style="display:block">${t<3?'Next: '+E(x.steps[t]):'Maxed'}${t?' · Perk: '+E(x.perk(t)):''}</span></div>`}).join('')}</div>`};
 try{TUT.push(['Lifestyle goals','Tap your face to see three goals: Home, Whip and Drip, three stars each. You climb them with what you buy: a better place, a better car, a better fit and jewelry. Every star you hold gives a lasting perk: home cuts stress every day and makes your family feel safer, a nice whip and drip earn respect from everyone, and drip makes Js pay a little more. Hitting a new star gives you rep.'])}catch(e){}
 try{const _dp=devPanel;devPanel=function(){const r=_dp.apply(this,arguments);try{const mc=document.getElementById('mcard');if(mc&&!mc.querySelector('[data-d110]')){const d=document.createElement('div');d.innerHTML='<div class="sec">Lifestyle (new)</div><div class="btns"><button class="btn" data-d110="max">Max all lifestyle</button></div>';mc.insertBefore(d,mc.querySelector('.btns:last-child'));d.addEventListener('click',e=>{if(!e.target.closest('[data-d110]'))return;S.home='loft';S.car='rover';S.fit='drip';S.jew=Object.assign(S.jew||{},{chain:1,grill:1});close();render()})}}catch(e){}return r}}catch(e){}
+})();
+
+</script>
+<script id="sv111js">
+/* sv111: saves you can trust. Saving can no longer be skipped by an error elsewhere in a render,
+   it saves when the phone hides or closes the tab, failed saves trim old history and retry, and if
+   they still fail you get told once instead of silently losing progress. Every slot keeps a backup
+   copy from the last new day; if the main save is missing or broken, the backup loads instead. */
+(function(){
+const bakKey=n=>slotKey(n)+'-bak';
+let warned=false,bakDay=null,lastOK=0;
+function warn(msg){if(warned)return;warned=true;try{toast(msg,false)}catch(e){}try{say('⚠️ '+msg)}catch(e){}}
+function trim(){try{if(S.log&&S.log.length>150)S.log=S.log.slice(-150)}catch(e){}try{if(S.lg95&&S.lg95.e)S.lg95.e=S.lg95.e.slice(0,100)}catch(e){}try{if(S.inbox&&S.inbox.length>150)S.inbox=S.inbox.slice(0,150)}catch(e){}try{if(S.news&&S.news.length>40)S.news=S.news.slice(0,40)}catch(e){}}
+function write(k,v){localStorage.setItem(k,v)}
+save=function(){if(!S||S.ph)return;if(S.over&&(S.iron||S.diff==='iron'))return;const n=S.slot||1;let j;
+ try{j=JSON.stringify(S)}catch(e){console.error('save stringify',e);warn('Save failed (game data error). Tell Euro: '+(e.message||'stringify'));return}
+ try{write(slotKey(n),j);localStorage.setItem('tl-cur',n);lastOK=Date.now()}
+ catch(e){trim();try{j=JSON.stringify(S);write(slotKey(n),j);localStorage.setItem('tl-cur',n);lastOK=Date.now()}catch(e2){warn('Your game could not save on this browser (storage full or private mode). Use Menu → Backup to keep a copy.');return}}
+ if(bakDay!==S.day+':'+n){try{write(bakKey(n),j);bakDay=S.day+':'+n}catch(e){}}};
+const _rs=readSlot;readSlot=function(n){const r=_rs(n);if(r)return r;try{const b=JSON.parse(localStorage.getItem(bakKey(n)));if(b&&b.day&&b.char)return b}catch(e){}return null};
+const _ld=load;load=function(n){let s=null;try{s=_ld(n)}catch(e){s=null}if(s)return s;try{const b=JSON.parse(localStorage.getItem(bakKey(n||curSlot())));if(b&&b.day&&b.char){s=migrate(b);if(s&&!s.slot)s.slot=n||curSlot();if(s){setTimeout(()=>{try{toast('Loaded your backup save',true)}catch(e){}},300);return s}}}catch(e){console.error('load bak',e)}return null};
+/* a render error can no longer stop the save */
+try{const _r=render;render=function(){try{return _r.apply(this,arguments)}finally{try{if(S&&!S.ph&&Date.now()-lastOK>400)save()}catch(e){}}}}catch(e){}
+/* save when the phone hides or closes the page */
+const flush=()=>{try{if(S&&!S.ph)save()}catch(e){}};
+document.addEventListener('visibilitychange',()=>{if(document.hidden)flush()});window.addEventListener('pagehide',flush);window.addEventListener('beforeunload',flush);
+/* tell the player once if this browser blocks saving */
+try{const k='tl-test';localStorage.setItem(k,'1');localStorage.removeItem(k)}catch(e){setTimeout(()=>warn('This browser is blocking saves (private mode or an in-app browser). Open the game in Safari or Chrome to keep your progress.'),1500)}
+window.SV111={bakKey,warned:()=>warned};
+try{TUT.push(['Your saves','The game saves on your device every time something changes and when you close it, and keeps a backup copy from each new day. Saves live in the browser you play in: Safari, Chrome, a Home Screen icon and the Discord link browser each keep their own saves, so always open the game the same way. Private mode does not keep saves. Menu → Backup gives you a code you can copy to keep your run safe or move it to another device. If saving ever fails, the game tells you.'])}catch(e){}
 })();
 
 </script>
