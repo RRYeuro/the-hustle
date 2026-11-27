@@ -128,7 +128,7 @@ Feature source copies: dev/skins/. Tests: dev/tests/ (crash test: dev/tests/t_fu
 | skin47 | 1k | modal, streetEvent, wCard | long cards: picture becomes a thin strip |
 | skin56 | 0k | render |  |
 | skin60 | 0k | openPlace | Javi and Mateo cards in texts: face thumbnail instead of the whole collage |
-| skin73 | 10k | devPanel, render | {steps,i,t0,base,miss} |
+| skin73 | 11k | devPanel, render | {steps,i,t0,base,miss} |
 | skin76 | 3k | devPanel, render, sfx | popups slide in + panel reveal |
 | skin92 | 14k | devPanel, nextDay, paneBlock, render, serveCusto, skipTime | skin92: UI set. Block fold, phone tab count, day recap, break down (bag up), tap sizes |
 

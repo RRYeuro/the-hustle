@@ -3246,7 +3246,7 @@ function finishMission(m){if(S.age&&S.age<18&&S.mode==='story'&&teenCount()&&S.m
 /* ---------- stats ---------- */
 const skFx=k=>{const v=(S.sk&&S.sk[k])||0,o=v-3,sg=x=>(x>=0?'+':'−')+Math.abs(x);return ({hustle:sg(o*2)+'% customer price',talk:sg(o*6)+'% plug haggle odds',muscle:'+'+v*2+' fight strength',smarts:sg(o*4)+'% quiet heist odds',luck:sg(o)+'% casino wins',stamina:sg(o*5)+' energy a day',charm:sg(o*5)+'% song and show income',biz:sg(o*6)+'% business income'})[k]||''};
 const SKN={hustle:'Hustle',talk:'Talk',muscle:'Muscle',smarts:'Street Smarts',luck:'Luck',stamina:'Stamina',charm:'Charm',biz:'Business',discipline:'Discipline'};
-const SKD={hustle:'Better prices, more customers, bigger profit and bigger scam payouts. Faster fire in the firewall game.',talk:'Haggle plugs and the label, talk parents and cops down, win people over. A wider window in talk-it-out and slower patterns in phishing.',muscle:'Win fights, block wars and robberies. More energy. An extra life in the firewall game at 7.',smarts:'Escape cops and crews, spot setups and fakes. More maze strikes, slower traces, and ghost work at 6.',luck:'Better card drops, closer calls go your way. Gambling, viral songs, and a shot at saving a failed scam step.',stamina:'More energy every day (+5 per point over 3), so you get more done before you are wiped.',charm:'Your songs reach more fans and shows pay more (+5% per point over 3). People warm up to you.',biz:'Your businesses and label artists pay more (+6% per point over 3) and upgrades cost less.',discipline:'Stress builds slower, school grades climb faster from 5, and you pass more drug tests.'};
+const SKD={hustle:'Better prices, more customers, bigger profit and bigger scam payouts. Faster fire in the firewall game.',talk:'Haggle plugs and the label, talk parents and cops down, win people over. A wider window in talk-it-out and slower patterns in phishing.',muscle:'Win fights, block wars and robberies. More energy. An extra life in the firewall game at 7.',smarts:'Escape cops and crews, spot setups and fakes. More maze time, slower traces, and ghost work at 6.',luck:'Better card drops, closer calls go your way. Gambling, viral songs, and a shot at saving a failed scam step.',stamina:'More energy every day (+5 per point over 3), so you get more done before you are wiped.',charm:'Your songs reach more fans and shows pay more (+5% per point over 3). People warm up to you.',biz:'Your businesses and label artists pay more (+6% per point over 3) and upgrades cost less.',discipline:'Stress builds slower, school grades climb faster from 5, and you pass more drug tests.'};
 function addXP(n){if(!n)return;S.xp+=n;while(S.xp>=S.lvl*20){S.xp-=S.lvl*20;S.lvl++;S.pts++;say(`Level up! You're level ${S.lvl}. Spend your skill point in the Me tab.`)}
   const ri=RANKS.indexOf(rank());if(ri>S.rk){S.rk=ri;const r=RANKS[ri];if(r[3])r[3]();S.rankPop=ri;say(`Moved up to ${rname(ri)}! ${r[2]}`)}}
 const RANKS=[[1,'Corner Boy','Just starting out.'],[3,'Petty Dealer','+25 stash space.',()=>{S.cap+=25}],[6,'Middle Man','Big plugs serve you no matter your rep.'],
@@ -3497,22 +3497,29 @@ function mgMaze(o,cb){mgOn=true;const C=7,R=9,T=22,GW=2*C+1,GH=2*R+1,W=GW*T,H=GH
   while(stk.length){const [cx,cy]=stk[stk.length-1];const nb=[[1,0],[-1,0],[0,1],[0,-1]].map(([dx,dy])=>[cx+dx,cy+dy,dx,dy]).filter(([x,y])=>x>=0&&y>=0&&x<C&&y<R&&!seen.has(x+','+y));
     if(!nb.length){stk.pop();continue}const [nx,ny,dx,dy]=pick(nb);seen.add(nx+','+ny);g[2*ny+1][2*nx+1]=0;g[2*cy+1+dy][2*cx+1+dx]=0;stk.push([nx,ny])}
   for(let i=0;i<Math.round(8-d*5);i++){const x=rnd(1,GW-2),y=rnd(1,GH-2);if(g[y][x]===1&&((g[y][x-1]===0&&g[y][x+1]===0)||(g[y-1][x]===0&&g[y+1][x]===0)))g[y][x]=0}
-  const maxS=mgLv(3+Math.floor(skv('smarts')/3)+(is('shade')?1:0)),LIM=(o.T||42000)+skv('smarts')*1500,ex=2*C-1,ey=2*R-1;let strikes=0,act=false,last=null,pos=null;const T0=performance.now();
-  modal(`<h2>${o.title||'Tunnel the VPN'}</h2>${mgHud(`Strikes 0 of ${maxS}. Drag from the green node to the exit, or tap an arrow key to start and steer with the arrows. Walls forgive a graze.`)}${mgCv(W,H)}`);
+  const LIM=(o.T||42000)+skv('smarts')*2000,ex=2*C-1,ey=2*R-1;let pc=[1,1],trail=[[1,1]],anim=null;const T0=performance.now();
+  modal(`<h2>${o.title||'Tunnel the VPN'}</h2>${mgHud('Swipe anywhere on the maze or use the arrows. Get the white dot to the yellow exit before time runs out.')}${mgCv(W,H,`<div class="btns" style="justify-content:center"><button class="btn" id="mzu">▲</button><button class="btn" id="mzl">◀</button><button class="btn" id="mzd">▼</button><button class="btn" id="mzr">▶</button></div>`)}`);
   const cv=$('mgc'),x=cv.getContext('2d');
-  const IN=6;const wall=(px,py)=>{const tx=Math.floor(px/T),ty=Math.floor(py/T);if(tx<0||ty<0||tx>=GW||ty>=GH)return true;if(g[ty][tx]!==1)return false;const fx=px-tx*T,fy=py-ty*T;return fx>=IN&&fx<=T-IN&&fy>=IN&&fy<=T-IN};
+  const open=(cx,cy)=>cy>=0&&cx>=0&&cy<GH&&cx<GW&&g[cy][cx]===0;
+  const step=(dx,dy)=>{if(!mgOn)return false;const nx=pc[0]+dx,ny=pc[1]+dy;if(!open(nx,ny))return false;anim={f:pc.slice(),t:performance.now()};pc=[nx,ny];
+    const k=trail.findIndex(p=>p[0]===nx&&p[1]===ny);if(k>=0)trail=trail.slice(0,k+1);else trail.push([nx,ny]);
+    if(nx===ex&&ny===ey)mgFin(cb,true,'Connected. You are in.');return true};
+  const go=(dx,dy)=>{if(!step(dx,dy))return;let n=0;while(n++<30){const side=dx?[[0,1],[0,-1]]:[[1,0],[-1,0]];if(side.some(([a,b])=>open(pc[0]+a,pc[1]+b)))break;if(!step(dx,dy))break}};
+  [['mzu',0,-1],['mzd',0,1],['mzl',-1,0],['mzr',1,0]].forEach(([id,a,b])=>{const e=$(id);if(e)e.onclick=()=>go(a,b)});
   const draw=()=>{x.fillStyle='#07090d';x.fillRect(0,0,W,H);for(let j=0;j<GH;j++)for(let i=0;i<GW;i++)if(g[j][i]){x.fillStyle='#1b2a46';x.fillRect(i*T,j*T,T,T);x.fillStyle='#27406b';x.fillRect(i*T,j*T,T,2)}
-    x.fillStyle='#3ddc84';x.beginPath();x.arc(1.5*T,1.5*T,T*.42,0,7);x.fill();x.fillStyle='#ffd23f';x.beginPath();x.arc((ex+.5)*T,(ey+.5)*T,T*.42,0,7);x.fill();
-    if(pos){x.fillStyle='#fff';x.beginPath();x.arc(pos[0],pos[1],4,0,7);x.fill()}};
-  const hit=()=>{strikes++;act=false;pos=null;$('mgmsg').textContent=`Hit a wall. Strikes ${strikes} of ${maxS}.`;$('mgmsg').style.color='var(--blood)';if(strikes>=maxS)mgFin(cb,false,'Traced. The connection dropped.')};
-  cv.onpointerdown=e=>{if(!mgOn)return;const p=mgPt(cv,e);if(Math.hypot(p[0]-1.5*T,p[1]-1.5*T)<T*1.4){act=true;last=p;pos=p;try{cv.setPointerCapture(e.pointerId)}catch(_){}}};
-  cv.onpointermove=e=>{if(!act||!mgOn)return;const p=mgPt(cv,e),n=Math.max(1,Math.ceil(Math.hypot(p[0]-last[0],p[1]-last[1])/3));for(let i=1;i<=n;i++){const qx=last[0]+(p[0]-last[0])*i/n,qy=last[1]+(p[1]-last[1])*i/n;if(wall(qx,qy))return hit()}
-    last=p;pos=p;if(Math.floor(p[0]/T)===ex&&Math.floor(p[1]/T)===ey){act=false;mgFin(cb,true,'Connected. You are in.')}};
-  cv.onpointerup=cv.onpointercancel=()=>{act=false;pos=null};
-  const kk={},KM={ArrowUp:'u',ArrowDown:'d',ArrowLeft:'l',ArrowRight:'r'};let kt=performance.now();
-  const kd=e=>{const m=KM[e.key];if(!m||!mgOn)return;e.preventDefault();kk[m]=1;if(!act){act=true;last=[1.5*T,1.5*T];pos=last.slice()}};const ku=e=>{const m=KM[e.key];if(m)delete kk[m]};document.addEventListener('keydown',kd);document.addEventListener('keyup',ku);
-  const kmove=()=>{const n=performance.now(),dt=Math.min(.05,(n-kt)/1000);kt=n;if(!act)return;const dx=(kk.r?1:0)-(kk.l?1:0),dy=(kk.d?1:0)-(kk.u?1:0);if(!dx&&!dy)return;const p=[last[0]+dx*105*dt,last[1]+dy*105*dt],k=Math.max(1,Math.ceil(Math.hypot(p[0]-last[0],p[1]-last[1])/2));for(let i=1;i<=k;i++){const qx=last[0]+(p[0]-last[0])*i/k,qy=last[1]+(p[1]-last[1])*i/k;if(wall(qx,qy))return hit()}last=p;pos=p;if(Math.floor(p[0]/T)===ex&&Math.floor(p[1]/T)===ey){act=false;mgFin(cb,true,'Connected. You are in.')}};
-  const loop=()=>{if(!mgOn||!cv.isConnected){document.removeEventListener('keydown',kd);document.removeEventListener('keyup',ku);return}kmove();const left=1-(performance.now()-T0)/LIM;if($('mgt'))$('mgt').style.width=Math.max(0,left*100)+'%';if(left<=0)return mgFin(cb,false,'Out of time. The session expired.');draw();requestAnimationFrame(loop)};loop()}
+    x.strokeStyle='rgba(61,220,132,.55)';x.lineWidth=5;x.lineCap='round';x.lineJoin='round';x.beginPath();trail.forEach((p,i)=>{const X=(p[0]+.5)*T,Y=(p[1]+.5)*T;i?x.lineTo(X,Y):x.moveTo(X,Y)});x.stroke();
+    x.fillStyle='#3ddc84';x.beginPath();x.arc(1.5*T,1.5*T,T*.3,0,7);x.fill();x.fillStyle='#ffd23f';x.beginPath();x.arc((ex+.5)*T,(ey+.5)*T,T*.42,0,7);x.fill();
+    let px=pc[0],py=pc[1];if(anim){const f=Math.min(1,(performance.now()-anim.t)/70);px=anim.f[0]+(pc[0]-anim.f[0])*f;py=anim.f[1]+(pc[1]-anim.f[1])*f;if(f>=1)anim=null}
+    x.fillStyle='#fff';x.shadowColor='#fff';x.shadowBlur=10;x.beginPath();x.arc((px+.5)*T,(py+.5)*T,T*.36,0,7);x.fill();x.shadowBlur=0};
+  let sw=null;const SW=14;
+  cv.onpointerdown=e=>{if(!mgOn)return;e.preventDefault();sw=[e.clientX,e.clientY];try{cv.setPointerCapture(e.pointerId)}catch(_){}};
+  cv.onpointermove=e=>{if(!sw||!mgOn)return;let ax=e.clientX-sw[0],ay=e.clientY-sw[1];
+    while(Math.max(Math.abs(ax),Math.abs(ay))>=SW){const h=Math.abs(ax)>=Math.abs(ay);const d1=h?[Math.sign(ax),0]:[0,Math.sign(ay)],d2=h?[0,Math.sign(ay)||0]:[Math.sign(ax)||0,0];
+      const ok=step(...d1)||((d2[0]||d2[1])&&step(...d2));if(h){sw[0]+=Math.sign(ax)*SW;ax-=Math.sign(ax)*SW}else{sw[1]+=Math.sign(ay)*SW;ay-=Math.sign(ay)*SW}if(!ok&&!mgOn)break}};
+  cv.onpointerup=cv.onpointercancel=()=>{sw=null};window._mzD={g,pc:()=>pc,ex,ey};
+  const KM={ArrowUp:[0,-1],ArrowDown:[0,1],ArrowLeft:[-1,0],ArrowRight:[1,0],w:[0,-1],s:[0,1],a:[-1,0],d:[1,0]};
+  const kd=e=>{const m=KM[e.key];if(!m||!mgOn)return;e.preventDefault();go(...m)};document.addEventListener('keydown',kd);
+  const loop=()=>{if(!mgOn||!cv.isConnected){document.removeEventListener('keydown',kd);return}const left=1-(performance.now()-T0)/LIM;if($('mgt'))$('mgt').style.width=Math.max(0,left*100)+'%';if(left<=0)return mgFin(cb,false,'Out of time. The session expired.');draw();requestAnimationFrame(loop)};loop()}
 function mgInv(o,cb){mgOn=true;const W=320,H=400,d=o.d||0,rows=3+(d>.5?1:0),cols=6;let px=W/2,lives=mgLv(3+(skv('muscle')>=7?1:0)),bul=[],eb=[],gx=0,gy=0,dir=1,inv=0,lastF=0,lastE=0,lt=performance.now();const T0=lt,LIM=48000;
   const en=[];for(let r=0;r<rows;r++)for(let c=0;c<cols;c++)en.push({x:34+c*44,y:30+r*28,a:1});
   const sp=(34+d*24)*(1-Math.min(.35,skv('smarts')*.03)),fireMs=Math.max(200,430-skv('hustle')*24),eMs=Math.max(450,1000-d*350);
@@ -3554,7 +3561,7 @@ function mgSimon(o,cb){mgOn=true;const d=o.d||0,len=5+Math.round(d*3),seq=Array.
   const play=()=>{show=true;i=0;$('mgmsg').textContent='Watch the pattern.';$('mgmsg').style.color='';let t=500;seq.forEach(k=>{setTimeout(()=>mgOn&&lit(k,1),t);setTimeout(()=>lit(k,0),t+fl*.7);t+=fl});setTimeout(()=>{if(!mgOn)return;show=false;$('mgmsg').textContent=`Your turn. ${allow-miss>0?'You can slip up '+(allow-miss)+' more time'+(allow-miss===1?'':'s')+'.':'No slips.'}`},t)};play();
   [0,1,2,3].forEach(k=>{$('sm'+k).onclick=()=>{if(!mgOn||show)return;lit(k,1);setTimeout(()=>lit(k,0),160);if(k===seq[i]){i++;if(i>=len)mgFin(cb,true,'Logged in. They never noticed.')}else{miss++;if(miss>allow)return mgFin(cb,false,'Wrong code. The account locked.');$('mgmsg').textContent='Wrong one. Replaying.';$('mgmsg').style.color='var(--blood)';setTimeout(play,800)}}})}
 const MG={maze:mgMaze,inv:mgInv,pac:mgPac,simon:mgSimon};
-const MGTXT={maze:'Tunnel the network. Drag from the green node to the yellow exit without touching a wall. <b>Smarts</b> gives you more strikes.',inv:'Hold the firewall. Drag to move, your gun fires itself. Kill every ICE block before it reaches your line. <b>Hustle</b> fires faster and <b>Smarts</b> slows them down.',pac:'Pull the files. Swipe or use the arrows to eat every data file and dodge the traces. <b>Smarts</b> slows the traces and <b>Luck</b> gives an extra life.',simon:'Phish the login. Watch the pattern, then repeat it. <b>Talk</b> slows the pattern and lets you slip up.'};
+const MGTXT={maze:'Tunnel the network. Swipe anywhere on the maze, tap the arrow buttons or use the arrow keys. Your dot slides down a hallway until the next turn. Reach the yellow exit before time runs out. <b>Smarts</b> gives you more time.',inv:'Hold the firewall. Drag to move, your gun fires itself. Kill every ICE block before it reaches your line. <b>Hustle</b> fires faster and <b>Smarts</b> slows them down.',pac:'Pull the files. Swipe or use the arrows to eat every data file and dodge the traces. <b>Smarts</b> slows the traces and <b>Luck</b> gives an extra life.',simon:'Phish the login. Watch the pattern, then repeat it. <b>Talk</b> slows the pattern and lets you slip up.'};
 const SCAMDEF={
  fake:{n:'Fake rental deposits',t:'List a house that is not yours and take deposits. Two steps.',noto:0,cost:0,st:['simon','maze'],pay:[450,800],heat:6},
  phish:{n:'Phish a business',t:'Fake invoices to a company that pays without checking. Three steps.',noto:15,cost:300,st:['simon','maze','inv'],pay:[1400,2300],heat:10},
@@ -6144,7 +6151,7 @@ function talk(kind,g){
   $('a').onclick=()=>go(.10,small);$('b').onclick=()=>go(.25,big);$('n').onclick=()=>qtyModal(kind,g);
 }
 /* ---------- modal ---------- */
-function modal(html){$('modal').classList.remove('splash');if($('modal').hidden)window._lt=S&&S.log&&S.log[0];$('mcard').style.maxWidth='';delete $('mcard').dataset.w6;$('mcard').innerHTML=html;$('modal').hidden=false;addX()}
+function modal(html){$('modal').classList.remove('splash');$('mcard').classList.remove('m93');if($('modal').hidden)window._lt=S&&S.log&&S.log[0];$('mcard').style.maxWidth='';delete $('mcard').dataset.w6;$('mcard').innerHTML=html;$('modal').hidden=false;addX()}
 // little X in the corner of any popup that has a way out (Cancel, Never mind, Back, Close...)
 function addX(){const mc=$('mcard');mc.scrollTop=0;const out=[...mc.querySelectorAll('button')].find(b=>/^(cancel|never mind|back|back out|close|not now|nah|not yet|let it go|walk off|done|okay|bet|continue|got it|skip|damn|aight|real|my bad|smh|lesson learned|it's all love|say less|good looking|welcome|keep going|let's see|i hear you|love you|my fault|never again|leave|leave it|watch your back)$/i.test(b.textContent.trim())&&!b.disabled);
   if(!out||window.mgOn)return;const x=document.createElement('button');x.className='xbtn';x.setAttribute('aria-label','Close');x.textContent='✕';x.onclick=()=>out.click();mc.prepend(x)}
@@ -7099,7 +7106,7 @@ function ckReport(){try{ckState()}catch(e){}const done=CKL.filter(x=>{try{return
 $('mcard').addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(!b||b.disabled||b.onclick||!$('mcard').contains(b))return;sfx('tap');try{act(b.dataset.a,b)}catch(err){console.error(err)}});
 $('pane').onclick=e=>{sfx('tap');const pp=e.target.closest('.mapp');if(pp)return openPlace(pp.dataset.p);const m=e.target.closest('.mapb');if(m){if(m.dataset.a==='go')act('go',m);return}const b=e.target.closest('button[data-a]');if(b&&!b.disabled){let ak=null;try{ak=ACTART[b.dataset.a+(b.dataset.k?':'+b.dataset.k:'')]||ACTART[b.dataset.a]||null}catch(_){};const top=S&&S.log&&S.log[0];let pk=null;try{if(b.closest('#pane'))pk=artFor(b)}catch(_){}act(b.dataset.a,b);try{if(pk&&$('modal').hidden)setTimeout(()=>{try{if($('modal').hidden)artPop(pk)}catch(_){}},80)}catch(_){}const nw=S&&S.log&&S.log[0];if(nw&&nw!==top&&$('modal').hidden){if(ak&&ARTX(ak)&&!(ak===_apk&&Date.now()-_apt<2500)){_apk=ak;_apt=Date.now();modal(`${a2(ak,340)}<p>${esc(nw.t)}</p><div class="btns"><button class="btn go" id="apk">OK</button></div>`);$('apk').onclick=close}else toast(nw.t)}}};
 $('retire').onclick=()=>{modal(`${a2('retire',320)}<h2>Retire your career?</h2><p>This ends the run and shows your final score. You cannot undo it.</p><div class="btns"><button class="btn red" id="rok">Retire</button><button class="btn" id="rno">Keep playing</button></div>`);$('rok').onclick=()=>{$('modal').hidden=true;S.over=true;checkEnd()};$('rno').onclick=close};
-const BUILD='v220';
+const BUILD='v221';
 const DISCORD_INVITE='https://discord.gg/bVsvWzbGW';const OG_UNTIL=Infinity;
 
 
@@ -7242,16 +7249,16 @@ document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest
 (function(){
 const hue=n=>{let h=0;for(const c of String(n))h=(h*31+c.charCodeAt(0))%360;return h};
 const esc=t=>String(t).replace(/[<>&"]/g,'');
-function card(id,name,cap,back){const h=hue(name);const L=String(back||'').split('|');
- return `<div class="pol" data-pf="${id}" role="button" tabindex="0" aria-label="${esc(name)}, tap to flip"><div class="fr"><div class="ph" style="background:linear-gradient(160deg,hsl(${h},45%,32%),hsl(${(h+60)%360},40%,18%))">${esc(name).slice(0,1).toUpperCase()}</div><div class="cp">${esc(cap)}</div></div><div class="bk2"><b>${esc(L[0])}</b>${L.slice(1).map(x=>esc(x)).join('<br>')}<div class="bkb">↩ tap to flip back</div></div></div>`}
+function card(id,name,cap,back,ic){const h=hue(name);const L=String(back||'').split('|');
+ return `<div class="pol" data-pf="${id}" role="button" tabindex="0" aria-label="${esc(name)}, tap to flip"><div class="fr"><div class="ph" style="background:linear-gradient(160deg,hsl(${h},45%,32%),hsl(${(h+60)%360},40%,18%))">${ic||esc(name).slice(0,1).toUpperCase()}</div><div class="cp">${esc(cap)}</div></div><div class="bk2"><b>${esc(L[0])}</b>${L.slice(1).map(x=>esc(x)).join('<br>')}<div class="bkb">↩ tap to flip back</div></div></div>`}
 function wall(){try{if(typeof S==='undefined'||!S)return '';
- const M=S.crewM||[];let h='';const RK={rh:'Right Hand',sol:'Soldier',lt:'Lieutenant'};
+const M=S.crewM||[];if(!M.length)return '';let h='';const RK={rh:'Right Hand',sol:'Soldier',lt:'Lieutenant'};
  M.forEach((m,i)=>{const sk=m.sk||{};const top=Object.keys(sk).sort((a,b)=>sk[b]-sk[a]).slice(0,3).map(k=>k+' '+sk[k]).join(' · ');
   h+=card('m'+i,m.name,m.name+' · '+(RK[m.rank]||'Crew'),m.name+'|Loyalty '+(m.loy||0)+'|Trust '+(m.trust||0)+'|'+top+'|'+(m.busy?'On a job':'Ready'))});
  const mine=(S.owner||[]).filter(o=>o==='me'||o===S.gang).length;
- h+=card('hall','Hall','Hall of the Block','Hall of the Block|Blocks you hold: '+mine+'|Rep '+(S.rep||0)+'|Day '+S.day);
+ h+=card('hall','Hall','Hall of the Block','Hall of the Block|Blocks you hold: '+mine+'|Rep '+(S.rep||0)+'|Day '+S.day,'🏆');
  const cr=(S.crews||[]).filter(c=>c.alive).map(c=>{const d=(typeof cdef==='function'?cdef(c.id):{name:c.id});return d.name+' '+c.str}).slice(0,4).join('|');
- h+=card('lad','Ladder','Gang Ladder','Gang Ladder|'+(cr||'No gangs yet'));
+ h+=card('lad','Ladder','Gang Ladder','Gang Ladder|'+(cr||'No gangs yet'),'🪜');
  return `<div class="pwall"><div class="pwt">Your crew · tap a photo to flip it</div>${h}</div>`}catch(e){return ''}}
 const _pb=paneBeef;paneBeef=function(){return wall()+_pb.apply(this,arguments)};
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('.pol');if(!b)return;b.classList.toggle('flip')});
@@ -7802,7 +7809,7 @@ const MORE=['beef','crew','cards','exp','sch','rap','rob','sp'];
 function tidy(){
  try{const m=document.getElementById('mission'),g=document.querySelector('#pane .wgoal');if(g)g.style.display=(m&&m.innerText.trim())?'none':''}catch(e){}
  try{const tabs=document.querySelector('.tabs');if(tabs){
-   tabs.querySelectorAll('button[role="tab"]').forEach(b=>{if(b.querySelector('span'))return;const t=b.textContent.trim(),mm=/^(\S+)\s+(.+)$/.exec(t);if(!mm)return;b.innerHTML='<i>'+mm[1]+'</i><span>'+mm[2].replace(/^Your /,'')+'</span>'});
+   tabs.querySelectorAll('button[role="tab"]').forEach(b=>{if(b.querySelector('i'))return;const dot=/●/.test(b.textContent),t=b.textContent.replace('●','').trim(),mm=/^(\S+)\s+(.+)$/.exec(t);if(!mm)return;b.innerHTML='<i>'+mm[1]+'</i><span>'+mm[2].replace(/^Your /,'')+(dot?' <b style="color:var(--blood)">●</b>':'')+'</span>'});
    tabs.querySelectorAll('button[role="tab"]').forEach(b=>{if(MORE.indexOf(b.dataset.t)>=0)b.dataset.more='1'});
    let mb=tabs.querySelector('.moretab');if(!mb){mb=document.createElement('button');mb.type='button';mb.className='moretab';mb.innerHTML='<i>☰</i><span>More</span>';tabs.appendChild(mb)}
    const cur=tabs.querySelector('button[aria-selected="true"]');mb.style.outline=cur&&cur.dataset.more==='1'?'2px solid var(--accent)':''}}catch(e){}
@@ -7818,7 +7825,7 @@ document.addEventListener('click',e=>{const t=e.target;if(!t||!t.closest)return;
  const ms=t.closest('#moreSheet');if(ms){const b=t.closest('button[data-go]');e.stopPropagation();const sh=document.getElementById('moreSheet');if(sh)sh.remove();if(b){const real=document.querySelector('.tabs button[data-t="'+b.dataset.go+'"]');if(real)real.click()}}},true);
 function openMore(){const old=document.getElementById('moreSheet');if(old){old.remove();return}
  const items=[...document.querySelectorAll('.tabs button[data-more="1"]')].filter(b=>!b.hidden);
- const d=document.createElement('div');d.id='moreSheet';d.innerHTML='<div class="mbox">'+items.map(b=>{const i=b.querySelector('i'),s=b.querySelector('span');return '<button type="button" data-go="'+b.dataset.t+'"><i>'+(i?i.textContent:'')+'</i>'+(s?s.textContent:b.textContent)+'</button>'}).join('')+'</div>';document.body.appendChild(d)}
+ const d=document.createElement('div');d.id='moreSheet';d.innerHTML='<div class="mbox">'+items.map(b=>{const i=b.querySelector('i'),s=b.querySelector('span');const sl=(s?s.innerHTML:b.textContent);return '<button type="button" data-go="'+b.dataset.t+'"><i>'+(i?i.textContent:'•')+'</i>'+sl+'</button>'}).join('')+'</div>';document.body.appendChild(d)}
 render();
 })();
 </script>
@@ -10836,7 +10843,7 @@ const LOOP=()=>[
  {el:()=>vis('.tabs button[data-t="move"]'),txt:'Tap <b>Move</b>. That\'s the city and your plugs.',done:()=>tab==='move'},
  {el:()=>vis('#pane [data-a31="tx"]')||vis('#pane [data-a31="ps"]'),txt:()=>vis('#pane [data-a31="tx"]')?'Text your plug to set up a meet.':'Tap <b>Show</b> to see your plug spots.',done:()=>!!vis('#pane [data-a31="go"]')||!!S.meet},
  {el:()=>vis('#pane [data-a31="go"]'),txt:'Tap <b>Meet</b>. Pulling up to a plug doesn\'t use the day.',done:()=>!!S.meet},
- {el:()=>vis('#mt31 [data-a="buy"]'),txt:'Tap <b>Buy</b> on something cheap to start.',done:()=>inv()||(modalOpen()&&!!$q('#mcard #ok'))},
+ {el:()=>vis('#mt31 [data-a="buy"]'),txt:'Tap <b>Buy</b> on something cheap to start.',done:()=>inv()||modalOpen()},
  {el:()=>modalOpen()?$q('#mcard'):null,txt:'Pick an amount, then tap <b>Buy</b>. Start small.',done:inv,modal:1},
  {el:()=>vis('#mt31y')||vis('#mt31x'),txt:'Got it. Tap <b>Done dealing</b> to head back.',done:()=>!S.meet},
  {el:()=>vis('.tabs button[data-t="block"]'),txt:'Tap <b>Block</b>. That\'s your corner, where the Js come.',done:()=>tab==='block'},
@@ -10856,7 +10863,7 @@ function draw(){if(!T)return;const st=T.steps[T.i];if(!st){finish();return}
  const [h,b]=ui();let el=null;try{el=st.el()}catch(e){}
  const blockedByModal=modalOpen()&&!st.modal&&!(el&&el.closest&&el.closest('#modal'));
  const n=T.steps.length,mini=T.mini;
- const btns=`<div class="tu73k">${!mini&&T.i>0&&!st.last?'<button class="btn" data-tu73="back">Back</button>':''}${!st.last&&!mini?'<button class="btn" data-tu73="skip">Skip tutorial</button>':''}${(st.next||mini)&&!blockedByModal?`<button class="btn go" data-tu73="next">${st.last||mini?'Got it':'Next'}</button>`:''}${!el&&!st.next&&!mini&&Date.now()-T.t0>4000?'<button class="btn" data-tu73="next">Skip step</button>':''}</div>`;
+ const btns=`<div class="tu73k">${!mini&&T.i>0&&!st.last?'<button class="btn" data-tu73="back">Back</button>':''}${!st.last&&!mini?'<button class="btn" data-tu73="skip">Skip tutorial</button>':''}${(st.next||mini)&&!blockedByModal?`<button class="btn go" data-tu73="next">${st.last||mini?'Got it':'Next'}</button>`:''}${!st.next&&!mini&&(!el?Date.now()-T.t0>4000:Date.now()-T.t0>7000)?'<button class="btn" data-tu73="next">Skip step</button>':''}</div>`;
  const stt=typeof st.txt==='function'?st.txt():st.txt;const txt=blockedByModal?'Finish this popup first, then we keep going.':(!el&&!st.next?stt+'<div class="tu73w">Can\'t see it? Close any popup, or tap Skip step.</div>':stt);
  const txt2=el&&el.tagName==='SUMMARY'?'Tap here to open this section first.':txt;const key=txt2+btns;if(b._k!==key){b._k=key;b.innerHTML=`${mini?'':`<div class="tu73n">Tutorial · ${T.i+1} of ${n}</div>`}<div class="tu73t">${txt2}</div>${btns}`}
  if(!el||blockedByModal){h.style.display=blockedByModal?'none':'block';if(!blockedByModal){h.style.cssText+=';left:50%;top:50%;width:0;height:0'}
@@ -10882,6 +10889,7 @@ window.addEventListener('click',e=>{if(!T)return;const t=e.target;const tb=t.clo
  if(t.closest&&(t.closest('#tu73b')||t.closest('#modal')))return;
  let el=null;try{el=T.steps[T.i].el()}catch(x){}
  if(el&&(el===t||el.contains(t)))return;
+ if(el&&e.clientX!=null){const r=el.getBoundingClientRect(),p=8;if(e.clientX>=r.left-p&&e.clientX<=r.right+p&&e.clientY>=r.top-p&&e.clientY<=r.bottom+p){e.preventDefault();e.stopPropagation();if(!el._tu73c){el._tu73c=1;setTimeout(()=>{el._tu73c=0;try{el.click()}catch(_){}},0)}return}}
  e.preventDefault();e.stopPropagation()},true);
 window.addEventListener('keydown',e=>{if(!T)return;const st=T.steps[T.i];if(e.key==='Escape'){e.preventDefault();e.stopPropagation();if(T.mini)off();else{off();S.tut73='skip';render()}}
  else if(e.key==='Enter'&&st&&(st.next||T.mini)&&!modalOpen()){e.preventDefault();e.stopPropagation();go(1)}},true);
@@ -12495,7 +12503,7 @@ function pick(r){const R=M(),ws=(S.workers||[]).filter(w=>w&&w.name);
  modal(`<h2>${ROLES[r].ic} ${ROLES[r].n}</h2><p class="s">${ROLES[r].d}</p><div class="r96">${ws.length?ws.map(w=>{const other=Object.keys(ROLES).find(k=>k!==r&&R[k]===w.id);const p=PL[pers(w)],j=JT[jt(w)];return `<button class="btn" data-mg103p="${r}" data-w="${E(w.id)}" ${other||busy(w)?'disabled':''}><b>${E(w.name)} · ${tags(w)}</b><small>${p[2]} ${j[2]}${other?` Already your ${ROLES[other].n.toLowerCase()}.`:busy(w)?' Busy on a trap.':''}</small></button>`}).join(''):'<p>You need workers first. Hire on the Crew tab.</p>'}</div>
  ${r==='lt'?`<p class="s">Re-up: ${(()=>{const g=R.g&&G(R.g);return g?`keeps at least ${amt(R.min,g)} of ${E(g.name)}`:'pick a product below'})()}</p><div class="t98c">${GOODS.filter(g=>!g.legal).slice(0,6).map(g=>`<button class="btn ${R.g===g.id?'go':''}" data-mg103g="${g.id}">${E(g.name)}</button>`).join('')}<button class="btn" data-mg103g="">No re-up</button></div>`:''}
  <div class="btns">${R[r]?`<button class="btn red" data-mg103x="${r}">Take them off the job</button>`:''}<button class="btn" id="mg103c">Close</button></div>`);(document.getElementById('mg103c')||{}).onclick=close}
-window.l103html=function(){if(!S)return '';const R=M();let h=`<div class="sec">Managers</div>`;
+window.l103html=function(){if(!S||!(S.workers||[]).length)return '';const R=M();let h=`<div class="sec">Managers</div>`;
  Object.keys(ROLES).forEach(r=>{const w=W(R[r]);h+=`<div class="row"><div class="info"><div class="t">${ROLES[r].ic} ${ROLES[r].n}${w?`: ${E(w.name)}`:''}</div><div class="s">${w?tags(w):ROLES[r].d}</div></div><button class="btn ${w?'':'go'}" data-mg103="${r}">${w?'Change':'Assign'}</button></div>`});
  return h};
 document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('[data-mg103],[data-mg103p],[data-mg103x],[data-mg103g]');if(!t||t.disabled)return;e.preventDefault();e.stopPropagation();const R=M();
@@ -12768,4 +12776,9 @@ try{TUT.push(['Your saves','The game saves on your device every time something c
 })();
 
 </script>
+<style id="fx221">
+#mcard>*{flex-shrink:0}
+.day{white-space:normal!important;overflow:visible!important;line-height:1.6}
+@media (max-width:899px){.tabs{grid-template-columns:none!important;grid-auto-flow:column!important;grid-auto-columns:minmax(0,1fr)!important;background:#08060d!important}}
+</style>
 <script>if('serviceWorker' in navigator){addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}</script></body></html>

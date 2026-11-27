@@ -495,3 +495,12 @@ Build order if Chris says build: 1) Crew Ops screen + ring basics (assign, equip
 - Nov 26 #16 Lifestyle goals (lf110): Home / Whip / Drip, 3 stars each from what you own; perks while held: home stress -1..3/day + family safety, whip respect +4/star, drip respect +3/star and J price +1%/star; first time per star = Today note + rep. On the profile card. Test t_lf110 (12).
 - Nov 26 v219 bump: managers with traits, worker ambition, supply ripples, seasons, credit, family needs, reputation per person, lifestyle goals, case file, books, rivals.
 - Nov 27 SAVE FIX + bug sweep (sv111): save() can't be skipped by a render error (render finally-save), saves on pagehide/visibility/beforeunload, quota errors trim history and retry, failure shows a one-time warning, per-slot backup copy each new day used by readSlot/load when the main save is missing or broken, boot check warns if the browser blocks storage. Guarded 12 popup button hooks in new skins (recap error when a popup was replaced). Friend row safe if trait missing. Replay tutorial only shows with a real game. Fixed stale tests t_drive, t_tie (deploy was copying old copies over fixes). Sweep: 69 test files, deep 8 lives, long-run 9 lives x 150 days with all new systems on, fuzz x6. Test t_sv111 (11).
+
+## v221 (phone fixes from Chris's iPhone run)
+- VPN maze rebuilt for phones: swipe anywhere, arrow buttons, arrow/WASD keys; dot slides to the next turn, no wall strikes, timer only (Smarts = more time)
+- Tutorial: Buy step can't get stuck (taps near the lit button count, any popup moves it on, Skip step after 7s)
+- Popups: cards no longer squash, so text stays inside (character picker etc.)
+- More sheet: School tile no longer blank when class is due (red dot kept)
+- Circle: crew photo wall only shows when you have crew; Hall/Ladder get icons instead of letters
+- Managers only show once you have workers
+- Bottom bar fills the width and is solid; top info line wraps
