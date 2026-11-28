@@ -7106,7 +7106,7 @@ function ckReport(){try{ckState()}catch(e){}const done=CKL.filter(x=>{try{return
 $('mcard').addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(!b||b.disabled||b.onclick||!$('mcard').contains(b))return;sfx('tap');try{act(b.dataset.a,b)}catch(err){console.error(err)}});
 $('pane').onclick=e=>{sfx('tap');const pp=e.target.closest('.mapp');if(pp)return openPlace(pp.dataset.p);const m=e.target.closest('.mapb');if(m){if(m.dataset.a==='go')act('go',m);return}const b=e.target.closest('button[data-a]');if(b&&!b.disabled){let ak=null;try{ak=ACTART[b.dataset.a+(b.dataset.k?':'+b.dataset.k:'')]||ACTART[b.dataset.a]||null}catch(_){};const top=S&&S.log&&S.log[0];let pk=null;try{if(b.closest('#pane'))pk=artFor(b)}catch(_){}act(b.dataset.a,b);try{if(pk&&$('modal').hidden)setTimeout(()=>{try{if($('modal').hidden)artPop(pk)}catch(_){}},80)}catch(_){}const nw=S&&S.log&&S.log[0];if(nw&&nw!==top&&$('modal').hidden){if(ak&&ARTX(ak)&&!(ak===_apk&&Date.now()-_apt<2500)){_apk=ak;_apt=Date.now();modal(`${a2(ak,340)}<p>${esc(nw.t)}</p><div class="btns"><button class="btn go" id="apk">OK</button></div>`);$('apk').onclick=close}else toast(nw.t)}}};
 $('retire').onclick=()=>{modal(`${a2('retire',320)}<h2>Retire your career?</h2><p>This ends the run and shows your final score. You cannot undo it.</p><div class="btns"><button class="btn red" id="rok">Retire</button><button class="btn" id="rno">Keep playing</button></div>`);$('rok').onclick=()=>{$('modal').hidden=true;S.over=true;checkEnd()};$('rno').onclick=close};
-const BUILD='v223';
+const BUILD='v224';
 const DISCORD_INVITE='https://discord.gg/bVsvWzbGW';const OG_UNTIL=Infinity;
 
 
@@ -12909,6 +12909,50 @@ const _pr=paneRap;paneRap=function(){let h=_pr.apply(this,arguments);try{if(!h||
   <div class="mtr"><div>Hype ${R.hype}<b><i style="width:${R.hype}%"></i></b></div><div>Voice ${Math.max(0,100-Math.round((R.fat||0)*25))}<b><i style="width:${Math.max(0,100-Math.round((R.fat||0)*25))}%"></i></b></div></div>`;
  return `<div class="daw223 t${t}">${top}${h}</div>`}catch(e){return h}};
 try{const T=TUT.find(x=>x[0]==='Rank looks');if(T)T[1]+=' Scams run on your laptop: each kind of scam sits in its own window, and ghost work runs in a terminal. The laptop starts cracked and gets cleaner as you rank up. The Studio is music software: hype and voice meters up top, and every song you drop is a track lane (green is a hit, red is a diss).'}catch(e){}
+})();
+</script>
+<style id="th224css">
+.th224[data-th]{border-radius:10px;padding:10px 10px 12px;margin-top:4px}
+.th224[data-th] .row{box-shadow:none!important}
+.th224[data-th="nb"]{background:#fbf8ef;background-image:linear-gradient(90deg,transparent 30px,#f19999 30px,#f19999 32px,transparent 32px),repeating-linear-gradient(#fbf8ef 0 27px,#b9cde6 27px 28px);padding-left:40px}
+.th224[data-th="nb"] .row{background:transparent!important;border:0!important;border-bottom:1px dashed rgba(29,36,51,.18)!important;border-radius:0!important;color:#1d2433!important}
+.th224[data-th="nb"] .row .t{color:#14213d!important;font-family:'Permanent Marker',var(--label),cursive!important;font-weight:400!important;letter-spacing:.3px!important}
+.th224[data-th="nb"] .row .s,.th224[data-th="nb"] .s{color:#3d4a63!important}
+.th224[data-th="nb"] .sec{color:#c0392b!important;font-family:'Permanent Marker',var(--label),cursive!important;text-transform:none!important;letter-spacing:.5px!important;font-size:17px!important;border:0!important;text-decoration:underline wavy rgba(192,57,43,.6)!important}
+.th224[data-th="nb"] .bar{background:rgba(29,36,51,.12)}
+.th224[data-th="nb"]::after{content:"✏️ ☆ (╯°□°)╯";display:block;text-align:right;color:#8a96ad;font-size:12px;margin-top:8px;opacity:.7}
+.th224[data-th="fr"]{background:linear-gradient(90deg,#e9ecef,#f6f7f8 40%,#e3e6ea);border:1px solid #c7ccd2;box-shadow:inset -8px 0 0 #d5d9de}
+.th224[data-th="fr"] .row{background:#fffef8!important;border:0!important;border-radius:2px!important;color:#222!important;margin:14px 6px!important;box-shadow:1px 3px 6px rgba(0,0,0,.18)!important;position:relative!important}
+.th224[data-th="fr"] .row:nth-child(odd){transform:rotate(-.8deg)!important}.th224[data-th="fr"] .row:nth-child(even){transform:rotate(.7deg)!important}
+.th224[data-th="fr"] .row::before{content:""!important;position:absolute!important;top:-7px!important;left:50%!important;width:16px!important;height:16px!important;margin-left:-8px!important;border-radius:50%!important;background:var(--mg,#e8504a)!important;box-shadow:inset -2px -2px 0 rgba(0,0,0,.2)!important}
+.th224[data-th="fr"] .row:nth-child(3n)::before{--mg:#2f80ed!important}.th224[data-th="fr"] .row:nth-child(3n+1)::before{--mg:#f2c94c!important}
+.th224[data-th="fr"] .row .t{color:#111!important}.th224[data-th="fr"] .row .s,.th224[data-th="fr"] .s{color:#555!important}
+.th224[data-th="fr"] .sec{color:#4a5560!important;border:0!important}
+.th224[data-th="lg"]{background:#eef6e8;background-image:repeating-linear-gradient(#eef6e8 0 25px,#bcd7b0 25px 26px),linear-gradient(90deg,transparent calc(100% - 80px),rgba(200,60,60,.35) calc(100% - 80px),rgba(200,60,60,.35) calc(100% - 78px),transparent calc(100% - 78px));border:1px solid #a9c79c}
+.th224[data-th="lg"] .row{background:rgba(255,255,255,.55)!important;border:1px solid #c5ddb9!important;border-radius:3px!important;color:#1f2a1c!important}
+.th224[data-th="lg"] .row .t{color:#15351a!important;font-family:ui-serif,Georgia,serif!important}.th224[data-th="lg"] .row .s,.th224[data-th="lg"] .s{color:#3f5a3a!important}
+.th224[data-th="lg"] .sec{color:#7a1f1f!important;font-family:ui-serif,Georgia,serif!important;letter-spacing:2px!important;border-bottom:2px double #7a1f1f!important}
+.th224[data-th="cw"]{background:#5e5d5a;background-image:radial-gradient(rgba(0,0,0,.18) 1px,transparent 1.5px),radial-gradient(rgba(255,255,255,.07) 1px,transparent 1.5px);background-size:7px 7px,11px 11px;color:#eee;border:1px solid #3d3c3a}
+.th224[data-th="cw"] .row{background:rgba(30,30,30,.55)!important;border:1px solid rgba(0,0,0,.35)!important;border-radius:4px!important}
+.th224[data-th="cw"] .sec{color:#f1e7c8!important;font-family:'Permanent Marker',var(--label),cursive!important;text-transform:none!important;border:0!important;letter-spacing:.5px!important}
+.tally224{font:22px/1.2 'Permanent Marker',var(--label),cursive;color:#f1e7c8;letter-spacing:2px;padding:4px 2px 10px;word-break:break-all}
+.tally224 small{display:block;font:12px var(--label);letter-spacing:1px;color:#cfcfcf}
+.th224[data-th="fr"].t3{background:linear-gradient(90deg,#9aa0a6,#c9ced3 40%,#8e949a);border-color:#6d7378}
+.th224[data-th="lg"].t3{background:#14110a;background-image:repeating-linear-gradient(#14110a 0 25px,#3a3016 25px 26px);color:#e9e2c8;border-color:#c9a227}
+.th224[data-th="lg"].t3 .row{background:rgba(0,0,0,.4)!important;border-color:#3a3016!important;color:#e9e2c8!important}.th224[data-th="lg"].t3 .row .t,.th224[data-th="lg"].t3 .sec{color:#d4af37!important}.th224[data-th="lg"].t3 .row .s,.th224[data-th="lg"].t3 .s{color:#bdb497!important}
+.th224[data-th="nb"]>.s,.th224[data-th="fr"]>.s{color:#3d4a63!important}.th224[data-th="lg"]>.s{color:#1f2a1c!important}.th224[data-th="lg"].t3>.s{color:#e9e2c8!important}
+</style>
+<script id="th224js">
+/* th224: themed screens round 3. School is notebook paper, Expenses are bills on the fridge, Business is a ledger, jail is the cell wall with tally marks.
+   Pure styling on #pane (no HTML rebuild), so the map and section routing are not touched. */
+(function(){
+const TH={sch:'nb',exp:'fr',biz:'lg',prison:'cw'};
+const _pp=panePrison;panePrison=function(){const h=_pp.apply(this,arguments);try{const R=S.pr;if(!h||!R)return h;const n=Math.max(0,S.day-R.start),left=Math.max(0,R.until-S.day);
+ const t='卌 '.repeat(Math.floor(Math.min(n,60)/5))+'|'.repeat(Math.min(n,60)%5);
+ return `<div class="tally224">${t||'—'}<small>${n} day${n===1?'':'s'} down · ${left} to go</small></div>`+h}catch(e){return h}};
+const _r=render;render=function(){const r=_r.apply(this,arguments);try{const p=document.getElementById('pane');const th=S&&!S.ph?TH[tab]:null;if(p&&th&&!p.querySelector(':scope>.th224')){let k=0;try{const tp=document.createElement('template');tp.innerHTML=waveTop();k=tp.content.childNodes.length}catch(e){}
+ const w=document.createElement('div');w.className='th224';w.dataset.th=th;let t=1;try{t=RK222.tier()}catch(e){}if(t===3)w.classList.add('t3');const kids=[...p.childNodes].slice(k);kids.forEach(n=>w.appendChild(n));if(w.childNodes.length)p.appendChild(w)}}catch(e){}return r};
+try{const T=TUT.find(x=>x[0]==='Rank looks');if(T)T[1]+=' School is written on notebook paper, Expenses are bills stuck on the fridge, Business is your ledger book (black and gold at Kingpin), and jail is your cell wall with a tally mark for every day down.'}catch(e){}
 })();
 </script>
 <script>if('serviceWorker' in navigator){addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}</script></body></html>

@@ -515,3 +515,10 @@ Build order if Chris says build: 1) Crew Ops screen + ring basics (assign, equip
 - Scams run on a laptop (Move tab): menu bar with wifi (neighbor's wifi to private line by rank) and notoriety, each scam group in its own window, ghost work in a green terminal, dock. Cracked screen at Corner Boy, silver at Boss, black and gold at Kingpin.
 - Studio is music software: REC transport bar, hype and voice meters (old hype bar removed so it isn't shown twice), songs as colored track lanes with waveforms (green hit, purple ok, blue weak, red diss). Follows rank looks.
 - How to play: added to "Rank looks". Test: t_lp223.
+
+## v224 (themed screens round 3, all rounds done)
+- School tab on notebook paper (blue lines, red margin, red-pen headers, doodles)
+- Expenses as bills stuck on the fridge with magnets (stainless at Kingpin)
+- Business as a green ledger book (black and gold at Kingpin)
+- Jail on the cell wall: concrete, tally marks for days down and days left
+- Styling only around the tab content (top day buttons untouched, map routing untouched). Test: t_th224.
