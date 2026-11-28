@@ -525,3 +525,4 @@ Build order if Chris says build: 1) Crew Ops screen + ring basics (assign, equip
 
 ## v225
 - Fix: tapping "Bus pass $30 · Go" only bought the pass and left you where you were. Now it buys the pass and takes the ride (3 energy). Test: t_bus.
+- (after v225) Fix: money history no longer shows the starting cash setup as $1,600 spent on day 1.

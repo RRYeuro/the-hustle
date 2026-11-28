@@ -12066,7 +12066,7 @@ function book(tag,n,c,x,tr,lab){const G=L();if(!G)return;n=N(n);tr=N(tr);if(tag=
   const D=G.days[d]||(G.days[d]={i:0,o:0,t:0,tr:0,k:{}});if(tag==='trading'){D.t+=n}else if(n>0){D.i+=n}else D.o+=-n;if(tag!=='trading')D.k[tag]=(D.k[tag]||0)+n}
  if(tr){const D=G.days[d]||(G.days[d]={i:0,o:0,t:0,tr:0,k:{}});D.tr+=tr;const last=G.e[0];if(last&&last.d===d&&last.tr&&last.l===lab)last.tr+=tr;else G.e.unshift({d,k:'transfer',l:String(lab||'').slice(0,40),n:0,tr})}
  if(G.e.length>250)G.e.length=250;const ks=Object.keys(G.days);if(ks.length>60)ks.map(Number).sort((a,b)=>a-b).slice(0,ks.length-60).forEach(k=>delete G.days[k])}
-function flush(lab){if(!S||S.over&&!base)return;const v=vec();if(!v)return;if(!base){base=v;return}
+let baseS=null,baseK='';function flush(lab){if(!S||S.over&&!base)return;const v=vec();if(!v)return;const k=(S.char||'')+'|'+(S.slot||'')+'|'+(S.born||S.mode||'');if(!base||baseS!==S||baseK!==k||S.ph||/^START AS|Play as /i.test(lab||ctx||'')){base=v;baseS=S;baseK=k;return}
  const dc=v.wc+v.sc+v.hc+(v.fc||0)-(base.wc+base.sc+base.hc+(base.fc||0)),dx=v.wd+v.sd+v.hd-(base.wd+base.sd+base.hd),dcr=v.cr-base.cr;
  const moved=['wc','wd','sc','sd','hc','hd','fc'].reduce((a,k)=>a+Math.max(0,(v[k]||0)-(base[k]||0)),0);base=v;
  let rc=dc-posted.c,rx=dx-posted.x,rcr=dcr-posted.cr;posted={c:0,x:0,cr:0};
