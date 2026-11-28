@@ -7106,7 +7106,7 @@ function ckReport(){try{ckState()}catch(e){}const done=CKL.filter(x=>{try{return
 $('mcard').addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(!b||b.disabled||b.onclick||!$('mcard').contains(b))return;sfx('tap');try{act(b.dataset.a,b)}catch(err){console.error(err)}});
 $('pane').onclick=e=>{sfx('tap');const pp=e.target.closest('.mapp');if(pp)return openPlace(pp.dataset.p);const m=e.target.closest('.mapb');if(m){if(m.dataset.a==='go')act('go',m);return}const b=e.target.closest('button[data-a]');if(b&&!b.disabled){let ak=null;try{ak=ACTART[b.dataset.a+(b.dataset.k?':'+b.dataset.k:'')]||ACTART[b.dataset.a]||null}catch(_){};const top=S&&S.log&&S.log[0];let pk=null;try{if(b.closest('#pane'))pk=artFor(b)}catch(_){}act(b.dataset.a,b);try{if(pk&&$('modal').hidden)setTimeout(()=>{try{if($('modal').hidden)artPop(pk)}catch(_){}},80)}catch(_){}const nw=S&&S.log&&S.log[0];if(nw&&nw!==top&&$('modal').hidden){if(ak&&ARTX(ak)&&!(ak===_apk&&Date.now()-_apt<2500)){_apk=ak;_apt=Date.now();modal(`${a2(ak,340)}<p>${esc(nw.t)}</p><div class="btns"><button class="btn go" id="apk">OK</button></div>`);$('apk').onclick=close}else toast(nw.t)}}};
 $('retire').onclick=()=>{modal(`${a2('retire',320)}<h2>Retire your career?</h2><p>This ends the run and shows your final score. You cannot undo it.</p><div class="btns"><button class="btn red" id="rok">Retire</button><button class="btn" id="rno">Keep playing</button></div>`);$('rok').onclick=()=>{$('modal').hidden=true;S.over=true;checkEnd()};$('rno').onclick=close};
-const BUILD='v222';
+const BUILD='v223';
 const DISCORD_INVITE='https://discord.gg/bVsvWzbGW';const OG_UNTIL=Infinity;
 
 
@@ -12861,6 +12861,54 @@ addEventListener('resize',()=>{try{strings()}catch(e){}});
 document.addEventListener('click',e=>{const p=e.target.closest&&e.target.closest('.cbd .pol');if(!p)return;setTimeout(()=>{const id=p.dataset.cb;if(p.classList.contains('flip'))FL.add(id);else FL.delete(id);const q=document.querySelector('.cbd .pol[data-cb="'+id+'"]');if(q)q.classList.toggle('flip',FL.has(id));strings()},0)});
 try{TUT.push(['Rank looks','Your screens level up with your rank. Corner Boy and Petty Dealer get the beat-up cork board look. From Middle Man the game turns clean and sharp (Boss look). From The Connect it goes black and gold (Kingpin look). Your Circle tab opens on your crime board: you, your crew and any gang you have beef with, tied together with string. Tap a photo to flip it. Heists now sit on a planning board with the blueprint, what you still need and the take.'])}catch(e){}
 try{const _dp=devPanel;devPanel=function(){const r=_dp.apply(this,arguments);try{const mc=document.getElementById('mcard');if(mc&&!mc.querySelector('[data-d222]')){const d=document.createElement('div');d.innerHTML='<div class="sec">Rank look (new)</div><div class="btns"><button class="btn" data-d222="1">Corner Boy look</button><button class="btn" data-d222="2">Boss look</button><button class="btn" data-d222="3">Kingpin look</button><button class="btn" data-d222="0">Use my rank</button></div>';mc.insertBefore(d,mc.querySelector('.btns:last-child'));d.addEventListener('click',e=>{const b=e.target.closest('[data-d222]');if(!b)return;S.rk222f=+b.dataset.d222||0;close();render()})}}catch(e){}return r}}catch(e){}
+})();
+</script>
+<style id="lp223css">
+.lap223{margin:4px 0 12px;background:#2b2b2e;border:1px solid #444;border-radius:14px 14px 6px 6px;padding:9px 9px 0}
+.lap223 .scr{position:relative;background:#0e1726;border-radius:5px;padding:0 8px 10px;overflow:hidden;min-height:180px;background-image:radial-gradient(circle at 80% 10%,rgba(80,120,200,.25),transparent 60%)}
+.lap223 .mbar{display:flex;justify-content:space-between;gap:8px;margin:0 -8px 10px;padding:4px 10px;background:rgba(255,255,255,.08);font:12px var(--label);letter-spacing:.5px;color:#cfd8e6}
+.lap223 .base{height:14px;background:#3a3a3e;margin:0 -9px;border-radius:0 0 10px 10px;position:relative}.lap223 .base::after{content:"";position:absolute;left:42%;width:16%;top:0;height:5px;background:#2a2a2d;border-radius:0 0 6px 6px}
+.lap223 .win{background:#e9edf3;color:#1b2230;border-radius:6px;margin:0 0 10px;overflow:hidden;box-shadow:0 3px 10px rgba(0,0,0,.35)}
+.lap223 .wtb{display:flex;align-items:center;gap:6px;background:#c9d2de;padding:5px 8px;font:500 13px var(--label);letter-spacing:.5px;color:#1b2230}
+.lap223 .wtb i{width:9px;height:9px;border-radius:50%;background:#ff5f57;display:inline-block}.lap223 .wtb i+i{background:#febc2e}.lap223 .wtb i+i+i{background:#28c840;margin-right:4px}
+.lap223 .win .row{background:transparent;border:0;border-bottom:1px solid #cdd5e1;border-radius:0;margin:0;color:#1b2230}.lap223 .win .row:last-child{border-bottom:0}
+.lap223 .win .row .t{color:#111}.lap223 .win .row .s{color:#4a5568}
+.lap223 .win.term{background:#05080a;color:#3ddc84}.lap223 .win.term .wtb{background:#1d2328;color:#9fb3a6}
+.lap223 .win.term .row{border-bottom-color:#14301f;font-family:ui-monospace,Menlo,monospace}.lap223 .win.term .row .t{color:#3ddc84}.lap223 .win.term .row .t::before{content:"> "}.lap223 .win.term .row .s{color:#8fbf9f}
+.lap223 .dock{display:flex;justify-content:center;gap:8px;margin-top:4px}.lap223 .dock span{width:22px;height:22px;border-radius:6px;display:grid;place-items:center;font-size:13px;background:rgba(255,255,255,.12)}
+.lap223.t1 .scr::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(115deg,transparent 46%,rgba(255,255,255,.35) 46.3%,transparent 46.8%),linear-gradient(60deg,transparent 30%,rgba(255,255,255,.22) 30.2%,transparent 30.6%) 0 0/60% 45% no-repeat,linear-gradient(150deg,transparent 52%,rgba(255,255,255,.25) 52.3%,transparent 52.7%) 100% 0/40% 35% no-repeat}
+.lap223.t2{background:#c9ccd2;border-color:#9aa0a8}.lap223.t2 .base{background:#b3b7bd}
+.lap223.t3{background:#111;border-color:#c9a227}.lap223.t3 .base{background:#1a1a1a;box-shadow:inset 0 1px 0 #c9a227}.lap223.t3 .scr{background:#050505}.lap223.t3 .mbar{color:#d4af37}
+.daw223{margin:4px 0 12px;background:#16161c;border:1px solid #333;border-radius:10px;padding:10px;color:#ddd}
+.daw223 .tp{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px;font:12px var(--label);letter-spacing:.6px;color:#9a9aa5}
+.daw223 .tp .rec{color:#ff5a4f}.daw223 .tp .rec::before{content:"● "}
+.daw223 .mtr{display:flex;gap:12px;margin:0 0 10px}.daw223 .mtr div{flex:1;font:11px var(--label);letter-spacing:.5px;color:#9a9aa5}
+.daw223 .mtr b{display:block;height:8px;border-radius:4px;background:#2a2a33;margin-top:4px;overflow:hidden}.daw223 .mtr b i{display:block;height:100%;background:linear-gradient(90deg,#3ddc84,#ffd23f 70%,#ff5a4f)}
+.daw223 .sec{color:#8b6cff;font-size:12px;letter-spacing:2px;border:0;margin:12px 0 6px;padding:0}
+.daw223 .row{background:#1e1e26;border:1px solid #2c2c36;border-radius:6px;margin:0 0 6px}.daw223 .row .t{color:#eee}.daw223 .row .s{color:#a3a3b0}
+.daw223 .row.lane{position:relative;padding-left:14px!important}.daw223 .row.lane::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;border-radius:6px 0 0 6px;background:var(--lc,#8b6cff)}
+.daw223 .row.lane .info{position:relative;z-index:1}.daw223 .row.lane::after{content:"";position:absolute;right:8px;left:45%;top:22%;bottom:22%;opacity:.35;background:repeating-linear-gradient(90deg,var(--lc,#8b6cff) 0 2px,transparent 2px var(--lg,5px));-webkit-mask:linear-gradient(0deg,transparent,#000 30%,#000 70%,transparent);mask:linear-gradient(0deg,transparent,#000 30%,#000 70%,transparent)}
+.daw223.t2{background:#f2f3f6;color:#222;border-color:#c8ccd4}.daw223.t2 .row{background:#fff;border-color:#dde1e7}.daw223.t2 .row .t{color:#111}.daw223.t2 .row .s{color:#555}.daw223.t2 .sec{color:#1f6feb}
+.daw223.t3{background:#060606;border-color:#c9a227}.daw223.t3 .row{background:#0e0e0e;border-color:#2a2414}.daw223.t3 .sec{color:#d4af37}.daw223.t3 .mtr b i{background:linear-gradient(90deg,#8a6d12,#d4af37)}
+</style>
+<script id="lp223js">
+/* lp223: themed screens round 2. Scams run on a laptop (windows, terminal for ghost work), the Studio is music software (transport bar, meters, songs as track lanes). Look follows rank skins (RK222). */
+(function(){
+const tier=()=>{try{return RK222.tier()}catch(e){return 1}};
+function wins(h){const parts=h.split('<div class="sec">');let out=parts[0]?`<div class="win"><div class="wtb"><i></i><i></i><i></i>Hustle.exe</div>${parts[0]}</div>`:'';
+ parts.slice(1).forEach(p=>{const e=p.indexOf('</div>');const title=p.slice(0,e),body=p.slice(e+6);const term=/Ghost work/i.test(title);
+  out+=`<div class="win${term?' term':''}"><div class="wtb"><i></i><i></i><i></i>${term?'ghost@laptop: ~':/^Scams/.test(title)?'Scams.exe':title}</div>${body}</div>`});return out}
+const _ps=paneScam;paneScam=function(){const h=_ps.apply(this,arguments);try{if(!h)return h;const sc=S.scam||{};const t=tier();
+ return `<div class="sec">Scams · ${typeof scamTitle==='function'?scamTitle():''}</div><div class="lap223 t${t}"><div class="scr"><div class="mbar"><span>📶 ${t===1?'Neighbor\'s wifi':t===2?'Home wifi':'Private line'}</span><span>${sc.noto||0} notoriety</span></div>${wins(h)}<div class="dock"><span>✉️</span><span>💳</span><span>🏦</span><span>${sc.laptop?'💻':'🔒'}</span></div></div><div class="base"></div></div>`}catch(e){return h}};
+const hue=n=>{let h=0;for(const c of String(n))h=(h*31+c.charCodeAt(0))%997;return h};
+const _pr=paneRap;paneRap=function(){let h=_pr.apply(this,arguments);try{if(!h||!S.rap)return h;const R=S.rap,t=tier();
+ let k=0;const songs=R.songs.slice().reverse();
+ h=h.replace(/<div class="row" style="padding:8px 12px">/g,()=>{const x=songs[k++]||{};const c=x.diss?'#ff5a4f':x.q>=75?'#3ddc84':x.q>=50?'#8b6cff':'#5aa9ff';return `<div class="row lane" style="padding:8px 12px;--lc:${c};--lg:${3+hue(x.title)%6}px">`});
+ h=h.replace(/<div class="bar"><i[^>]*><\/i><\/div>/,'');
+ const top=`<div class="tp"><span class="rec">REC</span><span>Session ${R.songs.length+1}</span><span>${R.songs.length} track${R.songs.length===1?'':'s'}</span>${R.signed?'<span style="color:var(--accent)">Signed</span>':''}</div>
+  <div class="mtr"><div>Hype ${R.hype}<b><i style="width:${R.hype}%"></i></b></div><div>Voice ${Math.max(0,100-Math.round((R.fat||0)*25))}<b><i style="width:${Math.max(0,100-Math.round((R.fat||0)*25))}%"></i></b></div></div>`;
+ return `<div class="daw223 t${t}">${top}${h}</div>`}catch(e){return h}};
+try{const T=TUT.find(x=>x[0]==='Rank looks');if(T)T[1]+=' Scams run on your laptop: each kind of scam sits in its own window, and ghost work runs in a terminal. The laptop starts cracked and gets cleaner as you rank up. The Studio is music software: hype and voice meters up top, and every song you drop is a track lane (green is a hit, red is a diss).'}catch(e){}
 })();
 </script>
 <script>if('serviceWorker' in navigator){addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}</script></body></html>

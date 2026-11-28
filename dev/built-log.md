@@ -510,3 +510,8 @@ Build order if Chris says build: 1) Crew Ops screen + ring basics (assign, equip
 - Circle tab opens on the crime board: you, your crew (real faces), gangs you have beef with or who run your block (icons), string between them (dashed red for rivals), sticky notes for blocks held and the gang ladder. Tap a photo to flip it. Board material changes with rank (cork, whiteboard, black glass).
 - Heists on a blueprint planning board: floor plan, ✓/✗ checklist of what you still need, take/heat/odds sticky note, Plan it button.
 - How to play: "Rank looks". Test: t_rk222.
+
+## v223 (themed screens round 2)
+- Scams run on a laptop (Move tab): menu bar with wifi (neighbor's wifi to private line by rank) and notoriety, each scam group in its own window, ghost work in a green terminal, dock. Cracked screen at Corner Boy, silver at Boss, black and gold at Kingpin.
+- Studio is music software: REC transport bar, hype and voice meters (old hype bar removed so it isn't shown twice), songs as colored track lanes with waveforms (green hit, purple ok, blue weak, red diss). Follows rank looks.
+- How to play: added to "Rank looks". Test: t_lp223.
