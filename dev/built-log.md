@@ -522,3 +522,6 @@ Build order if Chris says build: 1) Crew Ops screen + ring basics (assign, equip
 - Business as a green ledger book (black and gold at Kingpin)
 - Jail on the cell wall: concrete, tally marks for days down and days left
 - Styling only around the tab content (top day buttons untouched, map routing untouched). Test: t_th224.
+
+## v225
+- Fix: tapping "Bus pass $30 · Go" only bought the pass and left you where you were. Now it buys the pass and takes the ride (3 energy). Test: t_bus.
